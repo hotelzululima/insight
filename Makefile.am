@@ -12,11 +12,6 @@ ACLOCAL_AMFLAGS = -I autotools-files/m4
 doc:
 	(cd doc && $(MAKE))
 
-if WITH_ATF
-check:
-	(cd test && $(MAKE) check)
-endif
-
 distclean-local:
 	rm -fr lib bin
 
