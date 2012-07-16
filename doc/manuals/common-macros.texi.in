@@ -1,0 +1,29 @@
+@macro Insight
+Insight
+@end macro
+
+@macro manualversion
+0.1
+@end macro
+
+@macro softwareversion
+@VERSION@
+@end macro
+
+@copying
+This file documents the Insight framework.
+
+Copyright @copyright{} 2011-2012, Universite Bordeaux 1,
+Institut Polytechnique de Bordeaux (IPB), @*
+Centre National de la Recherche Scientifique (CNRS).
+
+All rights reserved.
+
+Redistribution and use in source and binary forms are permitted provided
+that the above copyright notice and this paragraph are duplicated in all
+such forms and that any documentation, advertising materials, and other
+materials related to such distribution and use acknowledge that this
+documentation is originally issued by the copyrights holders. The name
+of the University may not be used to endorse or promote products derived
+from this documentation without specific prior written permission.
+@end copying

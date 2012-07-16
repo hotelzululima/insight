@@ -1,0 +1,154 @@
+		  Insight Installation Instructions
+		 ===================================
+
+Basic Build and Install
+========================
+
+The insight framework needs a UNIX-like environment to build and work
+properly. It relies on a small number of widely used libraries and
+tools, and here is the list of dependencies if you downloaded the
+tarball of a release. Package names may vary depending on your
+operating system distribution.
+
+binutils
+g++
+libstl (probably provided with g++)
+libxml2
+
+Insight can be easily installed thanks to the usual:
+'./configure && make && make install'.
+
+In case of error, the 'configure' script should provide some useful
+error messages that will help you to get through.
+
+
+MacOS X Build and Install
+==========================
+
+Under MacOS X, you will need to install UNIX packages either by hand
+or by using MacPorts, Fink, or similar package systems. We tested and
+use insight with MacPorts (http://www.macports.org/).
+
+The insight framework needs the following additional packages to build
+and operate:
+
+Apple's XCode
+binutils
+libxml2
+pkgconfig
+
+./configure CPPFLAGS=-I/opt/local/include \
+	    LDFLAGS=-L/opt/local/lib/x86_64
+
+Note that, if you are using a system older than Snow Leopard (10.6.x),
+you will need to use a slightly different command line:
+
+./configure CPPFLAGS=-I/opt/local/include \
+	    LDFLAGS=-L/opt/local/lib
+
+The paths given are correct for MacPorts. Fink uses /sw as its root
+directory.
+
+Possibly unusual configure flags are available:
+
+ --enable-werror         compile with -Werror flag (default is no)
+ --enable-debug          compile with debug (default is no)
+ --enable-optimize       compile with optimization (default is no)
+
+
+Building in a separate directory
+=================================
+
+If you want to build the project outside of the source directory, just
+create a fresh directory (eg. 'build/'), cd into it and type:
+<path_to_srcdir>/configure <suitable_options>
+
+This should run exactly as if you were in the source directory but
+keeping built files apart from the source files.
+
+We recommend this way of building as it leaves the source directory
+clean.
+
+Using more binutils file formats/architectures
+===============================================
+
+On most operating system distributions the binutils package comes only
+with the minimum needed processor architectures and binary formats. In
+fact, the binutils can do much more than that and can deal with a lot
+of architectures and binary formats.
+
+The Debian-based systems propose a binutils-multiarch package that
+includes among others ARM support and adds several extra binary
+formats. It is generally a good idea to install it and to execute the
+following command as root (we assume binutils-2.22):
+
+# cd /usr/lib/
+# ln -s libbfd-2.22-multiarch.so libbfd-multiarch.so
+# ln -s libopcodes-2.22-multiarch.so libopcodes-multiarch.so
+
+If you do not have a Debian-based system, or if you want more than
+what binutils-multiarch package provides, you will need to recompile
+and install the binutils by yourself.
+
+Getting the sources can be done by FTP:
+ftp://ftp.gnu.org/gnu/binutils/
+
+Building the sources goes as usual, except that we will ask configure
+ to build all the binutils supported targets this way:
+
+./configure --enable-targets=all && make && make install
+
+Under NetBSD, we found it necessary to pass also the '--disable-nls'
+option to configure.
+
+You will probably need to point to this installation of the binutils
+when invoking 'configure' within insight. E.g.:
+
+./configure CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib
+
+Developer Build and Install
+============================
+
+Developers are, of course, more than welcome in this project and
+feature requests, development questions and patches will be looked at
+and commented upon by the Insight team (see the README file for more
+contact information).
+
+In order to build insight from a fresh checkout of the sources, you
+will need the following additional packages:
+
+autoconf
+automake
+bison (/usr/bin/bison is too old under MacOS X)
+flex
+GNU libtool
+
+Getting a fresh development snapshot of the source:
+
+$ svn checkout https://insight.labri.fr/svn/trunk insight
+
+Then, change to the directory you just checked out ('insight' here)
+and you will be able to generate all the autoconf stuff with:
+
+./autogen.sh
+
+You can then proceed with the usual 'configure' step.
+
+Test Framework (ATF/Kyua)
+=========================
+
+We use ATF (Automated Test Framework) together with the Kyua runner in
+order to test the framework. At the moment, we require a recent
+version of Kyua which is not available as a package on most
+systems. So, the best way to go is to install it directly from their
+stable or development sources.
+
+ATF/Kyua Project home: http://code.google.com/p/kyua/
+ATF/Kyua Documentation: http://code.google.com/p/kyua/wiki/ATF
+ATF/Kyua Blog: http://blog.julipedia.org/
+
+Stable release: http://code.google.com/p/kyua/downloads/list
+
+Development release:
+* ATF: http://code.google.com/p/kyua/source/checkout?repo=atf
+* Kyua: http://code.google.com/p/kyua/source/checkout

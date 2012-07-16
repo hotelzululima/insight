@@ -1,0 +1,156 @@
+%code requires {		  /*  -*- C++ -*- */
+#include <map>
+#include <string>
+
+#include <kernel/Microcode.hh>
+
+namespace arm {
+  typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
+  struct parser_data
+  {
+    std::string instruction;
+    MicrocodeAddress start_ma;
+  MicrocodeAddress next_ma;
+    std::vector<MicrocodeNode *> *nodes;
+    std::map<std::string, LValue *> registers;
+  };
+}
+}
+
+ /* Bison specific options */
+%skeleton "lalr1.cc"
+%language "c++"
+%require "2.4"
+%defines
+%define namespace "arm"
+
+ /* Initial rule is named 'start' */
+%start start
+
+ /* Parsing context */
+%parse-param { parser_data &data }
+/*%lex-param   { parser_data &data }*/
+
+%locations
+%initial-action
+{
+  /* Initialize the initial location */
+  @$.begin.filename = @$.end.filename = &data.instruction;
+};
+
+%debug
+%error-verbose
+
+ /* Symbols */
+%union
+{
+  long         intValue;
+  std::string *stringValue;
+  class Expr  *expr;
+};
+
+%code {
+using namespace std;
+using namespace arm;
+
+#include "decoder/binutils/arm/arm_translate.hh"
+
+#undef yylex
+#define yylex arm_lex
+
+#define YY_DECL				      \
+  arm::parser::token_type		      \
+    yylex(arm::parser::semantic_type* yylval, \
+          arm::parser::location_type* yylloc)
+
+YY_DECL;
+
+#include "arm_scanner.hh"
+}
+
+%token TOK_LPAR TOK_RPAR
+%token TOK_COMMA TOK_SEMICOLON
+%token TOK_PLUS TOK_MINUS TOK_STAR TOK_DOLLAR
+%token <stringValue>  TOK_INVALID
+%token                TOK_EOF      0 "end of buffer (EOF)"
+%token                TOK_EOL        "end of line (EOL)"
+
+%token <stringValue>  TOK_REGISTER   "register (REGISTER)"
+
+%token <intValue>     TOK_INTEGER    "integer value (INTEGER)"
+
+@TOKENS@
+
+
+%type <expr> operand register
+
+%type <intValue> integer immediate
+
+%printer    { debug_stream() << $$; } <intValue>
+
+%printer    { debug_stream() << *$$; } TOK_REGISTER
+%destructor { delete $$; } TOK_REGISTER
+
+%% /***** Parser rules *****/
+
+start: instruction;
+
+/* FIXME:
+ *  - simplify rules
+ *  - obviously semantics action have to be changed
+ */
+operand:
+  immediate { $$ = new Constant($1); }
+| register  { $$ = $1; }
+| register TOK_LPAR integer TOK_RPAR  { $$ = $1; } /* ex: %st(1) */
+| register TOK_SEMICOLON TOK_LPAR register TOK_RPAR  { $$ = $1; }
+| register TOK_SEMICOLON TOK_LPAR register TOK_COMMA register TOK_RPAR  { $$ = $1; }
+| register TOK_SEMICOLON TOK_LPAR register TOK_COMMA register TOK_COMMA integer TOK_RPAR  { $$ = $1; }
+| register TOK_SEMICOLON integer TOK_LPAR register TOK_RPAR  { $$ = $1; }
+| register TOK_SEMICOLON integer TOK_LPAR register TOK_COMMA register TOK_RPAR  { $$ = $1; }
+| register TOK_SEMICOLON integer TOK_LPAR register TOK_COMMA register TOK_COMMA integer TOK_RPAR  { $$ = $1; }
+| register TOK_SEMICOLON integer  { $$ = $1; }
+
+| integer  { $$ = new Constant($1); }
+| integer TOK_LPAR register TOK_RPAR { $$ = $3; }
+| integer TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR { $$ = $3; }
+| integer TOK_LPAR register TOK_COMMA register TOK_RPAR { $$ = $3; }
+| integer TOK_LPAR TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR { $$ = $4; }
+
+| TOK_LPAR register TOK_RPAR { $$ = $2; }
+| TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR { $$ = $2; }
+| TOK_LPAR register TOK_COMMA register TOK_RPAR { $$ = $2; }
+
+| TOK_STAR TOK_LPAR register TOK_RPAR { $$ = $3; }
+| TOK_STAR TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR { $$ = $3; }
+| TOK_STAR integer TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR { $$ = $4; }
+| TOK_STAR integer TOK_LPAR TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR { $$ = $5; }
+| TOK_STAR integer TOK_LPAR register TOK_RPAR { $$ = $4; }
+| TOK_STAR integer  { $$ = new Constant($2); }
+| TOK_STAR register { $$ = $2; }
+| TOK_STAR register TOK_LPAR register TOK_RPAR  { $$ = $2; }
+;
+
+register:
+  TOK_REGISTER { $$ = arm_translate_register (data, *$1); }
+ ;
+
+immediate:
+  TOK_DOLLAR integer { $$ = $2; }
+;
+
+integer:
+  TOK_PLUS  TOK_INTEGER { $$ = $2; }
+| TOK_MINUS TOK_INTEGER { $$ = -$2; }
+| TOK_INTEGER           { $$ = $1; }
+;
+
+@RULES@
+
+%% /***** Parser subroutines *****/
+
+void parser::error(const parser::location_type &loc,
+		   const string &msg)
+{
+  cerr << loc << ":" << msg << endl;
+}

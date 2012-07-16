@@ -1,0 +1,541 @@
+\input texinfo @c -*- texinfo -*-
+@c %**start of header
+@setfilename design.info
+@documentencoding UTF-8
+@settitle Insight Developer Manual
+@synindex fn cp
+@c %**end of header
+
+@include common-macros.texi
+
+@titlepage
+@title Insight Developer manual, version @manualversion
+@subtitle Insight @softwareversion -- A binary analysis framework
+@author Insight team
+@page
+
+@tex
+{\parskip=0pt
+\hfill {\it Insight Developer Manual}, version @manualversion\par
+\hfill The Insight Team (insight\@labri.fr)\par
+}
+@end tex
+
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top, Introduction
+@top Insight Design document
+@end ifnottex
+
+@node Introduction
+@chapter Introduction
+
+@node Architecture Overview
+@chapter Architecture Overview
+
+@node Microcode
+@chapter Microcode
+
+@section Architectures
+
+The @code{Architecture} class is a factory producing an
+@code{Architecture} objects which is a container to hold the
+specification of a given architecture. This specification can, then, be
+passed as an input to the rest of the framework to issue a decoder and a
+concrete interpreter for a specific binary. More precisely, the
+@code{Architecture} class provides a static method:
+@verbatim
+Architecture*
+Architecture::getArchitecture (const Architecture::processor_t,
+                                   const Architecture::endianness_t)
+@end verbatim
+
+This methode will select the appropriate architecture specification
+among the ones defined (@{emph{eg.} @code{ARM_Architecture},
+@code{X86_32_Architecture}) and return an object of this kind with
+proper settings. The possible values for the static methods are the
+following:
+
+@verbatim
+  typedef enum {
+    Architecture::Alpha,
+    Architecture::ARM,
+    Architecture::IA64,
+    Architecture::M68K,
+    Architecture::MIPS,
+    Architecture::PowerPC,
+    Architecture::Sparc,
+    Architecture::X86_32,
+    Architecture::X86_64,
+    Architecture::Unknown
+  } processor_t;
+@end verbatim
+
+@verbatim
+  typedef enum {
+    Architecture::LittleEndian,
+    Architecture::BigEndian,
+    Architecture::UnknownEndian
+  } endianness_t;
+@end verbatim
+
+Of course, only some combinations exists and are valid choice in
+Insight.
+
+@code{Architecture} class stores the processor type, the endianness,
+the list of the registers and their mapping in memory. This object will
+be used by the @code{Decoder} class to set-up a proper decoder.
+
+@section Memory Layout
+
+@section Interpreters over abstract domains
+
+@node Decoders
+@chapter Decoders
+
+@node Loaders
+@chapter Loaders
+@findex @code{Loaders} (class)
+
+The @code{Loaders} provides an interface to easily load an external
+entity into Insight. A @code{Loaders} can come in different flavors:
+
+@itemize
+@item @strong{Executable loaders} (@code{BinaryLoader}) for executable files
+and various types of library files.
+
+@item @strong{Process loaders} (@code{ProcessLoader}) for live programs
+being run inside a process own by the user.
+
+@item @strong{Program loaders}
+(@code{XMLProgramLoader}, @code{TextProgramLoader},
+@code{BytecodeProgramLoader}) for already analyzed and saved programs
+that the user want to reload in the analyzer.
+@end itemize
+
+Insight provides @code{LoaderFactory} class with static methods to
+create the appropriate loader depending on the plateform you are using.
+Thus, the user should, for example, write the following to get a binary
+loader:
+@*
+@verbatim
+    #include <loaders/LoaderFactory.hh>
+    #include <loaders/binary/BinaryLoader.hh>
+
+    BinaryLoader *loader = LoaderFactory::get_BinaryLoader(filename);
+@end verbatim
+@*
+Once the @code{loader} has been created, the user can ask the loader to
+extract data or elements from the external entity and insert it into the
+analyzer. Following the previous example, extracting the entrypoint of
+an executable would be done like this:
+@*
+@verbatim
+    ConcreteAddress entrypoint = loader.get_entrypoint();
+@end verbatim
+@*
+In the sequel of this chapter, the complete interface of each type of
+loaders will be detailed.
+
+@section Executable Loaders
+@findex @code{ExecutableLoader} (class)
+
+@section Live Process Loaders
+@findex @code{ProcessLoader} (class)
+
+@section File Loaders
+@findex @code{XmlLoader} (class)
+@findex @code{TextLoader} (class)
+@findex @code{BytecodeLoader} (class)
+
+@node Coding Style
+@chapter Coding Style
+
+This chapter is intended to give a guideline for people which are new to
+the project and who want to code for Insight.
+
+@section General Recommendations
+
+@itemize
+@item All identifiers and comments must be written in US english (en-US).
+
+@item When non-ASCII characters are used in names, UTF-8 shall be used
+
+@item Keep your lines under 80 columns when possible.
+
+@item Tabs are 8 spaces long.
+
+@item Avoid MS-DOS '@code{^M}' characters.
+@end itemize
+
+@section Naming Conventions
+
+@verbatim
+  #define MAX_ITERATION 1000
+
+  template <typename GenericType>
+  class ClassName
+  {
+  public:
+    int variable_name;
+    std::string string_name;
+
+    void method_name(int value);
+  }
+@end verbatim
+
+@itemize
+@item Preprocessor constants should be all uppercase using underscore to
+  separate words. For example: @code{MAX_ITERATIONS}.
+
+@item Variables should be all lowercase and use no separation between
+  words. For example: @code{mycurrentitem}.
+
+@item Variable and function/method names should be written in lowercase
+  using underscore to separate words. For example:
+  @code{name_of_function()}.
+
+  The name of the object is implicit, and should be avoided in a
+  method name. For example: @code{vector.getlength()} and @strong{not}
+  @code{vector.getvectorlength()}.
+
+  In case the function/method name contains an acronym, it should be
+  written in lower case too. For example: @code{to_xml()} (and
+  @strong{not} @code{to_XML()}).
+
+  However, in case the function/method name contains the name of a
+  class, this one should be uppercased and in one piece as the original
+  class name. For example: @code{get_ClassName(filename)} (and
+  @strong{not} @code{get_class_name(filename)}). Of course, constructors
+  and destructors must follow the class name.
+
+@item Types/classes should be in mixed case starting with upper case. For
+  example: @code{NameOfClass}.
+
+  Note that, in case the type/class name contains an acronym, only the
+  first letter of it should be uppercase. All others should be
+  lowercase. For example: @code{XmlParser} (and @strong{not}
+  @code{XMLParser}).
+
+@item Namespace names must be all in lower case. For example: @code{mynamespace}.
+@end itemize
+
+@section Files
+
+@itemize
+@item File extensions are as follow:
+  @itemize
+  @item Source files: @file{.cc};
+  @item Header files: @file{.hh};
+  @item Interface implementation files: @file{.ii}.
+  @end itemize
+
+  Usually, the source file (@file{.cc}) includes the header file
+  (@file{.hh}) which includes the implementation file (@file{.ii}). The
+  point is to split up the definition of template and/or inlined
+  functions into interface and implementation (there are lots of good
+  reasons to do that, including controlling instantiation). We could not
+  put all in the header files because @file{.hh} would not be an
+  appropriate name for it. So, the implementation file @file{.ii}
+  describes the implementation that should be present in the header file
+  while clearly delineating the implementation from the interface. And,
+  of course, the @file{.ii} file must be include into the @file{.hh}
+  file.
+
+@item Source file should be named after the class it holds. If possible,
+  try to keep only one class per source file. Moreover, a class should
+  be declared in a header file and defined in a source file.
+  Implementation should @strong{NEVER} go into header file.
+
+@verbatim
+class MyClass : public BaseClass
+{
+public:
+  int getValue () { return value; } // NO!  ...
+private:
+  int value;
+}
+@end verbatim
+
+@item Include guards must be put in header file.
+
+@verbatim
+#ifndef DIR_FILE_IN_UPPER_CASE_HH
+#define DIR_FILE_IN_UPPER_CASE_HH
+...
+#endif /* DIR_FILE_IN_UPPER_CASE_HH */
+@end verbatim
+
+@item Include statements should be sorted and grouped at the top of the
+  source file. They should be sorted by their hierarchical position in
+  the system with low level files included first. Leave an empty line
+  between groups of include statements.
+
+@verbatim
+#include <fstream>
+#include <iomanip>
+
+#include <qt/qbutton.h>
+#include <qt/qtextfield.h>
+
+#include "com/company/ui/MainWindow.h"
+#include "com/company/ui/PropertiesDialog.h"
+@end verbatim
+
+  In addition to show to the reader the individual include files, it
+  also gives an immediate clue about the modules that are involved.
+
+  Include file paths must never be absolute. Compiler directives
+  should instead be used to indicate root directories for includes.
+
+@item Each @file{.cc} file should include its corresponding
+  @file{.hh} file first in order to check that the @file{.hh} is
+  self-contained (doesn't lack include directives). This is an exception
+  to the above rule.
+
+@item Header files shall avoid '@code{using namespace std;}' so that we don't
+  pollute the main namespace uselessly.
+
+@item The parts of a class shall be sorted '@code{public}', '@code{protected}' and
+  '@code{private}' (most public first).
+@end itemize
+
+@section Code Statements
+
+@itemize
+@item Indentation is the default GNU Emacs one (``GNU''), basically
+  indentations of 2 spaces. And braces placed as in the following
+  example:
+
+@verbatim
+while (!done) {
+  doSomething();
+  done = moreToDo();
+}
+@end verbatim
+
+@item The if-else statements should have the following form:
+
+@verbatim
+if (condition) {
+  statements;
+}
+
+if (condition) {
+  statements;
+} else {
+  statements;
+}
+
+if (condition) {
+  statements;
+} else if (condition) {
+  statements;
+} else {
+  statements;
+}
+@end verbatim
+
+@item A switch statement should have the following form:
+
+@verbatim
+switch (condition) {
+  case ABC:
+    statements;
+    /* FALLTHROUGH */
+
+  case DEF:
+    statements;
+    break;
+
+  default:
+    statements;
+    break;
+}
+@end verbatim
+
+@item The function return type can be put in the left column immediately
+  above the function name.
+
+@verbatim
+void
+MyClass::myMethod(void) {
+  ...
+}
+@end verbatim
+
+@item Placing whitespaces:
+  @itemize
+  @item Operators should be surrounded by a space character;
+  @item C++ reserved words should be followed by a white space;
+  @item Commas should be followed by a white space;
+  @item Semicolons in for statments should be followed by a white space.
+  @end itemize
+
+@verbatim
+a = (b + c) * d; // NOT: a=(b+c)*d
+
+while (i < n) { // NOT: while(i < n)
+  ...
+
+do_something(a, b, c, d); // NOT: do_something(a,b,c,d);
+
+case 100: // NOT: case 100 :
+
+for (i = 0; i < 10; i++) { // NOT: for(i=0;i<10;i++){
+
+...
+@end verbatim
+
+@item You may use alignment wherever it enhances readability. For
+  example:
+
+@verbatim
+if      (a == lowValue)    compueSomething();
+else if (a == mediumValue) computeSomethingElse();
+else if (a == highValue)   computeSomethingElseYet();
+
+value = (potential        * oilDensity)   / constant1 +
+        (depth            * waterDensity) / constant2 +
+        (zCoordinateValue * gasDensity)   / constant3;
+
+minPosition     = computeDistance(min,     x, y, z);
+averagePosition = computeDistance(average, x, y, z);
+
+switch (value) {
+  case PHASE_OIL :   strcpy(phase, "Oil");   break;
+  case PHASE_WATER : strcpy(phase, "Water"); break;
+  case PHASE_GAS :   strcpy(phase, "Gas");   break;
+}
+@end verbatim
+
+@item Variables should be declared in the smallest scope possible.
+  And thus, use of global variables should be minimized.
+
+@item Pointers and references should have their reference symbol next to
+  the name rather than to the type. For example:
+
+@verbatim
+float *x; // NOT: float* x;
+int &y;   // NOT: int& y;
+@end verbatim
+@end itemize
+
+@section Comments
+
+
+Comments are good, but there is also a danger of over-commenting. So,
+if the code is explicit enough, do not add any comment.
+
+In case you need to add comments, basically, there are two types of
+comments. One is targetting the user API, it should be located in the
+header files and describe how to use the code and not what the code
+does. The other type of comments aims at explaining how the code works
+and justify choices within the code.
+
+Insight uses Doxygen comments to explain the API that is exported and
+usual comments for their users.
+
+@verbatim
+/* This is a comment on one line */
+
+/* This is a comment that takes
+ * several lines to be displayed.
+ */
+
+/** This is a Doxygen comment about a public class */
+class ClassName {
+public:
+  /** This is a Doxygen comment about a public method */
+  int public_method_name();
+
+private:
+  /* This is a comment about a private method */
+  int private_method_name();
+}
+@end verbatim
+
+Special markers, such as '@code{TODO}' or '@code{FIXME}', should be used
+to indicates a temporary comment. '@code{TODO}' means a missing feature
+to add later on, '@code{FIXME}' is to mark a spotted bug to be fixed
+later on.
+
+@verbatim
+/* TODO: Add support for DOT output */
+/* FIXME: This function leaks some memory from time to time */
+@end verbatim
+
+
+@section Indentation tools
+
+There are several indentation tools, we present here a non exhaustive
+list of such tools together with the options with which they must be
+used in order to match with our coding style.
+
+@itemize
+@item Artistic Style (@code{http://astyle.sourceforge.net/astyle.html}):
+
+@verbatim
+astyle --mode=c --style=gnu --suffix=none --indent=spaces=2        \
+       --unpad-paren --pad-oper --pad-header --brackets=break      \
+       --indent-namespaces --pad-oper --indent-preprocessor        \
+       --indent-col1-comments --align-pointer=name --lineend=linux \
+       <FILE(s)>
+@end verbatim
+
+@item indent (GNU indent):
+
+@verbatim
+indent <OPTIONS> ...TODO...
+@end verbatim
+@end itemize
+
+@section Software License
+
+@itemize
+@item License is LGPL version 2.1 (and not further ones) and should be
+  placed at the beginning of each source file and look this way
+  (change the copyright holder if necessary).
+@end itemize
+
+@verbatim
+/*-
+ * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+@end verbatim
+
+@node Full Index
+@unnumbered Full Index
+@printindex cp
+@bye

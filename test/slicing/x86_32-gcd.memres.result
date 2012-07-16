@@ -1,0 +1,523 @@
+*** Test of slicing algorithm ***
+
+input file: test-x86_32-gcd.o
+max number of steps: 100
+targeted address: 273
+lvalue: %ecx
+
+LOG[2]: warning: AF flags is not implemented
+
+LOG[2]: warning: AF flags is not implemented
+
+LOG[2]: warning: AF flags is not implemented
+
+LOG[2]: warning: AF flags is not implemented
+
+LOG[2]: warning: AF flags is not implemented
+
+================================================================================
+Running backward arrow < StaticArrow (0x2E,0) Skip  --> (0x111,0) >
+New context at pp (0x2E,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x2E,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x111,0) Skip  --> (0x111,0) >
+New context at pp (0x111,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x111,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x28,0) Skip << (LNOT (NOT %eflags{6:1}){0:1}){0:1} >> --> (0x2E,0) >
+New context at pp (0x28,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x28,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x26,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %eax %ecx){0:1} (SUB %eax %ecx){1:1}) (SUB %eax %ecx){2:1}) (SUB %eax %ecx){3:1}) (SUB %eax %ecx){4:1}) (SUB %eax %ecx){5:1}) (SUB %eax %ecx){6:1}) (SUB %eax %ecx){7:1})  --> (0x28,0) >
+New context at pp (0x26,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x26,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x26,3) %eflags{6:1} := (EQ (SUB %eax %ecx){0:33} 0x0{0:33})  --> (0x26,4) >
+New context at pp (0x26,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x26,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x26,2) %eflags{7:1} := (LT (SUB %eax %ecx){0:33} 0x0)  --> (0x26,3) >
+New context at pp (0x26,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x26,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x26,1) %eflags{11:1} := (GEQ (SUB %eax %ecx){0:33} 0x7FFFFFFF)  --> (0x26,2) >
+New context at pp (0x26,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x26,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x26,0) %eflags{0:1} := (SUB %eax %ecx){32:1}  --> (0x26,1) >
+New context at pp (0x26,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x26,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x23,0) Skip << (NOT (NOT %eflags{0:1}){0:1}){0:1} >> --> (0x26,0) >
+New context at pp (0x23,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x23,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x23,1) %eax := %ebx  --> (0x26,0) >
+New context at pp (0x23,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x23,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x21,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %ebx %eax){0:1} (SUB %ebx %eax){1:1}) (SUB %ebx %eax){2:1}) (SUB %ebx %eax){3:1}) (SUB %ebx %eax){4:1}) (SUB %ebx %eax){5:1}) (SUB %ebx %eax){6:1}) (SUB %ebx %eax){7:1})  --> (0x23,0) >
+New context at pp (0x21,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x21,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x23,0) Skip << (NOT %eflags{0:1}){0:1} >> --> (0x23,1) >
+New context at pp (0x23,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x23,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x21,3) %eflags{6:1} := (EQ (SUB %ebx %eax){0:33} 0x0{0:33})  --> (0x21,4) >
+New context at pp (0x21,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x21,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x21,2) %eflags{7:1} := (LT (SUB %ebx %eax){0:33} 0x0)  --> (0x21,3) >
+New context at pp (0x21,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x21,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x21,1) %eflags{11:1} := (GEQ (SUB %ebx %eax){0:33} 0x7FFFFFFF)  --> (0x21,2) >
+New context at pp (0x21,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x21,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x21,0) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x21,1) >
+New context at pp (0x21,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x21,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x11,0) Skip << %eflags{6:1} >> --> (0x21,0) >
+New context at pp (0x11,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x11,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x15,0) Skip << %eflags{6:1} >> --> (0x21,0) >
+New context at pp (0x15,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x15,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1F,0) Skip << (LNOT (NOT %eflags{6:1}){0:1}){0:1} >> --> (0x21,0) >
+New context at pp (0x1F,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1F,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xF,5) %eflags{11:1} := 0x0{0:1}  --> (0x11,0) >
+New context at pp (0xF,5) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0xF,5) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x13,5) %eflags{11:1} := 0x0{0:1}  --> (0x15,0) >
+New context at pp (0x13,5) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x13,5) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1D,5) %eflags{11:1} := 0x0{0:1}  --> (0x1F,0) >
+New context at pp (0x1D,5) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1D,5) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xF,4) %eflags{0:1} := 0x0{0:1}  --> (0xF,5) >
+New context at pp (0xF,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0xF,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x13,4) %eflags{0:1} := 0x0{0:1}  --> (0x13,5) >
+New context at pp (0x13,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x13,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1D,4) %eflags{0:1} := 0x0{0:1}  --> (0x1D,5) >
+New context at pp (0x1D,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1D,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xF,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0xF,4) >
+New context at pp (0xF,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0xF,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x13,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0x13,4) >
+New context at pp (0x13,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x13,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1D,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0x1D,4) >
+New context at pp (0x1D,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1D,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xF,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0xF,3) >
+New context at pp (0xF,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0xF,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x13,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0x13,3) >
+New context at pp (0x13,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x13,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1D,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0x1D,3) >
+New context at pp (0x1D,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1D,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xF,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0xF,2) >
+New context at pp (0xF,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0xF,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x13,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0x13,2) >
+New context at pp (0x13,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x13,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1D,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0x1D,2) >
+New context at pp (0x1D,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1D,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xF,0) %tmpr0 := (AND %eax %eax)  --> (0xF,1) >
+New context at pp (0xF,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0xF,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x13,0) %tmpr0 := (AND %ebx %ebx)  --> (0x13,1) >
+New context at pp (0x13,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x13,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1D,0) %tmpr0 := (AND %eax %eax)  --> (0x1D,1) >
+New context at pp (0x1D,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1D,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0xA,0) %ecx := 0x15  --> (0xF,0) >
+New context at pp (0xA,0) :
+	FALSE
+Maximum dependencies at pp (0xA,0) : {  }
+================================================================================
+Running backward arrow < StaticArrow (0x35,0) Skip  --> (0xF,0) >
+New context at pp (0x35,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x35,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x11,0) Skip << (LNOT %eflags{6:1}){0:1} >> --> (0x13,0) >
+New context at pp (0x11,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x11,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1F,0) Skip << (NOT %eflags{6:1}){0:1} >> --> (0x13,0) >
+New context at pp (0x1F,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1F,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1B,5) %eflags{0:1} := (SUB %eax %ebx){32:1}  --> (0x1D,0) >
+New context at pp (0x1B,5) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1B,5) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x5,0) %ebx := 0x405  --> (0xA,0) >
+New context at pp (0x5,0) :
+	FALSE
+Maximum dependencies at pp (0x5,0) : {  }
+================================================================================
+Running backward arrow < StaticArrow (0x33,5) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x35,0) >
+New context at pp (0x33,5) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x33,5) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1B,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %eax{0:1} %eax{1:1}) %eax{2:1}) %eax{3:1}) %eax{4:1}) %eax{5:1}) %eax{6:1}) %eax{7:1})  --> (0x1B,5) >
+New context at pp (0x1B,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1B,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x0,0) %eax := 0x42F  --> (0x5,0) >
+New context at pp (0x0,0) :
+	FALSE
+Maximum dependencies at pp (0x0,0) : {  }
+================================================================================
+Running backward arrow < StaticArrow (0x33,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %ebx{0:1} %ebx{1:1}) %ebx{2:1}) %ebx{3:1}) %ebx{4:1}) %ebx{5:1}) %ebx{6:1}) %ebx{7:1})  --> (0x33,5) >
+New context at pp (0x33,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x33,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1B,3) %eflags{6:1} := (EQ %eax 0x0)  --> (0x1B,4) >
+New context at pp (0x1B,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1B,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x33,3) %eflags{6:1} := (EQ %ebx 0x0)  --> (0x33,4) >
+New context at pp (0x33,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x33,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1B,2) %eflags{7:1} := (LT %eax 0x0)  --> (0x1B,3) >
+New context at pp (0x1B,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1B,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x33,2) %eflags{7:1} := (LT %ebx 0x0)  --> (0x33,3) >
+New context at pp (0x33,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x33,2) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1B,1) %eflags{11:1} := (GEQ (SUB %eax %ebx) 0x7FFFFFFF)  --> (0x1B,2) >
+New context at pp (0x1B,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1B,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x33,1) %eflags{11:1} := (GEQ (SUB %ebx %eax) 0x7FFFFFFF)  --> (0x33,2) >
+New context at pp (0x33,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x33,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x1B,0) %eax := (SUB %eax %ebx)  --> (0x1B,1) >
+New context at pp (0x1B,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x1B,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x33,0) %ebx := (SUB %ebx %eax)  --> (0x33,1) >
+New context at pp (0x33,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x33,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x19,0) Skip << (LNOT (NOT %eflags{0:1}){0:1}){0:1} >> --> (0x1B,0) >
+New context at pp (0x19,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x19,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x19,0) Skip << (NOT %eflags{0:1}){0:1} >> --> (0x33,0) >
+New context at pp (0x19,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x19,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x17,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %ebx %eax){0:1} (SUB %ebx %eax){1:1}) (SUB %ebx %eax){2:1}) (SUB %ebx %eax){3:1}) (SUB %ebx %eax){4:1}) (SUB %ebx %eax){5:1}) (SUB %ebx %eax){6:1}) (SUB %ebx %eax){7:1})  --> (0x19,0) >
+New context at pp (0x17,4) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x17,4) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x17,3) %eflags{6:1} := (EQ (SUB %ebx %eax){0:33} 0x0{0:33})  --> (0x17,4) >
+New context at pp (0x17,3) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x17,3) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x17,2) %eflags{7:1} := (LT (SUB %ebx %eax){0:33} 0x0)  --> (0x17,3) >
+New context at pp (0x17,2) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x17,2) : { %ecx  }
+================================================================================
+Dependencies:
+(0x0,0) <== ================================================================================
+Running backward arrow < StaticArrow (0x17,1) %eflags{11:1} := (GEQ (SUB %ebx %eax){0:33} 0x7FFFFFFF)  --> (0x17,2) >
+New context at pp (0x17,1) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x17,1) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x17,0) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x17,1) >
+New context at pp (0x17,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x17,0) : { %ecx  }
+================================================================================
+Running backward arrow < StaticArrow (0x15,0) Skip << (LNOT %eflags{6:1}){0:1} >> --> (0x17,0) >
+New context at pp (0x15,0) :
+	(EQ {elt} %ecx)
+Maximum dependencies at pp (0x15,0) : { %ecx  }
+DataDependency: Fixpoint Reached!
+{  }
+StaticArrow (0x0,0) %eax := 0x42F  --> (0x5,0)
+(0x5,0) <== {  }
+StaticArrow (0x5,0) %ebx := 0x405  --> (0xA,0)
+(0xA,0) <== {  }
+StaticArrow (0xA,0) %ecx := 0x15  --> (0xF,0)
+(0xF,0) <== { %ecx  }
+StaticArrow (0xF,0) %tmpr0 := (AND %eax %eax)  --> (0xF,1)
+(0xF,1) <== { %ecx  }
+StaticArrow (0xF,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0xF,2)
+(0xF,2) <== { %ecx  }
+StaticArrow (0xF,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0xF,3)
+(0xF,3) <== { %ecx  }
+StaticArrow (0xF,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0xF,4)
+(0xF,4) <== { %ecx  }
+StaticArrow (0xF,4) %eflags{0:1} := 0x0{0:1}  --> (0xF,5)
+(0xF,5) <== { %ecx  }
+StaticArrow (0xF,5) %eflags{11:1} := 0x0{0:1}  --> (0x11,0)
+(0x11,0) <== { %ecx  }
+(0x13,0) <== { %ecx  }
+StaticArrow (0x13,0) %tmpr0 := (AND %ebx %ebx)  --> (0x13,1)
+(0x13,1) <== { %ecx  }
+StaticArrow (0x13,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0x13,2)
+(0x13,2) <== { %ecx  }
+StaticArrow (0x13,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0x13,3)
+(0x13,3) <== { %ecx  }
+StaticArrow (0x13,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0x13,4)
+(0x13,4) <== { %ecx  }
+StaticArrow (0x13,4) %eflags{0:1} := 0x0{0:1}  --> (0x13,5)
+(0x13,5) <== { %ecx  }
+StaticArrow (0x13,5) %eflags{11:1} := 0x0{0:1}  --> (0x15,0)
+(0x15,0) <== { %ecx  }
+(0x17,0) <== { %ecx  }
+StaticArrow (0x17,0) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x17,1)
+(0x17,1) <== { %ecx  }
+StaticArrow (0x17,1) %eflags{11:1} := (GEQ (SUB %ebx %eax){0:33} 0x7FFFFFFF)  --> (0x17,2)
+(0x17,2) <== { %ecx  }
+StaticArrow (0x17,2) %eflags{7:1} := (LT (SUB %ebx %eax){0:33} 0x0)  --> (0x17,3)
+(0x17,3) <== { %ecx  }
+StaticArrow (0x17,3) %eflags{6:1} := (EQ (SUB %ebx %eax){0:33} 0x0{0:33})  --> (0x17,4)
+(0x17,4) <== { %ecx  }
+StaticArrow (0x17,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %ebx %eax){0:1} (SUB %ebx %eax){1:1}) (SUB %ebx %eax){2:1}) (SUB %ebx %eax){3:1}) (SUB %ebx %eax){4:1}) (SUB %ebx %eax){5:1}) (SUB %ebx %eax){6:1}) (SUB %ebx %eax){7:1})  --> (0x19,0)
+(0x19,0) <== { %ecx  }
+(0x1B,0) <== { %ecx  }
+StaticArrow (0x1B,0) %eax := (SUB %eax %ebx)  --> (0x1B,1)
+(0x1B,1) <== { %ecx  }
+StaticArrow (0x1B,1) %eflags{11:1} := (GEQ (SUB %eax %ebx) 0x7FFFFFFF)  --> (0x1B,2)
+(0x1B,2) <== { %ecx  }
+StaticArrow (0x1B,2) %eflags{7:1} := (LT %eax 0x0)  --> (0x1B,3)
+(0x1B,3) <== { %ecx  }
+StaticArrow (0x1B,3) %eflags{6:1} := (EQ %eax 0x0)  --> (0x1B,4)
+(0x1B,4) <== { %ecx  }
+StaticArrow (0x1B,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %eax{0:1} %eax{1:1}) %eax{2:1}) %eax{3:1}) %eax{4:1}) %eax{5:1}) %eax{6:1}) %eax{7:1})  --> (0x1B,5)
+(0x1B,5) <== { %ecx  }
+StaticArrow (0x1B,5) %eflags{0:1} := (SUB %eax %ebx){32:1}  --> (0x1D,0)
+(0x1D,0) <== { %ecx  }
+StaticArrow (0x1D,0) %tmpr0 := (AND %eax %eax)  --> (0x1D,1)
+(0x1D,1) <== { %ecx  }
+StaticArrow (0x1D,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0x1D,2)
+(0x1D,2) <== { %ecx  }
+StaticArrow (0x1D,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0x1D,3)
+(0x1D,3) <== { %ecx  }
+StaticArrow (0x1D,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0x1D,4)
+(0x1D,4) <== { %ecx  }
+StaticArrow (0x1D,4) %eflags{0:1} := 0x0{0:1}  --> (0x1D,5)
+(0x1D,5) <== { %ecx  }
+StaticArrow (0x1D,5) %eflags{11:1} := 0x0{0:1}  --> (0x1F,0)
+(0x1F,0) <== { %ecx  }
+(0x21,0) <== { %ecx  }
+StaticArrow (0x21,0) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x21,1)
+(0x21,1) <== { %ecx  }
+StaticArrow (0x21,1) %eflags{11:1} := (GEQ (SUB %ebx %eax){0:33} 0x7FFFFFFF)  --> (0x21,2)
+(0x21,2) <== { %ecx  }
+StaticArrow (0x21,2) %eflags{7:1} := (LT (SUB %ebx %eax){0:33} 0x0)  --> (0x21,3)
+(0x21,3) <== { %ecx  }
+StaticArrow (0x21,3) %eflags{6:1} := (EQ (SUB %ebx %eax){0:33} 0x0{0:33})  --> (0x21,4)
+(0x21,4) <== { %ecx  }
+StaticArrow (0x21,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %ebx %eax){0:1} (SUB %ebx %eax){1:1}) (SUB %ebx %eax){2:1}) (SUB %ebx %eax){3:1}) (SUB %ebx %eax){4:1}) (SUB %ebx %eax){5:1}) (SUB %ebx %eax){6:1}) (SUB %ebx %eax){7:1})  --> (0x23,0)
+(0x23,0) <== { %ecx  }
+(0x23,1) <== { %ecx  }
+StaticArrow (0x23,1) %eax := %ebx  --> (0x26,0)
+(0x26,0) <== { %ecx  }
+StaticArrow (0x26,0) %eflags{0:1} := (SUB %eax %ecx){32:1}  --> (0x26,1)
+(0x26,1) <== { %ecx  }
+StaticArrow (0x26,1) %eflags{11:1} := (GEQ (SUB %eax %ecx){0:33} 0x7FFFFFFF)  --> (0x26,2)
+(0x26,2) <== { %ecx  }
+StaticArrow (0x26,2) %eflags{7:1} := (LT (SUB %eax %ecx){0:33} 0x0)  --> (0x26,3)
+(0x26,3) <== { %ecx  }
+StaticArrow (0x26,3) %eflags{6:1} := (EQ (SUB %eax %ecx){0:33} 0x0{0:33})  --> (0x26,4)
+(0x26,4) <== { %ecx  }
+StaticArrow (0x26,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %eax %ecx){0:1} (SUB %eax %ecx){1:1}) (SUB %eax %ecx){2:1}) (SUB %eax %ecx){3:1}) (SUB %eax %ecx){4:1}) (SUB %eax %ecx){5:1}) (SUB %eax %ecx){6:1}) (SUB %eax %ecx){7:1})  --> (0x28,0)
+(0x28,0) <== { %ecx  }
+(0x2E,0) <== { %ecx  }
+(0x33,0) <== { %ecx  }
+StaticArrow (0x33,0) %ebx := (SUB %ebx %eax)  --> (0x33,1)
+(0x33,1) <== { %ecx  }
+StaticArrow (0x33,1) %eflags{11:1} := (GEQ (SUB %ebx %eax) 0x7FFFFFFF)  --> (0x33,2)
+(0x33,2) <== { %ecx  }
+StaticArrow (0x33,2) %eflags{7:1} := (LT %ebx 0x0)  --> (0x33,3)
+(0x33,3) <== { %ecx  }
+StaticArrow (0x33,3) %eflags{6:1} := (EQ %ebx 0x0)  --> (0x33,4)
+(0x33,4) <== { %ecx  }
+StaticArrow (0x33,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %ebx{0:1} %ebx{1:1}) %ebx{2:1}) %ebx{3:1}) %ebx{4:1}) %ebx{5:1}) %ebx{6:1}) %ebx{7:1})  --> (0x33,5)
+(0x33,5) <== { %ecx  }
+StaticArrow (0x33,5) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x35,0)
+(0x35,0) <== { %ecx  }
+(0x111,0) <== { %ecx  }
+(0x666,0) <== {  }
+================================================================================
+StaticArrow (0xA,0) %ecx := 0x15  --> (0xF,0)
+
+* Useless statements:
+StaticArrow (0xF,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0xF,2)
+StaticArrow (0xF,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0xF,3)
+StaticArrow (0xF,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0xF,4)
+StaticArrow (0xF,4) %eflags{0:1} := 0x0{0:1}  --> (0xF,5)
+StaticArrow (0xF,5) %eflags{11:1} := 0x0{0:1}  --> (0x11,0)
+StaticArrow (0x13,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0x13,2)
+StaticArrow (0x13,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0x13,3)
+StaticArrow (0x13,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0x13,4)
+StaticArrow (0x13,4) %eflags{0:1} := 0x0{0:1}  --> (0x13,5)
+StaticArrow (0x13,5) %eflags{11:1} := 0x0{0:1}  --> (0x15,0)
+StaticArrow (0x17,0) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x17,1)
+StaticArrow (0x17,1) %eflags{11:1} := (GEQ (SUB %ebx %eax){0:33} 0x7FFFFFFF)  --> (0x17,2)
+StaticArrow (0x17,2) %eflags{7:1} := (LT (SUB %ebx %eax){0:33} 0x0)  --> (0x17,3)
+StaticArrow (0x17,3) %eflags{6:1} := (EQ (SUB %ebx %eax){0:33} 0x0{0:33})  --> (0x17,4)
+StaticArrow (0x17,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %ebx %eax){0:1} (SUB %ebx %eax){1:1}) (SUB %ebx %eax){2:1}) (SUB %ebx %eax){3:1}) (SUB %ebx %eax){4:1}) (SUB %ebx %eax){5:1}) (SUB %ebx %eax){6:1}) (SUB %ebx %eax){7:1})  --> (0x19,0)
+StaticArrow (0x1B,1) %eflags{11:1} := (GEQ (SUB %eax %ebx) 0x7FFFFFFF)  --> (0x1B,2)
+StaticArrow (0x1B,2) %eflags{7:1} := (LT %eax 0x0)  --> (0x1B,3)
+StaticArrow (0x1B,3) %eflags{6:1} := (EQ %eax 0x0)  --> (0x1B,4)
+StaticArrow (0x1B,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %eax{0:1} %eax{1:1}) %eax{2:1}) %eax{3:1}) %eax{4:1}) %eax{5:1}) %eax{6:1}) %eax{7:1})  --> (0x1B,5)
+StaticArrow (0x1B,5) %eflags{0:1} := (SUB %eax %ebx){32:1}  --> (0x1D,0)
+StaticArrow (0x1D,1) %eflags{7:1} := (LT %tmpr0 0x0)  --> (0x1D,2)
+StaticArrow (0x1D,2) %eflags{6:1} := (EQ %tmpr0 0x0)  --> (0x1D,3)
+StaticArrow (0x1D,3) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %tmpr0{0:1} %tmpr0{1:1}) %tmpr0{2:1}) %tmpr0{3:1}) %tmpr0{4:1}) %tmpr0{5:1}) %tmpr0{6:1}) %tmpr0{7:1})  --> (0x1D,4)
+StaticArrow (0x1D,4) %eflags{0:1} := 0x0{0:1}  --> (0x1D,5)
+StaticArrow (0x1D,5) %eflags{11:1} := 0x0{0:1}  --> (0x1F,0)
+StaticArrow (0x21,0) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x21,1)
+StaticArrow (0x21,1) %eflags{11:1} := (GEQ (SUB %ebx %eax){0:33} 0x7FFFFFFF)  --> (0x21,2)
+StaticArrow (0x21,2) %eflags{7:1} := (LT (SUB %ebx %eax){0:33} 0x0)  --> (0x21,3)
+StaticArrow (0x21,3) %eflags{6:1} := (EQ (SUB %ebx %eax){0:33} 0x0{0:33})  --> (0x21,4)
+StaticArrow (0x21,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %ebx %eax){0:1} (SUB %ebx %eax){1:1}) (SUB %ebx %eax){2:1}) (SUB %ebx %eax){3:1}) (SUB %ebx %eax){4:1}) (SUB %ebx %eax){5:1}) (SUB %ebx %eax){6:1}) (SUB %ebx %eax){7:1})  --> (0x23,0)
+StaticArrow (0x26,0) %eflags{0:1} := (SUB %eax %ecx){32:1}  --> (0x26,1)
+StaticArrow (0x26,1) %eflags{11:1} := (GEQ (SUB %eax %ecx){0:33} 0x7FFFFFFF)  --> (0x26,2)
+StaticArrow (0x26,2) %eflags{7:1} := (LT (SUB %eax %ecx){0:33} 0x0)  --> (0x26,3)
+StaticArrow (0x26,3) %eflags{6:1} := (EQ (SUB %eax %ecx){0:33} 0x0{0:33})  --> (0x26,4)
+StaticArrow (0x26,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (SUB %eax %ecx){0:1} (SUB %eax %ecx){1:1}) (SUB %eax %ecx){2:1}) (SUB %eax %ecx){3:1}) (SUB %eax %ecx){4:1}) (SUB %eax %ecx){5:1}) (SUB %eax %ecx){6:1}) (SUB %eax %ecx){7:1})  --> (0x28,0)
+StaticArrow (0x33,1) %eflags{11:1} := (GEQ (SUB %ebx %eax) 0x7FFFFFFF)  --> (0x33,2)
+StaticArrow (0x33,2) %eflags{7:1} := (LT %ebx 0x0)  --> (0x33,3)
+StaticArrow (0x33,3) %eflags{6:1} := (EQ %ebx 0x0)  --> (0x33,4)
+StaticArrow (0x33,4) %eflags{2:1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR %ebx{0:1} %ebx{1:1}) %ebx{2:1}) %ebx{3:1}) %ebx{4:1}) %ebx{5:1}) %ebx{6:1}) %ebx{7:1})  --> (0x33,5)
+StaticArrow (0x33,5) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x35,0)
+
+
+**** some formulas have not been deleted:
+**** refcount = 50 formula = %ecx
+**** refcount = 3 formula = FALSE
+**** refcount = 46 formula = (EQ {elt} %ecx)
+**** refcount = 1 formula = {elt}
+==9635== 12 bytes in 1 blocks are definitely lost in loss record 2 of 12
+==9635==    at 0x4007885: operator new(unsigned int) (vg_replace_malloc.c:255)
+==9635==    by 0x419DAA7: BooleanConstantFormula::create(bool) (Formula.cc:181)
+==9635==    by 0x4107ECD: DataDependencyLocalContext::run_backward(StaticArrow*) (Slicing.cc:367)
+==9635==    by 0x4109238: DataDependency::InverseStep() (Slicing.cc:593)
+==9635==    by 0x4109A66: DataDependency::ComputeFixpoint(int) (Slicing.cc:629)
+==9635==    by 0x4109EBB: DataDependency::slice_it(Microcode*, std::list<LocatedLValue, std::allocator<LocatedLValue> >) (Slicing.cc:674)
+==9635==    by 0x4109D8F: DataDependency::slice_it(Microcode*, MicrocodeAddress, Expr*) (Slicing.cc:664)
+==9635==    by 0x8049889: test_slicing(char const*, int, int, std::string const&) (slicer.cc:49)
+==9635==    by 0x8049C4E: main (slicer.cc:107)
+==9635== 
+==9635== 84 (28 direct, 56 indirect) bytes in 1 blocks are definitely lost in loss record 8 of 12
+==9635==    at 0x4007885: operator new(unsigned int) (vg_replace_malloc.c:255)
+==9635==    by 0x41912DF: BinaryApp::create(BinaryOp, Expr*, Expr*, int, int) (Expressions.cc:253)
+==9635==    by 0x4191266: BinaryApp::create(BinaryOp, Expr*, Expr*) (Expressions.cc:240)
+==9635==    by 0x419BB95: IsIn(Expr const*) (ConditionalSet.cc:52)
+==9635==    by 0x419B981: ConditionalSet::cs_add(Formula**, Expr const*) (ConditionalSet.cc:199)
+==9635==    by 0x4108A64: DataDependency::DataDependency(Microcode*, std::list<LocatedLValue, std::allocator<LocatedLValue> >) (Slicing.cc:525)
+==9635==    by 0x4109E75: DataDependency::slice_it(Microcode*, std::list<LocatedLValue, std::allocator<LocatedLValue> >) (Slicing.cc:671)
+==9635==    by 0x4109D8F: DataDependency::slice_it(Microcode*, MicrocodeAddress, Expr*) (Slicing.cc:664)
+==9635==    by 0x8049889: test_slicing(char const*, int, int, std::string const&) (slicer.cc:49)
+==9635==    by 0x8049C4E: main (slicer.cc:107)
+==9635== 
+==9635== 32,820 (52 direct, 32,768 indirect) bytes in 1 blocks are definitely lost in loss record 12 of 12
+==9635==    at 0x4007885: operator new(unsigned int) (vg_replace_malloc.c:255)
+==9635==    by 0x41D9412: BinutilsBinaryLoader::get_memory() const (BinutilsBinaryLoader.cc:164)
+==9635==    by 0x8049822: test_slicing(char const*, int, int, std::string const&) (slicer.cc:44)
+==9635==    by 0x8049C4E: main (slicer.cc:107)
+==9635== 

@@ -1,0 +1,983 @@
+/*-
+ * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#include <list>
+#include <vector>
+#include <assert.h>
+#include <fstream>
+
+#include <config.h>
+
+#include <kernel/Annotation.hh>
+#include <utils/path.hh>
+#include <utils/tools.hh>
+
+#define GRAPH_INTERFACE_ITERATE_SUCCESSORS(prg,n) \
+  for (std::pair<Edge*,Node*> succ=prg->get_first_successor(n);		\
+       succ.first!=NULL && succ.second!=NULL;				      \
+       succ=prg->get_next_successor(n,succ.first))
+
+#define GRAPH_INTERFACE_ITERATE_PREDECESSORS(prg,n) \
+  for (std::pair<Edge*,Node*> pred=prg->get_first_predecessor(n);	\
+       pred.first!=NULL && pred.second!=NULL;				      \
+       pred=prg->get_next_predecessor(n,pred.first))
+
+//#define GRAPH_PATH_DEBUG_EQN_SOLVING
+
+
+
+/*
+ * Accessors
+ */
+
+
+/*
+ * Default implementation: linear time :(
+ */
+template<typename Node, typename Edge>
+std::pair<Edge *, Node *> GraphInterface<Node, Edge>::get_first_predecessor(Node *n) const
+{
+  for (typename std::vector<Node *>::iterator it = this->get_nodes()->begin(); it != this->get_nodes()->end(); ++it)
+    {
+      Node *c = *it;
+      GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, c)
+      {
+        if (*(succ.second) == *n)
+          {
+            return succ;
+          }
+      }
+    }
+  return std::pair<Edge *, Node *>(NULL, NULL);
+}
+
+
+/*
+ * Default implementation: linear time :(
+ */
+template<typename Node, typename Edge>
+std::pair<Edge *, Node *> GraphInterface<Node, Edge>::get_next_predecessor(Node *n, Edge *e) const
+{
+  bool trouve = false;
+  for (typename std::vector<Node *>::iterator it = this->get_nodes()->begin(); it != this->get_nodes()->end(); ++it)
+    {
+      Node *c = *it;
+      GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, c)
+      {
+        if (*(succ.second) == *n)
+          {
+            if (!trouve)
+              {
+                trouve = succ.first == e;
+              }
+            else
+              {
+                return succ;
+              }
+          }
+      }
+    }
+  return std::pair<Edge *, Node *>(NULL, NULL);
+}
+
+
+/*
+ * Default implementation: linear time :(
+ */
+template<typename Node, typename Edge>
+int GraphInterface<Node, Edge>::get_nb_successors(Node *n) const
+{
+  int nb = 0;
+  GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, n)
+  {
+    nb++;
+  }
+  return nb;
+}
+
+
+/*
+ * Default implementation: linear time :(
+ */
+template<typename Node, typename Edge>
+int GraphInterface<Node, Edge>::get_nb_predecessors(Node *n) const
+{
+  int nb = 0;
+  GRAPH_INTERFACE_ITERATE_PREDECESSORS(this, n)
+  {
+    nb++;
+  }
+  return nb;
+}
+
+
+
+/*
+ * ============================= Traversal ===============================
+ */
+
+/*
+ * depth_first_run
+ */
+template<typename Edge>
+void dfr_pop(std::list< std::vector<Edge *> > & stack)
+{
+  Log::check("dfr_pop : stack empty", stack.size() > 0);
+  Log::check("dfr_pop : last list empty", stack.back().size() > 0);
+  UNUSED Edge *last = NULL;
+  stack.back().pop_back();
+  while (stack.size() > 0 && stack.back().size() == 0)
+    {
+      stack.pop_back();
+      if (stack.size() > 0)
+        {
+          last = stack.back().back();
+          stack.back().pop_back();
+        }
+    }
+}
+
+
+template<typename Node, typename Edge>
+void GraphInterface<Node, Edge>::depth_first_run(Node *start, GraphVisitor<Node, Edge>& visitor)  const
+{
+  std::set<Edge *> vus;
+  std::list< std::vector<Edge *> > current_path;  // The current path is encoded by the list of the last arrows
+
+  // plug the visitor to the algorithm
+  visitor.current_path = &current_path;
+
+  // ------ Initialisation ------------
+  try
+    {
+      Edge *succ = this->get_first_successor(start).first;
+      if (succ == NULL)
+        {
+          // There is no successor : impasse
+          std::cerr << "ENTRY POINT SANS FILS" << std::endl;
+          visitor.back_step_impasse();
+          return;
+        }
+      // Copy of the successors
+      std::vector<Edge *> succs;
+      while (succ != NULL)
+        {
+          succs.push_back(succ);
+          succ = this->get_next_successor(start, succ).first;
+        }
+
+      // Push the new list of successors
+      current_path.push_back(succs);
+    }
+  catch (GetNodeNotFoundExc &)       // A priori, this check is useless, but, just in case.
+    {
+      Log::fatal_error("depth_first_run: no node corresponding to target.");
+    }
+
+  // ------ Let's rock ----------------
+  while ((current_path.size() > 0) && visitor.continue_run())
+    {
+
+      Edge *current_arrow = current_path.back().back();
+      Node *current_node = this->get_source(current_arrow);
+
+      Node *next_node = this->get_target(current_arrow);
+      if (next_node == NULL)
+        {
+          visitor.back_step_impasse();
+          dfr_pop(current_path);
+          continue;
+        }
+
+      // if there is a loop : pop back
+      bool looping = false, dejavu = false;
+
+      for (typename std::list<std::vector<Edge *> >::iterator arrs = current_path.begin(); arrs != current_path.end() && !looping; ++arrs)
+        {
+          for (typename std::vector<Edge *>::iterator arr = (*arrs).begin(); arr != (*arrs).end() && !looping; ++arr)
+            {
+              //cout <<"$$"<<(*arr)->pp()<<endl;
+              if (*((*arr)) == *current_arrow)
+                {
+                  looping = dejavu;
+                  dejavu = true;
+                  //	cout<<"! ok";
+                }
+            }
+        }
+      if (looping)
+        {
+          visitor.back_step_loop(current_arrow);
+          dfr_pop(current_path);
+          continue;
+        }
+
+      visitor.process(current_node, current_arrow);
+
+      if (!visitor.go_further(current_node, current_arrow))
+        {
+          dfr_pop(current_path);
+          continue;
+        }
+
+      // Copy of the successors
+      std::vector<Edge *> succs ;
+      Edge *succ = this->get_first_successor(next_node).first;
+      if (succ == NULL)
+        {
+          // There is no successor : impasse
+          visitor.back_step_impasse();
+          dfr_pop(current_path);
+          continue;
+        }
+      while (succ != NULL)
+        {
+          succs.push_back(succ);
+          succ = this->get_next_successor(next_node, succ).first;
+        }
+      // Push the new list of successors
+      current_path.push_back(succs);
+
+    } // while
+  visitor.traversal_over();
+}
+
+
+/*
+ * bread_first_run
+ */
+template<typename Node, typename Edge>
+void GraphInterface<Node, Edge>::bread_first_traversal(Node * , GraphVisitor<Node, Edge>&)  const
+{
+  /*! \todo */
+}
+
+/*
+ * depth_first_traversal
+ */
+template<typename Node, typename Edge>
+void GraphInterface<Node, Edge>::depth_first_traversal(Node *start, GraphVisitor<Node, Edge>& vis)  const
+{
+  std::set<Edge *> vus;
+  std::list<Edge *> traversal;
+
+
+  // ------ Initialisation ------------
+  Edge *succ = this->get_first_successor(start).first;
+  if (succ == NULL)
+    {
+      // There is no successor : impasse
+      std::cerr << "ENTRY POINT SANS FILS" << std::endl;
+      return;
+    }
+  // Copy of the successors
+  std::vector<Edge *> succs;
+  while (succ != NULL)
+    {
+      traversal.push_back(succ);
+      succ = this->get_next_successor(start, succ).first;
+    }
+
+  // ------ Let's rock ----------------
+  while ((traversal.size() > 0) && vis.continue_run())
+    {
+      Edge *current_arrow = traversal.back();
+      Node *current_node = this->get_source(current_arrow);
+      traversal.pop_back();
+      bool eof = false;
+      Node *next_node = this->get_target(current_arrow);
+      if (next_node == NULL || vus.find(current_arrow) != vus.end() || !vis.go_further(current_node, current_arrow))
+        {
+          eof = true;
+        }
+      if (!eof)
+        {
+          vus.insert(current_arrow);
+          vis.process(current_node, current_arrow);
+          // Copy of the successors
+          std::vector<Edge *> succs ;
+          Edge *succ = this->get_first_successor(next_node).first;
+          if (succ == NULL)
+            {
+              // There is no successor : impasse
+              eof = true;
+              vis.back_step_impasse();
+            }
+          while (succ != NULL)
+            {
+              traversal.push_back(succ);
+              succ = this->get_next_successor(next_node, succ).first;
+            }
+        }
+      else
+        {
+
+        }
+    }// while
+
+
+}
+
+
+
+/*
+ * topological_traversal
+ */
+template<typename Node, typename Edge>
+void GraphInterface<Node, Edge>::topological_traversal(Node *start, GraphVisitor<Node, Edge>& vis)  const
+{
+  std::set<Edge *> vus;
+  std::list<Edge *> traversal;
+  std::list< std::vector<Edge *> > current_path;
+
+  // ------ Initialisation ------------
+  Edge *succ = this->get_first_successor(start).first;
+  if (succ == NULL)
+    {
+      // There is no successor : impasse
+      std::cerr << "ENTRY POINT SANS FILS" << std::endl;
+      return;
+    }
+  // Copy of the successors
+  std::vector<Edge *> succs;
+  while (succ != NULL)
+    {
+      succs.push_back(succ);
+      succ = this->get_next_successor(start, succ).first;
+    }
+  // Push the new list of successors
+  if (succs.size() > 0)
+    {
+      current_path.push_back(succs);
+    }
+  // ------ Let's rock ----------------
+  while ((current_path.size() > 0))
+    {
+      Edge *current_arrow = current_path.back().back();
+      bool eof = false;
+      Node *next_node = this->get_target(current_arrow);
+      if (next_node == NULL || vus.find(current_arrow) != vus.end())
+        {
+          eof = true;
+        }
+      if (!eof)
+        {
+          vus.insert(current_arrow);
+          // Copy of the successors
+          std::vector<Edge *> succs ;
+          Edge *succ = this->get_first_successor(next_node).first;
+          if (succ == NULL)
+            {
+              // There is no successor : impasse
+              eof = true;
+            }
+          while (succ != NULL)
+            {
+              succs.push_back(succ);
+              succ = this->get_next_successor(next_node, succ).first;
+            }
+          // Push the new list of successors
+          if (succs.size() > 0)
+            {
+              current_path.push_back(succs);
+            }
+        }
+      if (eof)
+        {
+          Edge *last = NULL;
+          current_path.back().pop_back();
+          while (current_path.size() > 0 && current_path.back().size() == 0)
+            {
+              current_path.pop_back();
+              if (current_path.size() > 0)
+                {
+                  last = current_path.back().back();
+                  traversal.push_back(last);
+                  current_path.back().pop_back();
+                }
+            }
+        }
+    }// while
+  while (traversal.size() > 0 && vis.continue_run())
+    {
+      Edge *cur = traversal.back();
+      Node *src = this->get_source(cur);
+      traversal.pop_back();
+      vis.process(src, cur);
+      assert(vis.go_further(src, cur));
+    }
+
+}
+
+
+template<typename Node, typename Edge>
+class TestVisitor : public GraphVisitor<Node, Edge>
+{
+private:
+  int pass;
+public:
+  TestVisitor(): pass(0) {};
+  ~TestVisitor() {};
+  void process(Node * , Edge *a)
+  {
+    std::cout << pass << " : " << a->pp() << std::endl;
+    pass++;
+  };
+  bool go_further(Node *, Edge *)
+  {
+    return true;
+  };
+  void back_step_impasse()
+  {
+    std::cout << "BI\n";
+  };
+  void back_step_loop(Edge *e)
+  {
+    std::cout << "BL: " << e->pp() << std::endl;
+  };
+  bool continue_run()
+  {
+    return true;
+  };
+  void traversal_over() {	};
+};
+
+
+template<typename Node, typename Edge>
+void GraphInterface<Node, Edge>::depth_first_test()
+{
+  TestVisitor<Node, Edge> v;
+  this->depth_first_run(this->get_entry_point(), v);
+}
+
+template<typename Node, typename Edge>
+std::string GraphInterface<Node, Edge>::get_label_edge(Edge *n) const
+{
+  std::ostringstream oss;
+  oss << this->get_label_node(this->get_source(n)) << "_to_" << this->get_label_node(this->get_target(n));
+  return oss.str();
+}
+
+/*****************************************************************************
+ * Paths
+ *****************************************************************************/
+/*namespace __gnu_cxx {
+	template<>
+		struct hash<std::string> {
+			size_t operator( )( const std::string& a) const {
+				switch(a.size()) {
+					case 0:
+						return 0;
+					case 1:
+						return (size_t)a[0];
+					case 2:
+						return (size_t)a[0]+((size_t)a[1]<<8);
+					case 3:
+						return (size_t)a[0]+((size_t)a[1]<<8)+((size_t)a[2]<<16);
+					default:
+						return (size_t)a[0]+((size_t)a[1]<<8)+((size_t)a[2]<<16)+((size_t)a[3]<<24);
+				}
+			}
+		};
+}*/
+
+/*
+ * Simplifie un chemin: simplification + forme disjonctive
+ */
+template<typename Node, typename Edge>
+GraphPath<Node, Edge>* optimize(GraphPath<Node, Edge>* nvo)
+{
+  bool optimised;
+  GraphPath<Node, Edge>* old;
+  do
+    {
+      optimised = false;
+      old = nvo;
+      nvo = nvo->distribute();
+      if (nvo != old)
+        {
+          delete old;
+          optimised = true;
+        }
+      old = nvo;
+      nvo = nvo->simplify();
+      if (nvo != old)
+        {
+          delete old;
+          optimised = true;
+        }
+      old = nvo;
+      nvo = nvo->normalize();
+      if (nvo != old)
+        {
+          delete old;
+          optimised = true;
+        }
+    }
+  while (optimised);
+  return nvo;
+}
+
+template<typename Node, typename Edge>
+GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
+{
+  __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*> eqns;
+  __gnu_cxx::hash_map<size_t, VariablePath<Node, Edge>*> names;
+
+  int idl = 0;
+  std::vector<Node *>* nodes = this->get_nodes();
+
+  for (typename std::vector<Node *>::iterator it = nodes->begin(); it != nodes->end(); ++it)
+    {
+      std::ostringstream oss;
+      oss << "L" << idl++;
+      Node *n = *it;
+      names[(size_t)n] = new VariablePath<Node, Edge>(this, (const std::string)oss.str());
+    }
+
+  /*
+   * Initial equations
+   */
+  for (typename std::vector<Node *>::iterator it = nodes->begin(); it != nodes->end(); ++it)
+    {
+      Node *n = *it;
+      GraphPath<Node, Edge>* eqn;
+
+      ConcreteNodePath<Node, Edge>* p1 = new ConcreteNodePath<Node, Edge>(this);
+      p1->push_back(n);
+      UnionPath<Node, Edge>* p2 = new UnionPath<Node, Edge>(this);
+      GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, n)
+      {
+        Node *target = this->get_target(succ.first);
+        if (target != NULL)
+          {
+            p2->push_back(names[(size_t)succ.second]->clone());
+          }
+      }
+      eqn = new ConcatenationPath<Node, Edge>(p1, p2);
+      GraphPath<Node, Edge>* simpl = eqn->simplify();
+      if (eqn != simpl)
+        {
+          delete eqn;
+        }
+      eqns[names[(size_t)n]->get_id()] = simpl;
+    }
+
+
+
+  /*
+   * Equation solving
+   */
+  bool replaced, rewrited;
+  do
+    {
+      replaced = false;
+      rewrited = false;
+      std::string tosolve;
+      GraphPath<Node, Edge>* solution = NULL;
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+      std::cout << "Simplification..." << std::endl;
+      for (typename __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
+        {
+          std::pair<std::string, GraphPath<Node, Edge>*>elem = *it;
+          std::cout << elem.first << " := " << elem.second->pp() << std::endl;
+        }
+#endif
+      //Choisit une simplification à faire ...
+      for (typename __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); eqns.size() > 1 && it != eqns.end() && !replaced && !rewrited; ++it)
+        {
+          GraphPath<Node, Edge>* eqn = it->second;
+          tosolve = it->first;
+
+          //Solution trouvee
+          if (!(eqn->contains_variable()))
+            {
+              replaced = true;
+              solution = eqn;
+            }
+          //Lemme d'Ardenn X = AX: Lx= c0 + ... + cn-1 + Lx
+          else if (eqn->is_concatenation())
+            {
+              ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) eqn;
+              assert(cc->size() > 0);
+              GraphPath<Node, Edge>* last = cc->back();
+              //cn==Lx ?
+              if (last->is_variable() && ((VariablePath<Node, Edge>*)last)->get_id() == tosolve)
+                {
+                  //solution= (c0 ... cn-1)^{*}
+                  ConcatenationPath<Node, Edge>* scc = (ConcatenationPath<Node, Edge>*)cc->clone();
+                  delete scc->back();
+                  scc->pop_back();
+                  solution = new StarPath<Node, Edge>(scc);
+                  rewrited = true;
+                }
+            }
+          //Lemme d'Ardenn X = AX U B avec B!=epsilon
+          else if (eqn->is_union())
+            {
+              UnionPath<Node, Edge>* un = (UnionPath<Node, Edge>*) eqn;
+              GraphPath<Node, Edge>* first = un->front();
+              GraphPath<Node, Edge>* last = un->back();
+              if (first->is_concatenation() && un->size() == 2)
+                {
+                  ConcatenationPath<Node, Edge>* g = (ConcatenationPath<Node, Edge>*)first;
+                  assert(g->size() > 0);
+                  //X
+                  if (g->back()->is_variable())
+                    {
+                      VariablePath<Node, Edge>* v = (VariablePath<Node, Edge>*)g->back();
+                      //X==AX U B ?
+                      if (v->get_id() == tosolve)
+                        {
+                          rewrited = true;
+                          g = (ConcatenationPath<Node, Edge>*)g->clone();
+                          //Supprime le X
+                          delete g->back();
+                          g->pop_back();
+                          ConcatenationPath<Node, Edge>* scc = new ConcatenationPath<Node, Edge>(this);
+                          scc->push_back(new StarPath<Node, Edge>(g));
+                          scc->push_back(last->clone());
+                          solution = scc;
+                        }
+                    }
+                }
+              if (!rewrited)
+                {
+                  //essaye X==B U AX?
+                  GraphPath<Node, Edge>* tmp = first;
+                  first = last;
+                  last = tmp;
+                  if (first->is_concatenation() && un->size() == 2)
+                    {
+                      ConcatenationPath<Node, Edge>* g = (ConcatenationPath<Node, Edge>*)first;
+                      assert(g->size() > 0);
+                      //X
+                      if (g->back()->is_variable())
+                        {
+                          VariablePath<Node, Edge>* v = (VariablePath<Node, Edge>*)g->back();
+                          //X==B U AX ?
+                          if (v->get_id() == tosolve)
+                            {
+                              rewrited = true;
+                              g = (ConcatenationPath<Node, Edge>*)g->clone();
+                              //Supprime le X
+                              delete g->back();
+                              g->pop_back();
+                              ConcatenationPath<Node, Edge>* scc = new ConcatenationPath<Node, Edge>(this);
+                              scc->push_back(new StarPath<Node, Edge>(g));
+                              scc->push_back(last->clone());
+                              solution = scc;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      //Si pas de simplification, cherche une substitution utile
+      if (!replaced && !rewrited)
+        {
+          std::list<VariablePath<Node, Edge>*> vars;
+          for (typename __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end() && !replaced; ++it)
+            {
+              GraphPath<Node, Edge>* eqn = it->second;
+              tosolve = it->first;
+              //Ne substitue pas L0, inutile ...
+              if (tosolve != "L0")
+                {
+                  vars.clear();
+                  eqn->gather_variables(&vars);
+                  //L'equation ne doit contenir qu'une seule variable libre ...
+                  if (vars.size() == 1)
+                    {
+                      int times_used = 0;
+                      //VariablePath<Node,Edge>* var=(VariablePath<Node,Edge>*)vars.back();
+                      for (typename __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*>::iterator it2 = eqns.begin(); it2 != eqns.end() && times_used <= 1; ++it2)
+                        {
+                          vars.clear();
+                          (it2->second)->gather_variables(&vars);
+                          for (typename std::list<VariablePath<Node, Edge>*>::iterator itv = vars.begin(); itv != vars.end(); ++itv)
+                            {
+                              if ((*itv)->get_id() == tosolve)
+                                {
+                                  times_used++;
+                                  break;
+                                }
+                            }
+                        }
+                      //Et n'est referencée que dans une seule autre equation
+                      if (times_used <= 1)
+                        {
+                          replaced = true;
+                          solution = eqn;
+                        }
+                    }
+                }
+            }
+        }
+      //Application de la simplification (substitution) aux equations ...
+      if (replaced)
+        {
+          //Supprime l'equation qui a été remplacée
+          eqns.erase(tosolve);
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+          std::cout << "Remplace " << tosolve << " avec " << solution->pp() << std::endl;
+#endif
+          for (typename __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
+            {
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+              std::cout << "*" << it->first << std::endl;
+#endif
+              GraphPath<Node, Edge>* old = it->second;
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+              std::cout << "  Old :" << old->pp() << std::endl;
+#endif
+              GraphPath<Node, Edge>* nvo = old->replace_variable_in_place(tosolve, solution);
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+              std::cout << "  Nvo :" << nvo->pp() << std::endl;
+#endif
+              if (nvo != old)
+                {
+                  delete old;
+                }
+              nvo = optimize(nvo);
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+              std::cout << "  Sim :" << nvo->pp() << std::endl;
+#endif
+              it->second = nvo;
+            }
+          delete solution;
+        }
+      //Application de la simplification (reecriture) aux equations ...
+      else if (rewrited)
+        {
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+          std::cout << "Reecrit " << tosolve << " en " << solution->pp() << std::endl;
+#endif
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+          std::cout << "*" << tosolve << std::endl;
+#endif
+
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+          GraphPath<Node, Edge>* old = eqns[tosolve];
+          std::cout << "  Old :" << old->pp() << std::endl;
+#endif
+          GraphPath<Node, Edge>* nvo = solution;
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+          std::cout << "  Nvo :" << nvo->pp() << std::endl;
+#endif
+          nvo = optimize(nvo);
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+          std::cout << "  Sim :" << nvo->pp() << std::endl;
+#endif
+          delete eqns[tosolve];
+          eqns[tosolve] = solution;
+        }
+#ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
+      std::cout << "Fin simplification..." << std::endl;
+      /*for(typename hash_map<std::string,GraphPath<Node,Edge>*>::iterator it=eqns.begin();it!=eqns.end();++it) {
+        std::pair<std::string,GraphPath<Node,Edge>*>elem=*it;
+        std::cout << elem.first <<" := "<<elem.second->pp()<<std::endl;
+        }*/
+      std::cout << "\n";
+#endif
+    }
+  while (replaced || rewrited);
+
+  GraphPath<Node, Edge> *old, *nvo;
+  nvo = eqns[std::string("L0")];
+  for (int i = 0; i < 10; ++i)
+    {
+      old = nvo;
+      nvo = nvo->simplify();
+      if (old != nvo)
+        delete old;
+    }
+  return nvo;
+}
+
+
+
+
+
+/*
+ * get_nodes_between
+ */
+
+
+/* ***************************************************/
+/**
+ * \brief  Visitor that collects the nodes it goes through
+ */
+/* ***************************************************/
+template<typename Node, typename Edge>
+class CollectingVisitor : public GraphVisitor<Node, Edge>
+{
+private:
+  std::list<Node *>* seen;
+  std::list<Node *>* stop;
+public:
+  CollectingVisitor(std::list<Node *>* seen, std::list<Node *>* stop): seen(seen), stop(stop) {};
+  ~CollectingVisitor() {};
+  void process(Node *n, Edge *)
+  {
+    seen->push_back(n);
+  };
+  bool go_further(Node *c, Edge *)
+  {
+    for (typename std::list<Node *>::iterator it = stop->begin(); it != stop->end(); ++it)
+      {
+        Node *n = *it;
+        if (*n == *c)
+          {
+            seen->push_back(n);
+            return false;
+          }
+      }
+    return true;
+  };
+  void back_step_impasse() { };
+  void back_step_loop(Edge *) { };
+  bool continue_run()
+  {
+    return true;
+  };
+  void traversal_over() {	};
+};
+
+
+template<typename Node, typename Edge>
+std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, Node *end)
+{
+  std::list<Node *> stop;
+  stop.push_back(end);
+  std::list<Node *>* res = this->get_nodes_between(start, stop);
+  return res;
+}
+
+template<typename Node, typename Edge>
+std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, std::list<Node *>& end)
+{
+  std::list<Node *>* res = new std::list<Node *>();
+  CollectingVisitor<Node, Edge> cv(res, &end);
+  this->depth_first_traversal(start, cv);
+  return res;
+}
+
+
+/*
+ * Misc
+ */
+template<typename Node, typename Edge>
+std::string GraphInterface<Node, Edge>::pp() const
+{
+
+  std::ostringstream oss;
+  for (typename std::vector<Node *>::const_iterator stmt = this->get_nodes()->begin();
+       stmt != this->get_nodes()->end();
+       ++stmt)
+    oss << (*stmt)->pp() << std::endl;
+  return oss.str();
+}
+
+template<typename Node, typename Edge>
+bool GraphInterface<Node, Edge>::contains(Node *n) const
+{
+  std::vector<Node *>* ns = this->get_nodes();
+  for (typename std::vector<Node *>::iterator it = ns->begin(); it != ns->end(); ++it)
+    {
+      if (*n == **it)
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
+/*
+ * J'ai été obligé de recoder replaceAll, vraiment ? TT
+ */
+template<typename Node, typename Edge>
+void formatDot(std::string &pp)
+{
+  std::string searchString("\n");
+  std::string replaceString("\\n");
+  std::string::size_type pos = 0;
+  while ((pos = pp.find(searchString, pos)) != std::string::npos)
+    {
+      pp.replace(pos, searchString.size(), replaceString);
+      pos++;
+    }
+}
+
+template<typename Node, typename Edge> void
+GraphInterface<Node, Edge>::toDot(std::string filename) const
+{
+  std::ofstream out(filename.c_str());
+  toDot(out);
+  out << std::flush;
+  out.close();
+}
+
+template<typename Node, typename Edge> void
+GraphInterface<Node, Edge>::toDot(std::ostream &out) const
+{
+  out << "digraph G {\n";
+  std::vector<Node *>* ns = this->get_nodes();
+  for (typename std::vector<Node *>::iterator it = ns->begin(); it != ns->end(); ++it)
+    {
+      Node *n = *it;
+      std::string pp = n->pp();
+      formatDot<Node, Edge>(pp);
+      out << "cfg" << this->get_label_node(n) << "[shape=box,style=filled,color=oldlace,label=\"" << pp << "\"];\n";
+    }
+  for (typename std::vector<Node *>::iterator it = ns->begin(); it != ns->end(); ++it)
+    {
+      Node *n = *it;
+
+      for (Edge *e = this->get_first_successor(n).first; e != NULL; e = this->get_next_successor(n, e).first)
+        {
+          Node *src = this->get_source(e);
+          Node *tgt = this->get_target(e);
+          std::string pp = e->pp();
+          formatDot<Node, Edge>(pp);
+          if (src != NULL && tgt != NULL)
+            {
+              out << "cfg" << this->get_label_node(src) << "->cfg" << this->get_label_node(tgt) << "[label=\"" << pp << "\"];\n";
+            }
+        }
+    }
+  out << "}" << std::endl;
+}
+
+
+/*****************************************************************************/
+/*****************************************************************************/
+
+

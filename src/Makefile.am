@@ -1,0 +1,298 @@
+## Process this file with automake to produce Makefile.in
+AM_CPPFLAGS = @BINUTILS_CFLAGS@
+AM_LDFLAGS = @BINUTILS_LDFLAGS@
+
+AUTOMAKE_OPTIONS=subdir-objects
+
+CLEANFILES=
+BUILT_SOURCES= 
+
+all:
+
+## analyzers module
+analyzers_sources = \
+	analyzers/Wp.cc \
+	analyzers/Wp.hh \
+	analyzers/slicing/Slicing.hh \
+	analyzers/slicing/Slicing.cc
+
+## utils module
+utils_source = \
+	utils/Log.cc		\
+	utils/Log.hh		\
+	utils/Object.cc		\
+	utils/Object.hh		\
+	utils/bv-manip.hh	\
+	utils/infrastructure.hh	\
+	utils/option.hh		\
+	utils/tools.cc		\
+	utils/tools.hh
+
+## kernel module
+kernel_source = \
+	kernel/Address.cc 		\
+	kernel/Address.hh 		\
+	kernel/Annotation.cc 		\
+	kernel/Annotation.hh 		\
+	kernel/Architecture.cc 		\
+	kernel/Architecture.hh 	  	\
+	kernel/Architecture_ARM.cc    	\
+	kernel/Architecture_ARM.hh    	\
+	kernel/Architecture_X86_32.cc 	\
+	kernel/Architecture_X86_32.hh 	\
+	kernel/Expressions.cc	 	\
+	kernel/Expressions.hh	 	\
+	kernel/insight.cc	 	\
+	kernel/insight.hh	 	\
+	kernel/Memory.hh 		\
+	kernel/Memory.ii 		\
+	kernel/RegisterMap.hh 		\
+	kernel/RegisterMap.ii 		\
+	kernel/Value.cc 		\
+	kernel/Value.hh 		\
+	kernel/expressions/ConditionalSet.cc 	\
+	kernel/expressions/ConditionalSet.hh	\
+	kernel/expressions/Formula.cc     	\
+	kernel/expressions/Formula.hh     	\
+	kernel/expressions/FormulaAnnotation.cc \
+	kernel/expressions/FormulaAnnotation.hh \
+	kernel/expressions/Operators.cc   	\
+	kernel/expressions/Operators.def  	\
+	kernel/expressions/Operators.hh   	\
+	kernel/Microcode.cc			\
+	kernel/Microcode.hh			\
+	kernel/microcode/MicrocodeAddress.cc	\
+	kernel/microcode/MicrocodeAddress.hh	\
+	kernel/microcode/MicrocodeArchitecture.cc	\
+	kernel/microcode/MicrocodeArchitecture.hh	\
+	kernel/microcode/MicrocodeNode.cc	\
+	kernel/microcode/MicrocodeNode.hh	\
+	kernel/microcode/MicrocodeStatements.cc	\
+	kernel/microcode/MicrocodeStatements.hh	\
+	kernel/microcode/MicrocodeStore.hh	\
+	kernel/expressions/ExprParser.hh 	\
+	kernel/expressions/ExprParser.cc 	\
+	kernel/expressions/ExprLexer.hh 	\
+	kernel/expressions/ExprLexer.cc		\
+	kernel/expressions/FormulaVisitor.hh	\
+	kernel/expressions/PatternMatching.hh \
+	kernel/expressions/PatternMatching.cc 
+
+## interpreter module
+interpreters_source = \
+	interpreters/ExprSemantics.hh                   \
+	interpreters/microcode_exec.hh                  \
+	interpreters/common/ConcreteAddressMemory.hh    \
+	interpreters/common/ConcreteProgramPoint.cc     \
+	interpreters/common/ConcreteProgramPoint.hh     \
+	interpreters/concrete/ConcreteAddress.cc        \
+	interpreters/concrete/ConcreteAddress.hh        \
+	interpreters/concrete/ConcreteExprSemantics.cc  \
+	interpreters/concrete/ConcreteExprSemantics.hh  \
+	interpreters/concrete/ConcreteMemory.cc         \
+	interpreters/concrete/ConcreteMemory.hh         \
+	interpreters/concrete/ConcreteValue.cc          \
+	interpreters/concrete/ConcreteValue.hh          \
+	interpreters/concrete/concrete_context.cc       \
+	interpreters/concrete/concrete_context.hh       \
+	interpreters/interval/interval_context.cc       \
+	interpreters/interval/interval_context.hh       \
+	interpreters/interval/IntervalExprSemantics.cc  \
+	interpreters/interval/IntervalExprSemantics.hh  \
+	interpreters/interval/IntervalAddress.hh        \
+	interpreters/interval/IntervalAddress.cc        \
+	interpreters/interval/IntervalMemory.cc         \
+	interpreters/interval/IntervalMemory.hh         \
+	interpreters/interval/IntervalValue.cc          \
+	interpreters/interval/IntervalValue.hh          \
+	interpreters/sets/SetsValue.hh                  \
+	interpreters/sets/SetsValue.cc                  \
+	interpreters/sets/SetsAddress.hh                \
+	interpreters/sets/SetsAddress.cc                \
+	interpreters/sets/SetsMemory.hh                 \
+	interpreters/sets/SetsMemory.cc                 \
+	interpreters/sets/SetsExprSemantics.hh          \
+	interpreters/sets/SetsExprSemantics.cc          \
+	interpreters/sets/SetsContext.hh                \
+	interpreters/sets/SetsContext.cc
+
+## loaders module
+loaders_sources = \
+	loaders/LoaderFactory.cc 			\
+	loaders/LoaderFactory.hh 			\
+	loaders/binary/BinaryLoader.cc 			\
+	loaders/binary/BinaryLoader.hh 			\
+	loaders/binary/BinutilsBinaryLoader.cc 		\
+	loaders/binary/BinutilsBinaryLoader.hh 		\
+	loaders/microcode/MicrocodeLoader.cc 		\
+	loaders/microcode/MicrocodeLoader.hh 		\
+	loaders/microcode/xml_microcode_generator.cc	\
+	loaders/microcode/xml_microcode_generator.hh 	\
+	loaders/microcode/xml_microcode_parser.cc	\
+	loaders/microcode/xml_microcode_parser.hh 	\
+	loaders/process/ProcessLoader.cc 		\
+	loaders/process/ProcessLoader.hh
+
+
+## decoder module
+x86_32_decoder= \
+	decoders/binutils/x86-32/x86_32_cc.def \
+	decoders/binutils/x86-32/x86_32_misc_instructions.cc \
+	decoders/binutils/x86-32/x86_32_operators_mov.cc \
+	decoders/binutils/x86-32/x86_32_operators_arithmetics.cc \
+	decoders/binutils/x86-32/x86_32_operators_boolean.cc     \
+	decoders/binutils/x86-32/x86_32_operators_jump.cc        \
+	decoders/binutils/x86-32/x86_32_operators_loops.cc       \
+	decoders/binutils/x86-32/x86_32_operators_shift.cc       \
+	decoders/binutils/x86-32/x86_32_operators_strings.cc \
+        decoders/binutils/x86-32/x86_32_operators_proc_call.cc  \
+	decoders/binutils/x86-32/x86_32_decoder.hh \
+	decoders/binutils/x86-32/x86_32_decoder.cc \
+	decoders/binutils/x86-32/x86_32_decoder.hh \
+	decoders/binutils/x86-32/x86_32_translate.cc  \
+	decoders/binutils/x86-32/x86_32_translate.hh  \
+	decoders/binutils/x86-32/x86_32_translation_functions.hh \
+        decoders/binutils/x86-32/x86_32_parser.yy  \
+        decoders/binutils/x86-32/x86_32_scanner.ll \
+	decoders/binutils/x86-32/x86_32_A_instr.cc \
+	decoders/binutils/x86-32/x86_32_B_instr.cc \
+	decoders/binutils/x86-32/x86_32_C_instr.cc \
+	decoders/binutils/x86-32/x86_32_D_instr.cc \
+	decoders/binutils/x86-32/x86_32_H_instr.cc \
+	decoders/binutils/x86-32/x86_32_L_instr.cc \
+	decoders/binutils/x86-32/x86_32_M_instr.cc \
+	decoders/binutils/x86-32/x86_32_N_instr.cc \
+	decoders/binutils/x86-32/x86_32_P_instr.cc \
+	decoders/binutils/x86-32/x86_32_X_instr.cc 
+
+BUILT_SOURCES+= \
+	decoders/binutils/x86-32/stack.hh 	      	\
+	decoders/binutils/x86-32/location.hh       	\
+	decoders/binutils/x86-32/position.hh       	\
+	decoders/binutils/x86-32/x86_32_scanner.hh 	\
+	decoders/binutils/x86-32/x86_32_scanner.cc 	\
+	decoders/binutils/x86-32/x86_32_parser.hh  	\
+	decoders/binutils/x86-32/x86_32_parser.cc 
+
+arm_decoder= \
+	decoders/binutils/arm/arm_decoder.hh \
+	decoders/binutils/arm/arm_decoder.cc \
+        decoders/binutils/arm/arm_parser.yy  \
+        decoders/binutils/arm/arm_scanner.ll \
+	decoders/binutils/arm/arm_translate.hh  \
+	decoders/binutils/arm/arm_translate.cc  \
+	decoders/binutils/arm/arm_translation_functions.hh \
+	decoders/binutils/arm/arm_A_instr.cc	\
+	decoders/binutils/arm/arm_B_instr.cc	\
+	decoders/binutils/arm/arm_C_instr.cc	\
+	decoders/binutils/arm/arm_E_instr.cc	\
+	decoders/binutils/arm/arm_L_instr.cc	\
+	decoders/binutils/arm/arm_M_instr.cc	\
+	decoders/binutils/arm/arm_N_instr.cc \
+	decoders/binutils/arm/arm_P_instr.cc \
+	decoders/binutils/arm/arm_R_instr.cc \
+	decoders/binutils/arm/arm_S_instr.cc \
+	decoders/binutils/arm/arm_O_instr.cc	\
+	decoders/binutils/arm/arm_U_instr.cc
+
+BUILT_SOURCES+= \
+	decoders/binutils/arm/stack.hh 	      	\
+	decoders/binutils/arm/location.hh       	\
+	decoders/binutils/arm/position.hh       	\
+	decoders/binutils/arm/arm_scanner.hh 	\
+	decoders/binutils/arm/arm_scanner.cc 	\
+	decoders/binutils/arm/arm_parser.hh  	\
+	decoders/binutils/arm/arm_parser.cc 
+
+decoders_sources = \
+	decoders/Decoder.hh        \
+	decoders/Decoder.cc        \
+	decoders/DecoderFactory.hh \
+	decoders/DecoderFactory.cc \
+	decoders/binutils/BinutilsDecoder.hh \
+	decoders/binutils/BinutilsDecoder.cc \
+        ${x86_32_decoder} \
+        ${arm_decoder}
+
+
+decoders/binutils/x86-32/stack.hh		\
+decoders/binutils/x86-32/location.hh 	\
+decoders/binutils/x86-32/position.hh 	\
+decoders/binutils/x86-32/x86_32_parser.hh 	\
+decoders/binutils/x86-32/x86_32_parser.cc:	\
+  decoders/binutils/x86-32/x86_32_parser.yy
+	$(YACC) --output=decoders/binutils/x86-32/x86_32_parser.cc $<
+
+decoders/binutils/x86-32/x86_32_scanner.hh 	\
+decoders/binutils/x86-32/x86_32_scanner.cc : \
+       decoders/binutils/x86-32/x86_32_scanner.ll \
+       decoders/binutils/x86-32/x86_32_parser.hh
+	$(LEX) --outfile=decoders/binutils/x86-32/x86_32_scanner.cc \
+	       --header-file=decoders/binutils/x86-32/x86_32_scanner.hh $<
+
+decoders/binutils/arm/stack.hh	\
+decoders/binutils/arm/location.hh 	\
+decoders/binutils/arm/position.hh 	\
+decoders/binutils/arm/arm_parser.hh 	\
+decoders/binutils/arm/arm_parser.cc:	\
+  decoders/binutils/arm/arm_parser.yy
+	$(YACC) --output=decoders/binutils/arm/arm_parser.cc $<
+
+decoders/binutils/arm/arm_scanner.hh 	\
+decoders/binutils/arm/arm_scanner.cc : 	\
+       decoders/binutils/arm/arm_scanner.ll	\
+       decoders/binutils/arm/arm_parser.hh
+	$(LEX) --outfile=decoders/binutils/arm/arm_scanner.cc \
+	       --header-file=decoders/binutils/arm/arm_scanner.hh $<
+
+
+# kernel
+kernel_built_sources = \
+	kernel/expressions/stack.hh 	      	\
+	kernel/expressions/location.hh		\
+	kernel/expressions/position.hh		\
+	kernel/expressions/ExprLexer.cc 	\
+	kernel/expressions/ExprParser.hh  	\
+	kernel/expressions/ExprParser.cc 
+
+kernel/expressions/stack.hh		\
+kernel/expressions/location.hh		\
+kernel/expressions/position.hh		\
+kernel/expressions/ExprParser.hh 	\
+kernel/expressions/ExprParser.cc:	\
+kernel/expressions/ExprParser.yy
+	$(YACC) --output=kernel/expressions/ExprParser.cc $<
+
+kernel/expressions/ExprLexer.cc : \
+       kernel/expressions/ExprLexer.ll \
+       kernel/expressions/ExprParser.hh
+	$(LEX) --outfile=kernel/expressions/ExprLexer.cc $<
+
+BUILT_SOURCES+= \
+	${kernel_built_sources}
+
+kernel_cleanfiles = \
+	${kernel_built_sources}
+
+## libinsight
+##############
+lib_LTLIBRARIES = libinsight.la
+
+libinsight_la_SOURCES =  \
+	$(analyzers_sources) 	\
+	$(decoders_sources) 	\
+	$(interpreters_source) 	\
+	$(kernel_source) 	\
+	$(loaders_sources) 	\
+	$(utils_source)
+
+libinsight_la_CPPFLAGS = @BINUTILS_CFLAGS@
+libinsight_la_CXXFLAGS = @BINUTILS_CFLAGS@ -Wno-deprecated
+libinsight_la_LDFLAGS  = @BINUTILS_LDFLAGS@
+
+CLEANFILES +=
+
+DISTCLEANFILES =
+
+MAINTAINERCLEANFILES = \
+	Makefile.in config.h.in compile.log

@@ -1,0 +1,130 @@
+%{                      /* -*- C++ -*- */
+
+#include <string>
+#include <cerrno>
+#include <cstdlib>
+#include <climits>
+#include <sstream>
+
+#include "arm_parser.hh"
+
+#define YY_DECL				      \
+  arm::parser::token_type		      \
+    yylex(arm::parser::semantic_type* yylval, \
+          arm::parser::location_type* yylloc)
+
+/* Work around an incompatibility in flex (at least versions 2.5.31
+ * through 2.5.33): it generates code that does not conform to C89. */
+/* FIXME: Is this needed when the option 'noyywrap' has been set ? */
+#undef yywrap
+#define yywrap() 1
+
+/* By default yylex returns int, we use token_type. Unfortunately
+ * yyterminate by default returns 0, which is not of token_type. */
+#define yyterminate() return token::TOK_EOF
+
+/* This disables inclusion of unistd.h, which is not available under
+ * Visual C++ on Win32. The C++ scanner uses STL streams instead. */
+#define YY_NO_UNISTD_H
+
+/* This suffices to track locations accurately. Each time yylex is
+ * invoked, the begin position is moved onto the end position. */
+#define YY_USER_ACTION yylloc->columns(yyleng);
+
+using namespace std;
+using namespace arm;
+
+typedef parser::token token;
+
+static long xtoi(char* xstr);
+
+%}
+
+ /* Flex efficiency tuning */
+%option 7bit noyywrap nounput batch full align
+%option prefix="arm_"
+
+ /* Custom macros */
+hexvalue  [0-9a-f]+
+varname   [a-z][a-z0-9]+
+optype    [bswlqt]
+
+ /* NOTE: optype immediately follows the operator/mnemonic and gives
+  * the type of the handled data-size:
+  * b = byte (8 bit)
+  * s = short (16 bit integer) or single (32-bit floating point)
+  * w = word (16 bit)
+  * l = long (32 bit integer or 64-bit floating point)
+  * q = quad (64 bit)
+  * t = ten bytes (80-bit floating point)
+  */
+
+
+%% /***** Lexer rules *****/
+
+%{
+  /* Reset location at the beginning of yylex() */
+  yylloc->step();
+%}
+
+@RULES@
+
+"," { return token::TOK_COMMA;     }
+":" { return token::TOK_SEMICOLON; }
+"(" { return token::TOK_LPAR;      }
+")" { return token::TOK_RPAR;      }
+"+" { return token::TOK_PLUS;      }
+"-" { return token::TOK_MINUS;     }
+"*" { return token::TOK_STAR;      }
+"$" { return token::TOK_DOLLAR;    }
+
+ /* Spaces and end of lines */
+[ \t]+ { yylloc->lines(yyleng); yylloc->step(); }
+[\n]+  { yylloc->lines(yyleng); yylloc->step(); return token::TOK_EOL; }
+
+ /* Integer values */
+"0x"?{hexvalue} {
+                   if (yytext[1] != 'x')
+		     yylval->intValue = xtoi(yytext);
+		   else
+		     yylval->intValue = xtoi(yytext+2);
+		   return token::TOK_INTEGER;
+                }
+
+ /* Registers */
+"%"{varname} {
+                yylval->stringValue = new string (yytext + 1);
+	        return token::TOK_REGISTER;
+             }
+
+ /* Anything else is probable an error */
+.  {
+     char tmp[2] = { yytext[0], 0 };
+     yylval->stringValue = new string (tmp);
+     return token::TOK_INVALID;
+   }
+
+%% /***** Lexer subroutines *****/
+
+/* Convert a string coded in hexadecimal into a 'long' */
+static long xtoi(char *xstr)
+{
+  long result;
+  std::stringstream ss;
+
+  ss << std::hex << xstr;
+  ss >> result;
+
+  return result;
+}
+
+bool arm_scanner_open(const string &instr)
+{
+  return yy_scan_string (instr.c_str ());
+}
+
+void
+arm_scanner_close()
+{
+  yy_delete_buffer (YY_CURRENT_BUFFER);
+}

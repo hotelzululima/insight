@@ -1,0 +1,205 @@
+%code requires {		  /*  -*- C++ -*- */
+#include <map>
+#include <string>
+#include <stack>
+
+#include <kernel/Microcode.hh>
+
+/* TODO: Parser state should be defined once for all at a higher
+ * level. Not here. Indeed, every architecture parser will have the
+ * same kind of internal state anyway, so its definition should be
+ * shared by all the parsers. */
+namespace x86_32 {
+  typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
+  struct parser_data
+  {
+    typedef enum {
+#define X86_32_CC(id,f) X86_32_CC_ ## id,
+#include "decoder/binutils/x86-32/x86_32_cc.def"
+#undef X86_32_CC
+      NB_CC
+    } condition_code_t;
+    
+    parser_data (const Architecture &arch, Microcode *out, 
+		 const std::string &inst, address start, 
+		 address next);
+    ~parser_data();
+
+    Register *get_flag (const char *flagname) const;
+    Register *get_tmp_register (int index) const;
+
+    Expr *get_memory_reference (Expr *section, int disp, Expr *bis) const;
+
+    bool has_prefix;
+    std::string instruction;
+    MicrocodeAddress start_ma;
+    MicrocodeAddress next_ma;
+    Microcode *mc;
+    bool data16;
+    bool data_size;
+    bool addr16;
+    bool addr_size;
+    const char *data_segment;
+    const char *code_segment;
+    const char *stack_segment;
+    Architecture arch;
+    Expr *condition_codes[NB_CC];
+  };
+}
+}
+
+ /* Bison specific options */
+%skeleton "lalr1.cc"
+%language "c++"
+%require "2.4"
+%defines
+%define namespace "x86_32"
+
+ /* Initial rule is named 'start' */
+%start start
+
+ /* Parsing context */
+%parse-param { parser_data &data }
+/*%lex-param   { parser_data &data }*/
+
+%locations
+%initial-action
+{
+  /* Initialize the initial location */
+  @$.begin.filename = @$.end.filename = &data.instruction;
+};
+
+%debug
+%error-verbose
+
+ /* Symbols */
+%union
+{
+  long         intValue;
+  std::string *stringValue;
+  class Expr  *expr;
+};
+
+%code {
+using namespace std;
+using namespace x86_32;
+
+#include "decoder/binutils/x86-32/x86_32_translate.hh"
+
+#undef yylex
+#define yylex x86_32_lex
+
+#define YY_DECL					\
+ x86_32::parser::token_type			\
+   yylex(x86_32::parser::semantic_type* yylval,	\
+	 x86_32::parser::location_type* yylloc)
+
+ YY_DECL;
+
+#include "x86_32_scanner.hh"
+
+#define push_mc(data) do { (data).mc.push (new Microcode ()); } while (0)
+
+}
+
+%token TOK_LPAR TOK_RPAR
+%token TOK_COMMA TOK_COLON
+%token TOK_PLUS TOK_MINUS TOK_STAR TOK_DOLLAR
+%token <stringValue>  TOK_INVALID
+%token                TOK_EOF      0 "end of buffer (EOF)"
+%token                TOK_EOL        "end of line (EOL)"
+
+%token <stringValue>  TOK_REGISTER   "register (REGISTER)"
+
+%token <intValue>     TOK_INTEGER    "integer value (INTEGER)"
+
+@TOKENS@
+
+
+%type <expr> operand register section memory_reference base_index_scale
+
+%type <intValue> integer immediate 
+
+%printer    { debug_stream() << $$; } <intValue>
+
+%printer    { debug_stream() << *$$; } TOK_REGISTER
+%destructor { delete $$; } TOK_REGISTER
+
+%% /***** Parser rules *****/
+
+start: instruction;
+
+operand:
+immediate { $$ = Constant::create ($1, 0, 32); }
+| register { $$ = $1; }
+| register TOK_LPAR integer TOK_RPAR  
+  { throw std::runtime_error ("unsupported register"); } 
+| memory_reference { $$ = $1; }
+| TOK_STAR memory_reference { $$ = MemCell::create ($2); }
+| TOK_STAR register { $$ = MemCell::create ($2); }
+;
+
+memory_reference:
+  section integer base_index_scale
+{ $$ = data.get_memory_reference ($1, $2, $3); }
+| section integer
+{ $$ = data.get_memory_reference ($1, $2, NULL); }
+| section base_index_scale
+{ $$ = data.get_memory_reference ($1, 0, $2); }
+
+section : 
+  register TOK_COLON { $$ = $1; }
+| /* empty */        { $$ = NULL; }
+;
+
+base_index_scale :
+  TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR 
+{ $$ = BinaryApp::create (ADD, $2, BinaryApp::create (MUL, $4, $6)); }
+| TOK_LPAR register TOK_COMMA register TOK_RPAR 
+{ $$ = BinaryApp::create (ADD, $2, $4); }
+| TOK_LPAR register TOK_RPAR 
+{ $$ = $2; }
+| TOK_LPAR TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR 
+{ $$ = BinaryApp::create (MUL, $3, $5); }
+
+| TOK_LPAR TOK_COMMA TOK_INTEGER TOK_RPAR  
+{ $$ = NULL; }
+;
+
+register :
+TOK_REGISTER 
+{ 
+  $$ = data.arch.get_register ($1->c_str ()); 
+  if ($$ == NULL)
+    {
+      error (yylloc, ": error: unknown register " + *$1);
+      delete $1;
+      YYERROR;
+    }
+  else
+    {
+      delete $1;
+    }
+}
+ ;
+
+immediate:
+  TOK_DOLLAR integer { $$ = $2; }
+;
+
+integer :
+  TOK_PLUS  TOK_INTEGER { $$ = $2; }
+| TOK_MINUS TOK_INTEGER { $$ = -$2; }
+| TOK_INTEGER           { $$ = $1; }
+;
+
+@RULES@
+
+%% /***** Parser subroutines *****/
+
+void parser::error(const parser::location_type &loc,
+		   const string &msg)
+{
+  cerr << loc << ":" << msg << endl;
+}
+

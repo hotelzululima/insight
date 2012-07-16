@@ -1,0 +1,26 @@
+**** Decode instruction: call   0x1235
+[(0x0,0)] @{asm:=call   0x1235}@ ; %esp := (SUB %esp 0x4)
+[(0x0,1)] ; [%esp] := 0x5
+[(0x0,2)] ; StaticArrow (0x0,2) Skip  --> (0x1235,0)
+[(0x1235,0)] 
+
+**** Decode instruction: call   *0x1234
+[(0x5,0)] @{asm:=call   *0x1234}@ ; %esp := (SUB %esp 0x4)
+[(0x5,1)] ; [%esp] := 0xB
+[(0x5,2)] ; DynamicArrow (0x5,2) Jmp [0x1234]  --> << [0x1234] >>
+
+**** Decode instruction: call   *-0x4d2(%ebx)
+[(0xB,0)] @{asm:=call   *-0x4d2(%ebx)}@ ; %esp := (SUB %esp 0x4)
+[(0xB,1)] ; [%esp] := 0x11
+[(0xB,2)] ; DynamicArrow (0xB,2) Jmp [(ADD %ebx 0xFFFFFFFFFFFFFB2E)]  --> << [(ADD %ebx 0xFFFFFFFFFFFFFB2E)] >>
+
+**** Decode instruction: call   *0xf012002
+[(0x11,0)] @{asm:=call   *0xf012002}@ ; %esp := (SUB %esp 0x4)
+[(0x11,1)] ; [%esp] := 0x17
+[(0x11,2)] ; DynamicArrow (0x11,2) Jmp [0xF012002]  --> << [0xF012002] >>
+
+**** Decode instruction: call   *%eax
+[(0x17,0)] @{asm:=call   *%eax}@ ; %esp := (SUB %esp 0x4)
+[(0x17,1)] ; [%esp] := 0x19
+[(0x17,2)] ; DynamicArrow (0x17,2) Jmp %eax  --> << %eax >>
+

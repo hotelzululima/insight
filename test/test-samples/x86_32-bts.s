@@ -1,0 +1,9 @@
+	bts	%ax, %bx
+	bts	%eax, %ebx
+	bts	%ax,  0x12345678
+	bts	%eax, 0x12345678
+	bts	$0x13, %ax
+	bts	$0x13, %eax
+	btsw	$0x13, 0x12345678
+	bts	$0x13, 0x12345678
+	

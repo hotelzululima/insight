@@ -1,0 +1,44 @@
+\input texinfo @c -*- texinfo -*-
+@c %**start of header
+@setfilename design.info
+@documentencoding UTF-8
+@settitle Insight User Manual
+@syncodeindex fn cp
+@macro Insight
+Insight
+@end macro
+@c %**end of header
+
+@include common-macros.texi
+
+@titlepage
+@title Insight User manual, version @manualversion
+@subtitle Insight @softwareversion -- A binary analyzer framework
+@author Insight team
+@page
+
+@tex
+{\parskip=0pt
+\hfill {\it Insight User Manual}, version @manualversion\par
+\hfill The Insight Team (insight\@labri.fr)\par
+}
+@end tex
+
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top, Introduction
+@top Insight Design document
+@end ifnottex
+
+@node Introduction
+@chapter Introduction
+
+@node Full Index
+@unnumbered Full Index
+@printindex cp
+@bye

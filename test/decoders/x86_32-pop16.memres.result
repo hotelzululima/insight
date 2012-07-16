@@ -1,0 +1,45 @@
+**** Decode instruction: pop    %ax
+[(0x0,0)] @{asm:=pop    %ax}@ ; %eax{0;16} := [%esp]{0;16}
+[(0x0,1)] ; StaticArrow (0x0,1) %esp := (ADD %esp 0x2)  --> (0x2,0)
+[(0x2,0)] 
+
+**** Decode instruction: pop    %ax
+[(0x2,0)] @{asm:=pop    %ax}@ ; %eax{0;16} := [%esp]{0;16}
+[(0x2,1)] ; StaticArrow (0x2,1) %esp := (ADD %esp 0x2)  --> (0x4,0)
+[(0x4,0)] 
+
+**** Decode instruction: popw   %ds
+[(0x4,0)] @{asm:=popw   %ds}@ ; %ds{0;16} := [%esp]{0;16}
+[(0x4,1)] ; StaticArrow (0x4,1) %esp := (ADD %esp 0x2)  --> (0x6,0)
+[(0x6,0)] 
+
+**** Decode instruction: popw   %es
+[(0x6,0)] @{asm:=popw   %es}@ ; %es{0;16} := [%esp]{0;16}
+[(0x6,1)] ; StaticArrow (0x6,1) %esp := (ADD %esp 0x2)  --> (0x8,0)
+[(0x8,0)] 
+
+**** Decode instruction: popw   %fs
+[(0x8,0)] @{asm:=popw   %fs}@ ; %fs{0;16} := [%esp]{0;16}
+[(0x8,1)] ; StaticArrow (0x8,1) %esp := (ADD %esp 0x2)  --> (0xB,0)
+[(0xB,0)] 
+
+**** Decode instruction: popw   %gs
+[(0xB,0)] @{asm:=popw   %gs}@ ; %gs{0;16} := [%esp]{0;16}
+[(0xB,1)] ; StaticArrow (0xB,1) %esp := (ADD %esp 0x2)  --> (0xE,0)
+[(0xE,0)] 
+
+**** Decode instruction: popw   %ss
+[(0xE,0)] @{asm:=popw   %ss}@ ; %ss{0;16} := [%esp]{0;16}
+[(0xE,1)] ; StaticArrow (0xE,1) %esp := (ADD %esp 0x2)  --> (0x10,0)
+[(0x10,0)] 
+
+**** Decode instruction: popw   0x1111972
+[(0x10,0)] @{asm:=popw   0x1111972}@ ; [0x1111972]{0;16} := [%esp]{0;16}
+[(0x10,1)] ; StaticArrow (0x10,1) %esp := (ADD %esp 0x2)  --> (0x17,0)
+[(0x17,0)] 
+
+**** Decode instruction: data32 data32 pop %ax
+[(0x17,0)] @{asm:=data32 data32 pop %ax}@ ; %eax{0;16} := [%esp]{0;16}
+[(0x17,1)] ; StaticArrow (0x17,1) %esp := (ADD %esp 0x2)  --> (0x1B,0)
+[(0x1B,0)] 
+

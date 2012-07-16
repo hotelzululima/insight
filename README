@@ -1,0 +1,49 @@
+	Insight: An analysis framework for executable formats
+       =======================================================
+
+Insight provides a framework to analyze binary files using static
+analysis, model-checking and theorem proving techniques.
+
+Insight is released under a 2-clause BSD license (see the 'COPYING'
+file for more details).
+
+For now, Insight supports x86-32 and ARM architectures for
+analysis. Because it currently depends on the GNU binutils to read
+binary files and decode instructions, it is further limited to what
+your installation of the binutils allows. See the 'INSTALL' file to
+compile the binutils with support for all architectures.
+
+Insight is released as a library and we provide only tests; we are
+working on tools which will be released later under the same license.
+
+Users Information
+==================
+
+For further information on the contents of this distribution file,
+we refer you to the following other documents:
+
+* AUTHORS: List of authors and contributors to this project.
+* COPYING: License information.
+* INSTALL: Compilation and installation instructions.
+* NEWS: List of major changes between formal releases.
+
+For general and up-to-date information, visit our website at:
+
+https://insight.labri.fr/
+
+
+Developer Information
+======================
+
+Developpers are, of course, more than welcome in this project and
+feature requests, development questions and patches will be looked at
+and commented by the Insight team.
+
+Getting a fresh development snapshot of the source:
+
+$ svn checkout https://insight.labri.fr/svn/trunk insight
+
+In order to report a bug, or request a new feature, please use our
+issue tracker at https://insight.labri.fr/trac/newticket
+
+To contact the development team, send an e-mail to insight@labri.fr

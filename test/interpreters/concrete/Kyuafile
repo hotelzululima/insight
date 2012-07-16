@@ -1,0 +1,8 @@
+syntax("kyuafile", 1)
+
+test_suite("Insight")
+
+atf_test_program{name="concreteaddress_test"}
+atf_test_program{name="concretememory_test"}
+atf_test_program{name="concretevalue_test"}
+atf_test_program{name="simulator_test"}

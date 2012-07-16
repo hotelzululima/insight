@@ -1,0 +1,89 @@
+/*-
+ * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#ifdef BINARY_OP
+/* BINARY_OP(enumvalue, pp_string, is_commutative, is_associative) */
+
+BINARY_OP(ADD, "", true, true) /*! Addition */
+BINARY_OP(SUB, "", false, true) /*! Substraction */
+BINARY_OP(MUL_S, "", true, true) /*! Signed Multiplication */ 
+BINARY_OP(MUL_U, "", true, true) /*! Unsigned Multiplication */ 
+BINARY_OP(SDIV, "sDIV", false, false) /*! Signed Division */
+BINARY_OP(UDIV, "uDIV", false, false) /*! Unsigned Division */
+BINARY_OP(MODULO, "", false, false) /*! Modulo */
+BINARY_OP(CONCAT, "CC", false, true) /*! Concatenation */
+
+  /* Binary */
+BINARY_OP(AND_OP, "AND", true, true) /*! Bitwise and */
+BINARY_OP(OR, "", true, true) /*! Bitwise or */
+BINARY_OP(XOR, "", true, true) /*! Bitwise xor */
+BINARY_OP(LSH, "", false, false) /*! Left Shift equiv to << = SAL/SHL */
+BINARY_OP(RSH, "", false, false) /*! Right Shift equiv to >> = SAR */
+BINARY_OP(ROR, "", false, false) /*! Right rol */
+BINARY_OP(ROL, "", false, false) /*! Left rol */
+
+  /* bitwise operators */
+BINARY_OP(LAND, "", true, true)  /*! logical and */
+BINARY_OP(LOR, "", true, true)  /*! logical or */
+
+  /* Logic */
+BINARY_OP(EQ, "", true, true)  /*! Equality */
+BINARY_OP(NEQ, "", true, true) /*! Inequality */
+
+BINARY_OP(LT_S, "", false, false) /*! Less */
+BINARY_OP(LT_U, "", false, false) /*! Less */
+
+BINARY_OP(LEQ_S, "", false, false) /*! Less or equal */
+BINARY_OP(LEQ_U, "", false, false) /*! Less or equal */
+
+BINARY_OP(GT_S, "", false, false) /*! Greater */
+BINARY_OP(GT_U, "", false, false) /*! Greater */
+
+BINARY_OP(GEQ_S, "", false, false) /*! Greater or equal */
+BINARY_OP(GEQ_U, "", false, false) /*! Greater or equal */
+
+BINARY_OP(POW,  "", false, false) /*! power of */
+BINARY_OP(EXTEND_S, "", false, false) /*! signed extend */
+BINARY_OP(EXTEND_U, "", false, false) /*! unsigned extend */
+
+#endif
+
+#ifdef UNARY_OP
+/* UNARY_OP(enumvalue, pp_string) */ 
+UNARY_OP(NEG, "") /*! arithmetic negative */
+UNARY_OP(NOT, "") /*! bitwise not */
+UNARY_OP(LNOT, "") /*! logical not */
+
+#endif
+
+#ifdef TERNARY_OP
+TERNARY_OP(EXTRACT, "") /*! extract (ConcreteValue, offset, size) */
+#endif
+

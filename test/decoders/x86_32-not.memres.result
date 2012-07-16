@@ -1,0 +1,24 @@
+**** Decode instruction: not    %ah
+[(0x0,0)] @{asm:=not    %ah}@ ; StaticArrow (0x0,0) %eax{8;8} := (NOT %eax{8;8}){0;8}  --> (0x2,0)
+[(0x2,0)] 
+
+**** Decode instruction: notb   0x1234(%eax)
+[(0x2,0)] @{asm:=notb   0x1234(%eax)}@ ; StaticArrow (0x2,0) [(ADD %eax 0x1234)]{0;8} := (NOT [(ADD %eax 0x1234)]{0;8}){0;8}  --> (0x8,0)
+[(0x8,0)] 
+
+**** Decode instruction: not    %ax
+[(0x8,0)] @{asm:=not    %ax}@ ; StaticArrow (0x8,0) %eax{0;16} := (NOT %eax{0;16}){0;16}  --> (0xB,0)
+[(0xB,0)] 
+
+**** Decode instruction: notw   0x1234(%eax)
+[(0xB,0)] @{asm:=notw   0x1234(%eax)}@ ; StaticArrow (0xB,0) [(ADD %eax 0x1234)]{0;16} := (NOT [(ADD %eax 0x1234)]{0;16}){0;16}  --> (0x12,0)
+[(0x12,0)] 
+
+**** Decode instruction: not    %eax
+[(0x12,0)] @{asm:=not    %eax}@ ; StaticArrow (0x12,0) %eax := (NOT %eax)  --> (0x14,0)
+[(0x14,0)] 
+
+**** Decode instruction: notl   0x1234(%eax)
+[(0x14,0)] @{asm:=notl   0x1234(%eax)}@ ; StaticArrow (0x14,0) [(ADD %eax 0x1234)] := (NOT [(ADD %eax 0x1234)])  --> (0x1A,0)
+[(0x1A,0)] 
+

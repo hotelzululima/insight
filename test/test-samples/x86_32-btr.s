@@ -1,0 +1,9 @@
+	btr	%ax, %bx
+	btr	%eax, %ebx
+	btr	%ax,  0x12345678
+	btr	%eax, 0x12345678
+	btr	$0x13, %ax
+	btr	$0x13, %eax
+	btrw	$0x13, 0x12345678
+	btr	$0x13, 0x12345678
+	

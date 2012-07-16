@@ -1,0 +1,40 @@
+**** Decode instruction: bts    %ax,%bx
+[(0x0,0)] @{asm:=bts    %ax,%bx}@ ; %eflags{0;1} := (RSH %ebx{0;16} %eax{0;4}){0;1}
+[(0x0,1)] ; StaticArrow (0x0,1) %ebx{0;16} := (OR %ebx{0;16} (LSH 0x1{0;16} %eax{0;4}){0;16})  --> (0x4,0)
+[(0x4,0)] 
+
+**** Decode instruction: bts    %eax,%ebx
+[(0x4,0)] @{asm:=bts    %eax,%ebx}@ ; %eflags{0;1} := (RSH %ebx %eax{0;6}){0;1}
+[(0x4,1)] ; StaticArrow (0x4,1) %ebx := (OR %ebx (LSH 0x1 %eax{0;6}))  --> (0x7,0)
+[(0x7,0)] 
+
+**** Decode instruction: bts    %ax,0x12345678
+[(0x7,0)] @{asm:=bts    %ax,0x12345678}@ ; %eflags{0;1} := (RSH [0x12345678] %eax{0;6}){0;1}
+[(0x7,1)] ; StaticArrow (0x7,1) [0x12345678] := (OR [0x12345678] (LSH 0x1 %eax{0;6}))  --> (0xF,0)
+[(0xF,0)] 
+
+**** Decode instruction: bts    %eax,0x12345678
+[(0xF,0)] @{asm:=bts    %eax,0x12345678}@ ; %eflags{0;1} := (RSH [0x12345678] %eax{0;6}){0;1}
+[(0xF,1)] ; StaticArrow (0xF,1) [0x12345678] := (OR [0x12345678] (LSH 0x1 %eax{0;6}))  --> (0x16,0)
+[(0x16,0)] 
+
+**** Decode instruction: bts    $0x13,%ax
+[(0x16,0)] @{asm:=bts    $0x13,%ax}@ ; %eflags{0;1} := (RSH %eax{0;16} 0x13{0;4}){0;1}
+[(0x16,1)] ; StaticArrow (0x16,1) %eax{0;16} := (OR %eax{0;16} (LSH 0x1{0;16} 0x13{0;4}){0;16})  --> (0x1B,0)
+[(0x1B,0)] 
+
+**** Decode instruction: bts    $0x13,%eax
+[(0x1B,0)] @{asm:=bts    $0x13,%eax}@ ; %eflags{0;1} := (RSH %eax 0x13{0;6}){0;1}
+[(0x1B,1)] ; StaticArrow (0x1B,1) %eax := (OR %eax (LSH 0x1 0x13{0;6}))  --> (0x1F,0)
+[(0x1F,0)] 
+
+**** Decode instruction: btsw   $0x13,0x12345678
+[(0x1F,0)] @{asm:=btsw   $0x13,0x12345678}@ ; %eflags{0;1} := (RSH [0x12345678] 0x13{0;6}){0;1}
+[(0x1F,1)] ; StaticArrow (0x1F,1) [0x12345678] := (OR [0x12345678] (LSH 0x1 0x13{0;6}))  --> (0x28,0)
+[(0x28,0)] 
+
+**** Decode instruction: btsl   $0x13,0x12345678
+[(0x28,0)] @{asm:=btsl   $0x13,0x12345678}@ ; %eflags{0;1} := (RSH [0x12345678] 0x13{0;6}){0;1}
+[(0x28,1)] ; StaticArrow (0x28,1) [0x12345678] := (OR [0x12345678] (LSH 0x1 0x13{0;6}))  --> (0x30,0)
+[(0x30,0)] 
+

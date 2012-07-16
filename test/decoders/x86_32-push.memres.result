@@ -1,0 +1,75 @@
+**** Decode instruction: push   %ax
+[(0x0,0)] @{asm:=push   %ax}@ ; %esp := (SUB %esp 0x2)
+[(0x0,1)] ; StaticArrow (0x0,1) [%esp]{0;16} := %eax{0;16}  --> (0x2,0)
+[(0x2,0)] 
+
+**** Decode instruction: pushl  0x31415926
+[(0x2,0)] @{asm:=pushl  0x31415926}@ ; %esp := (SUB %esp 0x4)
+[(0x2,1)] ; StaticArrow (0x2,1) [%esp] := [0x31415926]  --> (0x8,0)
+[(0x8,0)] 
+
+**** Decode instruction: push   %eax
+[(0x8,0)] @{asm:=push   %eax}@ ; %esp := (SUB %esp 0x4)
+[(0x8,1)] ; StaticArrow (0x8,1) [%esp] := %eax  --> (0x9,0)
+[(0x9,0)] 
+
+**** Decode instruction: pushl  0x31415926
+[(0x9,0)] @{asm:=pushl  0x31415926}@ ; %esp := (SUB %esp 0x4)
+[(0x9,1)] ; StaticArrow (0x9,1) [%esp] := [0x31415926]  --> (0xF,0)
+[(0xF,0)] 
+
+**** Decode instruction: push   %bp
+[(0xF,0)] @{asm:=push   %bp}@ ; %esp := (SUB %esp 0x2)
+[(0xF,1)] ; StaticArrow (0xF,1) [%esp]{0;16} := %ebp{0;16}  --> (0x11,0)
+[(0x11,0)] 
+
+**** Decode instruction: push   %esp
+[(0x11,0)] @{asm:=push   %esp}@ ; %esp := (SUB %esp 0x4)
+[(0x11,1)] ; StaticArrow (0x11,1) [%esp] := %esp  --> (0x12,0)
+[(0x12,0)] 
+
+**** Decode instruction: push   $0x31
+[(0x12,0)] @{asm:=push   $0x31}@ ; %esp := (SUB %esp 0x4)
+[(0x12,1)] ; StaticArrow (0x12,1) [%esp] := 0x31  --> (0x14,0)
+[(0x14,0)] 
+
+**** Decode instruction: push   $0x3141
+[(0x14,0)] @{asm:=push   $0x3141}@ ; %esp := (SUB %esp 0x4)
+[(0x14,1)] ; StaticArrow (0x14,1) [%esp] := 0x3141  --> (0x19,0)
+[(0x19,0)] 
+
+**** Decode instruction: push   $0x31415926
+[(0x19,0)] @{asm:=push   $0x31415926}@ ; %esp := (SUB %esp 0x4)
+[(0x19,1)] ; StaticArrow (0x19,1) [%esp] := 0x31415926  --> (0x1E,0)
+[(0x1E,0)] 
+
+**** Decode instruction: push   %cs
+[(0x1E,0)] @{asm:=push   %cs}@ ; %esp := (SUB %esp 0x2)
+[(0x1E,1)] ; StaticArrow (0x1E,1) [%esp]{0;16} := %cs{0;16}  --> (0x1F,0)
+[(0x1F,0)] 
+
+**** Decode instruction: push   %ss
+[(0x1F,0)] @{asm:=push   %ss}@ ; %esp := (SUB %esp 0x2)
+[(0x1F,1)] ; StaticArrow (0x1F,1) [%esp]{0;16} := %ss{0;16}  --> (0x20,0)
+[(0x20,0)] 
+
+**** Decode instruction: push   %ds
+[(0x20,0)] @{asm:=push   %ds}@ ; %esp := (SUB %esp 0x2)
+[(0x20,1)] ; StaticArrow (0x20,1) [%esp]{0;16} := %ds{0;16}  --> (0x21,0)
+[(0x21,0)] 
+
+**** Decode instruction: push   %ds
+[(0x21,0)] @{asm:=push   %ds}@ ; %esp := (SUB %esp 0x2)
+[(0x21,1)] ; StaticArrow (0x21,1) [%esp]{0;16} := %ds{0;16}  --> (0x22,0)
+[(0x22,0)] 
+
+**** Decode instruction: push   %fs
+[(0x22,0)] @{asm:=push   %fs}@ ; %esp := (SUB %esp 0x2)
+[(0x22,1)] ; StaticArrow (0x22,1) [%esp]{0;16} := %fs{0;16}  --> (0x24,0)
+[(0x24,0)] 
+
+**** Decode instruction: push   %gs
+[(0x24,0)] @{asm:=push   %gs}@ ; %esp := (SUB %esp 0x2)
+[(0x24,1)] ; StaticArrow (0x24,1) [%esp]{0;16} := %gs{0;16}  --> (0x26,0)
+[(0x26,0)] 
+

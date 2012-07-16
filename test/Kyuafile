@@ -1,0 +1,7 @@
+syntax("kyuafile", 1)
+
+test_suite("Insight")
+
+include("interpreters/Kyuafile")
+include("kernel/Kyuafile")
+include("loaders/Kyuafile")
