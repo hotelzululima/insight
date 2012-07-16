@@ -1,5 +1,6 @@
 ## Process this file with automake to produce Makefile.in
-AM_CPPFLAGS = -I$(top_srcdir)/src
+AM_CPPFLAGS = -I$(top_srcdir)/src \
+              -DTEST_SAMPLES_DIR=\"@TEST_SAMPLES_DIR@/\"
 
 LDADD = $(top_builddir)/src/libinsight.la
 
@@ -16,9 +17,6 @@ check_PROGRAMS = \
 	kernel/architecture_test 		   \
 	kernel/expr_parser_test 		   \
 	kernel/formula_test 		   
-
-CPPFLAGS += -DTEST_SAMPLES_DIR=\"@TEST_SAMPLES_DIR@/\"
-
 
 # Kernel module tests
 kernel_architecture_test_SOURCES = \
