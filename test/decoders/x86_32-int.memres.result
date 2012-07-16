@@ -1,0 +1,12 @@
+**** Decode instruction: int3   
+[(0x0,0)] @{asm:=int3   }@ ; StaticArrow (0x0,0) Skip << False >> --> (0x1,0)
+[(0x1,0)] 
+
+**** Decode instruction: int    $0x10
+[(0x1,0)] @{asm:=int    $0x10}@ ; StaticArrow (0x1,0) Skip << False >> --> (0x3,0)
+[(0x3,0)] 
+
+**** Decode instruction: into   
+[(0x3,0)] @{asm:=into   }@ ; StaticArrow (0x3,0) Skip << (NOT %eflags{11;1}){0;1} >> --> (0x4,0)
+[(0x4,0)] 
+
