@@ -18,13 +18,18 @@ analyzers_sources = \
 
 ## utils module
 utils_source = \
+        utils/graph.hh         \
+        utils/graph.ii         \
 	utils/Log.cc		\
 	utils/Log.hh		\
 	utils/Object.cc		\
 	utils/Object.hh		\
 	utils/bv-manip.hh	\
 	utils/infrastructure.hh	\
+	utils/map-helpers.hh	\
 	utils/option.hh		\
+	utils/path.hh		\
+	utils/path.ii		\
 	utils/tools.cc		\
 	utils/tools.hh
 
@@ -52,13 +57,19 @@ kernel_source = \
 	kernel/Value.hh 		\
 	kernel/expressions/ConditionalSet.cc 	\
 	kernel/expressions/ConditionalSet.hh	\
+	kernel/expressions/ExprLexer.hh 	\
+	kernel/expressions/ExprLexer.ll		\
+	kernel/expressions/ExprParser.yy 	\
 	kernel/expressions/Formula.cc     	\
 	kernel/expressions/Formula.hh     	\
 	kernel/expressions/FormulaAnnotation.cc \
 	kernel/expressions/FormulaAnnotation.hh \
+	kernel/expressions/FormulaVisitor.hh	\
 	kernel/expressions/Operators.cc   	\
 	kernel/expressions/Operators.def  	\
 	kernel/expressions/Operators.hh   	\
+	kernel/expressions/PatternMatching.cc 	\
+	kernel/expressions/PatternMatching.hh 	\
 	kernel/Microcode.cc			\
 	kernel/Microcode.hh			\
 	kernel/microcode/MicrocodeAddress.cc	\
@@ -69,20 +80,45 @@ kernel_source = \
 	kernel/microcode/MicrocodeNode.hh	\
 	kernel/microcode/MicrocodeStatements.cc	\
 	kernel/microcode/MicrocodeStatements.hh	\
-	kernel/microcode/MicrocodeStore.hh	\
-	kernel/expressions/ExprParser.hh 	\
-	kernel/expressions/ExprParser.cc 	\
-	kernel/expressions/ExprLexer.hh 	\
-	kernel/expressions/ExprLexer.cc		\
-	kernel/expressions/FormulaVisitor.hh	\
-	kernel/expressions/PatternMatching.hh \
-	kernel/expressions/PatternMatching.cc 
+	kernel/microcode/MicrocodeStore.hh	
+
+kernel_built_sources = \
+	kernel/expressions/stack.hh 	      	\
+	kernel/expressions/location.hh		\
+	kernel/expressions/position.hh		\
+	kernel/expressions/ExprLexer.cc 	\
+	kernel/expressions/ExprParser.hh  	\
+	kernel/expressions/ExprParser.cc 
+
+kernel/expressions/stack.hh		\
+kernel/expressions/location.hh		\
+kernel/expressions/position.hh		\
+kernel/expressions/ExprParser.hh 	\
+kernel/expressions/ExprParser.cc:	\
+kernel/expressions/ExprParser.yy
+	$(YACC) --output=kernel/expressions/ExprParser.cc $<
+
+kernel/expressions/ExprLexer.hh \
+kernel/expressions/ExprLexer.cc : \
+       kernel/expressions/ExprLexer.ll \
+       kernel/expressions/ExprParser.hh
+	$(LEX) --outfile=kernel/expressions/ExprLexer.cc $<
+
+BUILT_SOURCES+= \
+	${kernel_built_sources}
+
+kernel_cleanfiles = \
+	${kernel_built_sources}
+
 
 ## interpreter module
 interpreters_source = \
 	interpreters/ExprSemantics.hh                   \
+	interpreters/ExprSemantics.ii                   \
 	interpreters/microcode_exec.hh                  \
+	interpreters/microcode_exec.ii                  \
 	interpreters/common/ConcreteAddressMemory.hh    \
+	interpreters/common/ConcreteAddressMemory.ii    \
 	interpreters/common/ConcreteProgramPoint.cc     \
 	interpreters/common/ConcreteProgramPoint.hh     \
 	interpreters/concrete/ConcreteAddress.cc        \
@@ -248,34 +284,6 @@ decoders/binutils/arm/arm_scanner.cc : 	\
 	       --header-file=decoders/binutils/arm/arm_scanner.hh $<
 
 
-# kernel
-kernel_built_sources = \
-	kernel/expressions/stack.hh 	      	\
-	kernel/expressions/location.hh		\
-	kernel/expressions/position.hh		\
-	kernel/expressions/ExprLexer.cc 	\
-	kernel/expressions/ExprParser.hh  	\
-	kernel/expressions/ExprParser.cc 
-
-kernel/expressions/stack.hh		\
-kernel/expressions/location.hh		\
-kernel/expressions/position.hh		\
-kernel/expressions/ExprParser.hh 	\
-kernel/expressions/ExprParser.cc:	\
-kernel/expressions/ExprParser.yy
-	$(YACC) --output=kernel/expressions/ExprParser.cc $<
-
-kernel/expressions/ExprLexer.cc : \
-       kernel/expressions/ExprLexer.ll \
-       kernel/expressions/ExprParser.hh
-	$(LEX) --outfile=kernel/expressions/ExprLexer.cc $<
-
-BUILT_SOURCES+= \
-	${kernel_built_sources}
-
-kernel_cleanfiles = \
-	${kernel_built_sources}
-
 ## libinsight
 ##############
 lib_LTLIBRARIES = libinsight.la
@@ -294,7 +302,7 @@ libinsight_la_LDFLAGS  = @BINUTILS_LDFLAGS@
 
 CLEANFILES +=
 
-DISTCLEANFILES =
+DISTCLEANFILES = ${BUILT_SOURCES}
 
 MAINTAINERCLEANFILES = \
 	Makefile.in config.h.in compile.log

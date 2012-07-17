@@ -118,9 +118,12 @@ endif
 
 BASE_TESTS = ${X86_32_TESTS}
 
+
 TESTS = \
 	${BASE_TESTS} \
 	 check-diff
+
+EXTRA_DIST=${TESTS:%=%.result} ${CHECKRESULTS}
 
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
@@ -153,6 +156,7 @@ save: ${TESTS}
             REF="${srcdir}/$$(basename $${T}).result"; \
             cp -f $${T} $${REF}; \
           done
+
 
 
 

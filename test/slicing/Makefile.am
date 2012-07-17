@@ -30,10 +30,14 @@ BASE_TESTS += \
 	x86_32-gcd.memres 
 endif
 
-TESTS = \
- ${BASE_TESTS} \
- \
- check-diff
+#TESTS = \
+# ${BASE_TESTS} \
+# \
+# check-diff
+
+TESTS = 
+
+EXTRA_DIST=${TESTS:%=%.result} ${CHECKRESULTS} Kyuafile
 
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}

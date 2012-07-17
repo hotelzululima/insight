@@ -4,9 +4,19 @@ AM_CPPFLAGS = -I$(top_srcdir)/src \
 
 LDADD = $(top_builddir)/src/libinsight.la
 
-SUBDIRS=decoders #slicing
+SUBDIRS=decoders slicing
 
 AUTOMAKE_OPTIONS=subdir-objects
+
+EXTRA_DIST = test-samples \
+             loaders/binary/Kyuafile \
+             loaders/Kyuafile \
+             interpreters/concrete/Kyuafile \
+             interpreters/Kyuafile \
+             kernel/Kyuafile \
+             slicing/Kyuafile \
+             Kyuafile
+
 
 check_PROGRAMS = \
 	interpreters/concrete/concreteaddress_test \
