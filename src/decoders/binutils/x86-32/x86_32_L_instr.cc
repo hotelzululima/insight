@@ -32,16 +32,3 @@
 
 using namespace std;
 
-X86_32_TRANSLATE_2_OP(LEA)
-{
-  LValue *dst = (LValue *) op2;
-  Expr *src;
-
-  if (dst->get_bv_size () == 16 && ! data.addr16)
-    src = op1->extract_bit_vector (0, 16);
-  else 
-    src = op1->ref ();
-	
-  data.mc->add_assignment (data.start_ma, dst, src, &data.next_ma);
-  op1->deref ();
-}

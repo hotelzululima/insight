@@ -131,6 +131,20 @@ X86_32_TRANSLATE_0_OP(CDQ)
 			   data.next_ma);
 }
 
+
+X86_32_TRANSLATE_0_OP(INVD)
+{
+  Log::warningln ("RDSTC translated in NOP");
+  x86_32_translate<X86_32_TOKEN (NOP)> (data);
+}
+
+X86_32_TRANSLATE_1_OP(INVLPG)
+{
+  Log::warningln ("RDSTC translated in INVLPG");
+  x86_32_translate<X86_32_TOKEN (NOP)> (data);
+  op1->deref ();
+}
+
 /*
 X86_32_TRANSLATE_0_OP (RDTSC)
 {

@@ -224,9 +224,12 @@ translate_shift_one_bit (SHRW);
 
 #define translate_shift_two_args(op,szc,sz)				\
 X86_32_TRANSLATE_2_OP(op ## szc)					\
-{ \
-  x86_32_translate_with_size (data, op1, op2, sz, \
-			      x86_32_translate<X86_32_TOKEN(op)>); \
+{									\
+  Expr *aux = TernaryApp::create (EXTRACT, op1,				\
+				  Constant::zero (op2->get_bv_size ()), \
+ 				  Constant::create (op2->get_bv_size (), \
+				 		    0, BV_DEFAULT_SIZE)); \
+  x86_32_translate<X86_32_TOKEN(op)> (data, aux, op2); \
 }
 
 translate_shift_two_args(SAL,B,8);

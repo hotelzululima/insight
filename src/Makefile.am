@@ -137,6 +137,8 @@ loaders_sources = \
 ## decoder module
 x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_cc.def \
+	decoders/binutils/x86-32/x86_32_interrupts.cc \
+	decoders/binutils/x86-32/x86_32_load_store.cc \
 	decoders/binutils/x86-32/x86_32_misc_instructions.cc \
 	decoders/binutils/x86-32/x86_32_operators_mov.cc \
 	decoders/binutils/x86-32/x86_32_operators_arithmetics.cc \

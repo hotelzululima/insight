@@ -48,12 +48,12 @@ s_jcc (MicrocodeAddress &from, x86_32::parser_data &data,
   if (cond->is_UnaryApp ())
     {
       UnaryApp *ua = dynamic_cast<UnaryApp *> (cond);  
-      if (ua->get_op () == LNOT)
+      if (ua->get_op () == LNOT || ua->get_op () == NOT)
 	notcond = ua->get_arg1 ()->ref ();
     }
 
   if (notcond == NULL)
-    notcond = UnaryApp::create (LNOT, cond->ref ());
+    notcond = UnaryApp::create (NOT, cond->ref (), 0, 1);
 
   data.mc->add_skip (from, last_addr, notcond);
   jmp->deref ();
@@ -70,12 +70,7 @@ s_jcc (MicrocodeAddress &from, x86_32::parser_data &data,
 
 X86_32_TRANSLATE_1_OP(JC)
 {
-  Expr *cf = data.get_flag ("cf");
-  
-  s_jcc (data.start_ma, data, op1, 
-	 cf->extract_bit_vector (0, 1), 
-	 &data.next_ma); 
-  cf->deref ();
+  s_jcc (data.start_ma, data, op1, data.get_flag ("cf"), &data.next_ma); 
 }
 
 X86_32_TRANSLATE_1_OP(JCXZ)

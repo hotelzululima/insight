@@ -46,10 +46,14 @@ X86_32_TESTS = \
         \
 	x86_32-idiv.res \
 	x86_32-imul.res \
+	x86_32-int.res \
 	\
 	x86_32-jcc.res \
 	x86_32-jmp.res \
+        \
+        x86_32-lsahf.res \
 	x86_32-lea.res \
+        \
 	x86_32-mov.res \
 	x86_32-nop.res \
 	x86_32-not.res \
@@ -90,10 +94,14 @@ X86_32_TESTS += \
         \
 	x86_32-idiv.memres \
 	x86_32-imul.memres \
+	x86_32-int.memres \
 	\
 	x86_32-jcc.memres \
 	x86_32-jmp.memres \
+        \
+        x86_32-lsahf.memres \
 	x86_32-lea.memres \
+        \
 	x86_32-mov.memres \
 	x86_32-nop.memres \
 	x86_32-not.memres \

@@ -44,6 +44,12 @@
   BINARY_FILE (X86_32_IMUL_01, "x86_32-simulator-imul-01.bin") \
   BINARY_FILE (X86_32_IMUL_02, "x86_32-simulator-imul-02.bin") \
   BINARY_FILE (X86_32_IMUL_03, "x86_32-simulator-imul-03.bin") \
+  BINARY_FILE (X86_32_INT, "x86_32-simulator-int.bin") \
+  BINARY_FILE (X86_32_INT3, "x86_32-simulator-int3.bin") \
+  BINARY_FILE (X86_32_INTO_01, "x86_32-simulator-into-01.bin") \
+  BINARY_FILE (X86_32_INTO_02, "x86_32-simulator-into-02.bin") \
+  \
+  BINARY_FILE (X86_32_LSAHF, "x86_32-simulator-lsahf.bin") \
   \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   \

@@ -96,12 +96,21 @@ Expr::extract_with_bit_vector_size_of (const Expr *e) const
 void 
 Expr::extract_bit_vector (Expr *&e, int new_bv_offset, int new_bv_size)
 {
-  if (e->get_bv_offset () != new_bv_offset || e->get_bv_size () != new_bv_size)
-    {
-      Expr *tmp = e->extract_bit_vector (new_bv_offset, new_bv_size);
-      e->deref ();
-      e = tmp;
-    }
+  if (new_bv_offset == 0 && e->get_bv_size () == new_bv_size)
+    return;
+
+  assert (1 <= new_bv_size && new_bv_size < e->get_bv_size ());
+
+  int offset = e->get_bv_offset () + new_bv_offset;
+  
+  assert (0 <= offset && offset < e->get_bv_size ());
+  assert (0 <= offset + new_bv_size - 1 && 
+	  offset + new_bv_size - 1 < e->get_bv_size ());
+
+
+  Expr *tmp = e->extract_bit_vector (offset, new_bv_size);
+  e->deref ();
+  e = tmp;
 }
 
 void 
