@@ -96,13 +96,15 @@ kernel/expressions/position.hh		\
 kernel/expressions/ExprParser.hh 	\
 kernel/expressions/ExprParser.cc:	\
 kernel/expressions/ExprParser.yy
-	$(YACC) --output=kernel/expressions/ExprParser.cc $<
+	$(YACC) --output=kernel/expressions/ExprParser.cc \
+		${srcdir}/kernel/expressions/ExprParser.yy
 
 kernel/expressions/ExprLexer.hh \
 kernel/expressions/ExprLexer.cc : \
        kernel/expressions/ExprLexer.ll \
        kernel/expressions/ExprParser.hh
-	$(LEX) --outfile=kernel/expressions/ExprLexer.cc $<
+	$(LEX) --outfile=kernel/expressions/ExprLexer.cc \
+		${srcdir}/kernel/expressions/ExprLexer.ll
 
 BUILT_SOURCES+= \
 	${kernel_built_sources}
@@ -259,14 +261,16 @@ decoders/binutils/x86-32/position.hh 	\
 decoders/binutils/x86-32/x86_32_parser.hh 	\
 decoders/binutils/x86-32/x86_32_parser.cc:	\
   decoders/binutils/x86-32/x86_32_parser.yy
-	$(YACC) --output=decoders/binutils/x86-32/x86_32_parser.cc $<
+	$(YACC) --output=decoders/binutils/x86-32/x86_32_parser.cc \
+		${srcdir}/decoders/binutils/x86-32/x86_32_parser.yy
 
 decoders/binutils/x86-32/x86_32_scanner.hh 	\
 decoders/binutils/x86-32/x86_32_scanner.cc : \
        decoders/binutils/x86-32/x86_32_scanner.ll \
        decoders/binutils/x86-32/x86_32_parser.hh
 	$(LEX) --outfile=decoders/binutils/x86-32/x86_32_scanner.cc \
-	       --header-file=decoders/binutils/x86-32/x86_32_scanner.hh $<
+	       --header-file=decoders/binutils/x86-32/x86_32_scanner.hh \
+		${srcdir}/decoders/binutils/x86-32/x86_32_scanner.ll
 
 decoders/binutils/arm/stack.hh	\
 decoders/binutils/arm/location.hh 	\
@@ -274,14 +278,16 @@ decoders/binutils/arm/position.hh 	\
 decoders/binutils/arm/arm_parser.hh 	\
 decoders/binutils/arm/arm_parser.cc:	\
   decoders/binutils/arm/arm_parser.yy
-	$(YACC) --output=decoders/binutils/arm/arm_parser.cc $<
+	$(YACC) --output=decoders/binutils/arm/arm_parser.cc \
+		${srcdir}/decoders/binutils/arm/arm_parser.yy
 
 decoders/binutils/arm/arm_scanner.hh 	\
 decoders/binutils/arm/arm_scanner.cc : 	\
        decoders/binutils/arm/arm_scanner.ll	\
        decoders/binutils/arm/arm_parser.hh
 	$(LEX) --outfile=decoders/binutils/arm/arm_scanner.cc \
-	       --header-file=decoders/binutils/arm/arm_scanner.hh $<
+	       --header-file=decoders/binutils/arm/arm_scanner.hh \
+		${srcdir}/decoders/binutils/arm/arm_scanner.ll
 
 
 ## libinsight
