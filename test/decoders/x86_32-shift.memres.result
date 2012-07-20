@@ -6,7 +6,7 @@
 [(0x0,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB 0x10 %tmpr0_32)){0;1}
 [(0x0,5)] ; StaticArrow (0x0,5) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x2,0); StaticArrow (0x0,5) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x0,6)
 [(0x0,6)] ; %eflags{11;1} := (XOR %ebx{8;8} %eflags{0;1}){0;1}
-[(0x0,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0x0,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x0,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x0,9)] ; StaticArrow (0x0,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x2,0)
 [(0x2,0)] 
@@ -27,12 +27,12 @@
 **** Decode instruction: shl    %cl,%bh
 [(0x8,0)] @{asm:=shl    %cl,%bh}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x8,1)] ; %tmpr1_8{0;8} := %ebx{8;8}
-[(0x8,2)] ; StaticArrow (0x8,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xA,0); StaticArrow (0x8,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x8,3)
+[(0x8,2)] ; StaticArrow (0x8,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA,0); StaticArrow (0x8,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x8,3)
 [(0x8,3)] ; %ebx{8;8} := (LSH %ebx{8;8} %tmpr0_8{0;8})
 [(0x8,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0x8,5)] ; StaticArrow (0x8,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA,0); StaticArrow (0x8,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x8,6)
+[(0x8,5)] ; StaticArrow (0x8,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA,0); StaticArrow (0x8,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x8,6)
 [(0x8,6)] ; %eflags{11;1} := (XOR %ebx{8;8} %eflags{0;1}){0;1}
-[(0x8,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0x8,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x8,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x8,9)] ; StaticArrow (0x8,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0xA,0)
 [(0xA,0)] 
@@ -40,12 +40,12 @@
 **** Decode instruction: shl    %cl,%ch
 [(0xA,0)] @{asm:=shl    %cl,%ch}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xA,1)] ; %tmpr1_8{0;8} := %ecx{8;8}
-[(0xA,2)] ; StaticArrow (0xA,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xC,0); StaticArrow (0xA,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xA,3)
+[(0xA,2)] ; StaticArrow (0xA,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC,0); StaticArrow (0xA,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA,3)
 [(0xA,3)] ; %ecx{8;8} := (LSH %ecx{8;8} %tmpr0_8{0;8})
 [(0xA,4)] ; %eflags{0;1} := (RSH %ecx{8;8} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0xA,5)] ; StaticArrow (0xA,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC,0); StaticArrow (0xA,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA,6)
+[(0xA,5)] ; StaticArrow (0xA,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC,0); StaticArrow (0xA,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA,6)
 [(0xA,6)] ; %eflags{11;1} := (XOR %ecx{8;8} %eflags{0;1}){0;1}
-[(0xA,7)] ; %eflags{7;1} := %ecx{7;1}
+[(0xA,7)] ; %eflags{7;1} := %ecx{15;1}
 [(0xA,8)] ; %eflags{6;1} := (EQ %ecx{8;8} 0x0{0;8}){0;1}
 [(0xA,9)] ; StaticArrow (0xA,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{8;1}){0;1} %ecx{9;1}){0;1} %ecx{10;1}){0;1} %ecx{11;1}){0;1} %ecx{12;1}){0;1} %ecx{13;1}){0;1} %ecx{14;1}){0;1} %ecx{15;1}){0;1}  --> (0xC,0)
 [(0xC,0)] 
@@ -53,10 +53,10 @@
 **** Decode instruction: shlb   %cl,0x12345678
 [(0xC,0)] @{asm:=shlb   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0xC,1)] ; %tmpr1_32 := [0x12345678]
-[(0xC,2)] ; StaticArrow (0xC,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x12,0); StaticArrow (0xC,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xC,3)
+[(0xC,2)] ; StaticArrow (0xC,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x12,0); StaticArrow (0xC,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC,3)
 [(0xC,3)] ; [0x12345678] := (LSH [0x12345678] %tmpr0_8{0;8})
 [(0xC,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0xC,5)] ; StaticArrow (0xC,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x12,0); StaticArrow (0xC,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC,6)
+[(0xC,5)] ; StaticArrow (0xC,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x12,0); StaticArrow (0xC,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC,6)
 [(0xC,6)] ; %eflags{11;1} := (XOR [0x12345678] %eflags{0;1}){0;1}
 [(0xC,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0xC,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -71,7 +71,7 @@
 [(0x12,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB 0x10 %tmpr0_32)){0;1}
 [(0x12,5)] ; StaticArrow (0x12,5) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x15,0); StaticArrow (0x12,5) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x12,6)
 [(0x12,6)] ; %eflags{11;1} := (XOR %ebx{8;8} %eflags{0;1}){0;1}
-[(0x12,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0x12,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x12,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x12,9)] ; StaticArrow (0x12,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x15,0)
 [(0x15,0)] 
@@ -118,10 +118,10 @@
 **** Decode instruction: shl    %cl,%bx
 [(0x26,0)] @{asm:=shl    %cl,%bx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x26,1)] ; %tmpr1_16{0;16} := %ebx{0;16}
-[(0x26,2)] ; StaticArrow (0x26,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x29,0); StaticArrow (0x26,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x26,3)
+[(0x26,2)] ; StaticArrow (0x26,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x29,0); StaticArrow (0x26,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x26,3)
 [(0x26,3)] ; %ebx{0;16} := (LSH %ebx{0;16} %tmpr0_8{0;8})
 [(0x26,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0x26,5)] ; StaticArrow (0x26,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x29,0); StaticArrow (0x26,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x26,6)
+[(0x26,5)] ; StaticArrow (0x26,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x29,0); StaticArrow (0x26,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x26,6)
 [(0x26,6)] ; %eflags{11;1} := (XOR %ebx{0;16} %eflags{0;1}){0;1}
 [(0x26,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x26,8)] ; %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
@@ -131,10 +131,10 @@
 **** Decode instruction: shl    %cl,%cx
 [(0x29,0)] @{asm:=shl    %cl,%cx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x29,1)] ; %tmpr1_16{0;16} := %ecx{0;16}
-[(0x29,2)] ; StaticArrow (0x29,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x2C,0); StaticArrow (0x29,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x29,3)
+[(0x29,2)] ; StaticArrow (0x29,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x2C,0); StaticArrow (0x29,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x29,3)
 [(0x29,3)] ; %ecx{0;16} := (LSH %ecx{0;16} %tmpr0_8{0;8})
 [(0x29,4)] ; %eflags{0;1} := (RSH %ecx{0;16} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0x29,5)] ; StaticArrow (0x29,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x2C,0); StaticArrow (0x29,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x29,6)
+[(0x29,5)] ; StaticArrow (0x29,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x2C,0); StaticArrow (0x29,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x29,6)
 [(0x29,6)] ; %eflags{11;1} := (XOR %ecx{0;16} %eflags{0;1}){0;1}
 [(0x29,7)] ; %eflags{7;1} := %ecx{15;1}
 [(0x29,8)] ; %eflags{6;1} := (EQ %ecx{0;16} 0x0{0;16}){0;1}
@@ -144,10 +144,10 @@
 **** Decode instruction: shlw   %cl,0x12345678
 [(0x2C,0)] @{asm:=shlw   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x2C,1)] ; %tmpr1_32 := [0x12345678]
-[(0x2C,2)] ; StaticArrow (0x2C,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x33,0); StaticArrow (0x2C,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x2C,3)
+[(0x2C,2)] ; StaticArrow (0x2C,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x33,0); StaticArrow (0x2C,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x2C,3)
 [(0x2C,3)] ; [0x12345678] := (LSH [0x12345678] %tmpr0_8{0;8})
 [(0x2C,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x2C,5)] ; StaticArrow (0x2C,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x33,0); StaticArrow (0x2C,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x2C,6)
+[(0x2C,5)] ; StaticArrow (0x2C,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x33,0); StaticArrow (0x2C,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x2C,6)
 [(0x2C,6)] ; %eflags{11;1} := (XOR [0x12345678] %eflags{0;1}){0;1}
 [(0x2C,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x2C,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -209,10 +209,10 @@
 **** Decode instruction: shl    %cl,%ebx
 [(0x47,0)] @{asm:=shl    %cl,%ebx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x47,1)] ; %tmpr1_32 := %ebx
-[(0x47,2)] ; StaticArrow (0x47,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x49,0); StaticArrow (0x47,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x47,3)
+[(0x47,2)] ; StaticArrow (0x47,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x49,0); StaticArrow (0x47,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x47,3)
 [(0x47,3)] ; %ebx := (LSH %ebx %tmpr0_8{0;8})
 [(0x47,4)] ; %eflags{0;1} := (RSH %ebx (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x47,5)] ; StaticArrow (0x47,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x49,0); StaticArrow (0x47,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x47,6)
+[(0x47,5)] ; StaticArrow (0x47,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x49,0); StaticArrow (0x47,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x47,6)
 [(0x47,6)] ; %eflags{11;1} := (XOR %ebx %eflags{0;1}){0;1}
 [(0x47,7)] ; %eflags{7;1} := %ebx{31;1}
 [(0x47,8)] ; %eflags{6;1} := (EQ %ebx 0x0){0;1}
@@ -222,10 +222,10 @@
 **** Decode instruction: shl    %cl,%ecx
 [(0x49,0)] @{asm:=shl    %cl,%ecx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x49,1)] ; %tmpr1_32 := %ecx
-[(0x49,2)] ; StaticArrow (0x49,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x4B,0); StaticArrow (0x49,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x49,3)
+[(0x49,2)] ; StaticArrow (0x49,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x4B,0); StaticArrow (0x49,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x49,3)
 [(0x49,3)] ; %ecx := (LSH %ecx %tmpr0_8{0;8})
 [(0x49,4)] ; %eflags{0;1} := (RSH %ecx (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x49,5)] ; StaticArrow (0x49,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x4B,0); StaticArrow (0x49,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x49,6)
+[(0x49,5)] ; StaticArrow (0x49,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x4B,0); StaticArrow (0x49,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x49,6)
 [(0x49,6)] ; %eflags{11;1} := (XOR %ecx %eflags{0;1}){0;1}
 [(0x49,7)] ; %eflags{7;1} := %ecx{31;1}
 [(0x49,8)] ; %eflags{6;1} := (EQ %ecx 0x0){0;1}
@@ -235,10 +235,10 @@
 **** Decode instruction: shll   %cl,0x12345678
 [(0x4B,0)] @{asm:=shll   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x4B,1)] ; %tmpr1_32 := [0x12345678]
-[(0x4B,2)] ; StaticArrow (0x4B,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x51,0); StaticArrow (0x4B,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x4B,3)
+[(0x4B,2)] ; StaticArrow (0x4B,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x51,0); StaticArrow (0x4B,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x4B,3)
 [(0x4B,3)] ; [0x12345678] := (LSH [0x12345678] %tmpr0_8{0;8})
 [(0x4B,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x4B,5)] ; StaticArrow (0x4B,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x51,0); StaticArrow (0x4B,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x4B,6)
+[(0x4B,5)] ; StaticArrow (0x4B,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x51,0); StaticArrow (0x4B,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x4B,6)
 [(0x4B,6)] ; %eflags{11;1} := (XOR [0x12345678] %eflags{0;1}){0;1}
 [(0x4B,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x4B,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -292,7 +292,7 @@
 [(0x5E,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB (ADD 0x8 %tmpr0_32) 0x1)){0;1}
 [(0x5E,5)] ; StaticArrow (0x5E,5) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x60,0); StaticArrow (0x5E,5) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x5E,6)
 [(0x5E,6)] ; %eflags{11;1} := 0x0{0;1}
-[(0x5E,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0x5E,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x5E,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x5E,9)] ; StaticArrow (0x5E,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x60,0)
 [(0x60,0)] 
@@ -313,12 +313,12 @@
 **** Decode instruction: sar    %cl,%bh
 [(0x66,0)] @{asm:=sar    %cl,%bh}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x66,1)] ; %tmpr1_8{0;8} := %ebx{8;8}
-[(0x66,2)] ; StaticArrow (0x66,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x68,0); StaticArrow (0x66,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x66,3)
+[(0x66,2)] ; StaticArrow (0x66,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x68,0); StaticArrow (0x66,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x66,3)
 [(0x66,3)] ; %ebx{8;8} := (RSH %ebx{8;8} %tmpr0_8{0;8})
 [(0x66,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB (ADD 0x8 %tmpr0_8{0;8}) 0x1)){0;1}
-[(0x66,5)] ; StaticArrow (0x66,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x68,0); StaticArrow (0x66,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x66,6)
+[(0x66,5)] ; StaticArrow (0x66,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x68,0); StaticArrow (0x66,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x66,6)
 [(0x66,6)] ; %eflags{11;1} := 0x0{0;1}
-[(0x66,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0x66,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x66,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x66,9)] ; StaticArrow (0x66,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x68,0)
 [(0x68,0)] 
@@ -326,12 +326,12 @@
 **** Decode instruction: sar    %cl,%ch
 [(0x68,0)] @{asm:=sar    %cl,%ch}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x68,1)] ; %tmpr1_8{0;8} := %ecx{8;8}
-[(0x68,2)] ; StaticArrow (0x68,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x6A,0); StaticArrow (0x68,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x68,3)
+[(0x68,2)] ; StaticArrow (0x68,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x6A,0); StaticArrow (0x68,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x68,3)
 [(0x68,3)] ; %ecx{8;8} := (RSH %ecx{8;8} %tmpr0_8{0;8})
 [(0x68,4)] ; %eflags{0;1} := (RSH %ecx{8;8} (SUB (ADD 0x8 %tmpr0_8{0;8}) 0x1)){0;1}
-[(0x68,5)] ; StaticArrow (0x68,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x6A,0); StaticArrow (0x68,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x68,6)
+[(0x68,5)] ; StaticArrow (0x68,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x6A,0); StaticArrow (0x68,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x68,6)
 [(0x68,6)] ; %eflags{11;1} := 0x0{0;1}
-[(0x68,7)] ; %eflags{7;1} := %ecx{7;1}
+[(0x68,7)] ; %eflags{7;1} := %ecx{15;1}
 [(0x68,8)] ; %eflags{6;1} := (EQ %ecx{8;8} 0x0{0;8}){0;1}
 [(0x68,9)] ; StaticArrow (0x68,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{8;1}){0;1} %ecx{9;1}){0;1} %ecx{10;1}){0;1} %ecx{11;1}){0;1} %ecx{12;1}){0;1} %ecx{13;1}){0;1} %ecx{14;1}){0;1} %ecx{15;1}){0;1}  --> (0x6A,0)
 [(0x6A,0)] 
@@ -339,10 +339,10 @@
 **** Decode instruction: sarb   %cl,0x12345678
 [(0x6A,0)] @{asm:=sarb   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x6A,1)] ; %tmpr1_32 := [0x12345678]
-[(0x6A,2)] ; StaticArrow (0x6A,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x70,0); StaticArrow (0x6A,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x6A,3)
+[(0x6A,2)] ; StaticArrow (0x6A,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x70,0); StaticArrow (0x6A,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x6A,3)
 [(0x6A,3)] ; [0x12345678] := (RSH [0x12345678] %tmpr0_8{0;8})
-[(0x6A,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0x6A,5)] ; StaticArrow (0x6A,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x70,0); StaticArrow (0x6A,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x6A,6)
+[(0x6A,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0x6A,5)] ; StaticArrow (0x6A,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x70,0); StaticArrow (0x6A,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x6A,6)
 [(0x6A,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0x6A,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x6A,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -357,7 +357,7 @@
 [(0x70,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB (ADD 0x8 %tmpr0_32) 0x1)){0;1}
 [(0x70,5)] ; StaticArrow (0x70,5) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x73,0); StaticArrow (0x70,5) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x70,6)
 [(0x70,6)] ; %eflags{11;1} := 0x0{0;1}
-[(0x70,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0x70,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x70,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x70,9)] ; StaticArrow (0x70,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x73,0)
 [(0x73,0)] 
@@ -404,10 +404,10 @@
 **** Decode instruction: sar    %cl,%bx
 [(0x84,0)] @{asm:=sar    %cl,%bx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x84,1)] ; %tmpr1_16{0;16} := %ebx{0;16}
-[(0x84,2)] ; StaticArrow (0x84,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x87,0); StaticArrow (0x84,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x84,3)
+[(0x84,2)] ; StaticArrow (0x84,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x87,0); StaticArrow (0x84,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x84,3)
 [(0x84,3)] ; %ebx{0;16} := (RSH %ebx{0;16} %tmpr0_8{0;8})
-[(0x84,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0x84,5)] ; StaticArrow (0x84,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x87,0); StaticArrow (0x84,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x84,6)
+[(0x84,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0x84,5)] ; StaticArrow (0x84,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x87,0); StaticArrow (0x84,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x84,6)
 [(0x84,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0x84,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0x84,8)] ; %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
@@ -417,10 +417,10 @@
 **** Decode instruction: sar    %cl,%cx
 [(0x87,0)] @{asm:=sar    %cl,%cx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x87,1)] ; %tmpr1_16{0;16} := %ecx{0;16}
-[(0x87,2)] ; StaticArrow (0x87,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x8A,0); StaticArrow (0x87,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x87,3)
+[(0x87,2)] ; StaticArrow (0x87,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x8A,0); StaticArrow (0x87,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x87,3)
 [(0x87,3)] ; %ecx{0;16} := (RSH %ecx{0;16} %tmpr0_8{0;8})
-[(0x87,4)] ; %eflags{0;1} := (RSH %ecx{0;16} (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0x87,5)] ; StaticArrow (0x87,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x8A,0); StaticArrow (0x87,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x87,6)
+[(0x87,4)] ; %eflags{0;1} := (RSH %ecx{0;16} (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0x87,5)] ; StaticArrow (0x87,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x8A,0); StaticArrow (0x87,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x87,6)
 [(0x87,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0x87,7)] ; %eflags{7;1} := %ecx{15;1}
 [(0x87,8)] ; %eflags{6;1} := (EQ %ecx{0;16} 0x0{0;16}){0;1}
@@ -430,10 +430,10 @@
 **** Decode instruction: sarw   %cl,0x12345678
 [(0x8A,0)] @{asm:=sarw   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x8A,1)] ; %tmpr1_32 := [0x12345678]
-[(0x8A,2)] ; StaticArrow (0x8A,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x91,0); StaticArrow (0x8A,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x8A,3)
+[(0x8A,2)] ; StaticArrow (0x8A,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x91,0); StaticArrow (0x8A,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x8A,3)
 [(0x8A,3)] ; [0x12345678] := (RSH [0x12345678] %tmpr0_8{0;8})
-[(0x8A,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0x8A,5)] ; StaticArrow (0x8A,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x91,0); StaticArrow (0x8A,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x8A,6)
+[(0x8A,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0x8A,5)] ; StaticArrow (0x8A,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x91,0); StaticArrow (0x8A,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x8A,6)
 [(0x8A,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0x8A,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x8A,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -495,10 +495,10 @@
 **** Decode instruction: sar    %cl,%ebx
 [(0xA5,0)] @{asm:=sar    %cl,%ebx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xA5,1)] ; %tmpr1_32 := %ebx
-[(0xA5,2)] ; StaticArrow (0xA5,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xA7,0); StaticArrow (0xA5,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xA5,3)
+[(0xA5,2)] ; StaticArrow (0xA5,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA7,0); StaticArrow (0xA5,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA5,3)
 [(0xA5,3)] ; %ebx := (RSH %ebx %tmpr0_8{0;8})
-[(0xA5,4)] ; %eflags{0;1} := (RSH %ebx (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0xA5,5)] ; StaticArrow (0xA5,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA7,0); StaticArrow (0xA5,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA5,6)
+[(0xA5,4)] ; %eflags{0;1} := (RSH %ebx (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0xA5,5)] ; StaticArrow (0xA5,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA7,0); StaticArrow (0xA5,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA5,6)
 [(0xA5,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0xA5,7)] ; %eflags{7;1} := %ebx{31;1}
 [(0xA5,8)] ; %eflags{6;1} := (EQ %ebx 0x0){0;1}
@@ -508,10 +508,10 @@
 **** Decode instruction: sar    %cl,%ecx
 [(0xA7,0)] @{asm:=sar    %cl,%ecx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xA7,1)] ; %tmpr1_32 := %ecx
-[(0xA7,2)] ; StaticArrow (0xA7,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xA9,0); StaticArrow (0xA7,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xA7,3)
+[(0xA7,2)] ; StaticArrow (0xA7,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA9,0); StaticArrow (0xA7,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA7,3)
 [(0xA7,3)] ; %ecx := (RSH %ecx %tmpr0_8{0;8})
-[(0xA7,4)] ; %eflags{0;1} := (RSH %ecx (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0xA7,5)] ; StaticArrow (0xA7,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA9,0); StaticArrow (0xA7,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA7,6)
+[(0xA7,4)] ; %eflags{0;1} := (RSH %ecx (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0xA7,5)] ; StaticArrow (0xA7,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA9,0); StaticArrow (0xA7,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA7,6)
 [(0xA7,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0xA7,7)] ; %eflags{7;1} := %ecx{31;1}
 [(0xA7,8)] ; %eflags{6;1} := (EQ %ecx 0x0){0;1}
@@ -521,10 +521,10 @@
 **** Decode instruction: sarl   %cl,0x12345678
 [(0xA9,0)] @{asm:=sarl   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0xA9,1)] ; %tmpr1_32 := [0x12345678]
-[(0xA9,2)] ; StaticArrow (0xA9,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xAF,0); StaticArrow (0xA9,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xA9,3)
+[(0xA9,2)] ; StaticArrow (0xA9,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xAF,0); StaticArrow (0xA9,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xA9,3)
 [(0xA9,3)] ; [0x12345678] := (RSH [0x12345678] %tmpr0_8{0;8})
-[(0xA9,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1)){0;1}
-[(0xA9,5)] ; StaticArrow (0xA9,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xAF,0); StaticArrow (0xA9,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xA9,6)
+[(0xA9,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
+[(0xA9,5)] ; StaticArrow (0xA9,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xAF,0); StaticArrow (0xA9,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xA9,6)
 [(0xA9,6)] ; %eflags{11;1} := 0x0{0;1}
 [(0xA9,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0xA9,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -578,7 +578,7 @@
 [(0xBC,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB 0x10 %tmpr0_32)){0;1}
 [(0xBC,5)] ; StaticArrow (0xBC,5) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0xBE,0); StaticArrow (0xBC,5) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0xBC,6)
 [(0xBC,6)] ; %eflags{11;1} := (XOR %ebx{8;8} %eflags{0;1}){0;1}
-[(0xBC,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0xBC,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0xBC,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0xBC,9)] ; StaticArrow (0xBC,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0xBE,0)
 [(0xBE,0)] 
@@ -599,12 +599,12 @@
 **** Decode instruction: shl    %cl,%bh
 [(0xC4,0)] @{asm:=shl    %cl,%bh}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xC4,1)] ; %tmpr1_8{0;8} := %ebx{8;8}
-[(0xC4,2)] ; StaticArrow (0xC4,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xC6,0); StaticArrow (0xC4,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xC4,3)
+[(0xC4,2)] ; StaticArrow (0xC4,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC6,0); StaticArrow (0xC4,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC4,3)
 [(0xC4,3)] ; %ebx{8;8} := (LSH %ebx{8;8} %tmpr0_8{0;8})
 [(0xC4,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0xC4,5)] ; StaticArrow (0xC4,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC6,0); StaticArrow (0xC4,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC4,6)
+[(0xC4,5)] ; StaticArrow (0xC4,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC6,0); StaticArrow (0xC4,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC4,6)
 [(0xC4,6)] ; %eflags{11;1} := (XOR %ebx{8;8} %eflags{0;1}){0;1}
-[(0xC4,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0xC4,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0xC4,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0xC4,9)] ; StaticArrow (0xC4,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0xC6,0)
 [(0xC6,0)] 
@@ -612,12 +612,12 @@
 **** Decode instruction: shl    %cl,%ch
 [(0xC6,0)] @{asm:=shl    %cl,%ch}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xC6,1)] ; %tmpr1_8{0;8} := %ecx{8;8}
-[(0xC6,2)] ; StaticArrow (0xC6,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xC8,0); StaticArrow (0xC6,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xC6,3)
+[(0xC6,2)] ; StaticArrow (0xC6,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC8,0); StaticArrow (0xC6,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC6,3)
 [(0xC6,3)] ; %ecx{8;8} := (LSH %ecx{8;8} %tmpr0_8{0;8})
 [(0xC6,4)] ; %eflags{0;1} := (RSH %ecx{8;8} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0xC6,5)] ; StaticArrow (0xC6,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC8,0); StaticArrow (0xC6,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC6,6)
+[(0xC6,5)] ; StaticArrow (0xC6,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC8,0); StaticArrow (0xC6,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC6,6)
 [(0xC6,6)] ; %eflags{11;1} := (XOR %ecx{8;8} %eflags{0;1}){0;1}
-[(0xC6,7)] ; %eflags{7;1} := %ecx{7;1}
+[(0xC6,7)] ; %eflags{7;1} := %ecx{15;1}
 [(0xC6,8)] ; %eflags{6;1} := (EQ %ecx{8;8} 0x0{0;8}){0;1}
 [(0xC6,9)] ; StaticArrow (0xC6,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{8;1}){0;1} %ecx{9;1}){0;1} %ecx{10;1}){0;1} %ecx{11;1}){0;1} %ecx{12;1}){0;1} %ecx{13;1}){0;1} %ecx{14;1}){0;1} %ecx{15;1}){0;1}  --> (0xC8,0)
 [(0xC8,0)] 
@@ -625,10 +625,10 @@
 **** Decode instruction: shlb   %cl,0x12345678
 [(0xC8,0)] @{asm:=shlb   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0xC8,1)] ; %tmpr1_32 := [0x12345678]
-[(0xC8,2)] ; StaticArrow (0xC8,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xCE,0); StaticArrow (0xC8,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xC8,3)
+[(0xC8,2)] ; StaticArrow (0xC8,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xCE,0); StaticArrow (0xC8,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xC8,3)
 [(0xC8,3)] ; [0x12345678] := (LSH [0x12345678] %tmpr0_8{0;8})
 [(0xC8,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0xC8,5)] ; StaticArrow (0xC8,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xCE,0); StaticArrow (0xC8,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xC8,6)
+[(0xC8,5)] ; StaticArrow (0xC8,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xCE,0); StaticArrow (0xC8,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xC8,6)
 [(0xC8,6)] ; %eflags{11;1} := (XOR [0x12345678] %eflags{0;1}){0;1}
 [(0xC8,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0xC8,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -643,7 +643,7 @@
 [(0xCE,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB 0x10 %tmpr0_32)){0;1}
 [(0xCE,5)] ; StaticArrow (0xCE,5) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0xD1,0); StaticArrow (0xCE,5) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0xCE,6)
 [(0xCE,6)] ; %eflags{11;1} := (XOR %ebx{8;8} %eflags{0;1}){0;1}
-[(0xCE,7)] ; %eflags{7;1} := %ebx{7;1}
+[(0xCE,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0xCE,8)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0xCE,9)] ; StaticArrow (0xCE,9) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0xD1,0)
 [(0xD1,0)] 
@@ -690,10 +690,10 @@
 **** Decode instruction: shl    %cl,%bx
 [(0xE2,0)] @{asm:=shl    %cl,%bx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xE2,1)] ; %tmpr1_16{0;16} := %ebx{0;16}
-[(0xE2,2)] ; StaticArrow (0xE2,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xE5,0); StaticArrow (0xE2,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xE2,3)
+[(0xE2,2)] ; StaticArrow (0xE2,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xE5,0); StaticArrow (0xE2,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xE2,3)
 [(0xE2,3)] ; %ebx{0;16} := (LSH %ebx{0;16} %tmpr0_8{0;8})
 [(0xE2,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0xE2,5)] ; StaticArrow (0xE2,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xE5,0); StaticArrow (0xE2,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xE2,6)
+[(0xE2,5)] ; StaticArrow (0xE2,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xE5,0); StaticArrow (0xE2,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xE2,6)
 [(0xE2,6)] ; %eflags{11;1} := (XOR %ebx{0;16} %eflags{0;1}){0;1}
 [(0xE2,7)] ; %eflags{7;1} := %ebx{15;1}
 [(0xE2,8)] ; %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
@@ -703,10 +703,10 @@
 **** Decode instruction: shl    %cl,%cx
 [(0xE5,0)] @{asm:=shl    %cl,%cx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0xE5,1)] ; %tmpr1_16{0;16} := %ecx{0;16}
-[(0xE5,2)] ; StaticArrow (0xE5,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xE8,0); StaticArrow (0xE5,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xE5,3)
+[(0xE5,2)] ; StaticArrow (0xE5,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xE8,0); StaticArrow (0xE5,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xE5,3)
 [(0xE5,3)] ; %ecx{0;16} := (LSH %ecx{0;16} %tmpr0_8{0;8})
 [(0xE5,4)] ; %eflags{0;1} := (RSH %ecx{0;16} (SUB 0x10 %tmpr0_8{0;8})){0;1}
-[(0xE5,5)] ; StaticArrow (0xE5,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xE8,0); StaticArrow (0xE5,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xE5,6)
+[(0xE5,5)] ; StaticArrow (0xE5,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xE8,0); StaticArrow (0xE5,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xE5,6)
 [(0xE5,6)] ; %eflags{11;1} := (XOR %ecx{0;16} %eflags{0;1}){0;1}
 [(0xE5,7)] ; %eflags{7;1} := %ecx{15;1}
 [(0xE5,8)] ; %eflags{6;1} := (EQ %ecx{0;16} 0x0{0;16}){0;1}
@@ -716,10 +716,10 @@
 **** Decode instruction: shlw   %cl,0x12345678
 [(0xE8,0)] @{asm:=shlw   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0xE8,1)] ; %tmpr1_32 := [0x12345678]
-[(0xE8,2)] ; StaticArrow (0xE8,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0xEF,0); StaticArrow (0xE8,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0xE8,3)
+[(0xE8,2)] ; StaticArrow (0xE8,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xEF,0); StaticArrow (0xE8,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0xE8,3)
 [(0xE8,3)] ; [0x12345678] := (LSH [0x12345678] %tmpr0_8{0;8})
 [(0xE8,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0xE8,5)] ; StaticArrow (0xE8,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xEF,0); StaticArrow (0xE8,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0xE8,6)
+[(0xE8,5)] ; StaticArrow (0xE8,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xEF,0); StaticArrow (0xE8,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0xE8,6)
 [(0xE8,6)] ; %eflags{11;1} := (XOR [0x12345678] %eflags{0;1}){0;1}
 [(0xE8,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0xE8,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -781,10 +781,10 @@
 **** Decode instruction: shl    %cl,%ebx
 [(0x103,0)] @{asm:=shl    %cl,%ebx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x103,1)] ; %tmpr1_32 := %ebx
-[(0x103,2)] ; StaticArrow (0x103,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x105,0); StaticArrow (0x103,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x103,3)
+[(0x103,2)] ; StaticArrow (0x103,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x105,0); StaticArrow (0x103,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x103,3)
 [(0x103,3)] ; %ebx := (LSH %ebx %tmpr0_8{0;8})
 [(0x103,4)] ; %eflags{0;1} := (RSH %ebx (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x103,5)] ; StaticArrow (0x103,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x105,0); StaticArrow (0x103,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x103,6)
+[(0x103,5)] ; StaticArrow (0x103,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x105,0); StaticArrow (0x103,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x103,6)
 [(0x103,6)] ; %eflags{11;1} := (XOR %ebx %eflags{0;1}){0;1}
 [(0x103,7)] ; %eflags{7;1} := %ebx{31;1}
 [(0x103,8)] ; %eflags{6;1} := (EQ %ebx 0x0){0;1}
@@ -794,10 +794,10 @@
 **** Decode instruction: shl    %cl,%ecx
 [(0x105,0)] @{asm:=shl    %cl,%ecx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x105,1)] ; %tmpr1_32 := %ecx
-[(0x105,2)] ; StaticArrow (0x105,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x107,0); StaticArrow (0x105,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x105,3)
+[(0x105,2)] ; StaticArrow (0x105,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x107,0); StaticArrow (0x105,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x105,3)
 [(0x105,3)] ; %ecx := (LSH %ecx %tmpr0_8{0;8})
 [(0x105,4)] ; %eflags{0;1} := (RSH %ecx (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x105,5)] ; StaticArrow (0x105,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x107,0); StaticArrow (0x105,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x105,6)
+[(0x105,5)] ; StaticArrow (0x105,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x107,0); StaticArrow (0x105,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x105,6)
 [(0x105,6)] ; %eflags{11;1} := (XOR %ecx %eflags{0;1}){0;1}
 [(0x105,7)] ; %eflags{7;1} := %ecx{31;1}
 [(0x105,8)] ; %eflags{6;1} := (EQ %ecx 0x0){0;1}
@@ -807,10 +807,10 @@
 **** Decode instruction: shll   %cl,0x12345678
 [(0x107,0)] @{asm:=shll   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x107,1)] ; %tmpr1_32 := [0x12345678]
-[(0x107,2)] ; StaticArrow (0x107,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x10D,0); StaticArrow (0x107,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x107,3)
+[(0x107,2)] ; StaticArrow (0x107,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x10D,0); StaticArrow (0x107,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x107,3)
 [(0x107,3)] ; [0x12345678] := (LSH [0x12345678] %tmpr0_8{0;8})
 [(0x107,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB 0x20 %tmpr0_8{0;8})){0;1}
-[(0x107,5)] ; StaticArrow (0x107,5) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x10D,0); StaticArrow (0x107,5) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x107,6)
+[(0x107,5)] ; StaticArrow (0x107,5) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x10D,0); StaticArrow (0x107,5) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x107,6)
 [(0x107,6)] ; %eflags{11;1} := (XOR [0x12345678] %eflags{0;1}){0;1}
 [(0x107,7)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x107,8)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -864,8 +864,8 @@
 [(0x11A,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB (ADD 0x8 %tmpr0_32) 0x1)){0;1}
 [(0x11A,5)] ; %ebx{8;8} := (AND %ebx{8;8} (NOT (LSH (NOT 0x0) %tmpr0_32)){8;8}){0;1}
 [(0x11A,6)] ; StaticArrow (0x11A,6) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x11C,0); StaticArrow (0x11A,6) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x11A,7)
-[(0x11A,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7){0;1}
-[(0x11A,8)] ; %eflags{7;1} := %ebx{7;1}
+[(0x11A,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7{0;8}){0;1}
+[(0x11A,8)] ; %eflags{7;1} := %ebx{15;1}
 [(0x11A,9)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x11A,10)] ; StaticArrow (0x11A,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x11C,0)
 [(0x11C,0)] 
@@ -887,13 +887,13 @@
 **** Decode instruction: shr    %cl,%bh
 [(0x122,0)] @{asm:=shr    %cl,%bh}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x122,1)] ; %tmpr1_8{0;8} := %ebx{8;8}
-[(0x122,2)] ; StaticArrow (0x122,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x124,0); StaticArrow (0x122,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x122,3)
+[(0x122,2)] ; StaticArrow (0x122,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x124,0); StaticArrow (0x122,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x122,3)
 [(0x122,3)] ; %ebx{8;8} := (RSH %ebx{8;8} %tmpr0_8{0;8})
 [(0x122,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB (ADD 0x8 %tmpr0_8{0;8}) 0x1)){0;1}
 [(0x122,5)] ; %ebx{8;8} := (AND %ebx{8;8} (NOT (LSH (NOT 0x0) %tmpr0_8{0;8})){8;8}){0;1}
-[(0x122,6)] ; StaticArrow (0x122,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x124,0); StaticArrow (0x122,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x122,7)
-[(0x122,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7){0;1}
-[(0x122,8)] ; %eflags{7;1} := %ebx{7;1}
+[(0x122,6)] ; StaticArrow (0x122,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x124,0); StaticArrow (0x122,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x122,7)
+[(0x122,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7{0;8}){0;1}
+[(0x122,8)] ; %eflags{7;1} := %ebx{15;1}
 [(0x122,9)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x122,10)] ; StaticArrow (0x122,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x124,0)
 [(0x124,0)] 
@@ -901,13 +901,13 @@
 **** Decode instruction: shr    %cl,%ch
 [(0x124,0)] @{asm:=shr    %cl,%ch}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x124,1)] ; %tmpr1_8{0;8} := %ecx{8;8}
-[(0x124,2)] ; StaticArrow (0x124,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x126,0); StaticArrow (0x124,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x124,3)
+[(0x124,2)] ; StaticArrow (0x124,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x126,0); StaticArrow (0x124,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x124,3)
 [(0x124,3)] ; %ecx{8;8} := (RSH %ecx{8;8} %tmpr0_8{0;8})
 [(0x124,4)] ; %eflags{0;1} := (RSH %ecx{8;8} (SUB (ADD 0x8 %tmpr0_8{0;8}) 0x1)){0;1}
 [(0x124,5)] ; %ecx{8;8} := (AND %ecx{8;8} (NOT (LSH (NOT 0x0) %tmpr0_8{0;8})){8;8}){0;1}
-[(0x124,6)] ; StaticArrow (0x124,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x126,0); StaticArrow (0x124,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x124,7)
-[(0x124,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7){0;1}
-[(0x124,8)] ; %eflags{7;1} := %ecx{7;1}
+[(0x124,6)] ; StaticArrow (0x124,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x126,0); StaticArrow (0x124,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x124,7)
+[(0x124,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7{0;8}){0;1}
+[(0x124,8)] ; %eflags{7;1} := %ecx{15;1}
 [(0x124,9)] ; %eflags{6;1} := (EQ %ecx{8;8} 0x0{0;8}){0;1}
 [(0x124,10)] ; StaticArrow (0x124,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{8;1}){0;1} %ecx{9;1}){0;1} %ecx{10;1}){0;1} %ecx{11;1}){0;1} %ecx{12;1}){0;1} %ecx{13;1}){0;1} %ecx{14;1}){0;1} %ecx{15;1}){0;1}  --> (0x126,0)
 [(0x126,0)] 
@@ -915,11 +915,11 @@
 **** Decode instruction: shrb   %cl,0x12345678
 [(0x126,0)] @{asm:=shrb   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x126,1)] ; %tmpr1_32 := [0x12345678]
-[(0x126,2)] ; StaticArrow (0x126,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x12C,0); StaticArrow (0x126,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x126,3)
+[(0x126,2)] ; StaticArrow (0x126,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x12C,0); StaticArrow (0x126,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x126,3)
 [(0x126,3)] ; [0x12345678] := (RSH [0x12345678] %tmpr0_8{0;8})
-[(0x126,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x126,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x126,5)] ; [0x12345678] := (AND [0x12345678] (NOT (LSH (NOT 0x0) %tmpr0_8{0;8}))){0;1}
-[(0x126,6)] ; StaticArrow (0x126,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x12C,0); StaticArrow (0x126,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x126,7)
+[(0x126,6)] ; StaticArrow (0x126,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x12C,0); StaticArrow (0x126,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x126,7)
 [(0x126,7)] ; %eflags{11;1} := (LSH %tmpr1_32 0x1F){0;1}
 [(0x126,8)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x126,9)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -934,8 +934,8 @@
 [(0x12C,4)] ; %eflags{0;1} := (RSH %ebx{8;8} (SUB (ADD 0x8 %tmpr0_32) 0x1)){0;1}
 [(0x12C,5)] ; %ebx{8;8} := (AND %ebx{8;8} (NOT (LSH (NOT 0x0) %tmpr0_32)){8;8}){0;1}
 [(0x12C,6)] ; StaticArrow (0x12C,6) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x12F,0); StaticArrow (0x12C,6) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x12C,7)
-[(0x12C,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7){0;1}
-[(0x12C,8)] ; %eflags{7;1} := %ebx{7;1}
+[(0x12C,7)] ; %eflags{11;1} := (LSH %tmpr1_8{0;8} 0x7{0;8}){0;1}
+[(0x12C,8)] ; %eflags{7;1} := %ebx{15;1}
 [(0x12C,9)] ; %eflags{6;1} := (EQ %ebx{8;8} 0x0{0;8}){0;1}
 [(0x12C,10)] ; StaticArrow (0x12C,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{8;1}){0;1} %ebx{9;1}){0;1} %ebx{10;1}){0;1} %ebx{11;1}){0;1} %ebx{12;1}){0;1} %ebx{13;1}){0;1} %ebx{14;1}){0;1} %ebx{15;1}){0;1}  --> (0x12F,0)
 [(0x12F,0)] 
@@ -962,7 +962,7 @@
 [(0x136,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB %tmpr0_32 0x1)){0;1}
 [(0x136,5)] ; %ebx{0;16} := (AND %ebx{0;16} (NOT (LSH (NOT 0x0) %tmpr0_32)){0;16}){0;1}
 [(0x136,6)] ; StaticArrow (0x136,6) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x139,0); StaticArrow (0x136,6) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x136,7)
-[(0x136,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF){0;1}
+[(0x136,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF{0;16}){0;1}
 [(0x136,8)] ; %eflags{7;1} := %ebx{15;1}
 [(0x136,9)] ; %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
 [(0x136,10)] ; StaticArrow (0x136,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{0;1}){0;1} %ebx{1;1}){0;1} %ebx{2;1}){0;1} %ebx{3;1}){0;1} %ebx{4;1}){0;1} %ebx{5;1}){0;1} %ebx{6;1}){0;1} %ebx{7;1}){0;1}  --> (0x139,0)
@@ -985,12 +985,12 @@
 **** Decode instruction: shr    %cl,%bx
 [(0x140,0)] @{asm:=shr    %cl,%bx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x140,1)] ; %tmpr1_16{0;16} := %ebx{0;16}
-[(0x140,2)] ; StaticArrow (0x140,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x143,0); StaticArrow (0x140,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x140,3)
+[(0x140,2)] ; StaticArrow (0x140,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x143,0); StaticArrow (0x140,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x140,3)
 [(0x140,3)] ; %ebx{0;16} := (RSH %ebx{0;16} %tmpr0_8{0;8})
-[(0x140,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x140,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x140,5)] ; %ebx{0;16} := (AND %ebx{0;16} (NOT (LSH (NOT 0x0) %tmpr0_8{0;8})){0;16}){0;1}
-[(0x140,6)] ; StaticArrow (0x140,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x143,0); StaticArrow (0x140,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x140,7)
-[(0x140,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF){0;1}
+[(0x140,6)] ; StaticArrow (0x140,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x143,0); StaticArrow (0x140,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x140,7)
+[(0x140,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF{0;16}){0;1}
 [(0x140,8)] ; %eflags{7;1} := %ebx{15;1}
 [(0x140,9)] ; %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
 [(0x140,10)] ; StaticArrow (0x140,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{0;1}){0;1} %ebx{1;1}){0;1} %ebx{2;1}){0;1} %ebx{3;1}){0;1} %ebx{4;1}){0;1} %ebx{5;1}){0;1} %ebx{6;1}){0;1} %ebx{7;1}){0;1}  --> (0x143,0)
@@ -999,12 +999,12 @@
 **** Decode instruction: shr    %cl,%cx
 [(0x143,0)] @{asm:=shr    %cl,%cx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x143,1)] ; %tmpr1_16{0;16} := %ecx{0;16}
-[(0x143,2)] ; StaticArrow (0x143,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x146,0); StaticArrow (0x143,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x143,3)
+[(0x143,2)] ; StaticArrow (0x143,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x146,0); StaticArrow (0x143,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x143,3)
 [(0x143,3)] ; %ecx{0;16} := (RSH %ecx{0;16} %tmpr0_8{0;8})
-[(0x143,4)] ; %eflags{0;1} := (RSH %ecx{0;16} (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x143,4)] ; %eflags{0;1} := (RSH %ecx{0;16} (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x143,5)] ; %ecx{0;16} := (AND %ecx{0;16} (NOT (LSH (NOT 0x0) %tmpr0_8{0;8})){0;16}){0;1}
-[(0x143,6)] ; StaticArrow (0x143,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x146,0); StaticArrow (0x143,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x143,7)
-[(0x143,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF){0;1}
+[(0x143,6)] ; StaticArrow (0x143,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x146,0); StaticArrow (0x143,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x143,7)
+[(0x143,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF{0;16}){0;1}
 [(0x143,8)] ; %eflags{7;1} := %ecx{15;1}
 [(0x143,9)] ; %eflags{6;1} := (EQ %ecx{0;16} 0x0{0;16}){0;1}
 [(0x143,10)] ; StaticArrow (0x143,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{0;1}){0;1} %ecx{1;1}){0;1} %ecx{2;1}){0;1} %ecx{3;1}){0;1} %ecx{4;1}){0;1} %ecx{5;1}){0;1} %ecx{6;1}){0;1} %ecx{7;1}){0;1}  --> (0x146,0)
@@ -1013,11 +1013,11 @@
 **** Decode instruction: shrw   %cl,0x12345678
 [(0x146,0)] @{asm:=shrw   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x146,1)] ; %tmpr1_32 := [0x12345678]
-[(0x146,2)] ; StaticArrow (0x146,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x14D,0); StaticArrow (0x146,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x146,3)
+[(0x146,2)] ; StaticArrow (0x146,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x14D,0); StaticArrow (0x146,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x146,3)
 [(0x146,3)] ; [0x12345678] := (RSH [0x12345678] %tmpr0_8{0;8})
-[(0x146,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x146,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x146,5)] ; [0x12345678] := (AND [0x12345678] (NOT (LSH (NOT 0x0) %tmpr0_8{0;8}))){0;1}
-[(0x146,6)] ; StaticArrow (0x146,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x14D,0); StaticArrow (0x146,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x146,7)
+[(0x146,6)] ; StaticArrow (0x146,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x14D,0); StaticArrow (0x146,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x146,7)
 [(0x146,7)] ; %eflags{11;1} := (LSH %tmpr1_32 0x1F){0;1}
 [(0x146,8)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x146,9)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}
@@ -1032,7 +1032,7 @@
 [(0x14D,4)] ; %eflags{0;1} := (RSH %ebx{0;16} (SUB %tmpr0_32 0x1)){0;1}
 [(0x14D,5)] ; %ebx{0;16} := (AND %ebx{0;16} (NOT (LSH (NOT 0x0) %tmpr0_32)){0;16}){0;1}
 [(0x14D,6)] ; StaticArrow (0x14D,6) Skip << (NEQ %tmpr0_32 0x1){0;1} >> --> (0x151,0); StaticArrow (0x14D,6) Skip << (EQ %tmpr0_32 0x1){0;1} >> --> (0x14D,7)
-[(0x14D,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF){0;1}
+[(0x14D,7)] ; %eflags{11;1} := (LSH %tmpr1_16{0;16} 0xF{0;16}){0;1}
 [(0x14D,8)] ; %eflags{7;1} := %ebx{15;1}
 [(0x14D,9)] ; %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
 [(0x14D,10)] ; StaticArrow (0x14D,10) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{0;1}){0;1} %ebx{1;1}){0;1} %ebx{2;1}){0;1} %ebx{3;1}){0;1} %ebx{4;1}){0;1} %ebx{5;1}){0;1} %ebx{6;1}){0;1} %ebx{7;1}){0;1}  --> (0x151,0)
@@ -1083,11 +1083,11 @@
 **** Decode instruction: shr    %cl,%ebx
 [(0x161,0)] @{asm:=shr    %cl,%ebx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x161,1)] ; %tmpr1_32 := %ebx
-[(0x161,2)] ; StaticArrow (0x161,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x163,0); StaticArrow (0x161,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x161,3)
+[(0x161,2)] ; StaticArrow (0x161,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x163,0); StaticArrow (0x161,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x161,3)
 [(0x161,3)] ; %ebx := (RSH %ebx %tmpr0_8{0;8})
-[(0x161,4)] ; %eflags{0;1} := (RSH %ebx (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x161,4)] ; %eflags{0;1} := (RSH %ebx (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x161,5)] ; %ebx := (AND %ebx (NOT (LSH (NOT 0x0) %tmpr0_8{0;8}))){0;1}
-[(0x161,6)] ; StaticArrow (0x161,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x163,0); StaticArrow (0x161,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x161,7)
+[(0x161,6)] ; StaticArrow (0x161,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x163,0); StaticArrow (0x161,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x161,7)
 [(0x161,7)] ; %eflags{11;1} := (LSH %tmpr1_32 0x1F){0;1}
 [(0x161,8)] ; %eflags{7;1} := %ebx{31;1}
 [(0x161,9)] ; %eflags{6;1} := (EQ %ebx 0x0){0;1}
@@ -1097,11 +1097,11 @@
 **** Decode instruction: shr    %cl,%ecx
 [(0x163,0)] @{asm:=shr    %cl,%ecx}@ ; %tmpr0_8{0;8} := (AND %ecx{0;8} 0x1F{0;8})
 [(0x163,1)] ; %tmpr1_32 := %ecx
-[(0x163,2)] ; StaticArrow (0x163,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x165,0); StaticArrow (0x163,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x163,3)
+[(0x163,2)] ; StaticArrow (0x163,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x165,0); StaticArrow (0x163,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x163,3)
 [(0x163,3)] ; %ecx := (RSH %ecx %tmpr0_8{0;8})
-[(0x163,4)] ; %eflags{0;1} := (RSH %ecx (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x163,4)] ; %eflags{0;1} := (RSH %ecx (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x163,5)] ; %ecx := (AND %ecx (NOT (LSH (NOT 0x0) %tmpr0_8{0;8}))){0;1}
-[(0x163,6)] ; StaticArrow (0x163,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x165,0); StaticArrow (0x163,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x163,7)
+[(0x163,6)] ; StaticArrow (0x163,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x165,0); StaticArrow (0x163,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x163,7)
 [(0x163,7)] ; %eflags{11;1} := (LSH %tmpr1_32 0x1F){0;1}
 [(0x163,8)] ; %eflags{7;1} := %ecx{31;1}
 [(0x163,9)] ; %eflags{6;1} := (EQ %ecx 0x0){0;1}
@@ -1111,11 +1111,11 @@
 **** Decode instruction: shrl   %cl,0x12345678
 [(0x165,0)] @{asm:=shrl   %cl,0x12345678}@ ; %tmpr0_8{0;8} := (AND (EXTRACT %ecx{0;8} 0x0 0x20){0;8} 0x1F{0;8})
 [(0x165,1)] ; %tmpr1_32 := [0x12345678]
-[(0x165,2)] ; StaticArrow (0x165,2) Skip << (EQ %tmpr0_8{0;8} 0x0) >> --> (0x16B,0); StaticArrow (0x165,2) Skip << (NEQ %tmpr0_8{0;8} 0x0) >> --> (0x165,3)
+[(0x165,2)] ; StaticArrow (0x165,2) Skip << (EQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x16B,0); StaticArrow (0x165,2) Skip << (NEQ %tmpr0_8{0;8} 0x0{0;8}) >> --> (0x165,3)
 [(0x165,3)] ; [0x12345678] := (RSH [0x12345678] %tmpr0_8{0;8})
-[(0x165,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1)){0;1}
+[(0x165,4)] ; %eflags{0;1} := (RSH [0x12345678] (SUB %tmpr0_8{0;8} 0x1{0;8})){0;1}
 [(0x165,5)] ; [0x12345678] := (AND [0x12345678] (NOT (LSH (NOT 0x0) %tmpr0_8{0;8}))){0;1}
-[(0x165,6)] ; StaticArrow (0x165,6) Skip << (NEQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x16B,0); StaticArrow (0x165,6) Skip << (EQ %tmpr0_8{0;8} 0x1){0;1} >> --> (0x165,7)
+[(0x165,6)] ; StaticArrow (0x165,6) Skip << (NEQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x16B,0); StaticArrow (0x165,6) Skip << (EQ %tmpr0_8{0;8} 0x1{0;8}){0;1} >> --> (0x165,7)
 [(0x165,7)] ; %eflags{11;1} := (LSH %tmpr1_32 0x1F){0;1}
 [(0x165,8)] ; %eflags{7;1} := [0x12345678]{31;1}
 [(0x165,9)] ; %eflags{6;1} := (EQ [0x12345678] 0x0){0;1}

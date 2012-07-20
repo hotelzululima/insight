@@ -120,8 +120,13 @@ public:
   int get_bv_offset() const;
   /*! \brief define the index of the first bit position of the bit vector */
 
+protected:
   virtual Expr *
-  extract_bit_vector (int new_bv_offset, int new_bv_size) const = 0;
+  change_bit_vector (int new_bv_offset, int new_bv_size) const = 0;
+
+public:
+  virtual Expr *
+  extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   virtual Expr *
   extract_with_bit_vector_of (const Expr *e) const;
@@ -317,13 +322,15 @@ private:
 
   virtual ~Variable();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
   static Variable *create (const std::string &id, int bv_offset = 0, 
 			   int bv_size = BV_DEFAULT_SIZE);
 
   std::string get_id() const;
 
-  virtual Expr *extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   /*! \brief syntactic equality of variables */
   virtual bool equal (const Formula *F) const;
@@ -358,6 +365,9 @@ private:
   Constant(constant_t v, int bv_offset, int bv_size);
   virtual ~Constant();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
 
   static inline Constant *zero (int size = BV_DEFAULT_SIZE) { 
@@ -384,7 +394,6 @@ public:
 			   int bv_size = BV_DEFAULT_SIZE);
 
   constant_t get_val() const;
-  virtual Expr *extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   /* See Expr class for documentation */
   Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
@@ -426,6 +435,9 @@ private:
   UnaryApp(UnaryOp op, Expr *arg1, int bv_offset, int bv_size);
   virtual ~UnaryApp();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
   static UnaryApp *create (UnaryOp op, Expr *arg1);
   static UnaryApp *create (UnaryOp op, Expr *arg1, int bv_offset, 
@@ -433,7 +445,6 @@ public:
 
   UnaryOp get_op() const;
   Expr *get_arg1() const;
-  virtual Expr *extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   /* See Expr class for documentation */
   std::string pp(std::string prefix = "") const;
@@ -476,6 +487,9 @@ private:
 
   virtual ~BinaryApp();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
   static BinaryApp *create (BinaryOp op, Expr *arg1, Expr *arg2);
   static BinaryApp *create (BinaryOp op, Expr *arg1, int arg2);
@@ -490,7 +504,6 @@ public:
   BinaryOp get_op() const;
   Expr *get_arg1() const;
   Expr *get_arg2() const;
-  virtual Expr *extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   /* See Expr class for documentation */
   Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
@@ -526,10 +539,11 @@ private:
 
   virtual ~TernaryApp();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
   static TernaryApp *create(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3);
-
-  virtual Expr *extract_bit_vector(int new_bv_offset, int new_bv_size) const;
 
   static TernaryApp *create(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3,
       int bv_offset, int bv_size = BV_DEFAULT_SIZE);
@@ -595,6 +609,9 @@ private:
   MemCell(Expr *addr, Tag tag, int bv_offset, int bv_size);
   virtual ~MemCell();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
   static MemCell *create (Expr *addr, Tag tag, int bv_offset = 0, 
 			  int bv_size = BV_DEFAULT_SIZE);
@@ -608,7 +625,6 @@ public:
   /*! \brief The address of the memory cell in the address space
       tag. */
   Expr *get_addr() const ;
-  virtual Expr *extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   /* See Expr class for documentation */
   std::string pp(std::string prefix = "") const;
@@ -648,6 +664,9 @@ private:
 
   virtual ~RegisterExpr ();
 
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
 public:
 
   static RegisterExpr *create (const RegisterDesc *reg);
@@ -656,8 +675,6 @@ public:
 
   const RegisterDesc *get_descriptor () const;
   const std::string &get_name() const;
-
-  virtual Expr *extract_bit_vector (int new_bv_offset, int new_bv_size) const;
 
   /* See Expr class for documentation */
   Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;

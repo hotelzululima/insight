@@ -1,6 +1,6 @@
 	## PUSH r/m16
 	push %ax
-	push 0x31415926
+	pushw 0x31415926
 	
 	## ## PUSH r/m32
 	push %eax
@@ -13,11 +13,15 @@
 	push %esp
 	
 	## ## PUSH imm8
-	push $0x31
+	push $0xF1
+
 	## ## PUSH imm16
 	push $0x3141
+	pushw $0x3141
+
 	## ## PUSH imm32
 	push $0x31415926
+	pushl $0x31415926
 	
 	## ## PUSH {CS,SS,DS,ES,FS,GS}
 	push %cs
@@ -26,5 +30,12 @@
 	push %ds
 	push %fs
 	push %gs
+
+	pushw %cs
+	pushw %ss
+	pushw %ds
+	pushw %ds
+	pushw %fs
+	pushw %gs
 
 	

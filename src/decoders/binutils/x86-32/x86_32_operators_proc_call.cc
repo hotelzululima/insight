@@ -41,6 +41,7 @@ X86_32_TRANSLATE_1_OP (CALL)
   assert (mc != NULL);
 
   x86_32_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
+
   Expr *addr = mc->get_addr ();
   if (addr->is_Constant ())
     {

@@ -34,76 +34,67 @@
 using namespace std;
 
 static void
-s_start_rep (x86_32::parser_data &data)
+s_loop (x86_32::parser_data &data, Expr *op1, Expr *cond)
 {
-  assert (! data.has_prefix);
+  MicrocodeAddress from (data.start_ma);
+  Expr *counter = data.get_register (data.addr16 ? "cx" : "ecx");
+  int csize = counter->get_bv_size ();
+  Expr *ccond = 
+    BinaryApp::create (NEQ, counter->ref (), Constant::zero(csize), 0, 1);
 
-  const char *regname = data.addr16 ? "cx" : "ecx";
-  LValue *counter = data.get_register (regname);
-  Expr *stopcond = BinaryApp::create (EQ, counter, Constant::zero ());
-  data.has_prefix = true;
-
-  data.mc->add_skip (data.start_ma, data.next_ma, stopcond);
-  data.mc->add_skip (data.start_ma, data.start_ma + 1,
-		     UnaryApp::create (LNOT, stopcond->ref ()));
-  data.start_ma++;
-}
-
-static void
-s_end_rep (x86_32::parser_data &data, Expr *cond)
-{
-  MicrocodeAddress start (data.start_ma);
-  const char *regname = data.addr16 ? "cx" : "ecx";
-  LValue *counter = data.get_register (regname);
-  Expr *stopcond = BinaryApp::create (EQ, counter->ref (), Constant::zero ());
-
-  data.mc->add_assignment (start, counter, 
-			   BinaryApp::create (SUB, counter->ref (),
-					      Constant::one ()));
-
-  if (cond)    
-    {
-      cond = BinaryApp::create (EQ, data.get_register ("zf"), cond);
-      stopcond = BinaryApp::create (OR, stopcond, cond);
-    }
-
-  data.mc->add_skip (start, data.next_ma, stopcond);
-  data.mc->add_skip (start, MicrocodeAddress (data.start_ma.getGlobal ()),
-		     UnaryApp::create (NOT, stopcond->ref ()));
+  if (cond == NULL)
+    cond = ccond->ref ();
+  else 
+    cond = BinaryApp::create (AND_OP, ccond->ref (), cond, 0, 1);
   
-  data.has_prefix = false;
+  data.mc->add_assignment (from, (LValue *) counter->ref (),
+			   BinaryApp::create (SUB, counter->ref (),
+					      Constant::one (csize), 0, csize));
+
+  MemCell *jmpaddr = dynamic_cast<MemCell *> (op1);
+  assert (jmpaddr);
+  assert (jmpaddr->get_addr ()->is_Constant ());
+  MicrocodeAddress ja = 
+    dynamic_cast<Constant *>(jmpaddr->get_addr ())->get_val ();
+
+  x86_32_if_then_else (from, data, cond->ref (), ja, data.next_ma);
+
+  op1->deref ();
+  cond->deref ();			   
+  ccond->deref ();
+  counter->deref ();
 }
 
-static void
-s_rep (x86_32::parser_data &data, bool start, Expr *zf_val)
+X86_32_TRANSLATE_1_OP(LOOP)
 {
-  if (start)
-    s_start_rep (data);
-  else
-    s_end_rep (data, zf_val);
+  s_loop (data, op1, NULL);
 }
 
-X86_32_TRANSLATE_PREFIX(REP)
-{  
-  s_rep (data, start, NULL);
-}
-
-X86_32_TRANSLATE_PREFIX(REPE)
+X86_32_TRANSLATE_1_OP(LOOPE)
 {
-  s_rep (data, start, start ? NULL : Constant::zero ());
+  s_loop (data, op1, data.get_flag ("zf"));
 }
 
-X86_32_TRANSLATE_PREFIX(REPZ)
+X86_32_TRANSLATE_1_OP(LOOPNE)
 {
-  s_rep (data, start, start ? NULL : Constant::zero ());
+  s_loop (data, op1, UnaryApp::create (NOT, data.get_flag ("zf"), 0, 1));
 }
 
-X86_32_TRANSLATE_PREFIX(REPNE)
+X86_32_TRANSLATE_1_OP(LOOPW)
 {
-  s_rep (data, start, start ? NULL : Constant::one ());
+  data.addr16 = true;
+  s_loop (data, op1, NULL);
 }
 
-X86_32_TRANSLATE_PREFIX(REPNZ)
+X86_32_TRANSLATE_1_OP(LOOPEW)
 {
-  s_rep (data, start, start ? NULL : Constant::one ());
+  data.addr16 = true;
+  s_loop (data, op1, data.get_flag ("zf"));
 }
+
+X86_32_TRANSLATE_1_OP(LOOPNEW)
+{
+  data.addr16 = true;
+  s_loop (data, op1, UnaryApp::create (NOT, data.get_flag ("zf"), 0, 1));
+}
+

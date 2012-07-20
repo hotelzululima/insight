@@ -40,8 +40,6 @@ s_flag_at_position (x86_32::parser_data &data, const char *flagname, int pos)
   return flag;
 }
 
-			/* --------------- */
-
 X86_32_TRANSLATE_0_OP(LAHF)
 {
   Expr *alvalue = BinaryApp::create (OR, data.get_flag ("cf"),
@@ -61,24 +59,22 @@ X86_32_TRANSLATE_0_OP(LAHF)
 			       s_flag_at_position (data, "sf", 7),
 			       0, 8);
 
-  data.mc->add_assignment (data.start_ma, data.get_register ("al"), alvalue,
+  data.mc->add_assignment (data.start_ma, data.get_register ("ah"), alvalue,
 			   data.next_ma);
 }
 
 X86_32_TRANSLATE_0_OP(SAHF)
 {
   MicrocodeAddress from (data.start_ma);
-  Expr *al = data.get_register ("al");
+  Expr *ah = data.get_register ("ah");
 
-  x86_32_assign_CF (from, data, al->extract_bit_vector (0,1));
-  x86_32_assign_PF (from, data, al->extract_bit_vector (2,1));
-  x86_32_assign_AF (from, data, al->extract_bit_vector (4,1));
-  x86_32_assign_ZF (from, data, al->extract_bit_vector (6,1));
-  x86_32_assign_SF (from, data, al->extract_bit_vector (7,1), &data.next_ma);
-  al->deref ();
+  x86_32_assign_CF (from, data, ah->extract_bit_vector (0,1));
+  x86_32_assign_PF (from, data, ah->extract_bit_vector (2,1));
+  x86_32_assign_AF (from, data, ah->extract_bit_vector (4,1));
+  x86_32_assign_ZF (from, data, ah->extract_bit_vector (6,1));
+  x86_32_assign_SF (from, data, ah->extract_bit_vector (7,1), &data.next_ma);
+  ah->deref ();
 }
-
-			/* --------------- */
 
 X86_32_TRANSLATE_2_OP(LEA)
 {
@@ -93,3 +89,100 @@ X86_32_TRANSLATE_2_OP(LEA)
   data.mc->add_assignment (data.start_ma, dst, src, &data.next_ma);
   op1->deref ();
 }
+
+X86_32_TRANSLATE_1_OP(LGDT)
+{
+  x86_32_skip (data);
+  op1->deref ();
+}
+
+X86_32_TRANSLATE_1_OP(LIDT)
+{
+  x86_32_skip (data);
+  op1->deref ();
+}
+
+X86_32_TRANSLATE_1_OP(LLDT)
+{
+  x86_32_skip (data);
+  op1->deref ();
+}
+
+X86_32_TRANSLATE_1_OP(LMSW)
+{
+  x86_32_skip (data);
+  op1->deref ();
+}
+
+X86_32_TRANSLATE_2_OP(LODS)
+{
+  op1->deref ();
+  Expr *esi = data.get_register (data.addr16 ? "si" : "esi");
+  Expr *dst = op2->ref ();
+  Expr *src = MemCell::create (esi->ref (), 0, dst->get_bv_size ());
+  Expr *inc = 
+    Constant::create (dst->get_bv_size ()  / 8, 0, esi->get_bv_size ());
+  MicrocodeAddress from (data.start_ma);
+
+  data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
+  x86_32_if_then_else (from, data, data.get_flag ("df"),
+		       from + 1, from + 2);
+  from++;
+  data.mc->add_assignment (from, (LValue *) esi->ref (),
+			   BinaryApp::create (SUB, esi->ref (), inc->ref (), 
+					      0, esi->get_bv_size ()),
+			   data.next_ma);
+  from++;
+  data.mc->add_assignment (from, (LValue *) esi->ref (),
+			   BinaryApp::create (ADD, esi->ref (), inc->ref (), 
+					      0, esi->get_bv_size ()),
+			   data.next_ma);
+  esi->deref (); 
+  inc->deref (); 
+  op2->deref (); 
+  src->deref (); 
+  dst->deref ();
+}
+
+X86_32_TRANSLATE_0_OP(STC)
+{
+  data.mc->add_assignment (data.start_ma, data.get_flag ("cf"),
+			   Constant::one (1), data.next_ma);
+}
+
+X86_32_TRANSLATE_0_OP(STD)
+{
+  data.mc->add_assignment (data.start_ma, data.get_flag ("df"),
+			   Constant::one (1), data.next_ma);
+}
+
+X86_32_TRANSLATE_2_OP(STOS) 
+{
+  op2->deref ();
+  Expr *edi = data.get_register (data.addr16 ? "di" : "edi");
+  Expr *src = op1->ref ();
+  Expr *dst = MemCell::create (edi->ref (), 0, src->get_bv_size ());
+  Expr *inc = 
+    Constant::create (src->get_bv_size ()  / 8, 0, dst->get_bv_size ());
+  MicrocodeAddress from (data.start_ma);
+
+  data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
+  x86_32_if_then_else (from, data, data.get_flag ("df"),
+		       from + 1, from + 2);
+  from++;
+  data.mc->add_assignment (from, (LValue *) edi->ref (),
+			   BinaryApp::create (SUB, edi->ref (), inc->ref (), 
+					      0, edi->get_bv_size ()),
+			   data.next_ma);
+  from++;
+  data.mc->add_assignment (from, (LValue *) edi->ref (),
+			   BinaryApp::create (ADD, edi->ref (), inc->ref (), 
+					      0, edi->get_bv_size ()),
+			   data.next_ma);
+  edi->deref (); 
+  inc->deref (); 
+  op1->deref ();
+  src->deref ();
+  dst->deref ();
+}
+

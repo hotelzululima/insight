@@ -85,6 +85,7 @@ x86_32::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
   mc = out;
   start_ma = MicrocodeAddress(start);
   next_ma = MicrocodeAddress(next);
+  lock = false;
   data16 = false;
   addr16 = false;
   data_segment = "ds";
@@ -95,11 +96,27 @@ x86_32::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
   condition_codes[X86_32_CC_ ## id] = Expr::parse (a, f);
 #include "x86_32_cc.def"
 #undef X86_32_CC
+  segment_registers.insert (a->get_register ("cs"));
+  segment_registers.insert (a->get_register ("ds"));
+  segment_registers.insert (a->get_register ("es"));
+  segment_registers.insert (a->get_register ("fs"));
+  segment_registers.insert (a->get_register ("gs"));
+  segment_registers.insert (a->get_register ("ss"));
 }
 
 x86_32::parser_data::~parser_data() {
   for (int i = 0; i < NB_CC; i++)
     condition_codes[i]->deref ();
+}
+
+bool 
+x86_32::parser_data::is_segment_register (const Expr *expr) 
+{
+  const RegisterExpr *reg = dynamic_cast<const RegisterExpr *> (expr);
+  assert (reg != NULL);
+
+  return 
+    segment_registers.find (reg->get_descriptor ()) != segment_registers.end ();
 }
 
 Expr *
@@ -277,11 +294,10 @@ x86_32_compute_PF (MicrocodeAddress &from, x86_32::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to)
 {
   int i;
-  int offset = value->get_bv_offset ();
   Expr *cond = Constant::one (1);
 
-  for (i = 0; i < 8; i++, offset++)
-    cond = BinaryApp::create (XOR, cond, value->extract_bit_vector (offset, 1), 
+  for (i = 0; i < 8; i++)
+    cond = BinaryApp::create (XOR, cond, value->extract_bit_vector (i, 1), 
 			      0, 1);
   data.mc->add_assignment (from, data.get_flag ("pf"), cond, to);  
 }

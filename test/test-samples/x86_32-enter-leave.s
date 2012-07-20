@@ -1,0 +1,14 @@
+
+	enterw  $0x1111, $0	
+	enterl	$0x1111, $0
+	
+	enterw	$0x1111, $1
+	enterl	$0x1111, $1
+
+	enterw	$0x1111, $0x12
+	enterl	$0x1111, $0x12
+
+	leavew
+	leavel
+	leave
+	

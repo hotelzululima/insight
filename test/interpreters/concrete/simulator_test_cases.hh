@@ -1,3 +1,34 @@
+/*
+ * simulator_test_cases.hh -- add a comment about this file
+ * 
+ * This file is a part of XXX SET PROJECT NAME XXX. 
+ * 
+ * Copyright (C) 2012 CNRS UMR 5800 & Université Bordeaux I (see AUTHORS file).
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
+ */
+
+/*!
+ * \file
+ * \brief
+ * 
+ */
+#ifndef SIMULATOR_TEST_CASES_HH
+# define SIMULATOR_TEST_CASES_HH
+
 #define SIMULATED_BINARIES \
   BINARY_FILE (X86_32_BASE_1, "x86_32-simulator-01.bin") \
   BINARY_FILE (X86_32_BASE_2, "x86_32-simulator-02.bin") \
@@ -40,6 +71,9 @@
   BINARY_FILE (X86_32_DAADAS, "x86_32-simulator-daadas.bin") \
   BINARY_FILE (X86_32_DIV, "x86_32-simulator-div.bin") \
   \
+  BINARY_FILE (X86_32_ENTERLEAVE_1, "x86_32-simulator-enter-leave-01.bin") \
+  BINARY_FILE (X86_32_ENTERLEAVE_2, "x86_32-simulator-enter-leave-02.bin") \
+  \
   BINARY_FILE (X86_32_IDIV, "x86_32-simulator-idiv.bin") \
   BINARY_FILE (X86_32_IMUL_01, "x86_32-simulator-imul-01.bin") \
   BINARY_FILE (X86_32_IMUL_02, "x86_32-simulator-imul-02.bin") \
@@ -50,7 +84,13 @@
   BINARY_FILE (X86_32_INTO_02, "x86_32-simulator-into-02.bin") \
   \
   BINARY_FILE (X86_32_LSAHF, "x86_32-simulator-lsahf.bin") \
+  BINARY_FILE (X86_32_LODS, "x86_32-simulator-lods.bin") \
+  BINARY_FILE (X86_32_LOOP, "x86_32-simulator-loop.bin") \
+  \
+  BINARY_FILE (X86_32_MOVBE, "x86_32-simulator-movbe.bin") \
   \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   \
   BINARY_FILE (X86_32_GCD, "x86_32-gcd.bin")
+
+#endif /* ! SIMULATOR_TEST_CASES_HH */

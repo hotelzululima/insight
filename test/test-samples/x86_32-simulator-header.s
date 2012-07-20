@@ -24,6 +24,7 @@
 initstack:
  	# mandatory to prevent raise of UndefinedValue 	
 	mov $stack_baseaddr, %esp
+	mov $0x12345678, %ebp
 	.endif
 
 	

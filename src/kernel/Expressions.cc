@@ -82,6 +82,23 @@ int Expr::get_bv_offset() const
 };
 
 Expr *
+Expr::extract_bit_vector (int new_bv_offset, int new_bv_size) const
+{
+  if (new_bv_offset == 0 && get_bv_size () == new_bv_size)
+    return ref ();
+
+  assert (0 <= new_bv_size && new_bv_size <= get_bv_size ());
+
+  assert (0 <= new_bv_offset && new_bv_offset < get_bv_size ());
+  assert (0 <= new_bv_offset + new_bv_size - 1 && 
+	  new_bv_offset + new_bv_size - 1 < get_bv_size ());
+  
+  Expr *result = change_bit_vector (get_bv_offset () + new_bv_offset, new_bv_size);
+
+  return result;
+}
+
+Expr *
 Expr::extract_with_bit_vector_of (const Expr *e) const
 {
   return extract_bit_vector (e->get_bv_offset (), e->get_bv_size ());
@@ -96,19 +113,7 @@ Expr::extract_with_bit_vector_size_of (const Expr *e) const
 void 
 Expr::extract_bit_vector (Expr *&e, int new_bv_offset, int new_bv_size)
 {
-  if (new_bv_offset == 0 && e->get_bv_size () == new_bv_size)
-    return;
-
-  assert (1 <= new_bv_size && new_bv_size < e->get_bv_size ());
-
-  int offset = e->get_bv_offset () + new_bv_offset;
-  
-  assert (0 <= offset && offset < e->get_bv_size ());
-  assert (0 <= offset + new_bv_size - 1 && 
-	  offset + new_bv_size - 1 < e->get_bv_size ());
-
-
-  Expr *tmp = e->extract_bit_vector (offset, new_bv_size);
+  Expr *tmp = e->extract_bit_vector (new_bv_offset, new_bv_size);
   e->deref ();
   e = tmp;
 }
@@ -154,7 +159,7 @@ Variable::get_id() const
 }
 
 Expr * 
-Variable::extract_bit_vector (int new_bv_offset, int new_bv_size) const 
+Variable::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
   return Variable::create (id, new_bv_offset, new_bv_size);
 }
@@ -185,7 +190,7 @@ Constant::get_val() const
 };
 
 Expr * 
-Constant::extract_bit_vector (int new_bv_offset, int new_bv_size) const 
+Constant::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
   return Constant::create (val, new_bv_offset, new_bv_size);
 }
@@ -231,7 +236,7 @@ UnaryApp::get_arg1() const
 }
 
 Expr * 
-UnaryApp::extract_bit_vector (int new_bv_offset, int new_bv_size) const 
+UnaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
   return UnaryApp::create (op, arg1->ref (), new_bv_offset, new_bv_size);
 }
@@ -253,7 +258,8 @@ BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2)
 BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, int arg2)
 {
-  return BinaryApp::create (op, arg1, Constant::create (arg2));
+  return BinaryApp::create (op, arg1, 
+			    Constant::create (arg2, 0, arg1->get_bv_size ()));
 }
 
 BinaryApp * 
@@ -268,7 +274,7 @@ BinaryApp::create (BinaryOp op, Expr *arg1, int arg2, int bv_offset,
 		   int bv_size)
 {
   return BinaryApp::create (op, arg1, 
-			    Constant::create (arg2),
+			    Constant::create (arg2, 0, arg1->get_bv_size ()),
 			    bv_offset, bv_size);
 }
 
@@ -297,7 +303,7 @@ BinaryApp::get_arg2() const
 }
 
 Expr * 
-BinaryApp::extract_bit_vector (int new_bv_offset, int new_bv_size) const 
+BinaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
   return BinaryApp::create (op, arg1->ref (), arg2->ref (), new_bv_offset, 
 			    new_bv_size);
@@ -352,7 +358,7 @@ TernaryApp::get_arg3() const
 
 
 Expr *
-TernaryApp::extract_bit_vector (int new_bv_offset, int new_bv_size) const
+TernaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   //XXX: need to check bitvectors size here
   return TernaryApp::create (op, arg1->ref (), arg2->ref (), arg3->ref(), new_bv_offset,
@@ -411,7 +417,7 @@ MemCell::get_addr() const
 }
 
 Expr * 
-MemCell::extract_bit_vector (int new_bv_offset, int new_bv_size) const 
+MemCell::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
   return MemCell::create (addr->ref (), tag, new_bv_offset, new_bv_size);
 }
@@ -454,7 +460,7 @@ RegisterExpr::get_name() const
 }
 
 Expr * 
-RegisterExpr::extract_bit_vector (int new_bv_offset, int new_bv_size) const 
+RegisterExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
   return RegisterExpr::create (regdesc, new_bv_offset, new_bv_size);
 }

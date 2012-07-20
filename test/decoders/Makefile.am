@@ -44,6 +44,8 @@ X86_32_TESTS = \
 	x86_32-daadas.res \
 	x86_32-div.res \
         \
+        x86_32-enter-leave.res \
+        \
 	x86_32-idiv.res \
 	x86_32-imul.res \
 	x86_32-int.res \
@@ -53,8 +55,11 @@ X86_32_TESTS = \
         \
         x86_32-lsahf.res \
 	x86_32-lea.res \
+	x86_32-lods.res \
+	x86_32-loop.res \
         \
 	x86_32-mov.res \
+	x86_32-movbe.res \
 	x86_32-nop.res \
 	x86_32-not.res \
 	x86_32-or.res \
@@ -92,6 +97,8 @@ X86_32_TESTS += \
 	x86_32-daadas.memres \
 	x86_32-div.memres \
         \
+        x86_32-enter-leave.memres \
+        \
 	x86_32-idiv.memres \
 	x86_32-imul.memres \
 	x86_32-int.memres \
@@ -101,8 +108,11 @@ X86_32_TESTS += \
         \
         x86_32-lsahf.memres \
 	x86_32-lea.memres \
+	x86_32-lods.memres \
+	x86_32-loop.memres \
         \
 	x86_32-mov.memres \
+	x86_32-movbe.memres \
 	x86_32-nop.memres \
 	x86_32-not.memres \
 	x86_32-or.memres \

@@ -177,14 +177,15 @@ x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_cc.def \
 	decoders/binutils/x86-32/x86_32_interrupts.cc \
 	decoders/binutils/x86-32/x86_32_load_store.cc \
+	decoders/binutils/x86-32/x86_32_prefixes.cc \
 	decoders/binutils/x86-32/x86_32_misc_instructions.cc \
+        decoders/binutils/x86-32/x86_32_stack_instructions.cc  \
 	decoders/binutils/x86-32/x86_32_operators_mov.cc \
 	decoders/binutils/x86-32/x86_32_operators_arithmetics.cc \
 	decoders/binutils/x86-32/x86_32_operators_boolean.cc     \
 	decoders/binutils/x86-32/x86_32_operators_jump.cc        \
 	decoders/binutils/x86-32/x86_32_operators_loops.cc       \
 	decoders/binutils/x86-32/x86_32_operators_shift.cc       \
-	decoders/binutils/x86-32/x86_32_operators_strings.cc \
         decoders/binutils/x86-32/x86_32_operators_proc_call.cc  \
 	decoders/binutils/x86-32/x86_32_decoder.hh \
 	decoders/binutils/x86-32/x86_32_decoder.cc \
@@ -194,15 +195,11 @@ x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_translation_functions.hh \
         decoders/binutils/x86-32/x86_32_parser.yy  \
         decoders/binutils/x86-32/x86_32_scanner.ll \
-	decoders/binutils/x86-32/x86_32_A_instr.cc \
 	decoders/binutils/x86-32/x86_32_B_instr.cc \
 	decoders/binutils/x86-32/x86_32_C_instr.cc \
-	decoders/binutils/x86-32/x86_32_D_instr.cc \
-	decoders/binutils/x86-32/x86_32_H_instr.cc \
 	decoders/binutils/x86-32/x86_32_L_instr.cc \
 	decoders/binutils/x86-32/x86_32_M_instr.cc \
 	decoders/binutils/x86-32/x86_32_N_instr.cc \
-	decoders/binutils/x86-32/x86_32_P_instr.cc \
 	decoders/binutils/x86-32/x86_32_X_instr.cc 
 
 BUILT_SOURCES+= \

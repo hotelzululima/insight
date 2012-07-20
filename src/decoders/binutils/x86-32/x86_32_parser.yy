@@ -59,6 +59,7 @@ namespace x86_32 {
     LValue *get_flag (const char *flagname) const;
     LValue *get_tmp_register (const char *id, int size) const;
     LValue *get_register (const char *regname) const;
+    bool is_segment_register (const Expr *expr); 
 
     Expr *get_memory_reference (Expr *section, int disp, Expr *bis) const;
 
@@ -67,6 +68,7 @@ namespace x86_32 {
     MicrocodeAddress start_ma;
     MicrocodeAddress next_ma;
     Microcode *mc;
+    bool lock;
     bool data16;
     bool data_size;
     bool addr16;
@@ -76,6 +78,8 @@ namespace x86_32 {
     const char *stack_segment;
     MicrocodeArchitecture *arch;
     Expr *condition_codes[NB_CC];
+    __gnu_cxx::hash_set<const RegisterDesc *, 
+			RegisterDesc::Hash> segment_registers;
   };
 }
 }
@@ -314,6 +318,8 @@ using namespace x86_32;
 %token  TOK_DPPS             "DPPS"
 %token  TOK_EMMS             "EMMS"
 %token  TOK_ENTER            "ENTER"
+%token  TOK_ENTERW           "ENTERW"
+%token  TOK_ENTERL           "ENTERL"
 %token  TOK_EXTRACTPS        "EXTRACTPS"
 %token  TOK_F2XM1            "F2XM1"
 %token  TOK_FABS             "FABS"
@@ -517,6 +523,8 @@ using namespace x86_32;
 %token  TOK_LSS              "LSS"
 %token  TOK_LEA              "LEA"
 %token  TOK_LEAVE            "LEAVE"
+%token  TOK_LEAVEW           "LEAVEW"
+%token  TOK_LEAVEL           "LEAVEL"
 %token  TOK_LFENCE           "LFENCE"
 %token  TOK_LGDT             "LGDT"
 %token  TOK_LIDT             "LIDT"
@@ -524,13 +532,12 @@ using namespace x86_32;
 %token  TOK_LMSW             "LMSW"
 %token  TOK_LOCK             "LOCK"
 %token  TOK_LODS             "LODS"
-%token  TOK_LODSB            "LODSB"
-%token  TOK_LODSW            "LODSW"
-%token  TOK_LODSD            "LODSD"
-%token  TOK_LODSQ            "LODSQ"
 %token  TOK_LOOP             "LOOP"
 %token  TOK_LOOPE            "LOOPE"
 %token  TOK_LOOPNE           "LOOPNE"
+%token  TOK_LOOPW            "LOOPW"
+%token  TOK_LOOPEW           "LOOPEW"
+%token  TOK_LOOPNEW          "LOOPNEW"
 %token  TOK_LSL              "LSL"
 %token  TOK_LTR              "LTR"
 %token  TOK_MASKMOVDQU       "MASKMOVDQU"
@@ -868,10 +875,6 @@ using namespace x86_32;
 %token  TOK_STI              "STI"
 %token  TOK_STMXCSR          "STMXCSR"
 %token  TOK_STOS             "STOS"
-%token  TOK_STOSB            "STOSB"
-%token  TOK_STOSW            "STOSW"
-%token  TOK_STOSD            "STOSD"
-%token  TOK_STOSQ            "STOSQ"
 %token  TOK_STR              "STR"
 %token  TOK_SUB              "SUB"
 %token  TOK_SUBB             "SUBB"
@@ -1222,6 +1225,8 @@ instruction:
 | TOK_DPPS operand TOK_COMMA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(DPPS)> (data, $2, $4, $6); }
 | TOK_EMMS operand { x86_32_translate<X86_32_TOKEN(EMMS)> (data, $2); }
 | TOK_ENTER operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(ENTER)> (data, $2, $4); }
+| TOK_ENTERW operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(ENTERW)> (data, $2, $4); }
+| TOK_ENTERL operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(ENTERL)> (data, $2, $4); }
 | TOK_EXTRACTPS operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(EXTRACTPS)> (data, $2, $4); }
 | TOK_F2XM1  { x86_32_translate<X86_32_TOKEN(F2XM1)> (data); }
 | TOK_FABS  { x86_32_translate<X86_32_TOKEN(FABS)> (data); }
@@ -1481,25 +1486,21 @@ instruction:
 | TOK_LSS operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LSS)> (data, $2, $4); }
 | TOK_LEA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LEA)> (data, $2, $4); }
 | TOK_LEAVE  { x86_32_translate<X86_32_TOKEN(LEAVE)> (data); }
+| TOK_LEAVEW  { x86_32_translate<X86_32_TOKEN(LEAVEW)> (data); }
+| TOK_LEAVEL  { x86_32_translate<X86_32_TOKEN(LEAVEL)> (data); }
 | TOK_LFENCE  { x86_32_translate<X86_32_TOKEN(LFENCE)> (data); }
 | TOK_LGDT operand { x86_32_translate<X86_32_TOKEN(LGDT)> (data, $2); }
 | TOK_LIDT operand { x86_32_translate<X86_32_TOKEN(LIDT)> (data, $2); }
 | TOK_LLDT operand { x86_32_translate<X86_32_TOKEN(LLDT)> (data, $2); }
 | TOK_LMSW operand { x86_32_translate<X86_32_TOKEN(LMSW)> (data, $2); }
 | TOK_LOCK { x86_32_translate<X86_32_TOKEN(LOCK)> (data, true); } instruction { x86_32_translate<X86_32_TOKEN(LOCK)> (data, false); }
-| TOK_LODS  { x86_32_translate<X86_32_TOKEN(LODS)> (data); }
 | TOK_LODS operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LODS)> (data, $2, $4); }
-| TOK_LODSB  { x86_32_translate<X86_32_TOKEN(LODSB)> (data); }
-| TOK_LODSB operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LODSB)> (data, $2, $4); }
-| TOK_LODSW  { x86_32_translate<X86_32_TOKEN(LODSW)> (data); }
-| TOK_LODSW operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LODSW)> (data, $2, $4); }
-| TOK_LODSD  { x86_32_translate<X86_32_TOKEN(LODSD)> (data); }
-| TOK_LODSD operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LODSD)> (data, $2, $4); }
-| TOK_LODSQ  { x86_32_translate<X86_32_TOKEN(LODSQ)> (data); }
-| TOK_LODSQ operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LODSQ)> (data, $2, $4); }
 | TOK_LOOP operand { x86_32_translate<X86_32_TOKEN(LOOP)> (data, $2); }
 | TOK_LOOPE operand { x86_32_translate<X86_32_TOKEN(LOOPE)> (data, $2); }
 | TOK_LOOPNE operand { x86_32_translate<X86_32_TOKEN(LOOPNE)> (data, $2); }
+| TOK_LOOPW operand { x86_32_translate<X86_32_TOKEN(LOOPW)> (data, $2); }
+| TOK_LOOPEW operand { x86_32_translate<X86_32_TOKEN(LOOPEW)> (data, $2); }
+| TOK_LOOPNEW operand { x86_32_translate<X86_32_TOKEN(LOOPNEW)> (data, $2); }
 | TOK_LSL operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(LSL)> (data, $2, $4); }
 | TOK_LTR operand { x86_32_translate<X86_32_TOKEN(LTR)> (data, $2); }
 | TOK_MASKMOVDQU operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MASKMOVDQU)> (data, $2, $4); }
@@ -1993,14 +1994,6 @@ instruction:
 | TOK_STMXCSR operand { x86_32_translate<X86_32_TOKEN(STMXCSR)> (data, $2); }
 | TOK_STOS  { x86_32_translate<X86_32_TOKEN(STOS)> (data); }
 | TOK_STOS operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(STOS)> (data, $2, $4); }
-| TOK_STOSB  { x86_32_translate<X86_32_TOKEN(STOSB)> (data); }
-| TOK_STOSB operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(STOSB)> (data, $2, $4); }
-| TOK_STOSW  { x86_32_translate<X86_32_TOKEN(STOSW)> (data); }
-| TOK_STOSW operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(STOSW)> (data, $2, $4); }
-| TOK_STOSD  { x86_32_translate<X86_32_TOKEN(STOSD)> (data); }
-| TOK_STOSD operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(STOSD)> (data, $2, $4); }
-| TOK_STOSQ  { x86_32_translate<X86_32_TOKEN(STOSQ)> (data); }
-| TOK_STOSQ operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(STOSQ)> (data, $2, $4); }
 | TOK_STR operand { x86_32_translate<X86_32_TOKEN(STR)> (data, $2); }
 | TOK_SUB operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(SUB)> (data, $2, $4); }
 | TOK_SUBB operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(SUBB)> (data, $2, $4); }

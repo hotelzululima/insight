@@ -131,6 +131,11 @@ X86_32_TRANSLATE_0_OP(CDQ)
 			   data.next_ma);
 }
 
+X86_32_TRANSLATE_0_OP(HLT)
+{
+  data.mc->add_skip (data.start_ma, data.start_ma, Constant::zero (1));
+}
+
 
 X86_32_TRANSLATE_0_OP(INVD)
 {

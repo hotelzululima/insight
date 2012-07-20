@@ -670,7 +670,7 @@ X86_32_TRANSLATE_2_OP(IMUL)
   x86_32_if_then_else (from, data,
 		       BinaryApp::create (NEQ, Constant::zero (dstsz),
 					  temp->extract_bit_vector (dstsz, 
-								    2 * dstsz)),
+								    dstsz)),
 		       from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::one (1));
@@ -722,7 +722,7 @@ X86_32_TRANSLATE_3_OP(IMUL)
   x86_32_if_then_else (from, data,
 		       BinaryApp::create (NEQ, Constant::zero (dstsz),
 					  temp->extract_bit_vector (dstsz, 
-								    2 * dstsz)),
+								    dstsz)),
 		       from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::one (1));
