@@ -30,8 +30,8 @@
 #ifndef INTERPRETERS_INTERVAL_INTERVAL_EXPR_SEMANTICS_HH
 #define INTERPRETERS_INTERVAL_INTERVAL_EXPR_SEMANTICS_HH
 
-#include <interpreters/ExprSemantics.hh>
-#include <interpreters/interval/IntervalValue.hh>
+#include <domains/ExprSemantics.hh>
+#include <domains/interval/IntervalValue.hh>
 
 typedef ExprSemantics<IntervalValue> IntervalExprSemantics;
 

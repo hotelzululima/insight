@@ -31,7 +31,7 @@
 #ifndef KERNEL_MICROCODE_HH
 #define KERNEL_MICROCODE_HH
 
-#include <interpreters/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteMemory.hh>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/microcode/MicrocodeStore.hh>
 #include <utils/graph.hh>

@@ -547,8 +547,8 @@ bool RegisterExpr::contains(Expr *o) const
 }
 
 /*****************************************************************************/
-#include <interpreters/concrete/ConcreteExprSemantics.hh>
-#include <interpreters/concrete/ConcreteValue.hh>
+#include <domains/concrete/ConcreteExprSemantics.hh>
+#include <domains/concrete/ConcreteValue.hh>
 
 /* Constant computations */
 class ConstantCompute: public TermReplacingRule

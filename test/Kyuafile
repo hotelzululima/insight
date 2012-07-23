@@ -2,6 +2,6 @@ syntax("kyuafile", 1)
 
 test_suite("Insight")
 
-include("interpreters/Kyuafile")
+include("domains/Kyuafile")
 include("kernel/Kyuafile")
 include("loaders/Kyuafile")

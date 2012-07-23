@@ -31,9 +31,9 @@
 #ifndef INTERPRETERS_SETS_SETS_MEMORY_HH
 #define INTERPRETERS_SETS_SETS_MEMORY_HH
 
-#include <interpreters/common/ConcreteAddressMemory.hh>
-#include <interpreters/sets/SetsAddress.hh>
-#include <interpreters/sets/SetsValue.hh>
+#include <domains/common/ConcreteAddressMemory.hh>
+#include <domains/sets/SetsAddress.hh>
+#include <domains/sets/SetsValue.hh>
 #include <kernel/Memory.hh>
 #include <kernel/RegisterMap.hh>
 

@@ -34,10 +34,10 @@
 
 #include <analyses/microcode_exec.hh>
 #include <decoders/Decoder.hh>
-#include <interpreters/common/ConcreteProgramPoint.hh>
-#include <interpreters/concrete/ConcreteValue.hh>
-#include <interpreters/concrete/ConcreteMemory.hh>
-#include <interpreters/concrete/ConcreteExprSemantics.hh>
+#include <domains/common/ConcreteProgramPoint.hh>
+#include <domains/concrete/ConcreteValue.hh>
+#include <domains/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteExprSemantics.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/Microcode.hh>
 

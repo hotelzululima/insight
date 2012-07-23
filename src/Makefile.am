@@ -115,44 +115,44 @@ kernel_cleanfiles = \
 	${kernel_built_sources}
 
 
-## interpreter module
-interpreters_source = \
-	interpreters/ExprSemantics.hh                   \
-	interpreters/ExprSemantics.ii                   \
-	interpreters/common/ConcreteAddressMemory.hh    \
-	interpreters/common/ConcreteAddressMemory.ii    \
-	interpreters/common/ConcreteProgramPoint.cc     \
-	interpreters/common/ConcreteProgramPoint.hh     \
-	interpreters/concrete/ConcreteAddress.cc        \
-	interpreters/concrete/ConcreteAddress.hh        \
-	interpreters/concrete/ConcreteExprSemantics.cc  \
-	interpreters/concrete/ConcreteExprSemantics.hh  \
-	interpreters/concrete/ConcreteMemory.cc         \
-	interpreters/concrete/ConcreteMemory.hh         \
-	interpreters/concrete/ConcreteValue.cc          \
-	interpreters/concrete/ConcreteValue.hh          \
-	interpreters/concrete/concrete_context.cc       \
-	interpreters/concrete/concrete_context.hh       \
-	interpreters/interval/interval_context.cc       \
-	interpreters/interval/interval_context.hh       \
-	interpreters/interval/IntervalExprSemantics.cc  \
-	interpreters/interval/IntervalExprSemantics.hh  \
-	interpreters/interval/IntervalAddress.hh        \
-	interpreters/interval/IntervalAddress.cc        \
-	interpreters/interval/IntervalMemory.cc         \
-	interpreters/interval/IntervalMemory.hh         \
-	interpreters/interval/IntervalValue.cc          \
-	interpreters/interval/IntervalValue.hh          \
-	interpreters/sets/SetsValue.hh                  \
-	interpreters/sets/SetsValue.cc                  \
-	interpreters/sets/SetsAddress.hh                \
-	interpreters/sets/SetsAddress.cc                \
-	interpreters/sets/SetsMemory.hh                 \
-	interpreters/sets/SetsMemory.cc                 \
-	interpreters/sets/SetsExprSemantics.hh          \
-	interpreters/sets/SetsExprSemantics.cc          \
-	interpreters/sets/SetsContext.hh                \
-	interpreters/sets/SetsContext.cc
+## domains module
+domains_source = \
+	domains/ExprSemantics.hh                   \
+	domains/ExprSemantics.ii                   \
+	domains/common/ConcreteAddressMemory.hh    \
+	domains/common/ConcreteAddressMemory.ii    \
+	domains/common/ConcreteProgramPoint.cc     \
+	domains/common/ConcreteProgramPoint.hh     \
+	domains/concrete/ConcreteAddress.cc        \
+	domains/concrete/ConcreteAddress.hh        \
+	domains/concrete/ConcreteExprSemantics.cc  \
+	domains/concrete/ConcreteExprSemantics.hh  \
+	domains/concrete/ConcreteMemory.cc         \
+	domains/concrete/ConcreteMemory.hh         \
+	domains/concrete/ConcreteValue.cc          \
+	domains/concrete/ConcreteValue.hh          \
+	domains/concrete/concrete_context.cc       \
+	domains/concrete/concrete_context.hh       \
+	domains/interval/interval_context.cc       \
+	domains/interval/interval_context.hh       \
+	domains/interval/IntervalExprSemantics.cc  \
+	domains/interval/IntervalExprSemantics.hh  \
+	domains/interval/IntervalAddress.hh        \
+	domains/interval/IntervalAddress.cc        \
+	domains/interval/IntervalMemory.cc         \
+	domains/interval/IntervalMemory.hh         \
+	domains/interval/IntervalValue.cc          \
+	domains/interval/IntervalValue.hh          \
+	domains/sets/SetsValue.hh                  \
+	domains/sets/SetsValue.cc                  \
+	domains/sets/SetsAddress.hh                \
+	domains/sets/SetsAddress.cc                \
+	domains/sets/SetsMemory.hh                 \
+	domains/sets/SetsMemory.cc                 \
+	domains/sets/SetsExprSemantics.hh          \
+	domains/sets/SetsExprSemantics.cc          \
+	domains/sets/SetsContext.hh                \
+	domains/sets/SetsContext.cc
 
 ## loaders module
 loaders_sources = \
@@ -294,7 +294,7 @@ lib_LTLIBRARIES = libinsight.la
 libinsight_la_SOURCES =  \
 	$(analyses_sources) 	\
 	$(decoders_sources) 	\
-	$(interpreters_source) 	\
+	$(domains_source) 	\
 	$(kernel_source) 	\
 	$(loaders_sources) 	\
 	$(utils_source)

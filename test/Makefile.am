@@ -11,18 +11,18 @@ AUTOMAKE_OPTIONS=subdir-objects
 EXTRA_DIST = test-samples \
              loaders/binary/Kyuafile \
              loaders/Kyuafile \
-             interpreters/concrete/Kyuafile \
-             interpreters/Kyuafile \
+             domains/concrete/Kyuafile \
+             domains/Kyuafile \
              kernel/Kyuafile \
              slicing/Kyuafile \
              Kyuafile
 
 
 check_PROGRAMS = \
-	interpreters/concrete/concreteaddress_test \
-	interpreters/concrete/concretememory_test  \
-	interpreters/concrete/concretevalue_test   \
-	interpreters/concrete/simulator_test       \
+	domains/concrete/concreteaddress_test \
+	domains/concrete/concretememory_test  \
+	domains/concrete/concretevalue_test   \
+	domains/concrete/simulator_test       \
 	loaders/binary/binaryloader_test	   \
 	kernel/architecture_test 		   \
 	kernel/expr_parser_test 		   \
@@ -43,18 +43,18 @@ loaders_binary_binaryloader_test_SOURCES = \
 	loaders/binary/binaryloader_test.cc
 
 # Interpreters module tests
-interpreters_concrete_concreteaddress_test_SOURCES = \
-	interpreters/concrete/concreteaddress_test.cc
+domains_concrete_concreteaddress_test_SOURCES = \
+	domains/concrete/concreteaddress_test.cc
 
-interpreters_concrete_concretememory_test_SOURCES = \
-	interpreters/concrete/concretememory_test.cc
+domains_concrete_concretememory_test_SOURCES = \
+	domains/concrete/concretememory_test.cc
 
-interpreters_concrete_concretevalue_test_SOURCES = \
-	interpreters/concrete/concretevalue_test.cc
+domains_concrete_concretevalue_test_SOURCES = \
+	domains/concrete/concretevalue_test.cc
 
-interpreters_concrete_simulator_test_SOURCES = \
-	interpreters/concrete/simulator_test_cases.hh \
-	interpreters/concrete/simulator_test.cc
+domains_concrete_simulator_test_SOURCES = \
+	domains/concrete/simulator_test_cases.hh \
+	domains/concrete/simulator_test.cc
 
 check: all 
 	@ kyua test \

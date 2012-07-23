@@ -31,7 +31,7 @@
 #define INTERPRETERS_INTERVAL_INTERVAL_ADDRESS_HH
 
 #include <kernel/Address.hh>
-#include <interpreters/interval/IntervalValue.hh>
+#include <domains/interval/IntervalValue.hh>
 
 class IntervalAddress : public Address
 {

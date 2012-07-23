@@ -37,9 +37,9 @@
 
 #include <analyses/microcode_exec.hh>
 #include <analyses/slicing/Slicing.hh>
-#include <interpreters/concrete/ConcreteExprSemantics.hh>
-#include <interpreters/concrete/concrete_context.hh>
-#include <interpreters/ExprSemantics.hh>
+#include <domains/concrete/ConcreteExprSemantics.hh>
+#include <domains/concrete/concrete_context.hh>
+#include <domains/ExprSemantics.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/expressions/Formula.hh>
 #include <kernel/insight.hh>

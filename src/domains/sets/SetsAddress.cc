@@ -28,11 +28,11 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/sets/SetsAddress.hh>
+#include <domains/sets/SetsAddress.hh>
 
 #include <cassert>
 
-#include <interpreters/sets/SetsValue.hh>
+#include <domains/sets/SetsValue.hh>
 
 SetsAddress::SetsAddress(SetsValue v) : address(v) {}
 

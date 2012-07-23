@@ -30,11 +30,11 @@
 #ifndef INTERPRETERS_INTERVAL_CONTEXT_HH_
 #define INTERPRETERS_INTERVAL_CONTEXT_HH_
 
-#include <interpreters/common/ConcreteProgramPoint.hh>
-#include <interpreters/interval/IntervalAddress.hh>
-#include <interpreters/interval/IntervalExprSemantics.hh>
-#include <interpreters/interval/IntervalMemory.hh>
-#include <interpreters/interval/IntervalValue.hh>
+#include <domains/common/ConcreteProgramPoint.hh>
+#include <domains/interval/IntervalAddress.hh>
+#include <domains/interval/IntervalExprSemantics.hh>
+#include <domains/interval/IntervalMemory.hh>
+#include <domains/interval/IntervalValue.hh>
 #include <kernel/Architecture.hh>
 
 class IntervalFactory;

@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "interpreters/interval/interval_context.hh"
+#include <domains/interval/interval_context.hh>
 
 IntervalContext::IntervalContext(IntervalMemory *mem)
 {

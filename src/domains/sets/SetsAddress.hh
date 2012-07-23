@@ -31,9 +31,9 @@
 #ifndef INTERPRETERS_SETS_SETS_ADDRESS_HH
 #define INTERPRETERS_SETS_SETS_ADDRESS_HH
 
+#include <domains/sets/SetsValue.hh>
+#include <domains/common/ConcreteAddressMemory.hh>
 #include <kernel/Address.hh>
-#include <interpreters/sets/SetsValue.hh>
-#include <interpreters/common/ConcreteAddressMemory.hh>
 
 class SetsAddress : public Address
 {

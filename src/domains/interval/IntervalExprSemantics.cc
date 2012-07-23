@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/interval/IntervalExprSemantics.hh>
+#include <domains/interval/IntervalExprSemantics.hh>
 
 #include <algorithm>
 using namespace std;

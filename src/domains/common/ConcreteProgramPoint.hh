@@ -32,11 +32,10 @@
 
 #include <string>
 
-#include <kernel/Microcode.hh>
-
 #include <analyses/microcode_exec.hh>
-#include <interpreters/concrete/ConcreteMemory.hh>
-#include <interpreters/concrete/ConcreteValue.hh>
+#include <domains/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteValue.hh>
+#include <kernel/Microcode.hh>
 
 class ConcreteProgramPoint : public AbstractProgramPoint<ConcreteProgramPoint>,
   public MicrocodeAddress

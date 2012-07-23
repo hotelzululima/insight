@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/concrete/ConcreteExprSemantics.hh>
+#include <domains/concrete/ConcreteExprSemantics.hh>
 #include <utils/bv-manip.hh>
 #include <iostream>
 

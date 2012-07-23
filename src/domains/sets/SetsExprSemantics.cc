@@ -28,8 +28,9 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/concrete/ConcreteExprSemantics.hh>
-#include <interpreters/sets/SetsExprSemantics.hh>
+#include <domains/concrete/ConcreteExprSemantics.hh>
+#include <domains/sets/SetsExprSemantics.hh>
+
 #include <list>
 
 /*! \brief Compute all possible values */

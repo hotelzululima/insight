@@ -37,8 +37,8 @@
 #include <utils/tools.hh>
 
 #include <kernel/Architecture.hh>
-#include <interpreters/concrete/ConcreteAddress.hh>
-#include <interpreters/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+#include <domains/concrete/ConcreteMemory.hh>
 
 /******************** BinaryLoader Exceptions ***********************/
 

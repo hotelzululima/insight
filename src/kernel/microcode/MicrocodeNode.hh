@@ -33,7 +33,7 @@
 #include <vector>
 #include <set>
 
-#include <interpreters/concrete/ConcreteAddress.hh>
+#include <domains/concrete/ConcreteAddress.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/Annotation.hh>
 #include <kernel/Expressions.hh>

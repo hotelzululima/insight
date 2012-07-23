@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/interval/IntervalValue.hh>
+#include <domains/interval/IntervalValue.hh>
 #include <utils/tools.hh>
 
 #include <algorithm>

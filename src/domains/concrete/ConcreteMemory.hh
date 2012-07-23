@@ -38,14 +38,14 @@
 #include <map>
 #include <ext/hash_map>
 
+#include <domains/concrete/ConcreteValue.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+
 #include <kernel/Memory.hh>
 #include <kernel/RegisterMap.hh>
 
 #include <utils/Object.hh>
 #include <utils/tools.hh>
-
-#include <interpreters/concrete/ConcreteValue.hh>
-#include <interpreters/concrete/ConcreteAddress.hh>
 
 /** \brief ConcreteMemory module which manage memory and also registers. */
 class ConcreteMemory : public Memory<ConcreteAddress, ConcreteValue>,

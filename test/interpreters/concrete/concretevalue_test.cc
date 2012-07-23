@@ -32,7 +32,7 @@
 
 #include <string>
 
-#include <interpreters/concrete/ConcreteValue.hh>
+#include <domains/concrete/ConcreteValue.hh>
 #include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
 

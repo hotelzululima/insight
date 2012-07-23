@@ -33,15 +33,14 @@
 #include <set>
 #include <string>
 
-#include <utils/option.hh>
+#include <domains/concrete/ConcreteValue.hh>
 
 #include <kernel/Architecture.hh>
 #include <kernel/Value.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
 
-#include <interpreters/concrete/ConcreteValue.hh>
-
+#include <utils/option.hh>
 
 /*****************************************************************************/
 

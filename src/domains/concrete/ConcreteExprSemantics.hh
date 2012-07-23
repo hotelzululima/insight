@@ -31,8 +31,8 @@
 #ifndef INTERPRETERS_CONCRETE_CONCRETE_EXPR_SEMANTICS_HH
 #define INTERPRETERS_CONCRETE_CONCRETE_EXPR_SEMANTICS_HH
 
-#include <interpreters/ExprSemantics.hh>
-#include <interpreters/concrete/ConcreteValue.hh>
+#include <domains/ExprSemantics.hh>
+#include <domains/concrete/ConcreteValue.hh>
 
 typedef ExprSemantics<ConcreteValue> ConcreteExprSemantics;
 

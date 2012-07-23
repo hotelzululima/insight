@@ -28,9 +28,9 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/common/ConcreteProgramPoint.hh>
-#include <interpreters/concrete/ConcreteMemory.hh>
-#include <interpreters/concrete/concrete_context.hh>
+#include <domains/common/ConcreteProgramPoint.hh>
+#include <domains/concrete/ConcreteMemory.hh>
+#include <domains/concrete/concrete_context.hh>
 
 #include <sstream>
 

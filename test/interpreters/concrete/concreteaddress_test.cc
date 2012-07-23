@@ -31,8 +31,8 @@
 #include <atf-c++.hpp>
 
 #include <kernel/insight.hh>
-#include <interpreters/concrete/ConcreteAddress.hh>
-#include <interpreters/concrete/ConcreteValue.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+#include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Architecture.hh>
 
 ATF_TEST_CASE(concreteaddress);

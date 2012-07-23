@@ -33,10 +33,10 @@
 
 #include <inttypes.h>
 
+#include <domains/concrete/ConcreteValue.hh>
+
 #include <kernel/Address.hh>
 #include <kernel/Architecture.hh>
-
-#include <interpreters/concrete/ConcreteValue.hh>
 
 /** \brief Real Concrete address for memory access */
 class ConcreteAddress : public Address

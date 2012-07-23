@@ -34,8 +34,8 @@
 #include <vector>
 
 #include <decoders/binutils/BinutilsDecoder.hh>
+#include <domains/concrete/ConcreteAddress.hh>
 #include <kernel/Microcode.hh>
-#include <interpreters/concrete/ConcreteAddress.hh>
 
 /* Decoding function for x86-32 architecture */
 bool

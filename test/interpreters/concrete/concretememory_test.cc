@@ -30,7 +30,7 @@
 
 #include <atf-c++.hpp>
 
-#include <interpreters/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteMemory.hh>
 #include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
 

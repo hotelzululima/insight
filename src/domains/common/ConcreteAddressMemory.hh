@@ -34,11 +34,11 @@
 #include <iostream>
 #include <ext/hash_map>
 
+#include <domains/concrete/ConcreteAddress.hh>
+
 #include <kernel/Architecture.hh>
 #include <kernel/Memory.hh>
 #include <kernel/Expressions.hh>
-
-#include <interpreters/concrete/ConcreteAddress.hh>
 
 template <typename Value>
 class ConcreteAddressMemory : public Memory<ConcreteAddress, Value>

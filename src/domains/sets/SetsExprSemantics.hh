@@ -31,8 +31,8 @@
 #ifndef INTERPRETERS_SETS_SETS_EXPR_SEMANTICS_HH
 #define INTERPRETERS_SETS_SETS_EXPR_SEMANTICS_HH
 
-#include <interpreters/ExprSemantics.hh>
-#include <interpreters/sets/SetsValue.hh>
+#include <domains/ExprSemantics.hh>
+#include <domains/sets/SetsValue.hh>
 
 typedef ExprSemantics<SetsValue> SetsExprSemantics;
 

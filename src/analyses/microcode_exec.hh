@@ -34,13 +34,14 @@
 #include <map>
 #include <list>
 #include <string>
-#include <utils/map-helpers.hh>
-#include <utils/option.hh>
+
+#include <domains/ExprSemantics.hh>
+#include <domains/concrete/ConcreteAddress.hh>
 #include <kernel/Memory.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/microcode/MicrocodeStore.hh>
-#include <interpreters/ExprSemantics.hh>
-#include <interpreters/concrete/ConcreteAddress.hh>
+#include <utils/map-helpers.hh>
+#include <utils/option.hh>
 
 #define TEMPLATE \
   template <typename Address,       \

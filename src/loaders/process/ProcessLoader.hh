@@ -34,8 +34,8 @@
 #include <unistd.h>
 #include <stdexcept>
 
-#include <interpreters/concrete/ConcreteAddress.hh>
-#include <interpreters/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+#include <domains/concrete/ConcreteMemory.hh>
 
 #include <utils/tools.hh>
 

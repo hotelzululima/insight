@@ -30,9 +30,9 @@
 #ifndef INTERPRETERS_INTERVAL_INTERVAL_MEMORY_HH
 #define INTERPRETERS_INTERVAL_INTERVAL_MEMORY_HH
 
-#include <interpreters/common/ConcreteAddressMemory.hh>
-#include <interpreters/interval/IntervalAddress.hh>
-#include <interpreters/interval/IntervalValue.hh>
+#include <domains/common/ConcreteAddressMemory.hh>
+#include <domains/interval/IntervalAddress.hh>
+#include <domains/interval/IntervalValue.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/Memory.hh>
 #include <kernel/RegisterMap.hh>

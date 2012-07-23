@@ -37,13 +37,13 @@
 #include <utility>
 #include <stdexcept>
 
-#include <utils/Object.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+#include <domains/concrete/ConcreteMemory.hh>
 
 #include <kernel/Microcode.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 
-#include <interpreters/concrete/ConcreteAddress.hh>
-#include <interpreters/concrete/ConcreteMemory.hh>
+#include <utils/Object.hh>
 
 /******************** Decoder helper functions ***********************/
 

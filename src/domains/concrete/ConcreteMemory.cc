@@ -38,8 +38,9 @@
 #include <list>
 #include <sstream>
 
+#include <domains/concrete/ConcreteAddress.hh>
+
 #include <utils/bv-manip.hh>
-#include <interpreters/concrete/ConcreteAddress.hh>
 
 
 using namespace std;

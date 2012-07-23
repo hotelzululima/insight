@@ -32,7 +32,7 @@
 
 #include <sstream>
 
-#include <interpreters/concrete/ConcreteMemory.hh>
+#include <domains/concrete/ConcreteMemory.hh>
 
 using namespace std;
 

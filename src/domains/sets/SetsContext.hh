@@ -32,11 +32,11 @@
 #define INTERPRETERS_SETS_SETS_CONTEXT_HH
 
 #include <analyses/microcode_exec.hh>
-#include <interpreters/common/ConcreteProgramPoint.hh>
-#include <interpreters/sets/SetsAddress.hh>
-#include <interpreters/sets/SetsExprSemantics.hh>
-#include <interpreters/sets/SetsMemory.hh>
-#include <interpreters/sets/SetsValue.hh>
+#include <domains/common/ConcreteProgramPoint.hh>
+#include <domains/sets/SetsAddress.hh>
+#include <domains/sets/SetsExprSemantics.hh>
+#include <domains/sets/SetsMemory.hh>
+#include <domains/sets/SetsValue.hh>
 #include <kernel/Architecture.hh>
 #include <utils/option.hh>
 

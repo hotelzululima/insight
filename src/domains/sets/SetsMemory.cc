@@ -28,12 +28,12 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/sets/SetsMemory.hh>
+#include <domains/sets/SetsMemory.hh>
 
-#include <interpreters/common/ConcreteAddressMemory.hh>
-#include <interpreters/concrete/concrete_context.hh>
-#include <interpreters/sets/SetsAddress.hh>
-#include <interpreters/sets/SetsValue.hh>
+#include <domains/common/ConcreteAddressMemory.hh>
+#include <domains/concrete/concrete_context.hh>
+#include <domains/sets/SetsAddress.hh>
+#include <domains/sets/SetsValue.hh>
 #include <kernel/Memory.hh>
 
 using namespace std;

@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/interval/IntervalMemory.hh>
+#include <domains/interval/IntervalMemory.hh>
 
 #include <sstream>
 #include <string>

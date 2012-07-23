@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/common/ConcreteAddressMemory.hh>
+#include <domains/common/ConcreteAddressMemory.hh>
 
 #include <kernel/Memory.hh>
 #include <utils/tools.hh>

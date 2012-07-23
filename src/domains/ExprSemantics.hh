@@ -57,6 +57,6 @@ public:
   static Value extract_eval(Value v, int off, int size);
 };
 
-#include <interpreters/ExprSemantics.ii>
+#include <domains/ExprSemantics.ii>
 
 #endif /* INTERPRETERS_EXPR_SEMANTICS_HH */

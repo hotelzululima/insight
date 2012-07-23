@@ -28,13 +28,13 @@
  * SUCH DAMAGE.
  */
 
-#include "interpreters/sets/SetsContext.hh"
+#include <domains/sets/SetsContext.hh>
 
-#include "interpreters/concrete/concrete_context.hh"
-#include "interpreters/sets/SetsAddress.hh"
-#include "interpreters/sets/SetsExprSemantics.hh"
-#include "interpreters/sets/SetsMemory.hh"
-#include "interpreters/sets/SetsValue.hh"
+#include <domains/concrete/concrete_context.hh>
+#include <domains/sets/SetsAddress.hh>
+#include <domains/sets/SetsExprSemantics.hh>
+#include <domains/sets/SetsMemory.hh>
+#include <domains/sets/SetsValue.hh>
 
 #include <utils/tools.hh>
 

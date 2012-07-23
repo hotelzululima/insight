@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <interpreters/common/ConcreteProgramPoint.hh>
+#include <domains/common/ConcreteProgramPoint.hh>
 
 #include <sstream>
 

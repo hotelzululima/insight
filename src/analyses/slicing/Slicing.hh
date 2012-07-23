@@ -33,14 +33,14 @@
 
 #include <list>
 #include <map>
-#include <utils/option.hh>
-#include <utils/map-helpers.hh>
+#include <domains/common/ConcreteProgramPoint.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/Formula.hh>
-#include <interpreters/common/ConcreteProgramPoint.hh>
 #include <kernel/microcode/MicrocodeNode.hh>
+#include <utils/option.hh>
+#include <utils/map-helpers.hh>
 
 
 class DataDependency;
