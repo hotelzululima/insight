@@ -140,6 +140,12 @@ X86_32_TRANSLATE_0_OP(POPAW)
   s_pop_all (data.start_ma, data.next_ma, data, regs);
 }
 
+X86_32_TRANSLATE_0_OP(POPAL)
+{
+  x86_32_translate<X86_32_TOKEN(POPA)> (data);
+}
+
+
 X86_32_TRANSLATE_1_OP(POP)
 {
   assert (op1->get_bv_size () == 32 || op1->get_bv_size () == 16);

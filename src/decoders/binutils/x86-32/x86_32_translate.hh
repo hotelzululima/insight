@@ -174,12 +174,6 @@ x86_32_compute_flag_proc (MicrocodeAddress &, x86_32::parser_data &,
 			  const Expr *value, MicrocodeAddress *);
 
 void 
-x86_32_binary_op (MicrocodeAddress &from, x86_32::parser_data &data, 
-		  BinaryOp op, LValue *dst, Expr *src, 
-		  x86_32_compute_flag_proc **flags,
-		  MicrocodeAddress *to = NULL);
-
-void 
 x86_32_assign_flag (MicrocodeAddress &from, x86_32::parser_data &data, 
 		    const char *flag, bool value, MicrocodeAddress *to = NULL);
 

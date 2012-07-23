@@ -1,29 +1,43 @@
 	.include "x86_32-simulator-header.s"
 
+	.set	src_addr, 0x555555
+	.set	byte_dst_addr,  0x777777
+	.set	word_dst_addr,  0x888888
+	.set	dword_dst_addr, 0x999999
+	
 start:
-	movl	$0x12345678, 0x10
-	movbe	0x10, %eax
-	cmp 	$0x78563412, %eax
+	stc	#to initialize eflags
+	mov	$src_addr, %esi
+	mov	$byte_dst_addr, %edi
+	movl	$0x12345678, src_addr
+
+	movsb
+	cmpb	$0x78, byte_dst_addr
+	jne 	error
+	movsb
+	cmpb	$0x56, byte_dst_addr+1
+	jne 	error
+	movsb
+	cmpb	$0x34, byte_dst_addr+2
+	jne 	error
+	movsb
+	cmpb	$0x12, byte_dst_addr+3
 	jne 	error
 
-	movl	%eax, 0x10
-	cmpl 	$0x12345678, 0x10
-	mov	$0, %eax
-	movbe	0x10, %ax
-	cmp 	$0x1234, %ax
+	mov	$src_addr, %esi
+	mov	$word_dst_addr, %edi
+	movsw
+	cmpw	$0x5678, word_dst_addr
 	jne 	error
-
-	movl	$0x12345678, %eax
-	movbe	%eax, 0x10
-	cmpl 	$0x78563412, 0x10
-	jne 	error
-
-	movl	0x10, %eax
-	cmp 	$0x12345678, %eax
-	movl	$0, 0x10
-	movbe	%ax, 0x10
-	cmpw 	$0x1234, 0x10
+	movsw
+	cmpw	$0x1234, word_dst_addr+2
 	jne 	error
 	
-	
+
+	mov	$src_addr, %esi
+	mov	$dword_dst_addr, %edi
+	movsl
+	cmpl	$0x12345678, dword_dst_addr
+	jne 	error
+
 	.include "x86_32-simulator-end.s"

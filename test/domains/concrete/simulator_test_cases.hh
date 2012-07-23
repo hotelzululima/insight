@@ -49,6 +49,7 @@
   BINARY_FILE (X86_32_AAS, "x86_32-simulator-aas.bin") \
   BINARY_FILE (X86_32_ADD, "x86_32-simulator-add.bin") \
   \
+  BINARY_FILE (X86_32_BOOLEANS, "x86_32-simulator-booleans.bin") \
   BINARY_FILE (X86_32_BOUND, "x86_32-simulator-bound.bin") \
   BINARY_FILE (X86_32_BSF, "x86_32-simulator-bsf.bin") \
   BINARY_FILE (X86_32_BSR, "x86_32-simulator-bsr.bin") \
@@ -88,6 +89,11 @@
   BINARY_FILE (X86_32_LOOP, "x86_32-simulator-loop.bin") \
   \
   BINARY_FILE (X86_32_MOVBE, "x86_32-simulator-movbe.bin") \
+  BINARY_FILE (X86_32_MOVS, "x86_32-simulator-movs.bin") \
+  BINARY_FILE (X86_32_MOVSXZ, "x86_32-simulator-movsxz.bin") \
+  BINARY_FILE (X86_32_MUL, "x86_32-simulator-mul.bin") \
+  \
+  BINARY_FILE (X86_32_NEG, "x86_32-simulator-neg.bin") \
   \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   \

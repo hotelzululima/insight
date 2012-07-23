@@ -32,20 +32,33 @@
 
 using namespace std;
 
-static x86_32_compute_flag_proc *flags[] = {
-  x86_32_reset_CF,
-  x86_32_reset_OF,
-  x86_32_compute_SF,
-  x86_32_compute_ZF,
-  x86_32_compute_PF,
-  NULL
-};
+static void 
+s_binary_op (x86_32::parser_data &data, BinaryOp op, Expr *op1, Expr *op2)
+{
+  MicrocodeAddress from (data.start_ma);
+  Expr *dst = op2;
+  Expr *src = op1;
+
+  x86_32_set_operands_size ((Expr *&) dst, src);
+
+  Expr *result = BinaryApp::create (op, dst->ref (), src->ref (), 0,
+				    dst->get_bv_size ());
+
+  data.mc->add_assignment (from, (LValue *) dst->ref (), result);
+  x86_32_compute_SF (from, data, dst);
+  x86_32_compute_ZF (from, data, dst);
+  x86_32_compute_PF (from, data, dst);
+  x86_32_reset_CF (from, data);
+  x86_32_reset_OF (from, data, NULL, &data.next_ma);
+
+  dst->deref ();
+  src->deref ();
+}
+
 
 X86_32_TRANSLATE_2_OP(AND)
 {
-  MicrocodeAddress start = data.start_ma;
-  x86_32_binary_op (start, data, AND_OP, (LValue *) op2, op1, flags, 
-		    &data.next_ma);
+  s_binary_op (data, AND_OP, op1, op2);
 }
 
 X86_32_TRANSLATE_2_OP(ANDB)
@@ -66,36 +79,9 @@ X86_32_TRANSLATE_2_OP(ANDL)
 			      x86_32_translate<X86_32_TOKEN(AND)>);
 }
 
-X86_32_TRANSLATE_2_OP(XOR)
-{
-  MicrocodeAddress start = data.start_ma;
-  x86_32_binary_op (start, data, XOR, (LValue *) op2, op1, flags, 
-		    &data.next_ma);
-}
-
-X86_32_TRANSLATE_2_OP(XORB)
-{
-  x86_32_translate_with_size (data, op1, op2, 8, 
-			      x86_32_translate<X86_32_TOKEN(XOR)>);
-}
-
-X86_32_TRANSLATE_2_OP(XORW)
-{
-  x86_32_translate_with_size (data, op1, op2, 16, 
-			      x86_32_translate<X86_32_TOKEN(XOR)>);
-}
-
-X86_32_TRANSLATE_2_OP(XORL)
-{
-  x86_32_translate_with_size (data, op1, op2, 32, 
-			      x86_32_translate<X86_32_TOKEN(XOR)>);
-}
-
 X86_32_TRANSLATE_2_OP(OR)
 {
-  MicrocodeAddress start = data.start_ma;
-  x86_32_binary_op (start, data, OR, (LValue *) op2, op1, flags, 
-		    &data.next_ma);
+  s_binary_op (data, OR, op1, op2);
 }
 
 X86_32_TRANSLATE_2_OP(ORB)
@@ -178,3 +164,27 @@ X86_32_TRANSLATE_2_OP(TESTL)
   x86_32_translate_with_size (data, op1, op2, 32, 
 			      x86_32_translate<X86_32_TOKEN(TEST)>);
 }
+
+X86_32_TRANSLATE_2_OP(XOR)
+{
+  s_binary_op (data, XOR, op1, op2);
+}
+
+X86_32_TRANSLATE_2_OP(XORB)
+{
+  x86_32_translate_with_size (data, op1, op2, 8, 
+			      x86_32_translate<X86_32_TOKEN(XOR)>);
+}
+
+X86_32_TRANSLATE_2_OP(XORW)
+{
+  x86_32_translate_with_size (data, op1, op2, 16, 
+			      x86_32_translate<X86_32_TOKEN(XOR)>);
+}
+
+X86_32_TRANSLATE_2_OP(XORL)
+{
+  x86_32_translate_with_size (data, op1, op2, 32, 
+			      x86_32_translate<X86_32_TOKEN(XOR)>);
+}
+

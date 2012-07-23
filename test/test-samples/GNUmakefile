@@ -39,6 +39,10 @@ X86_32_OBJECTS= \
   x86_32-mov.bin \
   x86_32-movbe.bin \
   x86_32-movs.bin \
+  x86_32-movsxz.bin \
+  x86_32-mul.bin \
+  \
+  x86_32-neg.bin \
   x86_32-nop.bin \
   x86_32-not.bin \
   x86_32-or.bin \
@@ -78,6 +82,7 @@ X86_32_OBJECTS= \
   x86_32-simulator-aas.bin  \
   x86_32-simulator-add.bin  \
   \
+  x86_32-simulator-booleans.bin  \
   x86_32-simulator-bound.bin  \
   x86_32-simulator-bsf.bin  \
   x86_32-simulator-bsr.bin  \
@@ -118,6 +123,10 @@ X86_32_OBJECTS= \
   \
   x86_32-simulator-movbe.bin \
   x86_32-simulator-movs.bin \
+  x86_32-simulator-movsxz.bin \
+  x86_32-simulator-mul.bin \
+  \
+  x86_32-simulator-neg.bin \
   \
   x86_32-simulator-sub.bin  \
   \

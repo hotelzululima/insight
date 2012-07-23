@@ -800,3 +800,100 @@ X86_32_TRANSLATE_3_OP(IMULL)
   x86_32_translate<X86_32_TOKEN(IMUL)> (data, op1, op2, op3);
 }
 
+X86_32_TRANSLATE_1_OP(MUL)
+{
+  Expr *upper;
+  Expr *lower;
+  int op1size = op1->get_bv_size ();
+  MicrocodeAddress from (data.start_ma);
+  Expr *temp = data.get_tmp_register (TMPREG (0), 2 * op1size);
+
+  if (op1size == 8)
+   {
+     upper = data.get_register ("ah");
+     lower = data.get_register ("al");
+    }
+  else if (op1size == 16)
+    {
+     upper = data.get_register ("dx");
+     lower = data.get_register ("ax");
+    }
+  else
+    {
+     upper = data.get_register ("edx");
+     lower = data.get_register ("eax");
+    }
+
+  data.mc->add_assignment (from, (LValue *) temp->ref (), 
+			   BinaryApp::create (MUL_U, lower->ref (), op1->ref (),
+					      0, temp->get_bv_size ()));
+  data.mc->add_assignment (from, (LValue *) lower->ref (), 
+			   temp->extract_bit_vector (0, lower->get_bv_size ()));
+  data.mc->add_assignment (from, (LValue *) upper->ref (), 
+			   temp->extract_bit_vector (lower->get_bv_size (),
+						     upper->get_bv_size ()));
+  Expr *cond = BinaryApp::create (EQ, upper->ref (),
+				  Constant::zero (upper->get_bv_size ()), 0, 1);
+  x86_32_if_then_else (from, data, cond, from + 1, from + 3);
+  from++;
+  data.mc->add_assignment (from, data.get_flag ("cf"), Constant::zero (1));
+  data.mc->add_assignment (from, data.get_flag ("of"), Constant::zero (1), 
+			   data.next_ma);
+  from++;
+  data.mc->add_assignment (from, data.get_flag ("cf"), Constant::one (1));
+  data.mc->add_assignment (from, data.get_flag ("of"), Constant::one (1), 
+			   data.next_ma);
+
+  op1->deref ();
+  temp->deref ();
+  upper->deref ();
+  lower->deref ();
+}
+
+X86_32_TRANSLATE_1_OP(MULB)
+{
+  Expr::extract_bit_vector (op1, 0, 8);
+  x86_32_translate<X86_32_TOKEN(MUL)> (data, op1); 
+}
+
+X86_32_TRANSLATE_1_OP(MULW)
+{
+  Expr::extract_bit_vector (op1, 0, 16);
+  x86_32_translate<X86_32_TOKEN(MUL)> (data, op1); 
+}
+
+X86_32_TRANSLATE_1_OP(MULL)
+{
+  Expr::extract_bit_vector (op1, 0, 32);
+  x86_32_translate<X86_32_TOKEN(MUL)> (data, op1); 
+}
+
+X86_32_TRANSLATE_1_OP(NEG)
+{
+  MicrocodeAddress from (data.start_ma);
+  int op1size = op1->get_bv_size ();
+  data.mc->add_assignment (from, data.get_flag ("cf"),
+			   BinaryApp::create (NEQ, op1->ref (), 
+					      Constant::zero (op1size), 0, 1));
+  data.mc->add_assignment (from, (LValue *) op1,			   
+			   UnaryApp::create (NEG, op1->ref (), 0, op1size),
+			   data.next_ma);
+}
+
+X86_32_TRANSLATE_1_OP(NEGB)
+{
+  Expr::extract_bit_vector (op1, 0, 8);
+  x86_32_translate<X86_32_TOKEN(NEG)> (data, op1);   
+}
+
+X86_32_TRANSLATE_1_OP(NEGW)
+{
+  Expr::extract_bit_vector (op1, 0, 16);
+  x86_32_translate<X86_32_TOKEN(NEG)> (data, op1);   
+}
+
+X86_32_TRANSLATE_1_OP(NEGL)
+{
+  Expr::extract_bit_vector (op1, 0, 32);
+  x86_32_translate<X86_32_TOKEN(NEG)> (data, op1);   
+}

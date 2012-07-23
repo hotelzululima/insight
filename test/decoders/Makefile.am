@@ -60,6 +60,11 @@ X86_32_TESTS = \
         \
 	x86_32-mov.res \
 	x86_32-movbe.res \
+	x86_32-movs.res \
+	x86_32-movsxz.res \
+	x86_32-mul.res \
+        \
+	x86_32-neg.res \
 	x86_32-nop.res \
 	x86_32-not.res \
 	x86_32-or.res \
@@ -113,6 +118,11 @@ X86_32_TESTS += \
         \
 	x86_32-mov.memres \
 	x86_32-movbe.memres \
+	x86_32-movs.memres \
+	x86_32-movsxz.memres \
+	x86_32-mul.memres \
+        \
+	x86_32-neg.memres \
 	x86_32-nop.memres \
 	x86_32-not.memres \
 	x86_32-or.memres \

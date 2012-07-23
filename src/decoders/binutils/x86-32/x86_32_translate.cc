@@ -165,21 +165,6 @@ x86_32_set_operands_size (Expr *&dst, Expr *&src)
     Expr::extract_with_bit_vector_size_of ((Expr *&) dst, src);
 }
 
-void 
-x86_32_binary_op (MicrocodeAddress &from, x86_32::parser_data &data, 
-		  BinaryOp op, LValue *dst, Expr *src, 
-		  x86_32_compute_flag_proc **flags,
-		  MicrocodeAddress *to)
-{
-  x86_32_set_operands_size ((Expr *&) dst, src);
-  Expr *result = BinaryApp::create (op, dst->ref (), src, 0,
-				    dst->get_bv_size ());
-
-  data.mc->add_assignment (from, (LValue *) dst->ref (), result, NULL);
-  for(; *flags; flags++)    
-    (*flags) (from, data, dst, flags[1] ? NULL : to);
-  dst->deref ();
-}
 
 			/* --------------- */
 
