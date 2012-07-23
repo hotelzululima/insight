@@ -34,7 +34,7 @@
 
 #include <kernel/Microcode.hh>
 
-#include <interpreters/microcode_exec.hh>
+#include <analyses/microcode_exec.hh>
 #include <interpreters/concrete/ConcreteMemory.hh>
 #include <interpreters/concrete/ConcreteValue.hh>
 

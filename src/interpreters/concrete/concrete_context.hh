@@ -32,12 +32,12 @@
 
 #include <map>
 
+#include <analyses/microcode_exec.hh>
 #include <decoders/Decoder.hh>
 #include <interpreters/common/ConcreteProgramPoint.hh>
 #include <interpreters/concrete/ConcreteValue.hh>
 #include <interpreters/concrete/ConcreteMemory.hh>
 #include <interpreters/concrete/ConcreteExprSemantics.hh>
-#include <interpreters/microcode_exec.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/Microcode.hh>
 

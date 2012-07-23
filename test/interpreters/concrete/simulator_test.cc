@@ -32,12 +32,12 @@
 #include <string>
 #include <sstream>
 
+#include <analyses/microcode_exec.hh>
+#include <decoders/DecoderFactory.hh>
+#include <interpreters/concrete/concrete_context.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <loaders/LoaderFactory.hh>
-#include <decoders/DecoderFactory.hh>
-#include <interpreters/microcode_exec.hh>
-#include <interpreters/concrete/concrete_context.hh>
 #include <utils/Log.hh>
 
 

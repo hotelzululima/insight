@@ -35,14 +35,14 @@
 #include <iomanip>
 #include <stdexcept>
 
-#include <kernel/insight.hh>
-#include <kernel/Microcode.hh>
-#include <interpreters/microcode_exec.hh>
+#include <analyses/microcode_exec.hh>
+#include <analyses/slicing/Slicing.hh>
 #include <interpreters/concrete/ConcreteExprSemantics.hh>
 #include <interpreters/concrete/concrete_context.hh>
 #include <interpreters/ExprSemantics.hh>
+#include <kernel/Microcode.hh>
 #include <kernel/expressions/Formula.hh>
-#include <analyses/slicing/Slicing.hh>
+#include <kernel/insight.hh>
 #include <loaders/LoaderFactory.hh>
 
 

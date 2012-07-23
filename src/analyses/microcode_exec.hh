@@ -37,6 +37,7 @@
 #include <utils/map-helpers.hh>
 #include <utils/option.hh>
 #include <kernel/Memory.hh>
+#include <kernel/Microcode.hh>
 #include <kernel/microcode/MicrocodeStore.hh>
 #include <interpreters/ExprSemantics.hh>
 #include <interpreters/concrete/ConcreteAddress.hh>

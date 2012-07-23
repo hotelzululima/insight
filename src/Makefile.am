@@ -11,9 +11,11 @@ all:
 
 ## analyses module
 analyses_sources = \
-	analyses/Wp.cc \
-	analyses/Wp.hh \
-	analyses/slicing/Slicing.hh \
+	analyses/microcode_exec.hh	\
+	analyses/microcode_exec.ii	\
+	analyses/Wp.cc			\
+	analyses/Wp.hh			\
+	analyses/slicing/Slicing.hh	\
 	analyses/slicing/Slicing.cc
 
 ## utils module
@@ -117,8 +119,6 @@ kernel_cleanfiles = \
 interpreters_source = \
 	interpreters/ExprSemantics.hh                   \
 	interpreters/ExprSemantics.ii                   \
-	interpreters/microcode_exec.hh                  \
-	interpreters/microcode_exec.ii                  \
 	interpreters/common/ConcreteAddressMemory.hh    \
 	interpreters/common/ConcreteAddressMemory.ii    \
 	interpreters/common/ConcreteProgramPoint.cc     \
