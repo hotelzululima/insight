@@ -32,9 +32,9 @@
 
 using namespace std;
 
-static void
-s_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data, 
-	  Expr *op1, Expr *op2, MicrocodeAddress *to)
+void
+x86_32_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data, 
+	       Expr *op1, Expr *op2, MicrocodeAddress *to)
 {
   Expr *src = op1;
   Expr *dst = op2;
@@ -81,7 +81,7 @@ s_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data,
 X86_32_TRANSLATE_2_OP(CMP)
 {
   MicrocodeAddress from = data.start_ma;
-  s_cmpgen (from, data, op1, op2, &data.next_ma);
+  x86_32_cmpgen (from, data, op1, op2, &data.next_ma);
 }
 
 X86_32_TRANSLATE_2_OP(CMPB)
@@ -109,86 +109,6 @@ X86_32_TRANSLATE_2_OP(CMPL)
 
 			/* --------------- */
 
-static void
-s_cmps (x86_32::parser_data &data, int size)
-{
-  MicrocodeAddress from = data.start_ma;
-  Expr *si = data.get_register ("esi");
-  Expr *di = data.get_register ("edi");
-  Expr *op1 = MemCell::create (si->ref (), 0, size);
-  Expr *op2 = MemCell::create (di->ref (), 0, size);
-
-  s_cmpgen (from, data, op1, op2, NULL);
-  Expr *inc = Constant::create (size / 8, 0, si->get_bv_size ());
-
-  MicrocodeAddress pc(from);
-  from++;
-
-  data.mc->add_assignment (from, (LValue *) si->ref (), 
-			   BinaryApp::create (ADD, si->ref (), inc->ref (),
-					      0, si->get_bv_size ()));
-  data.mc->add_assignment (from, (LValue *) di->ref (), 
-			   BinaryApp::create (ADD, di->ref (), inc->ref (),
-					      0, di->get_bv_size ()), 
-			   data.next_ma);
-  from++;
-  MicrocodeAddress pc2 (from);
-  data.mc->add_assignment (from, (LValue *) si->ref (), 
-			   BinaryApp::create (SUB, si->ref (), inc->ref (), 
-					      0, si->get_bv_size ()));
-  data.mc->add_assignment (from, (LValue *) di->ref (), 
-			   BinaryApp::create (SUB, di->ref (), inc->ref (), 
-					      0, di->get_bv_size ()),
-			   &data.next_ma);
-
-  data.mc->add_skip (pc, pc2, data.get_flag ("df"));
-  data.mc->add_skip (pc, pc + 1, 
-		     UnaryApp::create (NOT, data.get_flag ("df"), 0, 1));
-
-  inc->deref ();
-  si->deref ();
-  di->deref ();
-}
-
-			/* --------------- */
-
-X86_32_TRANSLATE_0_OP(CMPSB)
-{
-  s_cmps (data, 8);
-}
-
-X86_32_TRANSLATE_2_OP(CMPSB)
-{
-  x86_32_translate<X86_32_TOKEN(CMPSB)> (data);
-  op1->deref ();
-  op2->deref ();
-}
-
-X86_32_TRANSLATE_0_OP(CMPSW)
-{
-  s_cmps (data, 16);
-}
-
-X86_32_TRANSLATE_2_OP(CMPSW)
-{
-  x86_32_translate<X86_32_TOKEN(CMPSW)> (data);
-  op1->deref ();
-  op2->deref ();
-}
-
-X86_32_TRANSLATE_0_OP(CMPSD)
-{
-  s_cmps (data, 32);
-}
-
-X86_32_TRANSLATE_2_OP(CMPSD)
-{
-  x86_32_translate<X86_32_TOKEN(CMPSD)> (data);
-  op1->deref ();
-  op2->deref ();
-}
-
-			/* --------------- */
 
 X86_32_TRANSLATE_2_OP(CMPXCHG)
 {

@@ -295,6 +295,10 @@ x86_32_if_then_else (MicrocodeAddress start, x86_32::parser_data &data,
 		     Expr *cond,
 		     MicrocodeAddress ifaddr, MicrocodeAddress elseaddr);
 
+void
+x86_32_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data, 
+	       Expr *op1, Expr *op2, MicrocodeAddress *to);
+
 #include "x86_32_translation_functions.hh"
 
 #endif /* ! X86_32_TRANSLATE_HH */

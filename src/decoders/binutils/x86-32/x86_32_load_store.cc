@@ -114,36 +114,6 @@ X86_32_TRANSLATE_1_OP(LMSW)
   op1->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(LODS)
-{
-  op1->deref ();
-  Expr *esi = data.get_register (data.addr16 ? "si" : "esi");
-  Expr *dst = op2->ref ();
-  Expr *src = MemCell::create (esi->ref (), 0, dst->get_bv_size ());
-  Expr *inc = 
-    Constant::create (dst->get_bv_size ()  / 8, 0, esi->get_bv_size ());
-  MicrocodeAddress from (data.start_ma);
-
-  data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
-  x86_32_if_then_else (from, data, data.get_flag ("df"),
-		       from + 1, from + 2);
-  from++;
-  data.mc->add_assignment (from, (LValue *) esi->ref (),
-			   BinaryApp::create (SUB, esi->ref (), inc->ref (), 
-					      0, esi->get_bv_size ()),
-			   data.next_ma);
-  from++;
-  data.mc->add_assignment (from, (LValue *) esi->ref (),
-			   BinaryApp::create (ADD, esi->ref (), inc->ref (), 
-					      0, esi->get_bv_size ()),
-			   data.next_ma);
-  esi->deref (); 
-  inc->deref (); 
-  op2->deref (); 
-  src->deref (); 
-  dst->deref ();
-}
-
 X86_32_TRANSLATE_0_OP(STC)
 {
   data.mc->add_assignment (data.start_ma, data.get_flag ("cf"),
@@ -154,35 +124,5 @@ X86_32_TRANSLATE_0_OP(STD)
 {
   data.mc->add_assignment (data.start_ma, data.get_flag ("df"),
 			   Constant::one (1), data.next_ma);
-}
-
-X86_32_TRANSLATE_2_OP(STOS) 
-{
-  op2->deref ();
-  Expr *edi = data.get_register (data.addr16 ? "di" : "edi");
-  Expr *src = op1->ref ();
-  Expr *dst = MemCell::create (edi->ref (), 0, src->get_bv_size ());
-  Expr *inc = 
-    Constant::create (src->get_bv_size ()  / 8, 0, dst->get_bv_size ());
-  MicrocodeAddress from (data.start_ma);
-
-  data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
-  x86_32_if_then_else (from, data, data.get_flag ("df"),
-		       from + 1, from + 2);
-  from++;
-  data.mc->add_assignment (from, (LValue *) edi->ref (),
-			   BinaryApp::create (SUB, edi->ref (), inc->ref (), 
-					      0, edi->get_bv_size ()),
-			   data.next_ma);
-  from++;
-  data.mc->add_assignment (from, (LValue *) edi->ref (),
-			   BinaryApp::create (ADD, edi->ref (), inc->ref (), 
-					      0, edi->get_bv_size ()),
-			   data.next_ma);
-  edi->deref (); 
-  inc->deref (); 
-  op1->deref ();
-  src->deref ();
-  dst->deref ();
 }
 

@@ -143,12 +143,12 @@ X86_32_TRANSLATE_2_OP(CMPB); // x86_32_C_instr.cc
 X86_32_TRANSLATE_2_OP(CMPL); // x86_32_C_instr.cc 
 X86_32_TRANSLATE_2_OP(CMPW); // x86_32_C_instr.cc 
 
-X86_32_TRANSLATE_0_OP(CMPSB);  // x86_32_C_instr.cc 
-X86_32_TRANSLATE_2_OP(CMPSB);  // x86_32_C_instr.cc 
-X86_32_TRANSLATE_0_OP(CMPSW);  // x86_32_C_instr.cc 
-X86_32_TRANSLATE_2_OP(CMPSW);  // x86_32_C_instr.cc 
-X86_32_TRANSLATE_0_OP(CMPSD);  // x86_32_C_instr.cc 
-X86_32_TRANSLATE_2_OP(CMPSD);  // x86_32_C_instr.cc 
+X86_32_TRANSLATE_0_OP(CMPSB);  // x86_32_strings.cc 
+X86_32_TRANSLATE_2_OP(CMPSB);  // x86_32_strings.cc 
+X86_32_TRANSLATE_0_OP(CMPSW);  // x86_32_strings.cc 
+X86_32_TRANSLATE_2_OP(CMPSW);  // x86_32_strings.cc 
+X86_32_TRANSLATE_0_OP(CMPSD);  // x86_32_strings.cc 
+X86_32_TRANSLATE_2_OP(CMPSD);  // x86_32_strings.cc 
 
 X86_32_TRANSLATE_2_OP(CMPXCHG); // x86_32_C_instr.cc 
 
@@ -258,7 +258,7 @@ X86_32_TRANSLATE_1_OP(LMSW); // NOP / x86_32_load_store.cc
 
 X86_32_TRANSLATE_PREFIX(LOCK); // NOP / x86_32_prefixes.cc
 
-X86_32_TRANSLATE_2_OP(LODS);  // x86_32_load_store.cc
+X86_32_TRANSLATE_2_OP(LODS);  // x86_32_strings.cc
 
 X86_32_TRANSLATE_1_OP(LOOP);    // x86_32_operators_loops.cc
 X86_32_TRANSLATE_1_OP(LOOPE);   // x86_32_operators_loops.cc
@@ -280,40 +280,22 @@ X86_32_TRANSLATE_2_OP(MOVB); // x86_32_operators_mov.cc
 X86_32_TRANSLATE_2_OP(MOVW); // x86_32_operators_mov.cc
 X86_32_TRANSLATE_2_OP(MOVL); // x86_32_operators_mov.cc
 X86_32_TRANSLATE_2_OP(MOVBE); // x86_32_operators_mov.cc
-/*
-X86_32_TRANSLATE_0_OP(MOVSB); // x86_32_operators_mov.cc
-X86_32_TRANSLATE_2_OP(MOVSB); // x86_32_operators_mov.cc
+
+X86_32_TRANSLATE_0_OP(MOVSB); // x86_32_strings.cc
+X86_32_TRANSLATE_2_OP(MOVSB); // x86_32_strings.cc
+X86_32_TRANSLATE_0_OP(MOVSW); // x86_32_strings.cc
+X86_32_TRANSLATE_2_OP(MOVSW); // x86_32_strings.cc
+X86_32_TRANSLATE_0_OP(MOVSL); // x86_32_strings.cc
+X86_32_TRANSLATE_2_OP(MOVSL); // x86_32_strings.cc
+
 X86_32_TRANSLATE_2_OP(MOVSBW); // x86_32_operators_mov.cc
 X86_32_TRANSLATE_2_OP(MOVSBL); // x86_32_operators_mov.cc
-X86_32_TRANSLATE_0_OP(MOVSW); // x86_32_operators_mov.cc
-X86_32_TRANSLATE_2_OP(MOVSW); // x86_32_operators_mov.cc
 X86_32_TRANSLATE_2_OP(MOVSWL); // x86_32_operators_mov.cc
-X86_32_TRANSLATE_2_OP(MOVSL); // x86_32_operators_mov.cc
-X86_32_TRANSLATE_0_OP(MOVSD); // x86_32_operators_mov.cc
-X86_32_TRANSLATE_2_OP(MOVSD); // x86_32_operators_mov.cc
-*/
 
-// X86_32_TRANSLATE_2_OP(MOVSX);
+X86_32_TRANSLATE_2_OP(MOVZBW); // x86_32_operators_mov.cc
+X86_32_TRANSLATE_2_OP(MOVZBL); // x86_32_operators_mov.cc
+X86_32_TRANSLATE_2_OP(MOVZWL); // x86_32_operators_mov.cc
 
-// X86_32_TRANSLATE_2_OP(MOVZX);
-
-// X86_32_TRANSLATE_2_OP(MOVZBL);
-
-// X86_32_TRANSLATE_2_OP(MOVZWL);
-
-// X86_32_TRANSLATE_1_OP(MUL);
-
-// X86_32_TRANSLATE_1_OP(MULB);
-
-// X86_32_TRANSLATE_1_OP(MULW);
-
-// X86_32_TRANSLATE_1_OP(MULL);
-
-// X86_32_TRANSLATE_0_OP(MWAIT);
-
-// X86_32_TRANSLATE_1_OP(NEG);
-
-// X86_32_TRANSLATE_1_OP(NEGB);
 
 // X86_32_TRANSLATE_1_OP(NEGW);
 
@@ -670,7 +652,7 @@ X86_32_TRANSLATE_0_OP(STD); // x86_32_load_store.cc
 
 // X86_32_TRANSLATE_0_OP(STI); 
 
-X86_32_TRANSLATE_2_OP(STOS); // x86_32_load_store.cc
+X86_32_TRANSLATE_2_OP(STOS); // x86_32_strings.cc
 
 // X86_32_TRANSLATE_1_OP(STR);
 

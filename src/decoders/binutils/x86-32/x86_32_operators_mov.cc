@@ -154,91 +154,74 @@ X86_32_TRANSLATE_2_OP (CMOV ## cc) \
 X86_32_TRANSLATE_2_OP (CMOVC)
 { 
   s_mov_on_cc (data.start_ma, data, op1, op2, 
-	       data.condition_codes[parser_data::X86_32_CC_B]->ref (), \
+	       data.condition_codes[parser_data::X86_32_CC_B]->ref (), 
 	       data.next_ma); 
 }
 
 X86_32_TRANSLATE_2_OP (CMOVNC)
 { 
   s_mov_on_cc (data.start_ma, data, op1, op2, 
-	       data.condition_codes[parser_data::X86_32_CC_NB]->ref (), \
+	       data.condition_codes[parser_data::X86_32_CC_NB]->ref (), 
 	       data.next_ma); 
 }
 
-
-static void
-s_mov (x86_32::parser_data &data, Expr *inc)
+static void 
+s_movx (x86_32::parser_data &data, Expr *op1, Expr *op2, BinaryOp op, int size)
 {
-  MicrocodeAddress start (data.start_ma);
-  MicrocodeAddress next = data.has_prefix ? start + 6 : data.next_ma;
-  MicrocodeAddress ifaddr;
-  LValue *si = data.get_register (data.addr16 ? "si" : "esi");
-  LValue *di = data.get_register (data.addr16 ? "di" : "edi");
-  LValue *df = data.get_flag ("df");
+  Expr *val = BinaryApp::create (op, op1, 
+				 Constant::create (size, 0, BV_DEFAULT_SIZE),
+				 0, size);
+  assert (op2->get_bv_size () == size);
 
-  data.mc->add_assignment (start, MemCell::create (di), MemCell::create (si),
-			   start + 1);
-
-  data.mc->add_skip (start + 1, start + 2, 
-		     BinaryApp::create (EQ, df, Constant::zero ()));
-
-  data.mc->add_skip (start + 1, start + 4,
-		     BinaryApp::create (NEQ, df->ref (), Constant::zero ()));
-
-  data.mc->add_assignment (start + 2, (LValue *) si->ref (), 
-			   BinaryApp::create (ADD, si->ref (), inc->ref ()),
-			   start + 3);
-
-  data.mc->add_assignment (start + 3, (LValue *) di->ref (), 
-			   BinaryApp::create (ADD, di->ref (), inc->ref ()), 
-			   next);
+  x86_32_translate<X86_32_TOKEN(MOV)> (data, val, op2);
   
-  data.mc->add_assignment (start + 4, (LValue *) si->ref (), 
-			   BinaryApp::create (SUB, si->ref (), inc->ref ()),
-			   start + 5);
-
-  data.mc->add_assignment (start + 5, (LValue *) di->ref (), 
-			   BinaryApp::create (SUB, di->ref (), inc->ref ()), 
-			   next);  
-  if (data.has_prefix)
-    data.start_ma = next;
-  inc->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(MOVSB)
+static void 
+s_movs (x86_32::parser_data &data, Expr *op1, Expr *op2, int size)
 {
-  s_mov (data, Constant::one ());
+  s_movx (data, op1, op2, EXTEND_S, size);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSB)
+static void 
+s_movz (x86_32::parser_data &data, Expr *op1, Expr *op2, int size)
 {
-  x86_32_translate<X86_32_TOKEN(MOVSB)> (data);
-  op1->deref ();
-  op2->deref ();
+  s_movx (data, op1, op2, EXTEND_U, size);
 }
 
-X86_32_TRANSLATE_0_OP(MOVSW)
+X86_32_TRANSLATE_2_OP(MOVSBW)
 {
-  s_mov (data, Constant::create (2));
+  Expr::extract_bit_vector (op1, 0, 8);
+  s_movs (data, op1, op2, 16);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSW)
+X86_32_TRANSLATE_2_OP(MOVSBL)
 {
-  x86_32_translate<X86_32_TOKEN(MOVSW)> (data);
-  op1->deref ();
-  op2->deref ();
+  Expr::extract_bit_vector (op1, 0, 8);
+  s_movs (data, op1, op2, 32);
 }
 
-X86_32_TRANSLATE_0_OP(MOVSD)
+X86_32_TRANSLATE_2_OP(MOVSWL)
 {
-  s_mov (data, Constant::create (4));
+  Expr::extract_bit_vector (op1, 0, 16);
+  s_movs (data, op1, op2, 32);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSD)
+X86_32_TRANSLATE_2_OP(MOVZBW)
 {
-  x86_32_translate<X86_32_TOKEN(MOVSD)> (data);
-  op1->deref ();
-  op2->deref ();
+  Expr::extract_bit_vector (op1, 0, 8);
+  s_movz (data, op1, op2, 16);
 }
 
+X86_32_TRANSLATE_2_OP(MOVZBL)
+{
+  Expr::extract_bit_vector (op1, 0, 8);
+  s_movz (data, op1, op2, 32);
+}
+
+X86_32_TRANSLATE_2_OP(MOVZWL)
+{
+  Expr::extract_bit_vector (op1, 0, 16);
+  s_movz (data, op1, op2, 32);
+}
 

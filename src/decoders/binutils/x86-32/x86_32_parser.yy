@@ -581,23 +581,25 @@ using namespace x86_32;
 %token  TOK_MOVNTQ           "MOVNTQ"
 %token  TOK_MOVQ2DQ          "MOVQ2DQ"
 %token  TOK_MOVSB            "MOVSB"
+%token  TOK_MOVSW            "MOVSW"
+%token  TOK_MOVSL            "MOVSL"
+
 %token  TOK_MOVSBW           "MOVSBW"
 %token  TOK_MOVSBL           "MOVSBL"
-%token  TOK_MOVSW            "MOVSW"
 %token  TOK_MOVSWL           "MOVSWL"
-%token  TOK_MOVSL            "MOVSL"
-%token  TOK_MOVSD            "MOVSD"
-%token  TOK_MOVSQ            "MOVSQ"
+
 %token  TOK_MOVSHDUP         "MOVSHDUP"
 %token  TOK_MOVSLDUP         "MOVSLDUP"
 %token  TOK_MOVSS            "MOVSS"
-%token  TOK_MOVSX            "MOVSX"
+
 %token  TOK_MOVSXD           "MOVSXD"
 %token  TOK_MOVUPD           "MOVUPD"
 %token  TOK_MOVUPS           "MOVUPS"
-%token  TOK_MOVZX            "MOVZX"
+
 %token  TOK_MOVZBL           "MOVZBL"
+%token  TOK_MOVZBW           "MOVZBW"
 %token  TOK_MOVZWL           "MOVZWL"
+
 %token  TOK_MPSADBW          "MPSADBW"
 %token  TOK_MUL              "MUL"
 %token  TOK_MULB             "MULB"
@@ -1563,20 +1565,19 @@ instruction:
 | TOK_MOVSW operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSW)> (data, $2, $4); }
 | TOK_MOVSWL operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSWL)> (data, $2, $4); }
 | TOK_MOVSL operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSL)> (data, $2, $4); }
-| TOK_MOVSD operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSD)> (data, $2, $4); }
-| TOK_MOVSD operand TOK_COMMA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSD)> (data, $2, $4, $6); }
-| TOK_MOVSQ operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSQ)> (data, $2, $4); }
 | TOK_MOVSHDUP operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSHDUP)> (data, $2, $4); }
 | TOK_MOVSLDUP operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSLDUP)> (data, $2, $4); }
 | TOK_MOVSS operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSS)> (data, $2, $4); }
 | TOK_MOVSS operand TOK_COMMA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSS)> (data, $2, $4, $6); }
-| TOK_MOVSX operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSX)> (data, $2, $4); }
+
 | TOK_MOVSXD operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVSXD)> (data, $2, $4); }
 | TOK_MOVUPD operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVUPD)> (data, $2, $4); }
 | TOK_MOVUPS operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVUPS)> (data, $2, $4); }
-| TOK_MOVZX operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVZX)> (data, $2, $4); }
+
+| TOK_MOVZBW operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVZBW)> (data, $2, $4); }
 | TOK_MOVZBL operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVZBL)> (data, $2, $4); }
 | TOK_MOVZWL operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MOVZWL)> (data, $2, $4); }
+
 | TOK_MPSADBW operand TOK_COMMA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(MPSADBW)> (data, $2, $4, $6); }
 | TOK_MUL operand { x86_32_translate<X86_32_TOKEN(MUL)> (data, $2); }
 | TOK_MULB operand { x86_32_translate<X86_32_TOKEN(MULB)> (data, $2); }

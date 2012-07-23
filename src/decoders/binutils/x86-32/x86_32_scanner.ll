@@ -540,24 +540,29 @@ optype    [bswlqt]
 "movntps"          { return token::TOK_MOVNTPS; }
 "movntq"           { return token::TOK_MOVNTQ; }
 "movq2dq"          { return token::TOK_MOVQ2DQ; }
-"movsb"            { return token::TOK_MOVSB; }
+
 "movsbw"           { return token::TOK_MOVSBW; }
 "movsbl"           { return token::TOK_MOVSBL; }
-"movsw"            { return token::TOK_MOVSW; }
 "movswl"           { return token::TOK_MOVSWL; }
+
+"movsb"            { return token::TOK_MOVSB; }
+"movsw"            { return token::TOK_MOVSW; }
 "movsl"            { return token::TOK_MOVSL; }
-"movsd"            { return token::TOK_MOVSD; }
-"movsq"            { return token::TOK_MOVSQ; }
+"movsd"            { return token::TOK_MOVSL; }
+
+
 "movshdup"         { return token::TOK_MOVSHDUP; }
 "movsldup"         { return token::TOK_MOVSLDUP; }
 "movss"            { return token::TOK_MOVSS; }
-"movsx"            { return token::TOK_MOVSX; }
+
 "movsxd"           { return token::TOK_MOVSXD; }
 "movupd"           { return token::TOK_MOVUPD; }
 "movups"           { return token::TOK_MOVUPS; }
-"movzx"            { return token::TOK_MOVZX; }
+
 "movzbl"           { return token::TOK_MOVZBL; }
+"movzbw"           { return token::TOK_MOVZBW; }
 "movzwl"           { return token::TOK_MOVZWL; }
+
 "mpsadbw"          { return token::TOK_MPSADBW; }
 "mul"              { return token::TOK_MUL; }
 "mulb"             { return token::TOK_MULB; }
