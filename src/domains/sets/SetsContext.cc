@@ -1,0 +1,534 @@
+/*-
+ * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#include "interpreters/sets/SetsContext.hh"
+
+#include "interpreters/concrete/concrete_context.hh"
+#include "interpreters/sets/SetsAddress.hh"
+#include "interpreters/sets/SetsExprSemantics.hh"
+#include "interpreters/sets/SetsMemory.hh"
+#include "interpreters/sets/SetsValue.hh"
+
+#include <utils/tools.hh>
+
+#include <list>
+#include <map>
+
+using namespace std;
+
+SetsContext::SetsContext(SetsMemory *mem)
+{
+  memory = mem;
+}
+
+SetsContext::~SetsContext() {}
+
+SetsContext *SetsContext::clone()
+{
+  return new SetsContext(new SetsMemory(*memory));
+}
+
+bool SetsContext::merge(AbstractContext<SETS_CLASSES> * other)
+{
+  SetsContext *ctx = dynamic_cast<SetsContext *>(other);
+  if (ctx == NULL)
+    Log::fatal_error("Set context: merge with other kind of context");
+
+  return this->memory->merge(*(other->memory));
+}
+
+SetsContext *SetsContext::empty_context()
+{
+  return new SetsContext(new SetsMemory());
+}
+
+/*****************************************************************************/
+/* Non Deterministic Evaluation                                              */
+/*****************************************************************************/
+// TODO: optim: recopie du resultat peut etre un peu abusee...
+
+void
+add_value_with_same_context(ND_eval_result &current_list,
+                            SpecializedContext *s_ctxt,
+                            SetsValue s)
+{
+  try
+    {
+      std::list<ConcreteValue> values = s.get_values().getValue();
+      for (std::list<ConcreteValue>::iterator v = values.begin(); v != values.end(); v++)
+        current_list.push_back(pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>(*v), s_ctxt));
+    }
+  catch (OptionNoValueExc &)
+    {
+      current_list.push_back(pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>() , s_ctxt));
+    }
+}
+
+/** ** **/
+
+ND_eval_result
+ND_eval_unary_expr_generic(SetsValue(*op_sem)(SetsValue, int, int),
+                           SpecializedContext *s_ctxt,
+                           Expr *e, int offset, int size)
+{
+
+  ND_eval_result arg_vals = ND_eval(s_ctxt, e);
+  ND_eval_result result;
+  for (ND_eval_result::iterator arg_pair = arg_vals.begin(); arg_pair != arg_vals.end(); arg_pair++)
+    result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (op_sem(SetsValue(arg_pair->first), offset, size).extract_value(),
+                     arg_pair->second));
+  return result;
+}
+
+/** ** **/
+
+ND_eval_result
+ND_eval_unary_expr(SpecializedContext *s_ctxt, UnaryApp *ua)
+{
+
+  switch (ua->get_op())
+    {
+    case NEG:
+      return ND_eval_unary_expr_generic(SetsExprSemantics::NEG_eval, s_ctxt, ua->get_arg1(), ua->get_bv_offset (), ua->get_bv_size ());
+    case NOT:
+      return ND_eval_unary_expr_generic(SetsExprSemantics::NOT_eval, s_ctxt, ua->get_arg1(), ua->get_bv_offset (), ua->get_bv_size ());
+    case LNOT:
+      return ND_eval_unary_expr_generic(SetsExprSemantics::LNOT_eval, s_ctxt, ua->get_arg1(), ua->get_bv_offset (), ua->get_bv_size ());
+    default:
+      Log::fatal_error("Context::eval Unknown unary operator");
+    }
+
+}
+
+/** ** **/
+
+ND_eval_result
+ND_eval_binary_expr_generic(SetsValue(*op_sem)(SetsValue, SetsValue, int, int),
+                            SpecializedContext *s_ctxt,
+                            Expr *arg1_expr,
+                            Expr *arg2_expr, int offset, int size)
+{
+
+  ND_eval_result arg1_vals = ND_eval(s_ctxt, arg1_expr);
+  ND_eval_result result;
+  for (ND_eval_result::iterator arg1_pair  = arg1_vals.begin();
+       arg1_pair != arg1_vals.end(); arg1_pair++)
+    {
+      ND_eval_result arg2_vals = ND_eval(arg1_pair->second, arg2_expr);
+      for (ND_eval_result::iterator arg2_pair  = arg2_vals.begin();
+           arg2_pair != arg2_vals.end(); arg2_pair++)
+        result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (op_sem(arg1_pair->first, arg2_pair->first, offset, size).extract_value(),
+                         arg2_pair->second));
+    }
+
+  return result;
+}
+
+// TODO: free memory
+
+/** ** **/
+
+ND_eval_result
+ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
+{
+  int offset = e->get_bv_offset ();
+  int size = e->get_bv_size ();
+
+  switch (e->get_op())
+    {
+    case ADD:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::ADD_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case SUB:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::SUB_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case MUL_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::MUL_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case MUL_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::MUL_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case UDIV:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::UDIV_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case SDIV:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::SDIV_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+
+    case AND_OP:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::AND_OP_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case OR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::OR_eval,   s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case XOR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::XOR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case LSH:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case RSH:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::RSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case ROR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::ROR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case ROL:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::ROL_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+
+    case LAND:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LAND_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case LOR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LOR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+
+    case EQ:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::EQ_eval,   s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+
+    case LEQ_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case GEQ_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_S_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+    case LT_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case GT_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LT_S_eval,   s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+
+    case LEQ_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case GEQ_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_U_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+    case LT_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case GT_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::LT_U_eval,   s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+
+    case POW:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::POW_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case CONCAT:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::CONCAT_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+
+    default:
+      Log::fatal_error("Context::eval Unknown binary operator");
+    }
+
+#undef APPLY_BINARY
+
+}
+
+/** ** **/
+
+ND_eval_result
+ND_eval(SpecializedContext *s_ctxt, const Expr *e)
+{
+
+  ND_eval_result result;
+
+  if (e->is_Variable())
+    Log::fatal_error("GenericContext:eval: Variable are not supported by interpreter");
+
+  if (e->is_Constant())
+    {
+      add_value_with_same_context(result, s_ctxt,
+                                  SetsValue((Constant *) e));
+      return result;
+    }
+
+  if (e->is_UnaryApp())
+    return ND_eval_unary_expr(s_ctxt, (UnaryApp *) e);
+
+  if (e->is_BinaryApp())
+    return ND_eval_binary_expr(s_ctxt, (BinaryApp *) e);
+
+  if (e->is_MemCell())
+    {
+      // Here we take all possible addresses, and then, all possible
+      // values pointed by each addresses
+      MemCell *mc = (MemCell *) e;
+
+      ND_eval_result addresses = ND_eval(s_ctxt, mc->get_addr());
+
+      if (addresses.size() == 0) Log::fatal_error("ND_eval : empty address");
+
+      for (ND_eval_result::iterator addr_pair = addresses.begin(); addr_pair != addresses.end(); addr_pair++)
+        {
+          SpecializedContext *current_s_ctxt = addr_pair->second;
+          ConcreteAddress addr;
+          try
+            {
+              new(&addr) ConcreteAddress((addr_pair->first).getValue());
+            }
+          catch (OptionNoValueExc &)
+            {
+              Log::warning ("ND_eval: TOP value for address : returns TOP");
+              result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>() , current_s_ctxt));
+              return result;
+            }
+
+          try
+            {
+              Option<ConcreteValue> val = current_s_ctxt->get_specialized(addr);
+              result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (val, current_s_ctxt));
+            }
+          catch (SpecializedContextNotSpecialized &)
+            {
+              // addr is not specialized : one produces any possible specialisation for addr
+              SetsValue s_val =
+                current_s_ctxt->underlying_context->memory->get(SetsAddress(SetsValue(addr_pair->first)),
+                    mc->get_bv_size() / 8, Architecture::LittleEndian);  // TODO: attention au LittleEndian
+              try
+                {
+                  std::list<ConcreteValue> possible_values = s_val.get_values().getValue(); // Raise an exception if it is TOP
+                  for (std::list<ConcreteValue>::iterator v = possible_values.begin(); v != possible_values.end(); v++)
+                    {
+                      SpecializedContext *new_s_ctxt = new SpecializedContext(*s_ctxt);
+                      new_s_ctxt->specialize(addr, *v);
+                      result.push_back(pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>(*v), new_s_ctxt));
+                    }
+                }
+              catch (OptionNoValueExc &)     // case TOP
+                {
+                  SpecializedContext *new_s_ctxt = new SpecializedContext(*s_ctxt);
+                  new_s_ctxt->specialize(addr, Option<ConcreteValue>());
+                  result.push_back(pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>() , new_s_ctxt));
+                }
+            }
+        }
+      return result;
+    }
+
+  if (e->is_RegisterExpr())
+    {
+      const RegisterDesc *reg = ((RegisterExpr *) e)->get_descriptor();
+
+      try
+        {
+          Option<ConcreteValue> val = s_ctxt->get_specialized(reg);
+          result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (val, s_ctxt));
+        }
+      catch (SpecializedContextNotSpecialized &)
+        {
+          // reg is not specialized : one produces any possible specialisation for addr
+          SetsValue s_val = 
+	    s_ctxt->underlying_context->memory->get(reg);
+          try
+            {
+              std::list<ConcreteValue> possible_values = s_val.get_values().getValue(); // Raise an exception if it is TOP
+              for (std::list<ConcreteValue>::iterator v = possible_values.begin(); v != possible_values.end(); v++)
+                {
+                  SpecializedContext *new_s_ctxt = new SpecializedContext(*s_ctxt);
+                  new_s_ctxt->specialize(reg, *v);
+                  result.push_back(pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>(*v), new_s_ctxt));
+                }
+            }
+          catch (OptionNoValueExc &)     // case TOP
+            {
+              SpecializedContext *new_s_ctxt = new SpecializedContext(*s_ctxt);
+              new_s_ctxt->specialize(reg, Option<ConcreteValue>());
+              result.push_back(pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>() , new_s_ctxt));
+            }
+        }
+      return result;
+    }
+
+  Log::fatal_error("Context::eval Expression Type unknown");
+};
+
+
+/*****************************************************************************/
+
+SetsValue SetsContext::eval(const Expr *e)
+{
+
+  SpecializedContext s_ctxt(this);
+  ND_eval_result nd_evaluation = ND_eval(&s_ctxt, e);
+
+  SetsValue the_value(BV_DEFAULT_SIZE);  // \todo check size
+  for (std::list< std::pair< Option<ConcreteValue>, SpecializedContext *> >::iterator
+       v = nd_evaluation.begin();
+       v != nd_evaluation.end();
+       v++)
+    the_value.add_value(v->first);
+
+  return the_value;
+}
+
+
+/*****************************************************************************/
+/* Specialized Context                                                       */
+/*****************************************************************************/
+
+SpecializedContext::SpecializedContext(SetsContext *ctxt)
+{
+  underlying_context = ctxt;
+}
+
+SpecializedContext::~SpecializedContext() {}
+
+/*****************************************************************************/
+
+void
+SpecializedContext::
+specialize(ConcreteAddress addr, Option<ConcreteValue> v)
+{
+  specialised_mem_cells.push_front(std::pair < ConcreteAddress, Option<ConcreteValue> > (addr, v));
+}
+
+Option<ConcreteValue>
+SpecializedContext::
+get_specialized(ConcreteAddress addr)
+{
+  for (std::list < std::pair < ConcreteAddress, Option<ConcreteValue> > > ::const_iterator
+       p = specialised_mem_cells.begin();
+       p != specialised_mem_cells.end();
+       p++)
+    if (p->first.get_address() == addr.get_address()) return p->second;
+  throw SpecializedContextNotSpecialized();
+}
+
+void
+SpecializedContext::
+specialize(const RegisterDesc *reg, Option<ConcreteValue> v)
+{
+  specialised_registers.push_front(std::pair < const RegisterDesc *, Option<ConcreteValue> > (reg, v));
+}
+
+Option<ConcreteValue>
+SpecializedContext::
+get_specialized(const RegisterDesc *reg)
+{
+  for (std::list < std::pair <const RegisterDesc *, Option<ConcreteValue> > > ::const_iterator
+       p = specialised_registers.begin();
+       p != specialised_registers.end();
+       p++)
+    if (p->first == reg) 
+      return p->second;
+  throw SpecializedContextNotSpecialized();
+}
+
+/*****************************************************************************/
+
+Option<AbstractContext<SETS_CLASSES>*>
+SpecializedContext::
+merge_contexts(std::list< SpecializedContext *> s_ctxts)
+{
+
+  // 0. check that all specialised contexts have the same underlying context
+  if (s_ctxts.size() == 0) return Option<AbstractContext<SETS_CLASSES>*>();
+  SpecializedContext *first_ctxt = s_ctxts.front();
+  SetsContext *underlying_ctxt = first_ctxt->underlying_context;
+  for (std::list< SpecializedContext *>::const_iterator ctxt = s_ctxts.begin(); ctxt != s_ctxts.end(); ctxt++)
+    if ((*ctxt)->underlying_context != underlying_ctxt) Log::fatal_error("SetsContext:merge_contexts: underlying contexts different");
+
+  // 1. collect all specialized address and registers in all the specialised context
+  std::list < std::pair < ConcreteAddress, Option<ConcreteValue> > > all_specialised_mem_cells;
+  std::list < std::pair < const RegisterDesc *, Option<ConcreteValue> > > all_specialised_registers;
+  for (std::list< SpecializedContext *>::const_iterator ctxt = s_ctxts.begin(); ctxt != s_ctxts.end(); ctxt++)
+    { /* Concatenate all_specialised_mem_cells and (*ctxt)->specialised_mem_cells */
+      all_specialised_mem_cells.insert(all_specialised_mem_cells.end(),
+				       (*ctxt)->specialised_mem_cells.begin(),
+				       (*ctxt)->specialised_mem_cells.end());
+      /* Concatenate all_specialised_registers and (*ctxt)->specialised_registers */
+      all_specialised_registers.insert(all_specialised_registers.end(),
+				       (*ctxt)->specialised_registers.begin(),
+				       (*ctxt)->specialised_registers.end());
+    }
+
+  // 2. for each specialized address (resp. register),
+  //    2.1 delete the corresponding value in a copy of the underlying context
+  SetsContext *underlying_ctxt_cpy = underlying_ctxt->clone();
+
+  for (std::list < std::pair < ConcreteAddress, Option<ConcreteValue> > >::const_iterator
+       cell = all_specialised_mem_cells.begin();
+       cell != all_specialised_mem_cells.end();
+       cell++)
+    underlying_ctxt_cpy->memory->clear(cell->first, BV_DEFAULT_SIZE); // \todo check size
+
+  for (std::list < std::pair < const RegisterDesc *, Option<ConcreteValue> > >::const_iterator
+       reg = all_specialised_registers.begin();
+       reg != all_specialised_registers.end();
+       reg++)
+    underlying_ctxt_cpy->memory->clear(reg->first);
+
+  //    2.2 put all the specialized values corresponding to the address (resp. registers) in the
+  //        copy of the underlying context.
+
+  for (std::list < std::pair < ConcreteAddress, Option<ConcreteValue> > >::const_iterator
+       cell = all_specialised_mem_cells.begin();
+       cell != all_specialised_mem_cells.end();
+       cell++)
+    underlying_ctxt_cpy->memory->put(cell->first, SetsValue(cell->second),
+				     Architecture::LittleEndian); // TODO: LittleEndian?
+
+  for (std::list < std::pair < const RegisterDesc *, Option<ConcreteValue> > >::const_iterator
+       reg = all_specialised_registers.begin();
+       reg != all_specialised_registers.end();
+       reg++)
+    {
+      if (!underlying_ctxt_cpy->memory->is_undefined(reg->first))
+        {
+          SetsValue v = underlying_ctxt_cpy->memory->get(reg->first);
+          v.add(SetsValue(reg->second));
+          underlying_ctxt_cpy->memory->put(reg->first, v);
+        }
+      else
+        {
+          underlying_ctxt_cpy->memory->put(reg->first, SetsValue(reg->second));
+        }
+    }
+
+  return Option<AbstractContext<SETS_CLASSES>*>(underlying_ctxt_cpy);
+}
+
+/*****************************************************************************/
+
+pair< Option<AbstractContext<SETS_CLASSES>*>, Option<AbstractContext<SETS_CLASSES>*> >
+SetsContext::
+split_context(Expr *condition)
+{
+
+  SpecializedContext s_ctxt(this);
+  ND_eval_result nd_evaluation = ND_eval(&s_ctxt, condition);
+
+  std::list< SpecializedContext *> true_contexts;
+  std::list< SpecializedContext *> false_contexts;
+
+  SetsValue the_value(BV_DEFAULT_SIZE);
+  for (std::list< std::pair< Option<ConcreteValue>, SpecializedContext *> >::iterator
+       v = nd_evaluation.begin();
+       v != nd_evaluation.end();
+       v++)
+    {
+
+      if (v->first.hasValue())
+        {
+          if (v->first.getValue().to_bool().getValue())
+            true_contexts.push_back(v->second);
+          else
+            false_contexts.push_back(v->second);
+        }
+      else   // v is TOP
+        {
+          true_contexts.push_back(v->second);
+          false_contexts.push_back(v->second);
+        }
+    }
+
+  return std::pair<Option<AbstractContext<SETS_CLASSES>*>, Option<AbstractContext<SETS_CLASSES>*> >
+         (SpecializedContext::merge_contexts(true_contexts),
+          SpecializedContext::merge_contexts(false_contexts));
+}

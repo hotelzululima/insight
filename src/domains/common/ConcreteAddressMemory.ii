@@ -1,0 +1,299 @@
+/*-
+ * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+#include <interpreters/common/ConcreteAddressMemory.hh>
+
+#include <kernel/Memory.hh>
+#include <utils/tools.hh>
+
+#include <map>
+
+template <class Value>
+typename ConcreteAddressMemory<Value>::ConcreteAddressMemoryValue *
+ConcreteAddressMemory<Value>::
+CAMV_copy(ConcreteAddressMemory<Value>::ConcreteAddressMemoryValue *original)
+{
+
+  ConcreteAddressMemoryValue *mval = new ConcreteAddressMemoryValue();
+  mval->value = original->value;
+  mval->is_broken = original->is_broken;
+  mval->endianness = original->endianness;
+  return mval;
+
+}
+
+template <class Value>
+ConcreteAddressMemory<Value>::ConcreteAddressMemory() :
+  Memory<ConcreteAddress, Value>()
+{
+}
+
+template <class Value>
+ConcreteAddressMemory<Value>::ConcreteAddressMemory(const ConcreteAddressMemory<Value> &other) :
+  Memory<ConcreteAddress, Value>(other),
+  memory(other.memory)
+{
+
+  std::map<ConcreteAddressMemoryValue *, ConcreteAddressMemoryValue *> copies;
+  typename std::map<ConcreteAddressMemoryValue *, ConcreteAddressMemoryValue *>::
+  iterator record;
+
+  for (typename memory_type::iterator
+       p = memory.begin();
+       p != memory.end();
+       p++)
+    {
+
+      record = copies.find(p->second.mvalue);
+      if (record != copies.end())
+        p->second.mvalue = record->second;
+      else
+        {
+          ConcreteAddressMemoryValue *mvalue_cpy = CAMV_copy(p->second.mvalue);
+          copies[p->second.mvalue] = mvalue_cpy;
+          p->second.mvalue = mvalue_cpy;
+        }
+    }
+
+}
+
+template <class Value>
+Value ConcreteAddressMemory<Value>::get(const ConcreteAddress &a, int size,
+                                        Architecture::endianness_t e)
+  throw (UndefinedValue)
+{
+
+  typename memory_type::iterator it = memory.find(a.get_address());
+  if (it != memory.end())
+    {
+      ConcreteAddressMemoryCell &cell = it->second;
+      ConcreteAddressMemoryValue *mval = cell.mvalue;
+
+      if (!mval->is_broken && mval->value.get_size() == size * 8 &&
+          mval->endianness == e &&
+          cell.offset == (e == Architecture::BigEndian ? size - 1 : 0))
+        return mval->value;
+    }
+
+  throw UndefinedValue (a.to_string ());
+}
+
+template <class Value>
+void ConcreteAddressMemory<Value>::put(const ConcreteAddress &a,
+                                       const Value &v, 
+				       Architecture::endianness_t e)
+{
+  ConcreteAddressMemoryValue *mval = NULL;
+  ConcreteAddressMemoryCell cell;
+  typename memory_type::iterator it;
+  int bit_size = v.get_size();
+  int size = bit_size / 8;
+  address_t addr = a.get_address() +
+		(e == Architecture::BigEndian ? size - 1 : 0);
+  int i;
+
+  if (bit_size & 7)
+    {
+      Log::fatal_error("ConcreteAddressMemory::put():"
+                       " size of value is not a multiple of 8");
+    }
+
+  for (i = 0; i < size; i++)
+    {
+      it = memory.find(addr);
+      if (it != memory.end())
+        {
+          ConcreteAddressMemoryValue *tmp;
+          cell = it->second;
+          tmp = cell.mvalue;
+          if (cell.offset == i && tmp->value == v && tmp->endianness == e)
+            goto already;
+          else
+            {
+              tmp->is_broken |= 1 << i;
+              if (tmp->is_broken == ((1 << tmp->value.get_size()) - 1))
+                delete tmp;
+            }
+        }
+      if (mval == NULL)
+        {
+          mval = new ConcreteAddressMemoryValue();
+          mval->value = v;
+          mval->is_broken = 0;
+          mval->endianness = e;
+        }
+      cell.offset = i;
+      cell.mvalue = mval;
+
+      memory[addr] = cell;
+
+already:
+      if (e == Architecture::BigEndian)
+        addr--;
+      else
+        addr++;
+    }
+}
+
+/*! \brief Tell whether the memory cell has been defined before or not */
+template <class Value>
+bool ConcreteAddressMemory<Value>::
+is_undefined(const ConcreteAddress &a) const
+{
+  return memory.find(a.get_address()) == memory.end();
+}
+
+template <typename Value>
+bool ConcreteAddressMemory<Value>::
+is_empty() const
+{
+  return memory.size() == 0;
+}
+
+template <class Value>
+std::string ConcreteAddressMemory<Value>::pp()
+{
+  std::ostringstream oss;
+  ValueIterator mem_cell = this->get_value_iterator();
+  while (!mem_cell.end())
+    {
+      ConcreteAddress addr(mem_cell.get_address());
+      oss << "[";
+      addr.output_text(oss);
+      oss << " --> ";
+      mem_cell.get_value().output_text(oss);
+      oss << "]";
+      mem_cell++;
+    }
+  return oss.str();
+}
+
+template <class Value>
+std::string ConcreteAddressMemory<Value>::dump()
+{
+
+  std::ostringstream oss;
+  for (typename memory_type::const_iterator
+       p = memory.begin();
+       p != memory.end();
+       p++)
+    {
+      oss << "[" << p->first <<  " : "
+          << "{" << p->second.mvalue->value << ":("
+          << std::hex << p->second.mvalue->is_broken << ")}" << std::dec
+          << ":(" << p->second.offset << ")"
+          << "]" << std::endl;
+    }
+  return oss.str();
+
+}
+
+/*****************************************************************************/
+
+template <class Value>
+void ConcreteAddressMemory<Value>::ValueIterator::look_for_value()
+{
+  if (p == mem->memory.end()) return;
+  while ((p != mem->memory.end()) &&
+         (!((p->second.offset == 0) &&
+            !(p->second.mvalue->is_broken))))
+    p++;
+}
+
+template <class Value>
+ConcreteAddressMemory<Value>::
+ValueIterator::ValueIterator(const ConcreteAddressMemory<Value> *m) : mem(m)
+{
+  p = mem->memory.begin();
+  look_for_value();
+}
+
+template <class Value>
+ConcreteAddressMemory<Value>::
+ValueIterator::ValueIterator(const ValueIterator &other) :
+  mem(other.mem),
+  p(other.p)
+{}
+
+template <class Value>
+ConcreteAddressMemory<Value>::
+ValueIterator::~ValueIterator() {};
+
+template <class Value>
+bool ConcreteAddressMemory<Value>::ValueIterator::end()
+{
+  return p == mem->memory.end();
+}
+
+template <class Value>
+typename ConcreteAddressMemory<Value>::ValueIterator
+ConcreteAddressMemory<Value>::ValueIterator::operator++(int)
+{
+  if (p == mem->memory.end()) return *this;
+  p++;
+  look_for_value();
+  return *this;
+}
+
+template <class Value>
+ConcreteAddress ConcreteAddressMemory<Value>::ValueIterator::get_address()
+{
+  if (p == mem->memory.end())
+    Log::fatal_error("ValueIterator::get_address(): "
+	"attempt to retrieve an element after the end");
+  return p->first;
+}
+
+template <class Value>
+Value ConcreteAddressMemory<Value>::ValueIterator::get_value()
+{
+  if (p == mem->memory.end())
+    Log::fatal_error("ValueIterator::get_value(): "
+	"attempt to retrieve an element after the end");
+  return p->second.mvalue->value;
+}
+
+template <class Value>
+Architecture::endianness_t
+ConcreteAddressMemory<Value>::ValueIterator::get_endianness()
+{
+  if (p == mem->memory.end())
+    Log::fatal_error("ValueIterator::get_endianness(): "
+	"attempt to retrieve an element after the end");
+  return p->second.mvalue->endianness;
+}
+
+template <class Value>
+typename ConcreteAddressMemory<Value>::ValueIterator
+ConcreteAddressMemory<Value>::
+get_value_iterator() const
+{
+  return ValueIterator(this);
+}
