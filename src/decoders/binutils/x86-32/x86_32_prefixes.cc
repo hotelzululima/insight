@@ -97,12 +97,11 @@ s_start_rep (x86_32::parser_data &data)
 
   const char *regname = data.addr16 ? "cx" : "ecx";
   LValue *counter = data.get_register (regname);
-  Expr *stopcond = BinaryApp::create (EQ, counter, Constant::zero ());
+  Expr *stopcond = BinaryApp::create (EQ, counter, 
+				      Constant::zero (counter->get_bv_size ()));
   data.has_prefix = true;
-
-  data.mc->add_skip (data.start_ma, data.next_ma, stopcond);
-  data.mc->add_skip (data.start_ma, data.start_ma + 1,
-		     UnaryApp::create (LNOT, stopcond->ref ()));
+  x86_32_if_then_else (data.start_ma, data, stopcond,
+		       data.next_ma, data.start_ma + 1);
   data.start_ma++;
 }
 
@@ -112,11 +111,13 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
   MicrocodeAddress start (data.start_ma);
   const char *regname = data.addr16 ? "cx" : "ecx";
   LValue *counter = data.get_register (regname);
-  Expr *stopcond = BinaryApp::create (EQ, counter->ref (), Constant::zero ());
+  int csize = counter->get_bv_size ();
+  Expr *stopcond = BinaryApp::create (EQ, counter->ref (), 
+				      Constant::zero (csize));
 
   data.mc->add_assignment (start, counter, 
 			   BinaryApp::create (SUB, counter->ref (),
-					      Constant::one ()));
+					      Constant::one (csize), csize));
 
   if (cond)    
     {
@@ -126,7 +127,7 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
 
   data.mc->add_skip (start, data.next_ma, stopcond);
   data.mc->add_skip (start, MicrocodeAddress (data.start_ma.getGlobal ()),
-		     UnaryApp::create (NOT, stopcond->ref ()));
+		     UnaryApp::create (NOT, stopcond->ref (), 0, 1));
   
   data.has_prefix = false;
 }
