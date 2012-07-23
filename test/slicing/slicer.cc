@@ -42,7 +42,7 @@
 #include <interpreters/concrete/concrete_context.hh>
 #include <interpreters/ExprSemantics.hh>
 #include <kernel/expressions/Formula.hh>
-#include <analyzers/slicing/Slicing.hh>
+#include <analyses/slicing/Slicing.hh>
 #include <loaders/LoaderFactory.hh>
 
 

@@ -9,12 +9,12 @@ BUILT_SOURCES=
 
 all:
 
-## analyzers module
-analyzers_sources = \
-	analyzers/Wp.cc \
-	analyzers/Wp.hh \
-	analyzers/slicing/Slicing.hh \
-	analyzers/slicing/Slicing.cc
+## analyses module
+analyses_sources = \
+	analyses/Wp.cc \
+	analyses/Wp.hh \
+	analyses/slicing/Slicing.hh \
+	analyses/slicing/Slicing.cc
 
 ## utils module
 utils_source = \
@@ -292,7 +292,7 @@ decoders/binutils/arm/arm_scanner.cc : 	\
 lib_LTLIBRARIES = libinsight.la
 
 libinsight_la_SOURCES =  \
-	$(analyzers_sources) 	\
+	$(analyses_sources) 	\
 	$(decoders_sources) 	\
 	$(interpreters_source) 	\
 	$(kernel_source) 	\
