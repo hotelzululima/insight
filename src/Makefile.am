@@ -200,7 +200,6 @@ x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_C_instr.cc \
 	decoders/binutils/x86-32/x86_32_L_instr.cc \
 	decoders/binutils/x86-32/x86_32_M_instr.cc \
-	decoders/binutils/x86-32/x86_32_N_instr.cc \
 	decoders/binutils/x86-32/x86_32_X_instr.cc 
 
 BUILT_SOURCES+= \
