@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INTERPRETERS_SETS_SETS_MEMORY_HH
-#define INTERPRETERS_SETS_SETS_MEMORY_HH
+#ifndef DOMAINS_SETS_SETS_MEMORY_HH
+#define DOMAINS_SETS_SETS_MEMORY_HH
 
 #include <domains/common/ConcreteAddressMemory.hh>
 #include <domains/sets/SetsAddress.hh>
@@ -160,4 +160,4 @@ public:
   virtual std::string pp();
 };
 
-#endif /* INTERPRETERS_SETS_SETS_MEMORY_HH */
+#endif /* DOMAINS_SETS_SETS_MEMORY_HH */

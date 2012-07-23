@@ -28,12 +28,12 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INTERPRETERS_SETS_SETS_EXPR_SEMANTICS_HH
-#define INTERPRETERS_SETS_SETS_EXPR_SEMANTICS_HH
+#ifndef DOMAINS_SETS_SETS_EXPR_SEMANTICS_HH
+#define DOMAINS_SETS_SETS_EXPR_SEMANTICS_HH
 
 #include <domains/ExprSemantics.hh>
 #include <domains/sets/SetsValue.hh>
 
 typedef ExprSemantics<SetsValue> SetsExprSemantics;
 
-#endif /* INTERPRETERS_SETS_SETS_EXPR_SEMANTICS_HH */
+#endif /* DOMAINS_SETS_SETS_EXPR_SEMANTICS_HH */

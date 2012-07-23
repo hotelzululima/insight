@@ -27,8 +27,8 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef INTERPRETERS_INTERVAL_CONTEXT_HH_
-#define INTERPRETERS_INTERVAL_CONTEXT_HH_
+#ifndef DOMAINS_INTERVAL_CONTEXT_HH_
+#define DOMAINS_INTERVAL_CONTEXT_HH_
 
 #include <domains/common/ConcreteProgramPoint.hh>
 #include <domains/interval/IntervalAddress.hh>
@@ -68,4 +68,4 @@ public:
 
 };
 
-#endif /* INTERPRETERS_INTERVAL_CONTEXT_HH_ */
+#endif /* DOMAINS_INTERVAL_CONTEXT_HH_ */

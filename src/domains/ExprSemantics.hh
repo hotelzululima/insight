@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INTERPRETERS_EXPR_SEMANTICS_HH
-#define INTERPRETERS_EXPR_SEMANTICS_HH
+#ifndef DOMAINS_EXPR_SEMANTICS_HH
+#define DOMAINS_EXPR_SEMANTICS_HH
 
 #include <kernel/Value.hh>
 
@@ -59,4 +59,4 @@ public:
 
 #include <domains/ExprSemantics.ii>
 
-#endif /* INTERPRETERS_EXPR_SEMANTICS_HH */
+#endif /* DOMAINS_EXPR_SEMANTICS_HH */

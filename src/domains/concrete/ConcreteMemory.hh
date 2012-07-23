@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INTERPRETERS_CONCRETE_CONCRETEMEMORY_HH
-#define INTERPRETERS_CONCRETE_CONCRETEMEMORY_HH
+#ifndef DOMAINS_CONCRETE_CONCRETEMEMORY_HH
+#define DOMAINS_CONCRETE_CONCRETEMEMORY_HH
 
 #include <stdio.h>
 #include <stddef.h>
@@ -115,4 +115,4 @@ public:
   void output_text(std::ostream &) const;
 };
 
-#endif /* INTERPRETERS_CONCRETE_CONCRETEMEMORY_HH */
+#endif /* DOMAINS_CONCRETE_CONCRETEMEMORY_HH */

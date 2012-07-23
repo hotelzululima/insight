@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INTERPRETERS_SETS_SETS_ADDRESS_HH
-#define INTERPRETERS_SETS_SETS_ADDRESS_HH
+#ifndef DOMAINS_SETS_SETS_ADDRESS_HH
+#define DOMAINS_SETS_SETS_ADDRESS_HH
 
 #include <domains/sets/SetsValue.hh>
 #include <domains/common/ConcreteAddressMemory.hh>
@@ -57,4 +57,4 @@ public:
 
 };
 
-#endif /* INTERPRETERS_SETS_SETS_ADDRESS_HH */
+#endif /* DOMAINS_SETS_SETS_ADDRESS_HH */

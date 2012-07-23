@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INTERPRETERS_SETS_SETS_CONTEXT_HH
-#define INTERPRETERS_SETS_SETS_CONTEXT_HH
+#ifndef DOMAINS_SETS_SETS_CONTEXT_HH
+#define DOMAINS_SETS_SETS_CONTEXT_HH
 
 #include <analyses/microcode_exec.hh>
 #include <domains/common/ConcreteProgramPoint.hh>
@@ -172,4 +172,4 @@ public:
 
 };
 
-#endif /* INTERPRETERS_SETS_SETS_CONTEXT_HH */
+#endif /* DOMAINS_SETS_SETS_CONTEXT_HH */

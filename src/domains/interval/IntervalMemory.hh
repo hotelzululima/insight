@@ -27,8 +27,8 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef INTERPRETERS_INTERVAL_INTERVAL_MEMORY_HH
-#define INTERPRETERS_INTERVAL_INTERVAL_MEMORY_HH
+#ifndef DOMAINS_INTERVAL_INTERVAL_MEMORY_HH
+#define DOMAINS_INTERVAL_INTERVAL_MEMORY_HH
 
 #include <domains/common/ConcreteAddressMemory.hh>
 #include <domains/interval/IntervalAddress.hh>
@@ -67,4 +67,4 @@ public:
   virtual std::string pp();
 };
 
-#endif /* INTERPRETERS_INTERVAL_INTERVAL_MEMORY_HH */
+#endif /* DOMAINS_INTERVAL_INTERVAL_MEMORY_HH */
