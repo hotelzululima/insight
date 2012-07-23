@@ -220,3 +220,18 @@ X86_32_TRANSLATE_1_OP(PREFETCHNTA)
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }
+
+X86_32_TRANSLATE_2_OP(XCHG)
+{
+  MicrocodeAddress from (data.start_ma);
+  
+  if (op1->is_MemCell ())
+    Expr::extract_bit_vector (op1, 0, op2->get_bv_size ());
+  else if (op2->is_MemCell ())
+    Expr::extract_bit_vector (op2, 0, op1->get_bv_size ());
+
+  LValue *temp = data.get_tmp_register (TMPREG(0), op1->get_bv_size ());
+  data.mc->add_assignment (from, temp, op1->ref ());
+  data.mc->add_assignment (from, (LValue *) op1, op2->ref ());
+  data.mc->add_assignment (from, (LValue *) op2, temp->ref (), data.next_ma);
+}

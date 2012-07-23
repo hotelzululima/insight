@@ -74,8 +74,15 @@ X86_32_TESTS = \
 	x86_32-popa16.res \
 	x86_32-push.res \
 	x86_32-push16.res \
+        \
 	x86_32-shift.res \
-	x86_32-xor.res 
+	x86_32-sbb.res \
+        \
+	x86_32-xadd.res \
+	x86_32-xchg.res \
+	x86_32-xor.res \
+        \
+        ${dummy}
 
 if WITH_VALGRIND
 X86_32_TESTS += \
@@ -132,8 +139,15 @@ X86_32_TESTS += \
 	x86_32-popa16.memres \
 	x86_32-push.memres \
 	x86_32-push16.memres \
+        \
 	x86_32-shift.memres \
-	x86_32-xor.memres 
+	x86_32-sbb.memres \
+        \
+	x86_32-xadd.memres \
+	x86_32-xchg.memres \
+	x86_32-xor.memres \
+        \
+        ${dummy}
 endif
 
 BASE_TESTS = ${X86_32_TESTS}

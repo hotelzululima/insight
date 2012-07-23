@@ -58,6 +58,10 @@ X86_32_OBJECTS= \
   x86_32-ret.bin \
   x86_32-shift.bin \
   x86_32-sub.bin \
+  x86_32-sbb.bin \
+  \
+  x86_32-xadd.bin \
+  x86_32-xchg.bin \
   x86_32-xor.bin \
   \
   x86_32-slicing-01.bin \
@@ -81,6 +85,7 @@ X86_32_OBJECTS= \
   x86_32-simulator-aam.bin  \
   x86_32-simulator-aas.bin  \
   x86_32-simulator-add.bin  \
+  x86_32-simulator-adcsbb.bin  \
   \
   x86_32-simulator-booleans.bin  \
   x86_32-simulator-bound.bin  \
@@ -129,6 +134,9 @@ X86_32_OBJECTS= \
   x86_32-simulator-neg.bin \
   \
   x86_32-simulator-sub.bin  \
+  \
+  x86_32-simulator-xadd.bin  \
+  x86_32-simulator-xchg.bin  \
   \
   ${dummy}
 

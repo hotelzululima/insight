@@ -48,6 +48,7 @@
   BINARY_FILE (X86_32_AAM, "x86_32-simulator-aam.bin") \
   BINARY_FILE (X86_32_AAS, "x86_32-simulator-aas.bin") \
   BINARY_FILE (X86_32_ADD, "x86_32-simulator-add.bin") \
+  BINARY_FILE (X86_32_ADCSBB, "x86_32-simulator-adcsbb.bin") \
   \
   BINARY_FILE (X86_32_BOOLEANS, "x86_32-simulator-booleans.bin") \
   BINARY_FILE (X86_32_BOUND, "x86_32-simulator-bound.bin") \
@@ -96,6 +97,9 @@
   BINARY_FILE (X86_32_NEG, "x86_32-simulator-neg.bin") \
   \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
+  \
+  BINARY_FILE (X86_32_XADD, "x86_32-simulator-xadd.bin") \
+  BINARY_FILE (X86_32_XCHG, "x86_32-simulator-xchg.bin") \
   \
   BINARY_FILE (X86_32_GCD, "x86_32-gcd.bin")
 

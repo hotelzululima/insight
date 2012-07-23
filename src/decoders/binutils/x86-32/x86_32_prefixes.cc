@@ -32,6 +32,11 @@
 
 using namespace std;
 
+X86_32_TRANSLATE_0_OP(DATA16)
+{
+  x86_32_skip (data);
+}
+
 X86_32_TRANSLATE_PREFIX(ADDR16)
 {
   if (start)
