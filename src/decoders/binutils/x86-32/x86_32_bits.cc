@@ -32,37 +32,6 @@
 
 using namespace std;
 
-X86_32_TRANSLATE_2_OP(BOUND)
-{
-  Expr *index = op1;
-  Expr::extract_with_bit_vector_of (op2, op1);
-
-  MemCell *min = dynamic_cast<MemCell *>(op2->ref ());
-
-  assert (min != NULL);
-
-  Expr *max_addr = 
-    BinaryApp::create (ADD, min->get_addr ()->ref (),
-		       op1->get_bv_size () / 8,
-		       0, min->get_addr ()->get_bv_size ());
-
-  Expr *max = MemCell::create (max_addr, 0, index->get_bv_size ());
-
-  data.mc->add_skip (data.start_ma, data.next_ma,
-		     BinaryApp::create (AND_OP,
-					BinaryApp::create (LEQ_S,
-							   min,
-							   index->ref (), 
-							   0, 1),
-					BinaryApp::create (LEQ_S,
-							   index->ref (), 
-							   max,
-							   0, 1),
-					0, 1));
-  op1->deref ();
-  op2->deref ();
-}
-
 static void
 s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
 {
@@ -129,35 +98,6 @@ X86_32_TRANSLATE_2_OP(BSF)
 X86_32_TRANSLATE_2_OP(BSR)
 {
   s_bs (data, op1, op2, false);
-}
-
-X86_32_TRANSLATE_1_OP(BSWAP)
-{
-  assert (op1->get_bv_offset () == 0);
-  assert (op1->get_bv_size () == 32);
-  assert (op1->is_LValue ());
-
-  MicrocodeAddress from (data.start_ma);
-  LValue *temp = data.get_tmp_register (TMPREG(0), op1->get_bv_size ());
-
-  data.mc->add_assignment (from, 
-			   (LValue *) temp->ref (), 
-			   op1->ref ());
-  data.mc->add_assignment (from, 
-			   (LValue *) op1->extract_bit_vector (0, 8),
-			   temp->extract_bit_vector (24, 8));
-  data.mc->add_assignment (from, 
-			   (LValue *) op1->extract_bit_vector (8, 8),
-			   temp->extract_bit_vector (16, 8));
-  data.mc->add_assignment (from, 
-			   (LValue *) op1->extract_bit_vector (16, 8),
-			   temp->extract_bit_vector (8, 8));
-  data.mc->add_assignment (from, 
-			   (LValue *) op1->extract_bit_vector (24, 8),
-			   temp->extract_bit_vector (0, 8),
-			   data.next_ma);
-  temp->deref ();
-  op1->deref ();
 }
 
 #define BT_NO_CHG 0
