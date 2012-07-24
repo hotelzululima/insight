@@ -1,0 +1,3 @@
+	pusha
+	pushaw
+	pushal

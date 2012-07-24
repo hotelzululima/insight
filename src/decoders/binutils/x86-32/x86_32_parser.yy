@@ -717,7 +717,7 @@ using namespace x86_32;
 %token  TOK_POPAD            "POPAD"
 %token  TOK_POPCNT           "POPCNT"
 %token  TOK_POPF             "POPF"
-%token  TOK_POPFD            "POPFD"
+%token  TOK_POPFW            "POPFW"
 %token  TOK_POPFQ            "POPFQ"
 %token  TOK_POR              "POR"
 %token  TOK_PREFETCHT0       "PREFETCHT0"
@@ -764,9 +764,10 @@ using namespace x86_32;
 %token  TOK_PUSHW            "PUSHW"
 %token  TOK_PUSHL            "PUSHL"
 %token  TOK_PUSHA            "PUSHA"
-%token  TOK_PUSHAD           "PUSHAD"
+%token  TOK_PUSHAW           "PUSHAW"
+%token  TOK_PUSHAL           "PUSHAL"
 %token  TOK_PUSHF            "PUSHF"
-%token  TOK_PUSHFD           "PUSHFD"
+%token  TOK_PUSHFW           "PUSHFW"
 %token  TOK_PXOR             "PXOR"
 %token  TOK_RCL              "RCL"
 %token  TOK_RCLB             "RCLB"
@@ -1762,7 +1763,7 @@ instruction:
 | TOK_POPAD  { x86_32_translate<X86_32_TOKEN(POPAD)> (data); }
 | TOK_POPCNT operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(POPCNT)> (data, $2, $4); }
 | TOK_POPF  { x86_32_translate<X86_32_TOKEN(POPF)> (data); }
-| TOK_POPFD  { x86_32_translate<X86_32_TOKEN(POPFD)> (data); }
+| TOK_POPFW  { x86_32_translate<X86_32_TOKEN(POPFW)> (data); }
 | TOK_POPFQ  { x86_32_translate<X86_32_TOKEN(POPFQ)> (data); }
 | TOK_POR operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(POR)> (data, $2, $4); }
 | TOK_POR operand TOK_COMMA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(POR)> (data, $2, $4, $6); }
@@ -1839,9 +1840,10 @@ instruction:
 | TOK_PUSHW operand { x86_32_translate<X86_32_TOKEN(PUSHW)> (data, $2); }
 | TOK_PUSHL operand { x86_32_translate<X86_32_TOKEN(PUSHL)> (data, $2); }
 | TOK_PUSHA  { x86_32_translate<X86_32_TOKEN(PUSHA)> (data); }
-| TOK_PUSHAD  { x86_32_translate<X86_32_TOKEN(PUSHAD)> (data); }
+| TOK_PUSHAW  { x86_32_translate<X86_32_TOKEN(PUSHAW)> (data); }
+| TOK_PUSHAL  { x86_32_translate<X86_32_TOKEN(PUSHAL)> (data); }
 | TOK_PUSHF  { x86_32_translate<X86_32_TOKEN(PUSHF)> (data); }
-| TOK_PUSHFD  { x86_32_translate<X86_32_TOKEN(PUSHFD)> (data); }
+| TOK_PUSHFW  { x86_32_translate<X86_32_TOKEN(PUSHFW)> (data); }
 | TOK_PXOR operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(PXOR)> (data, $2, $4); }
 | TOK_PXOR operand TOK_COMMA operand TOK_COMMA operand { x86_32_translate<X86_32_TOKEN(PXOR)> (data, $2, $4, $6); }
 | TOK_RCL operand { x86_32_translate<X86_32_TOKEN(RCL)> (data, $2); }

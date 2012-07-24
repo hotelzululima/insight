@@ -89,13 +89,16 @@
   \
   BINARY_FILE (X86_32_NEG, "x86_32-simulator-neg.bin") \
   \
+  BINARY_FILE (X86_32_POPCNT, "x86_32-simulator-popcnt.bin") \
   BINARY_FILE (X86_32_PUSHPOP_1, "x86_32-simulator-pushpop-01.bin") \
   BINARY_FILE (X86_32_PUSHPOP_2, "x86_32-simulator-pushpop-02.bin") \
   BINARY_FILE (X86_32_PUSHPOP_3, "x86_32-simulator-pushpop-03.bin") \
   BINARY_FILE (X86_32_PUSHPOP_4, "x86_32-simulator-pushpop-04.bin") \
   BINARY_FILE (X86_32_PUSHPOP_5, "x86_32-simulator-pushpop-05.bin") \
   BINARY_FILE (X86_32_PUSHPOP_6, "x86_32-simulator-pushpop-06.bin") \
-  BINARY_FILE (X86_32_POPCNT, "x86_32-simulator-popcnt.bin") \
+  BINARY_FILE (X86_32_PUSHFPOPF, "x86_32-simulator-pushfpopf.bin") \
+  BINARY_FILE (X86_32_PUSHAPOPA, "x86_32-simulator-pushapopa.bin") \
+  \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   \
   BINARY_FILE (X86_32_XADD, "x86_32-simulator-xadd.bin") \

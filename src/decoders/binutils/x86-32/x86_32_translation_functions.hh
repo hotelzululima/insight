@@ -57,7 +57,7 @@
 
 // X86_32_TRANSLATE_PREFIX(GS);
 
-X86_32_TRANSLATE_0_OP(DATA16);
+X86_32_TRANSLATE_0_OP(DATA16);   // x86_32_prefixes.cc
 X86_32_TRANSLATE_PREFIX(DATA32); // x86_32_prefixes.cc
 X86_32_TRANSLATE_PREFIX(DATA16); // x86_32_prefixes.cc
 
@@ -344,11 +344,10 @@ X86_32_TRANSLATE_0_OP(POPA);  // x86_32_stack_instructions.cc
 X86_32_TRANSLATE_0_OP(POPAW);  // x86_32_stack_instructions.cc
 X86_32_TRANSLATE_0_OP(POPAL);  // x86_32_stack_instructions.cc
 
-// X86_32_TRANSLATE_2_OP(POPCNT);
+X86_32_TRANSLATE_2_OP(POPCNT); // x86_32_misc_instructions.cc
 
-// X86_32_TRANSLATE_0_OP(POPF);
-
-// X86_32_TRANSLATE_0_OP(POPFD);
+X86_32_TRANSLATE_0_OP(POPF); // x86_32_stack_instructions.cc
+X86_32_TRANSLATE_0_OP(POPFW); // x86_32_stack_instructions.cc
 
 X86_32_TRANSLATE_1_OP(PREFETCHT0); // NOP / x86_32_misc_instructions.cc
 X86_32_TRANSLATE_1_OP(PREFETCHT1); // NOP / x86_32_misc_instructions.cc
@@ -360,13 +359,12 @@ X86_32_TRANSLATE_1_OP(PUSH);  // x86_32_stack_instructions.cc
 X86_32_TRANSLATE_1_OP(PUSHW); // x86_32_stack_instructions.cc
 X86_32_TRANSLATE_1_OP(PUSHL); // x86_32_stack_instructions.cc
 
-// X86_32_TRANSLATE_0_OP(PUSHA);
+X86_32_TRANSLATE_0_OP(PUSHA);  // x86_32_stack_instructions.cc
+X86_32_TRANSLATE_0_OP(PUSHAW); // x86_32_stack_instructions.cc
+X86_32_TRANSLATE_0_OP(PUSHAL); // x86_32_stack_instructions.cc
 
-// X86_32_TRANSLATE_0_OP(PUSHAD);
-
-// X86_32_TRANSLATE_0_OP(PUSHF);
-
-// X86_32_TRANSLATE_0_OP(PUSHFD);
+X86_32_TRANSLATE_0_OP(PUSHF);  // x86_32_stack_instructions.cc
+X86_32_TRANSLATE_0_OP(PUSHFW); // x86_32_stack_instructions.cc
 
 // X86_32_TRANSLATE_1_OP(RCL);
 

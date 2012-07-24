@@ -55,6 +55,7 @@ X86_32_OBJECTS= \
   x86_32-popal.bin \
   x86_32-popaw.bin \
   x86_32-push.bin \
+  x86_32-pusha.bin \
   x86_32-push16.bin \
   x86_32-rep.bin \
   x86_32-ret.bin \
@@ -128,14 +129,15 @@ X86_32_OBJECTS= \
   \
   x86_32-simulator-neg.bin \
   \
+  x86_32-simulator-popcnt.bin \
   x86_32-simulator-pushpop-01.bin \
   x86_32-simulator-pushpop-02.bin \
   x86_32-simulator-pushpop-03.bin \
   x86_32-simulator-pushpop-04.bin  \
   x86_32-simulator-pushpop-05.bin  \
   x86_32-simulator-pushpop-06.bin  \
-  x86_32-simulator-popcnt.bin \
   x86_32-simulator-pushfpopf.bin  \
+  x86_32-simulator-pushapopa.bin  \
   \
   x86_32-simulator-sub.bin  \
   \

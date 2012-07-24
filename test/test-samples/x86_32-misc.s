@@ -12,4 +12,15 @@
 	cwde
 	
 	rdtsc
-	
+
+	popf
+	popfl
+
+	pushf
+	pushfl
+
+	data16 popf
+	data16 popfl
+
+	data16 pushf
+	data16 pushfl

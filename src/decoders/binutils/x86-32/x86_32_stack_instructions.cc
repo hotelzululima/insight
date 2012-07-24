@@ -213,7 +213,7 @@ s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
   Expr *nval = BinaryApp::create (ADD, reg->ref (), reg->get_bv_size () >> 3);
   data.mc->add_assignment (start, reg, nval);
 
-  for (; i < 6; i++)
+  for (i++; i < 7; i++)
     {
       reg = data.get_register (regs[i]);
       x86_32_pop (start, data, reg);
@@ -277,5 +277,83 @@ X86_32_TRANSLATE_1_OP(PUSHW)
 X86_32_TRANSLATE_1_OP(PUSHL)
 {
   x86_32_translate<X86_32_TOKEN(PUSH)> (data, op1);
+}
+
+
+X86_32_TRANSLATE_0_OP(POPF)
+{
+  MicrocodeAddress from (data.start_ma);
+  Expr *eflags = data.get_register ("eflags");
+  
+  if (data.data16)
+    Expr::extract_bit_vector (eflags, 0, 16);
+  
+  x86_32_pop (from, data, (LValue *) eflags, &data.next_ma);
+}
+
+X86_32_TRANSLATE_0_OP(POPFW)
+{
+  data.data16 = true;
+  x86_32_translate<X86_32_TOKEN(POPF)> (data);
+}
+
+X86_32_TRANSLATE_0_OP(PUSHF)
+{
+  Expr *eflags = data.get_register ("eflags");
+  MicrocodeAddress from (data.start_ma);
+
+  if (data.data16)
+    Expr::extract_bit_vector (eflags, 0, 16);
+  else
+    {
+      Expr *tmp = BinaryApp::create (AND_OP, eflags,
+				     Constant::create (0x00FCFFFF, 0,
+						       eflags->get_bv_size ()),
+				     0, eflags->get_bv_size ());
+      eflags = tmp;
+    }
+
+  x86_32_push (from, data, eflags, &data.next_ma);
+}
+
+X86_32_TRANSLATE_0_OP(PUSHFW)
+{
+  data.data16 = true;
+  x86_32_translate<X86_32_TOKEN(PUSHF)> (data);
+}
+
+X86_32_TRANSLATE_0_OP(PUSHA)
+{
+  LValue *temp = data.get_tmp_register (TMPREG (0), data.data16 ? 16 : 32);
+  MicrocodeAddress from (data.start_ma);
+  const char *regs32[] = { "esp", "eax", "ecx", "edx", "ebx", "ebp", "esi", 
+			   "edi" };
+  const char *regs16[] = { "sp", "ax", "cx", "dx", "bx", "bp", "si", 
+			   "di" };
+  const char **regs = data.data16 ? regs16 : regs32;
+
+  data.mc->add_assignment (from, (LValue *) temp->ref (), 
+			   data.get_register (regs[0]));
+  
+  x86_32_push (from, data, data.get_register (regs[1]));
+  x86_32_push (from, data, data.get_register (regs[2]));
+  x86_32_push (from, data, data.get_register (regs[3]));
+  x86_32_push (from, data, data.get_register (regs[4]));
+  x86_32_push (from, data, temp->ref ());
+  x86_32_push (from, data, data.get_register (regs[5]));
+  x86_32_push (from, data, data.get_register (regs[6]));
+  x86_32_push (from, data, data.get_register (regs[7]), &data.next_ma); 
+  temp->deref ();
+}
+
+X86_32_TRANSLATE_0_OP(PUSHAW)
+{
+  data.data16 = true;
+  x86_32_translate<X86_32_TOKEN(PUSHA)> (data);
+}
+
+X86_32_TRANSLATE_0_OP(PUSHAL)
+{
+  x86_32_translate<X86_32_TOKEN(PUSHA)> (data);
 }
 

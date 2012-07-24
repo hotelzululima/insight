@@ -680,7 +680,7 @@ optype    [bswlqt]
 "popad"            { return token::TOK_POPAD; }
 "popcnt"           { return token::TOK_POPCNT; }
 "popf"             { return token::TOK_POPF; }
-"popfd"            { return token::TOK_POPFD; }
+"popfw"            { return token::TOK_POPFW; }
 "popfq"            { return token::TOK_POPFQ; }
 "por"              { return token::TOK_POR; }
 "prefetcht0"       { return token::TOK_PREFETCHT0; }
@@ -727,9 +727,10 @@ optype    [bswlqt]
 "pushw"            { return token::TOK_PUSHW; }
 "pushl"            { return token::TOK_PUSHL; }
 "pusha"            { return token::TOK_PUSHA; }
-"pushad"           { return token::TOK_PUSHAD; }
+"pushaw"           { return token::TOK_PUSHAW; }
+"pushaL"           { return token::TOK_PUSHAL; }
 "pushf"            { return token::TOK_PUSHF; }
-"pushfd"           { return token::TOK_PUSHFD; }
+"pushfw"           { return token::TOK_PUSHFW; }
 "pxor"             { return token::TOK_PXOR; }
 "rcl"              { return token::TOK_RCL; }
 "rclb"             { return token::TOK_RCLB; }
