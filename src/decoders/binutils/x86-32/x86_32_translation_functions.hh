@@ -540,12 +540,13 @@ X86_32_TRANSLATE_2_OP(SBBL); // x86_32_operators_arithmetics.cc
 // X86_32_TRANSLATE_2_OP(SCASD); to implement in x86_32_strings.cc
 
 
-#define X86_32_CC(id, form) X86_32_TRANSLATE_2_OP(SET ## id);
-#include "x86_32_cc.def"
+#define X86_32_CC(id, form) \
+  X86_32_TRANSLATE_1_OP(SET ## id); // x86_32_misc_instructions.cc
+#include "x86_32_cc.def" 
 #undef  X86_32_CC
 
-// X86_32_TRANSLATE_1_OP(SETC);
-// X86_32_TRANSLATE_1_OP(SETNC);
+X86_32_TRANSLATE_1_OP(SETC);  // x86_32_misc_instructions.cc
+X86_32_TRANSLATE_1_OP(SETNC);  // x86_32_misc_instructions.cc
 
 
 // X86_32_TRANSLATE_0_OP(SFENCE);
@@ -608,7 +609,7 @@ X86_32_TRANSLATE_2_OP(TESTL); // x86_32_operators_booleans.cc
 
 X86_32_TRANSLATE_2_OP(XADD); // x86_32_operators_arithmetics.cc
 
-// X86_32_TRANSLATE_2_OP(XCHG);
+X86_32_TRANSLATE_2_OP(XCHG); // x86_32_misc_instructions.cc
 
 // X86_32_TRANSLATE_0_OP(XGETBV);
 

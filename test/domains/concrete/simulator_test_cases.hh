@@ -100,6 +100,7 @@
   BINARY_FILE (X86_32_PUSHAPOPA, "x86_32-simulator-pushapopa.bin") \
   \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
+  BINARY_FILE (X86_32_SETCC, "x86_32-simulator-setcc.bin") \
   \
   BINARY_FILE (X86_32_XADD, "x86_32-simulator-xadd.bin") \
   BINARY_FILE (X86_32_XCHG, "x86_32-simulator-xchg.bin") \

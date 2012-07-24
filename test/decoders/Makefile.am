@@ -80,6 +80,7 @@ X86_32_TESTS = \
         \
 	x86_32-shift.res \
 	x86_32-sbb.res \
+	x86_32-setcc.res \
         \
 	x86_32-xadd.res \
 	x86_32-xchg.res \
@@ -148,6 +149,7 @@ X86_32_TESTS += \
         \
 	x86_32-shift.memres \
 	x86_32-sbb.memres \
+	x86_32-setcc.memres \
         \
 	x86_32-xadd.memres \
 	x86_32-xchg.memres \

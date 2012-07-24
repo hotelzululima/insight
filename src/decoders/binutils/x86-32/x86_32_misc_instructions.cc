@@ -278,3 +278,37 @@ X86_32_TRANSLATE_2_OP(XCHG)
   data.mc->add_assignment (from, (LValue *) op1, op2->ref ());
   data.mc->add_assignment (from, (LValue *) op2, temp->ref (), data.next_ma);
 }
+
+static void
+s_set_cc (x86_32::parser_data &data, Expr *cond, Expr *dst)
+{
+  if (dst->get_bv_size () != 8)
+    Expr::extract_bit_vector (dst, 0, 8);
+  x86_32_if_then_else (data.start_ma, data, cond, 
+		       data.start_ma + 1, data.start_ma + 2);
+  data.mc->add_assignment (data.start_ma + 1, (LValue *) dst->ref (),
+			   Constant::one (8), data.next_ma);
+  data.mc->add_assignment (data.start_ma + 1, (LValue *) dst->ref (),
+			   Constant::zero (8), data.next_ma);
+  dst->deref ();
+}
+
+#define X86_32_CC(id, form) \
+X86_32_TRANSLATE_1_OP(SET ## id)		\
+{ \
+  Expr *cond = \
+    data.condition_codes[x86_32::parser_data::X86_32_CC_ ## id]->ref (); \
+  s_set_cc (data, cond, op1); \
+}
+#include "x86_32_cc.def" 
+#undef  X86_32_CC
+
+X86_32_TRANSLATE_1_OP (SETC)
+{
+  x86_32_translate<X86_32_TOKEN(SETB)> (data, op1);
+}
+
+X86_32_TRANSLATE_1_OP (SETNC)
+{
+  x86_32_translate<X86_32_TOKEN(SETAE)> (data, op1);
+}

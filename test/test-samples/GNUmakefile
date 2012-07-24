@@ -59,6 +59,8 @@ X86_32_OBJECTS= \
   x86_32-push16.bin \
   x86_32-rep.bin \
   x86_32-ret.bin \
+  \
+  x86_32-setcc.bin \
   x86_32-shift.bin \
   x86_32-sub.bin \
   x86_32-sbb.bin \
@@ -140,6 +142,7 @@ X86_32_OBJECTS= \
   x86_32-simulator-pushapopa.bin  \
   \
   x86_32-simulator-sub.bin  \
+  x86_32-simulator-setcc.bin \
   \
   x86_32-simulator-xadd.bin  \
   x86_32-simulator-xchg.bin  \
