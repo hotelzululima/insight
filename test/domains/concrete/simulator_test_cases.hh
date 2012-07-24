@@ -36,13 +36,6 @@
   BINARY_FILE (X86_32_BASE_4, "x86_32-simulator-04.bin") \
   BINARY_FILE (X86_32_BASE_5, "x86_32-simulator-05.bin") \
   \
-  BINARY_FILE (X86_32_PUSHPOP_1, "x86_32-pushpop-01.bin") \
-  BINARY_FILE (X86_32_PUSHPOP_2, "x86_32-pushpop-02.bin") \
-  BINARY_FILE (X86_32_PUSHPOP_3, "x86_32-pushpop-03.bin") \
-  BINARY_FILE (X86_32_PUSHPOP_4, "x86_32-pushpop-04.bin") \
-  BINARY_FILE (X86_32_PUSHPOP_5, "x86_32-pushpop-05.bin") \
-  BINARY_FILE (X86_32_PUSHPOP_6, "x86_32-pushpop-06.bin") \
-  \
   BINARY_FILE (X86_32_AAA, "x86_32-simulator-aaa.bin") \
   BINARY_FILE (X86_32_AAD, "x86_32-simulator-aad.bin") \
   BINARY_FILE (X86_32_AAM, "x86_32-simulator-aam.bin") \
@@ -96,6 +89,12 @@
   \
   BINARY_FILE (X86_32_NEG, "x86_32-simulator-neg.bin") \
   \
+  BINARY_FILE (X86_32_PUSHPOP_1, "x86_32-simulator-pushpop-01.bin") \
+  BINARY_FILE (X86_32_PUSHPOP_2, "x86_32-simulator-pushpop-02.bin") \
+  BINARY_FILE (X86_32_PUSHPOP_3, "x86_32-simulator-pushpop-03.bin") \
+  BINARY_FILE (X86_32_PUSHPOP_4, "x86_32-simulator-pushpop-04.bin") \
+  BINARY_FILE (X86_32_PUSHPOP_5, "x86_32-simulator-pushpop-05.bin") \
+  BINARY_FILE (X86_32_PUSHPOP_6, "x86_32-simulator-pushpop-06.bin") \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   \
   BINARY_FILE (X86_32_XADD, "x86_32-simulator-xadd.bin") \
