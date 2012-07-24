@@ -95,6 +95,7 @@
   BINARY_FILE (X86_32_PUSHPOP_4, "x86_32-simulator-pushpop-04.bin") \
   BINARY_FILE (X86_32_PUSHPOP_5, "x86_32-simulator-pushpop-05.bin") \
   BINARY_FILE (X86_32_PUSHPOP_6, "x86_32-simulator-pushpop-06.bin") \
+  BINARY_FILE (X86_32_POPCNT, "x86_32-simulator-popcnt.bin") \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   \
   BINARY_FILE (X86_32_XADD, "x86_32-simulator-xadd.bin") \

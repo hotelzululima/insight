@@ -46,7 +46,9 @@ X86_32_OBJECTS= \
   x86_32-nop.bin \
   x86_32-not.bin \
   x86_32-or.bin \
+  \
   x86_32-pop.bin \
+  x86_32-popcnt.bin \
   x86_32-pop16.bin \
   x86_32-popa.bin \
   x86_32-popa16.bin \

@@ -68,6 +68,8 @@ X86_32_TESTS = \
 	x86_32-nop.res \
 	x86_32-not.res \
 	x86_32-or.res \
+        \
+	x86_32-popcnt.res \
 	x86_32-pop.res \
 	x86_32-pop16.res \
 	x86_32-popa.res \
@@ -133,6 +135,8 @@ X86_32_TESTS += \
 	x86_32-nop.memres \
 	x86_32-not.memres \
 	x86_32-or.memres \
+        \
+	x86_32-popcnt.memres \
 	x86_32-pop.memres \
 	x86_32-pop16.memres \
 	x86_32-popa.memres \

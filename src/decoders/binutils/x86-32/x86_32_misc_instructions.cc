@@ -221,6 +221,49 @@ X86_32_TRANSLATE_1_OP(PREFETCHNTA)
   op1->deref ();
 }
 
+X86_32_TRANSLATE_2_OP(POPCNT)
+{
+  Expr *dst = op2;
+  Expr *src = op1;
+  const char *reset[] = { "of", "sf", "af", "cf", "pf", NULL };
+  MicrocodeAddress from (data.start_ma);
+
+  if (src->get_bv_size () > dst->get_bv_size ())
+    Expr::extract_bit_vector (src, 0, dst->get_bv_size ());
+
+  Expr *c = 
+    BinaryApp::create (EXTEND_U, 
+		       src->extract_bit_vector (0, 1),
+		       Constant::create (dst->get_bv_size (), 
+					 0, BV_DEFAULT_SIZE),
+		       0, dst->get_bv_size ());
+
+  data.mc->add_assignment (from, (LValue *) dst->ref (), c);
+  for (int i = 1; i < dst->get_bv_size (); i++)
+    {
+      Expr *aux = 
+	BinaryApp::create (EXTEND_U, 
+			   src->extract_bit_vector (i, 1),
+			   Constant::create (dst->get_bv_size (), 
+					     0, BV_DEFAULT_SIZE),
+			   0, dst->get_bv_size ());
+      data.mc->add_assignment (from, (LValue *) dst->ref (), 
+			       BinaryApp::create (ADD, dst->ref (), aux, 0,
+						  dst->get_bv_size ()));
+    }
+
+
+  
+  x86_32_reset_flags (from, data, reset);
+  x86_32_assign_ZF (from, data, 
+		    BinaryApp::create (EQ, src->ref (), 
+				       Constant::zero (src->get_bv_size ()), 
+				       0, 1), 
+		    &data.next_ma);
+  dst->deref ();
+  src->deref ();
+}
+
 X86_32_TRANSLATE_2_OP(XCHG)
 {
   MicrocodeAddress from (data.start_ma);
