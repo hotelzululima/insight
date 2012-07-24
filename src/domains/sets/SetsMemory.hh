@@ -138,9 +138,9 @@ public:
   /*! \brief Clear the set pointed by the addresses in a. size is given in bytes */
   void clear(ConcreteAddress addr, int size);
 
-  /*! \brief Tells whether at least one of the address contained in a has a
-      contents */
-  virtual bool is_undefined(const SetsAddress &a) const;
+  /*! \brief Tells whether at least one of the addresses contained in
+      a has a contents */
+  virtual bool is_defined(const SetsAddress &a) const;
 
   /*! \brief For each defined memory cell of this instance or the
       dother one, makes the union of the two sets of possible
@@ -151,7 +151,7 @@ public:
       memory */
   ConcreteAddressMemory<SetsValue>::ValueIterator get_value_iterator() const;
 
-  using RegisterMap<SetsValue>::is_undefined;
+  using RegisterMap<SetsValue>::is_defined;
   using RegisterMap<SetsValue>::get;
   using RegisterMap<SetsValue>::put;
   using RegisterMap<SetsValue>::clear;

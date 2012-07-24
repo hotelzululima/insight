@@ -65,7 +65,7 @@ public:
   virtual void put(const RegisterDesc *, Value);
 
   /** \brief Tell whether a given register has been set before or not. */
-  virtual bool is_undefined(const RegisterDesc *) const;
+  virtual bool is_defined(const RegisterDesc *) const;
 
   virtual const_reg_iterator regs_begin () const;
   virtual const_reg_iterator regs_end () const;

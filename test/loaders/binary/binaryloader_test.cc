@@ -93,8 +93,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
   /* Checking if the memory has been properly loaded */
   ConcreteMemory * memory = loader->get_memory();
 
-  ATF_REQUIRE(!(memory->is_undefined(entrypoint)));
-  ATF_REQUIRE(memory->is_undefined(ConcreteAddress(0x100)));
+  ATF_REQUIRE(memory->is_defined(entrypoint));
+  ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
   Insight::terminate ();
 }
 
@@ -129,9 +129,9 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
   /* Checking if the memory has been properly loaded */
   ConcreteMemory * memory = loader->get_memory();
 
-  ATF_REQUIRE(!(memory->is_undefined(entrypoint)));
-  ATF_REQUIRE(memory->is_undefined(ConcreteAddress(0x100)));
-  Insight::terminate ();
+  ATF_REQUIRE(memory->is_defined(entrypoint));
+  ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
+  Insight::terminate();
 }
 
 ATF_INIT_TEST_CASES(tcs)

@@ -60,7 +60,7 @@ main (int argc, char **argv)
       BinutilsDecoder *decoder = new BinutilsDecoder (&arch, memory);
       ConcreteAddress start (loader->get_entrypoint());
 
-      while (! memory->is_undefined (start) && result == EXIT_SUCCESS)
+      while (memory->is_defined (start) && result == EXIT_SUCCESS)
 	{
 	  Microcode *mc = new Microcode ();
 	  

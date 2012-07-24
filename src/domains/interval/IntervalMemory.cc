@@ -60,11 +60,11 @@ IntervalMemory::put(const IntervalAddress &ia, const IntervalValue &v,
 }
 
 bool
-IntervalMemory::is_undefined(const IntervalAddress &ia) const
+IntervalMemory::is_defined(const IntervalAddress &ia) const
 {
 
   /*! \todo iterate over addresses. Q: which addresses?? */
-  return mem.is_undefined(ConcreteAddress(ia.get().getMin()));
+  return mem.is_defined(ConcreteAddress(ia.get().getMin()));
 }
 
 bool

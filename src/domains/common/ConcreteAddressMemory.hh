@@ -88,7 +88,7 @@ public:
   virtual void put(const ConcreteAddress &a, const Value &v, 
 		   Architecture::endianness_t e);
 
-  virtual bool is_undefined(const ConcreteAddress &a) const;
+  virtual bool is_defined(const ConcreteAddress &a) const;
 
   /*! \brief Tell whether the memory is empty or not */
   bool is_empty() const;

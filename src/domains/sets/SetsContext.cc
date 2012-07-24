@@ -479,7 +479,7 @@ merge_contexts(std::list< SpecializedContext *> s_ctxts)
        reg != all_specialised_registers.end();
        reg++)
     {
-      if (!underlying_ctxt_cpy->memory->is_undefined(reg->first))
+      if (underlying_ctxt_cpy->memory->is_defined(reg->first))
         {
           SetsValue v = underlying_ctxt_cpy->memory->get(reg->first);
           v.add(SetsValue(reg->second));

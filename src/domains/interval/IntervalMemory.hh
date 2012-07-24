@@ -55,13 +55,13 @@ public:
     throw (UndefinedValue);
   virtual void put(const IntervalAddress &a, const IntervalValue &v, 
 		   Architecture::endianness_t e);
-  virtual bool is_undefined(const IntervalAddress &a) const;
+  virtual bool is_defined(const IntervalAddress &a) const;
 
   virtual bool merge(const IntervalMemory &);
 
   using RegisterMap<IntervalValue>::get;
   using RegisterMap<IntervalValue>::put;
-  using RegisterMap<IntervalValue>::is_undefined;
+  using RegisterMap<IntervalValue>::is_defined;
   using RegisterMap<IntervalValue>::clear;
 
   virtual std::string pp();

@@ -586,7 +586,7 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 		 const ConcreteAddress &start)
 {
   const Architecture *arch = mcarch->get_reference_arch ();
-  assert (! mem->is_undefined (start));
+  assert (mem->is_defined(start));
   set<ConcreteAddress, CmpConcreteAddress> visited;
   set<ConcreteAddress, CmpConcreteAddress> tovisit;
   Decoder *decoder = DecoderFactory::get_Decoder(mcarch, mem);
@@ -612,10 +612,10 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 		{
 		  ConcreteAddress ctgt (node->get_loc ().getGlobal ());
 			  
-		  if ((!mem->is_undefined (ctgt)) && 
-		      visited.find (ctgt) == visited.end () && 
-		      tovisit.find (ctgt) == tovisit.end ())
-		    tovisit.insert (ctgt);
+		  if (mem->is_defined(ctgt) && 
+		      visited.find(ctgt) == visited.end() && 
+		      tovisit.find(ctgt) == tovisit.end())
+		    tovisit.insert(ctgt);
 		}
 
 	      newnodes.nodes.pop_front ();
@@ -641,7 +641,7 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 			    dynamic_cast<Constant *> (mc->get_addr ());
 			  ConcreteAddress a (cst->get_val());
 
-			  if (! mem->is_undefined (a))
+			  if (mem->is_defined(a))
 			    {
 			      ConcreteValue val = 
 				mem->get (a, arch->address_range, 
@@ -661,7 +661,7 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 		    {
 		      ConcreteAddress ctgt (tgt.getGlobal ());
 			  
-		      if ((! mem->is_undefined (ctgt)) && 
+		      if (mem->is_defined (ctgt) && 
 			  visited.find (ctgt) == visited.end () && 
 			  tovisit.find (ctgt) == tovisit.end ())
 			tovisit.insert (ctgt);

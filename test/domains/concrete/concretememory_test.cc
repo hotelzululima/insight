@@ -55,7 +55,7 @@ ATF_TEST_CASE_BODY(concretememory_registers)
   ATF_REQUIRE_THROW(RegisterDescNotFound, arch_x86->get_register("xxx"));
 
   /* Check if register are undefined */
-  ATF_REQUIRE_EQ(memory->is_undefined(eax), true);
+  ATF_REQUIRE_EQ(memory->is_defined(eax), false);
 
   /* Check if an exception is thrown on accessing an undefined register */
   ATF_REQUIRE_THROW(UndefinedValue, memory->get(eax));
@@ -64,7 +64,7 @@ ATF_TEST_CASE_BODY(concretememory_registers)
   memory->put(eax, ConcreteValue(32, 32768));
 
   /* Check if register are undefined */
-  ATF_REQUIRE_EQ(memory->is_undefined(eax), false);
+  ATF_REQUIRE_EQ(memory->is_defined(eax), true);
 
   /* Check if the put() did work well */
   ATF_REQUIRE(memory->get(eax) == ConcreteValue(32, 32768));
@@ -87,8 +87,8 @@ ATF_TEST_CASE_BODY(concretememory_memcells)
   ConcreteMemory * memory = new ConcreteMemory();
 
   /* Check if memcells are undefined */
-  ATF_REQUIRE_EQ(memory->is_undefined(ConcreteAddress::null_addr()), true);
-  ATF_REQUIRE_EQ(memory->is_undefined(ConcreteAddress(6234)), true);
+  ATF_REQUIRE_EQ(memory->is_defined(ConcreteAddress::null_addr()), false);
+  ATF_REQUIRE_EQ(memory->is_defined(ConcreteAddress(6234)), false);
 
   ConcreteAddress addr = ConcreteAddress(1024);
   ConcreteValue value = ConcreteValue(32, 6235);

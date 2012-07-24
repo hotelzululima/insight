@@ -165,9 +165,9 @@ already:
 /*! \brief Tell whether the memory cell has been defined before or not */
 template <class Value>
 bool ConcreteAddressMemory<Value>::
-is_undefined(const ConcreteAddress &a) const
+is_defined(const ConcreteAddress &a) const
 {
-  return memory.find(a.get_address()) == memory.end();
+  return memory.find(a.get_address()) != memory.end();
 }
 
 template <typename Value>

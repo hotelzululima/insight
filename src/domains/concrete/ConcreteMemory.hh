@@ -103,10 +103,10 @@ public:
   virtual void put(const RegisterDesc *, ConcreteValue);
 
   /** \brief Tells if the register has been written or not. */
-  bool is_undefined(const RegisterDesc *) const;
+  bool is_defined(const RegisterDesc *) const;
 
   /** \brief Tells if the memory cell has been written or not. */
-  bool is_undefined(const ConcreteAddress &) const;
+  bool is_defined(const ConcreteAddress &) const;
 
 
   /***************************************************************************/

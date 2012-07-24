@@ -84,7 +84,7 @@ ConcreteMemory::get(const ConcreteAddress &addr,
       address_t cur =
 	(e == Architecture::LittleEndian ? a + size - i - 1 : a + i);
 
-      if (is_undefined(ConcreteAddress(cur)))
+      if (!is_defined(ConcreteAddress(cur)))
 	throw UndefinedValue(addr.to_string ());
 
       res = (res << 8) | memory[cur];
@@ -118,15 +118,15 @@ ConcreteMemory::put(const ConcreteAddress &addr,
 }
 
 bool
-ConcreteMemory::is_undefined(const ConcreteAddress &a) const
+ConcreteMemory::is_defined(const ConcreteAddress &a) const
 {
-  return (memory.find(a.get_address()) == memory.end());
+  return (memory.find(a.get_address()) != memory.end());
 }
 
 bool
-ConcreteMemory::is_undefined(const RegisterDesc *r) const
+ConcreteMemory::is_defined(const RegisterDesc *r) const
 {
-  return RegisterMap<ConcreteValue>::is_undefined(r);
+  return RegisterMap<ConcreteValue>::is_defined(r);
 }
 
 ConcreteValue
@@ -135,7 +135,7 @@ ConcreteMemory::get(const RegisterDesc * r) const
 {
   assert (! r->is_alias ());
   /* Checking for unspecified access */
-  if (is_undefined(r))
+  if (!is_defined(r))
     {
       throw UndefinedValue (r->get_label ());
     }

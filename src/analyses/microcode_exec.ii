@@ -289,10 +289,10 @@ exec(Statement *st)
 	  const RegisterDesc *rdesc = reg->get_descriptor();
 	  Value v = eval(assign->get_rval());
 	  Value regval;
-	  if (new_ctxt->memory->is_undefined(rdesc))
-	    regval = Value::unknown_value (rdesc->get_window_size());
-	  else 
+	  if (new_ctxt->memory->is_defined(rdesc))
 	    regval = new_ctxt->memory->get(rdesc);
+	  else 
+	    regval = Value::unknown_value (rdesc->get_window_size());
 
 	  v = Semantics::embed_eval(regval, v, reg->get_bv_offset());
           new_ctxt->memory->put (rdesc, v);

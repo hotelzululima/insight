@@ -52,9 +52,9 @@ template <typename Value>
 Value
 RegisterMap<Value>::get(const RegisterDesc *r) const throw (UndefinedValue)
 {
-  assert (! r->is_alias ());
+  assert (!r->is_alias());
 
-  if (is_undefined(r))
+  if (!is_defined(r))
     throw UndefinedValue (r->get_label ());
 
   return registermap.find(r)->second;
@@ -64,18 +64,18 @@ template <typename Value>
 void
 RegisterMap<Value>::put(const RegisterDesc *r, Value v)
 {
-  assert (! r->is_alias ());
+  assert (!r->is_alias());
 
   RegisterMap<Value>::registermap[r] = v;
 }
 
 template <typename Value>
 bool
-RegisterMap<Value>::is_undefined(const RegisterDesc *r) const
+RegisterMap<Value>::is_defined(const RegisterDesc *r) const
 {
-  assert (! r->is_alias ());
+  assert (!r->is_alias());
 
-  return (RegisterMap<Value>::registermap.find(r) ==
+  return (RegisterMap<Value>::registermap.find(r) !=
 	  RegisterMap<Value>::registermap.end());
 }
 

@@ -189,7 +189,7 @@ BinutilsBinaryLoader::get_memory() const
         {
 	  ConcreteValue val (8, *ptr);
           /* Endianness is irrelevant for 8 bits, choose the best */
-	  if (!(memory->is_undefined (current)))
+	  if (memory->is_defined (current))
 	    {
 	      ConcreteValue v = memory->get (current, 1,
 					     Architecture::BigEndian);

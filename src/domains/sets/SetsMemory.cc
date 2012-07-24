@@ -126,23 +126,23 @@ SetsMemory::put(const SetsAddress &a, const SetsValue &v,
 }
 
 bool
-SetsMemory::is_undefined(const SetsAddress &a) const
+SetsMemory::is_defined(const SetsAddress &a) const
 {
 
   if (a.get().is_any())
     {
       Log::warningln ("SetsMemory::is_memcell_defined: found address with "
 		      "top value");
-      return mem.is_empty();
+      return !mem.is_empty();
     }
 
   std::list<ConcreteValue> addr = a.get().get_values().getValue();
   for (std::list<ConcreteValue>::iterator v = addr.begin();
        v != addr.end();
        v++)
-    if (mem.is_undefined(ConcreteAddress(*v)))
-      return false;
-  return true;
+    if (mem.is_defined(ConcreteAddress(*v)))
+      return true;
+  return false;
 }
 
 ConcreteAddressMemory<SetsValue>::ValueIterator
@@ -167,7 +167,7 @@ bool SetsMemory::merge(const SetsMemory &other)
   for (const_reg_iterator rv = other.regs_begin(); rv != other.regs_end(); rv++)
     {
       const RegisterDesc *reg = rv->first;
-      if (!this->is_undefined(reg))
+      if (is_defined(reg))
         {
           SetsValue regv = get(reg);
           bool local_modif = regv.add(rv->second);

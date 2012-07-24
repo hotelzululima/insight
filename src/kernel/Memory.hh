@@ -59,7 +59,7 @@ public:
 		   Architecture::endianness_t) = 0;
 
   /** \brief Tells whether a memory cell has been initialized before or not. */
-  virtual bool is_undefined(const Address &) const = 0;
+  virtual bool is_defined(const Address &) const = 0;
 };
 
 #include "Memory.ii"

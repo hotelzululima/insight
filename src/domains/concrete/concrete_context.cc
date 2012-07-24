@@ -68,7 +68,7 @@ ConcreteContext::clone()
 void 
 ConcreteExecContext::request_update (ConcreteProgramPoint &pp)
 {
-  if (memory->is_undefined (ConcreteAddress (pp.to_address().getGlobal())))
+  if (!memory->is_defined (ConcreteAddress (pp.to_address().getGlobal())))
     return;
 
   if (decoder == NULL)
