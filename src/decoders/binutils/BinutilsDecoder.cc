@@ -33,6 +33,7 @@
 #endif
 
 #include <stdarg.h>
+#include <stdlib.h>
 
 #include <vector>
 #include <utility>
