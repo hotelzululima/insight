@@ -32,8 +32,8 @@
 #include "config.h"
 #endif
 
-#include <stdarg.h>
-#include <stdlib.h>
+#include <cstdarg>
+#include <cstdlib>
 
 #include <vector>
 #include <utility>

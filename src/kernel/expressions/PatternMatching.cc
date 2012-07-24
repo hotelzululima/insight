@@ -28,10 +28,12 @@
  * SUCH DAMAGE.
  */
 
+#include <algorithm>
+
 #include <kernel/Expressions.hh>
-#include "Formula.hh"
-#include "FormulaVisitor.hh"
-#include "PatternMatching.hh"
+#include <kernel/expressions/Formula.hh>
+#include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/expressions/PatternMatching.hh>
 
 using namespace std;
 

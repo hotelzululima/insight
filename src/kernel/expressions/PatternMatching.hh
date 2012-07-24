@@ -37,8 +37,8 @@
 class PatternMatching :  public Object
 {
 public:
-  typedef __gnu_cxx::hash_map<const Variable *, Formula *,
-			      Formula::Hash, Formula::Equal> Matching;
+  typedef std::tr1::unordered_map<const Variable *, Formula *,
+			     Formula::Hash, Formula::Equal> Matching;
   typedef std::list<const Variable *> VarList;
   typedef Matching::const_iterator const_iterator;
 

@@ -98,7 +98,7 @@ RegisterDesc::hashcode () const
   return (3 * get_index () +
 	  5 * get_register_size () + 
 	  7 * get_window_size () + 13 * get_window_offset () + 
-	  19 * __gnu_cxx::hash<std::string>() (label));
+	  19 * std::tr1::hash<std::string>() (label));
 }
 
 int 

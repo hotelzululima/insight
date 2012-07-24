@@ -306,14 +306,16 @@ struct lt_arrow {
     return ((long long int) n1) < ((long long int) n2) ;
   }
 };
-namespace __gnu_cxx {
-  template<>
-  struct hash<MicrocodeAddress> {
-    size_t operator()(const MicrocodeAddress &a) const {
-      return a.getGlobal();
-    }
-  };
-};
+namespace std {
+  namespace tr1 {
+    template<>
+    struct hash<MicrocodeAddress> {
+      size_t operator()(const MicrocodeAddress &a) const {
+	return a.getGlobal();
+      }
+    };
+  }
+}
 
 typedef std::set<MicrocodeNode *, lt_node> MicrocodeNodeSet;
 typedef std::set<StmtArrow *, lt_arrow> MicrocodeArrowSet;

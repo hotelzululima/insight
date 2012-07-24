@@ -106,9 +106,9 @@ MicrocodeNode * Microcode::get_node(MicrocodeAddress addr) const
 	throw(GetNodeNotFoundExc)
 {
   if (optimized) {
-    __gnu_cxx::hash_map<MicrocodeAddress, MicrocodeNode *,
-			__gnu_cxx::hash<MicrocodeAddress>,
-			EqualsFunctor<MicrocodeAddress> >::const_iterator it;
+    std::tr1::unordered_map<MicrocodeAddress, MicrocodeNode *,
+			    std::tr1::hash<MicrocodeAddress>,
+		    EqualsFunctor<MicrocodeAddress> >::const_iterator it;
     it = opt_nodes.find(addr);
     if (it != opt_nodes.end())
       return it->second;

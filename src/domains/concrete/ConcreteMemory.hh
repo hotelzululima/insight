@@ -36,7 +36,7 @@
 #include <inttypes.h>
 
 #include <map>
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 
 #include <domains/concrete/ConcreteValue.hh>
 #include <domains/concrete/ConcreteAddress.hh>
@@ -52,9 +52,9 @@ class ConcreteMemory : public Memory<ConcreteAddress, ConcreteValue>,
 		       public RegisterMap<ConcreteValue>
 {
   /** \brief Data structure used to encode the concrete memory. */
-  typedef __gnu_cxx::hash_map<address_t,
-			      uint8_t,
-			      __gnu_cxx::hash<address_t> > MemoryMap;
+  typedef std::tr1::unordered_map<address_t,
+				  uint8_t,
+				  std::tr1::hash<address_t> > MemoryMap;
 
   /** \brief The actual storage into memory. */
   MemoryMap memory;

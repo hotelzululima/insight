@@ -30,18 +30,19 @@
 #ifndef KERNEL_EXPRESSIONS_FORMULA_HH
 #define KERNEL_EXPRESSIONS_FORMULA_HH
 
-#include <iostream>
-#include <cassert>
-#include <ext/hash_set>
-#include <ext/hash_map>
 #include <kernel/Annotation.hh>
+#include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <utils/Object.hh>
 #include <utils/option.hh>
 #include <utils/infrastructure.hh>
+
+#include <cassert>
+#include <iostream>
 #include <list>
 #include <string>
+#include <tr1/unordered_set>
+#include <tr1/unordered_map>
 #include <vector>
-#include <kernel/microcode/MicrocodeArchitecture.hh>
 
 /*****************************************************************************/
 /* ATTENTION CHANTIER -- ATTENTION CHANTIER -- ATTENTION CHANTIER            */
@@ -297,7 +298,7 @@ public:
   virtual std::string pp(std::string prefix = "") const = 0;
   virtual std::string to_string() const;
 
-  /*! operations needed for hash_set storage */
+  /*! operations needed for unordered_set storage */
   virtual size_t hash () const;
   virtual bool equal (const Formula *F) const = 0;
 
@@ -326,7 +327,7 @@ protected:
   }
   
 private:
-  typedef __gnu_cxx::hash_set<Formula *, Formula::Hash, Formula::Equal> FormulaStore;  
+  typedef std::tr1::unordered_set<Formula *, Formula::Hash, Formula::Equal> FormulaStore;  
 
   static FormulaStore *formula_store;
   static void dumpStore ();

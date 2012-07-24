@@ -35,7 +35,7 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 
 #include <libxml2/libxml/tree.h>
 #include <libxml2/libxml/parser.h>

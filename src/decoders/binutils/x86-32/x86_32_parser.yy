@@ -78,8 +78,8 @@ namespace x86_32 {
     const char *stack_segment;
     MicrocodeArchitecture *arch;
     Expr *condition_codes[NB_CC];
-    __gnu_cxx::hash_set<const RegisterDesc *, 
-			RegisterDesc::Hash> segment_registers;
+    std::tr1::unordered_set<const RegisterDesc *, 
+			    RegisterDesc::Hash> segment_registers;
   };
 }
 }

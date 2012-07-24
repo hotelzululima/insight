@@ -32,7 +32,7 @@
 
 #include <sstream>
 #include <iostream>
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 
 #include <domains/concrete/ConcreteAddress.hh>
 
@@ -70,7 +70,8 @@ protected:
     int offset;
   };
 
-  typedef __gnu_cxx::hash_map<address_t, ConcreteAddressMemoryCell> memory_type;
+  typedef std::tr1::unordered_map<address_t, ConcreteAddressMemoryCell>
+	memory_type;
   memory_type memory;
 
 public:

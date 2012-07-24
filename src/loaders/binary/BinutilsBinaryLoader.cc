@@ -28,8 +28,9 @@
  * SUCH DAMAGE.
  */
 
-#include "BinutilsBinaryLoader.hh"
+#include <loaders/binary/BinutilsBinaryLoader.hh>
 
+#include <cstdlib>
 #include <sstream>
 
 #include <domains/concrete/ConcreteMemory.hh>

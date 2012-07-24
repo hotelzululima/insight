@@ -33,7 +33,7 @@
 #include <string>
 #include <list>
 #include <map>
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 #include <utils/tools.hh>
 
 
@@ -70,7 +70,7 @@ public:
 
 
 typedef std::string AnnotationId;
-#define AnnotationMap __gnu_cxx::hash_map<AnnotationId,Annotation*>
+#define AnnotationMap std::tr1::unordered_map<AnnotationId,Annotation*>
 
 
 
@@ -95,7 +95,7 @@ public:
 
   /*! \brief get annotations. Renamed this method in order to
    * lower the number of name conflicts on methods such as begin().
-   * That's why the inheritance on std::hash_map is private */
+   * That's why the inheritance on std::tr1::unordered_map is private */
   AnnotationMap *get_annotations();
   /*! \brief get a specific annotation. */
   Annotation *get_annotation(AnnotationId &id);

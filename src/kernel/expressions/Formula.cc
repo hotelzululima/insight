@@ -30,17 +30,19 @@
 
 #include <kernel/expressions/Formula.hh>
 
-#include <map>
-#include <list>
-#include <typeinfo>
-#include <sstream>
+#include <algorithm>
 #include <iostream>
-#include <ext/hash_map>
-#include <utils/infrastructure.hh>
-#include <utils/tools.hh>
+#include <list>
+#include <map>
+#include <sstream>
+#include <tr1/unordered_map>
+#include <typeinfo>
+
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/FormulaVisitor.hh>
+#include <utils/infrastructure.hh>
+#include <utils/tools.hh>
 
 using namespace std;
 
@@ -476,7 +478,7 @@ QuantifiedFormula::equal (const Formula *F) const
 size_t 
 Formula::hash () const
 {
-  return __gnu_cxx::hash<const char*>()(typeid(*this).name());
+  return std::tr1::hash<const char*>()(typeid(*this).name());
 }
 
 size_t

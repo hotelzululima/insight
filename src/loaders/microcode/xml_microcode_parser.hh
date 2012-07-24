@@ -41,7 +41,7 @@
 /** \brief Main interface of the XML microcode parser */
 Microcode *xml_parse_mc_program(const std::string filename);
 
-typedef __gnu_cxx::hash_map<std::string, RegisterExpr *> XmlRegisterStore;
+typedef std::tr1::unordered_map<std::string, RegisterExpr *> XmlRegisterStore;
 extern XmlRegisterStore xml_register_store;
 
 void xml_delete_register_store();

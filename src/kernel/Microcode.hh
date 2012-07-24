@@ -63,9 +63,9 @@ private:
   MicrocodeAddress start;
 
   /*! for optimization purpose */
-  __gnu_cxx::hash_map<MicrocodeAddress, MicrocodeNode *,
-		      __gnu_cxx::hash<MicrocodeAddress>,
-		      EqualsFunctor<MicrocodeAddress> > opt_nodes;
+  std::tr1::unordered_map<MicrocodeAddress, MicrocodeNode *,
+			  std::tr1::hash<MicrocodeAddress>,
+			  EqualsFunctor<MicrocodeAddress> > opt_nodes;
   bool optimized;
 
   void apply_callbacks (MicrocodeNode *node);

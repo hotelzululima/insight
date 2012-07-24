@@ -28,7 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#include <ext/hash_map>
+#include <tr1/unordered_map>
+
 #include <kernel/Annotation.hh>
 /*
  * pp
@@ -466,7 +467,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
     }
   //Calcul du polynome
   assert((left ^ right) || none);
-  __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*> polynome;
+  std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*> polynome;
   for (typename std::list<GraphPath<Node, Edge>*>::iterator it = nvo.begin(); it != nvo.end(); ++it)
     {
       ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) * it;
@@ -514,7 +515,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
     }
 
   this->clear();
-  for (typename __gnu_cxx::hash_map<std::string, GraphPath<Node, Edge>*>::iterator it = polynome.begin(); it != polynome.end(); ++it)
+  for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = polynome.begin(); it != polynome.end(); ++it)
     {
       VariablePath<Node, Edge>* var = NULL;
       if (it->first != "None")

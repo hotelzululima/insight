@@ -31,7 +31,7 @@
 #ifndef KERNEL_REGISTERMAP_HH
 #define KERNEL_REGISTERMAP_HH
 
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 
 #include <kernel/Architecture.hh>
 
@@ -46,8 +46,8 @@ class RegisterMap : public Object
 {
 public:
   /** \brief Data structure used to encode the register table */
-  typedef __gnu_cxx::hash_map<const RegisterDesc *,
-			      Value, RegisterDesc::Hash > RegisterHashMap;
+  typedef std::tr1::unordered_map<const RegisterDesc *,
+				  Value, RegisterDesc::Hash > RegisterHashMap;
   typedef typename RegisterHashMap::const_iterator const_reg_iterator;
   typedef typename RegisterHashMap::iterator reg_iterator;
 

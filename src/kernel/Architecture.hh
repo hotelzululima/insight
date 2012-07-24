@@ -98,9 +98,9 @@ private:
 };
 
 /** \brief Data structure used to encode the registers. */
-typedef __gnu_cxx::hash_map<std::string,
-			    RegisterDesc*,
-			    __gnu_cxx::hash<std::string> > RegisterSpecs;
+typedef std::tr1::unordered_map<std::string,
+				RegisterDesc*,
+				std::tr1::hash<std::string> > RegisterSpecs;
 
 /** \brief Abstract class storing the full description of an architecture.
  *

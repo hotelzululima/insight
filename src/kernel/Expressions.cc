@@ -28,21 +28,24 @@
  * SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <string>
-#include <sstream>
+#include <kernel/Expressions.hh>
+
+#include <algorithm>
 #include <iostream>
-#include <ext/hash_map>
-#include <ext/hash_map>
+#include <sstream>
+#include <string>
+#include <tr1/unordered_map>
+#include <tr1/unordered_map>
+#include <kernel/expressions/Formula.hh>
+#include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/expressions/PatternMatching.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
 #include <utils/infrastructure.hh>
-#include <kernel/expressions/Formula.hh>
-#include <kernel/expressions/FormulaVisitor.hh>
-#include "kernel/expressions/PatternMatching.hh"
-#include "Expressions.hh"
+
+#include <cassert>
+#include <cstdio>
+#include <cstring>
 
 using namespace std;
 
@@ -1470,7 +1473,7 @@ Expr::hash () const
 size_t 
 Variable::hash () const 
 { 
-  return 13 * this->Expr::hash() + 51 * __gnu_cxx::hash<string>()(id);
+  return 13 * this->Expr::hash() + 51 * std::tr1::hash<string>()(id);
 }
 
 size_t 
@@ -1503,7 +1506,7 @@ TernaryApp::hash () const
 size_t 
 MemCell::hash () const 
 { 
-  return (13 * this->Expr::hash() + 19 * __gnu_cxx::hash<string>()(tag) +
+  return (13 * this->Expr::hash() + 19 * std::tr1::hash<string>()(tag) +
 	  111 * addr->hash ());
 }
 

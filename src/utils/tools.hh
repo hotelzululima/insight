@@ -32,23 +32,26 @@
 #define UTILS_TOOLS_H
 
 #include <map>
-#include <ext/hash_map>
+#include <tr1/unordered_map>
 
 #include <utils/Log.hh>
 
-/** \brief GNU C++ namespace (contains STL non-standard API and more...) */
-namespace __gnu_cxx {
-  /** Implements a hashmap's hash function for strings */
-  template<>
-  struct hash<std::string>
-  {
-    hash<char*> h;
-    size_t operator()(const std::string &s) const
+#if 0
+namespace std {
+  namespace tr1 {
+    /** Implements a hashmap's hash function for strings */
+    template<>
+    struct hash<std::string>
     {
-      return h(s.c_str());
+      hash<char*> h;
+      size_t operator()(const std::string &s) const
+      {
+	return h(s.c_str());
+      };
     };
-  };
+  }
 }
+#endif
 
 /** \brief Convert an int to a string (cf. 'itoa()') */
 std::string itos(int i);
