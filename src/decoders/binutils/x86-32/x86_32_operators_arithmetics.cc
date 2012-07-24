@@ -976,7 +976,7 @@ X86_32_TRANSLATE_2_OP(XADD)
 
   data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
   data.mc->add_assignment (from, (LValue *) src->ref (), 
-			   temp->extract_bit_vector (0, dst->get_bv_size ()));
+			   temp->extract_bit_vector (0, src->get_bv_size ()));
 
   x86_32_compute_SF (from, data, dst);
   x86_32_compute_ZF (from, data, dst);
