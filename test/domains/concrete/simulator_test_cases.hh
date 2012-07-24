@@ -99,6 +99,7 @@
   BINARY_FILE (X86_32_PUSHFPOPF, "x86_32-simulator-pushfpopf.bin") \
   BINARY_FILE (X86_32_PUSHAPOPA, "x86_32-simulator-pushapopa.bin") \
   \
+  BINARY_FILE (X86_32_SCAS, "x86_32-simulator-scas.bin") \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   BINARY_FILE (X86_32_SETCC, "x86_32-simulator-setcc.bin") \
   \

@@ -256,3 +256,28 @@ X86_32_TRANSLATE_2_OP(MOVSL)
 }
 
 
+X86_32_TRANSLATE_2_OP(SCAS)
+{
+  MicrocodeAddress from (data.start_ma);
+  
+  Expr::extract_bit_vector (op1, 0, op2->get_bv_size ());
+
+  x86_32_cmpgen (from, data, op1, op2, NULL);
+  x86_32_if_then_else (from, data, data.get_register ("df"),
+		       from + 1, from +2);
+  from++;
+  LValue *di = data.get_register (data.addr16 ? "di" : "edi");
+  Expr *inc = Constant::create (op1->get_bv_size () / 8, 0, di->get_bv_size ());
+  data.mc->add_assignment (from, (LValue *) di->ref (),
+			   BinaryApp::create (SUB, di->ref (),
+					      inc->ref (), 0, 
+					      di->get_bv_size ()), 
+			   data.next_ma);
+  from++;
+  data.mc->add_assignment (from, (LValue *) di->ref (),
+			   BinaryApp::create (ADD, di->ref (), inc->ref (), 0, 
+					      di->get_bv_size ()), 
+			   data.next_ma);
+  di->deref ();
+  inc->deref ();
+}

@@ -523,22 +523,7 @@ X86_32_TRANSLATE_2_OP(SBBB); // x86_32_operators_arithmetics.cc
 X86_32_TRANSLATE_2_OP(SBBW); // x86_32_operators_arithmetics.cc
 X86_32_TRANSLATE_2_OP(SBBL); // x86_32_operators_arithmetics.cc
 
-// X86_32_TRANSLATE_0_OP(SCAS); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_2_OP(SCAS); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_0_OP(SCASB); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_2_OP(SCASB); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_0_OP(SCASW); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_2_OP(SCASW); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_0_OP(SCASD); to implement in x86_32_strings.cc
-
-// X86_32_TRANSLATE_2_OP(SCASD); to implement in x86_32_strings.cc
-
+X86_32_TRANSLATE_2_OP(SCAS); // x86_32_strings.cc
 
 #define X86_32_CC(id, form) \
   X86_32_TRANSLATE_1_OP(SET ## id); // x86_32_misc_instructions.cc
