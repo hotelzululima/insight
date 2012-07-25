@@ -57,8 +57,10 @@ X86_32_OBJECTS= \
   x86_32-push.bin \
   x86_32-pusha.bin \
   x86_32-push16.bin \
+  \
   x86_32-rep.bin \
   x86_32-ret.bin \
+  x86_32-rotate.bin \
   \
   x86_32-scas.bin \
   x86_32-setcc.bin \
@@ -141,6 +143,11 @@ X86_32_OBJECTS= \
   x86_32-simulator-pushpop-06.bin  \
   x86_32-simulator-pushfpopf.bin  \
   x86_32-simulator-pushapopa.bin  \
+  \
+  x86_32-simulator-rotate-01.bin \
+  x86_32-simulator-rotate-02.bin \
+  x86_32-simulator-rotate-03.bin \
+  x86_32-simulator-rotate-04.bin \
   \
   x86_32-simulator-scas.bin  \
   x86_32-simulator-sub.bin  \

@@ -76,6 +76,8 @@ X86_32_TESTS = \
 	x86_32-pusha.res \
 	x86_32-push16.res \
         \
+	x86_32-rotate.res \
+        \
 	x86_32-scas.res \
 	x86_32-shift.res \
 	x86_32-sbb.res \
@@ -145,6 +147,8 @@ X86_32_TESTS += \
 	x86_32-push.memres \
 	x86_32-pusha.memres \
 	x86_32-push16.memres \
+        \
+	x86_32-rotate.memres \
         \
 	x86_32-scas.memres \
 	x86_32-shift.memres \

@@ -161,8 +161,3 @@
 	shr  $3, %ebx
 	shr  $3, %ecx
 	shrl $3, 0x12345678
-
-#
-# ROL OPERATORS
-#
-	

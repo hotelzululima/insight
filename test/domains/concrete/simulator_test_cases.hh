@@ -99,6 +99,11 @@
   BINARY_FILE (X86_32_PUSHFPOPF, "x86_32-simulator-pushfpopf.bin") \
   BINARY_FILE (X86_32_PUSHAPOPA, "x86_32-simulator-pushapopa.bin") \
   \
+  BINARY_FILE (X86_32_ROTATE_1, "x86_32-simulator-rotate-01.bin") \
+  BINARY_FILE (X86_32_ROTATE_2, "x86_32-simulator-rotate-02.bin") \
+  BINARY_FILE (X86_32_ROTATE_3, "x86_32-simulator-rotate-03.bin") \
+  BINARY_FILE (X86_32_ROTATE_4, "x86_32-simulator-rotate-04.bin") \
+  \
   BINARY_FILE (X86_32_SCAS, "x86_32-simulator-scas.bin") \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   BINARY_FILE (X86_32_SETCC, "x86_32-simulator-setcc.bin") \

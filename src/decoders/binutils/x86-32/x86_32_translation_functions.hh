@@ -366,69 +366,41 @@ X86_32_TRANSLATE_0_OP(PUSHAL); // x86_32_stack_instructions.cc
 X86_32_TRANSLATE_0_OP(PUSHF);  // x86_32_stack_instructions.cc
 X86_32_TRANSLATE_0_OP(PUSHFW); // x86_32_stack_instructions.cc
 
-// X86_32_TRANSLATE_1_OP(RCL);
+X86_32_TRANSLATE_1_OP(RCL);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCL);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RCLB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCLB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RCLW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCLW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RCLL); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCLL); // x86_32_operators_shift.cc
 
-// X86_32_TRANSLATE_2_OP(RCL);
+X86_32_TRANSLATE_1_OP(RCR);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCR);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RCRB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCRB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RCRW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCRW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RCRL); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RCRL); // x86_32_operators_shift.cc
 
-// X86_32_TRANSLATE_1_OP(RCLB);
+X86_32_TRANSLATE_1_OP(ROL);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(ROL);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(ROLB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(ROLB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(ROLW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(ROLW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(ROLL); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(ROLL); // x86_32_operators_shift.cc
 
-// X86_32_TRANSLATE_2_OP(RCLB);
-
-// X86_32_TRANSLATE_1_OP(RCLW);
-
-// X86_32_TRANSLATE_2_OP(RCLW);
-
-// X86_32_TRANSLATE_1_OP(RCLL);
-
-// X86_32_TRANSLATE_2_OP(RCLL);
-
-// X86_32_TRANSLATE_1_OP(RCR);
-
-// X86_32_TRANSLATE_2_OP(RCR);
-
-// X86_32_TRANSLATE_1_OP(RCRB);
-
-// X86_32_TRANSLATE_2_OP(RCRB);
-
-// X86_32_TRANSLATE_1_OP(RCRW);
-
-// X86_32_TRANSLATE_2_OP(RCRW);
-
-// X86_32_TRANSLATE_1_OP(RCRL);
-
-// X86_32_TRANSLATE_2_OP(RCRL);
-
-// X86_32_TRANSLATE_1_OP(ROL);
-
-// X86_32_TRANSLATE_2_OP(ROL);
-
-// X86_32_TRANSLATE_1_OP(ROLB);
-
-// X86_32_TRANSLATE_2_OP(ROLB);
-
-// X86_32_TRANSLATE_1_OP(ROLW);
-
-// X86_32_TRANSLATE_2_OP(ROLW);
-
-// X86_32_TRANSLATE_1_OP(ROLL);
-
-// X86_32_TRANSLATE_2_OP(ROLL);
-
-// X86_32_TRANSLATE_1_OP(ROR);
-
-// X86_32_TRANSLATE_2_OP(ROR);
-
-// X86_32_TRANSLATE_1_OP(RORB);
-
-// X86_32_TRANSLATE_2_OP(RORB);
-
-// X86_32_TRANSLATE_1_OP(RORW);
-
-// X86_32_TRANSLATE_2_OP(RORW);
-
-// X86_32_TRANSLATE_1_OP(RORL);
-
-// X86_32_TRANSLATE_2_OP(RORL);
+X86_32_TRANSLATE_1_OP(ROR);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(ROR);  // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RORB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RORB); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RORW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RORW); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_1_OP(RORL); // x86_32_operators_shift.cc
+X86_32_TRANSLATE_2_OP(RORL); // x86_32_operators_shift.cc
 
 // X86_32_TRANSLATE_0_OP(RDMSR);
 
