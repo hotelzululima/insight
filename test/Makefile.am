@@ -60,7 +60,3 @@ check: all
 	@ kyua test \
              --kyuafile=$(top_srcdir)/test/Kyuafile \
              --build-root=$(top_builddir)/test/ 
-
-
-MAINTAINERCLEANFILES = \
-	Makefile.in

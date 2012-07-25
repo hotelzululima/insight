@@ -27,6 +27,3 @@ clean-local:
 
 distclean-local:
 	rm -fr api/ *.pdf
-
-MAINTAINERCLEANFILES = \
-	Makefile.in

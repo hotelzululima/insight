@@ -21,18 +21,3 @@ EXTRA_DIST =      \
         ChangeLog \
         NEWS      \
         README
-
-MAINTAINERCLEANFILES = \
-	Makefile.in    \
-	aclocal.m4     \
-	compile        \
-	config.guess   \
-	config.sub     \
-	depcomp        \
-	install-sh     \
-	ltmain.sh      \
-	missing        \
-	ylwrap
-
-maintainer-clean-local:
-	-rm -fr m4 autotools-files

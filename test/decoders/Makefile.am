@@ -8,8 +8,6 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
-MAINTAINERCLEANFILES = Makefile.in
-
 check_PROGRAMS = test-decoder
 
 test_decoder_SOURCES = test-decoder.cc

@@ -304,4 +304,4 @@ CLEANFILES +=
 DISTCLEANFILES = ${BUILT_SOURCES}
 
 MAINTAINERCLEANFILES = \
-	Makefile.in config.h.in compile.log
+	compile.log
