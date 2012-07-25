@@ -32,132 +32,72 @@
 
 using namespace std;
 
-static int
-s_actual_size (const Expr *e)
-{
-  int bv_size = e->get_bv_size ();
-  if (e->get_bv_offset () + bv_size > BV_DEFAULT_SIZE)
-    return BV_DEFAULT_SIZE - e->get_bv_offset () + 1;
-  return bv_size;
-}
-
-			/* --------------- */
-
-static Expr *
-s_msb (Expr *e)
-{  
-  int msbindex = e->get_bv_offset () + s_actual_size (e) - 1;
-  Expr *result = BinaryApp::create (LSH, e, msbindex);
-  Expr::extract_bit_vector (result, 0, 1);
-
-  return result;
-}
-
-
 static void
-s_translate_shift (MicrocodeAddress &from, x86_32::parser_data &data, 
-		   LValue *dst, Expr *shift, 
-		   MicrocodeAddress *to, bool go_left, bool keep_sign)
+s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift, 
+		   bool go_left, bool keep_sign)
 {
-  Expr *val;
-  Expr *carry_index;
-  int shiftnbbits = s_actual_size (shift);
-  LValue *tmpreg0 = data.get_tmp_register (TMPREG (0), shift->get_bv_size ());
-  LValue *tmpreg1 = data.get_tmp_register (TMPREG (1), dst->get_bv_size ());
-
-  /* tmpreg0 <- 5 first bits of shift count */
-  data.mc->add_assignment (from, tmpreg0, 
-			   BinaryApp::create (AND_OP, shift, 
-					      Constant::create (0x1F, 0, 
-								shiftnbbits)));
-  Expr::extract_with_bit_vector_size_of ((Expr *&) tmpreg1, dst);
-
-  /* tmpreg1 <- dst */
-  data.mc->add_assignment (from, tmpreg1, dst->ref ());
-
-  /* 
-   * If shift count is 0 then nothing has to be done; thus, we go directly 
-   * to the end. 
-   */
-  data.mc->add_skip (from, *to, BinaryApp::create (EQ, tmpreg0->ref (), 0));
-  data.mc->add_skip (from, from + 1, 
-		     BinaryApp::create (NEQ, tmpreg0->ref (), 0));
+  MicrocodeAddress from (data.start_ma);
+  LValue *tempCount = data.get_tmp_register (TMPREG(0), 8);
+  LValue *tempDest = data.get_tmp_register (TMPREG(1), dst->get_bv_size ());
+  int dsz = dst->get_bv_size ();
+  Expr *mshift = 
+    BinaryApp::create (AND_OP, shift->ref (),
+		       Constant::create (0x1F, 0,shift->get_bv_size ()), 
+		       0, 8);
+  
+  data.mc->add_assignment (from, (LValue *) tempCount->ref (), mshift->ref ());
+  data.mc->add_assignment (from, (LValue *) tempDest->ref (), dst->ref ());
+  
+  MicrocodeAddress start_while (from);
   from++;
+  int cfindex = go_left ? dsz - 1 : 0;
 
-  if (go_left)
-    {
-      /* Index of the last bit shifted out: offset+sz-shift */
-      carry_index = Constant::create (dst->get_bv_offset() +
-				      s_actual_size (dst));
-      carry_index = BinaryApp::create (SUB, carry_index, tmpreg0->ref ());
-				      
-      val = BinaryApp::create (LSH, dst->ref (), tmpreg0->ref ());
-    }
-  else
-    {
-      /* Index of the last bit shifted out: offset+shift-1 */
-	carry_index = tmpreg0->ref ();
+  data.mc->add_assignment (from, data.get_flag ("cf"),
+			   dst->extract_bit_vector (cfindex, 1));
+  BinaryOp op;
 
-      if (dst->get_bv_offset ())
-	carry_index = 
-	  BinaryApp::create (ADD, 
-			     Constant::create (dst->get_bv_offset()), 
-			     carry_index);
-	
-      carry_index = BinaryApp::create (SUB, carry_index, 1);
+  if (go_left) op = MUL_U;
+  else if (keep_sign) op = SDIV;
+  else op = UDIV;
 
-      val = BinaryApp::create (RSH, dst->ref (), tmpreg0->ref ());
-    }
-
-  /* 
-   * Since we cannot restrict Expression by other expressions,
-   * we get the carry using a shift on the right: 
-   * CF <- (dst >> cindex){0;1} 
-   */
-  Expr *carry = BinaryApp::create (RSH, dst->ref (), carry_index, 0, 1);
-
-  data.mc->add_assignment (from, dst, val);
-  x86_32_assign_CF (from, data, carry);
-
-  if (! go_left && ! keep_sign)
-    {
-      /* especially for SHR we have to reset lefts bits */
-      Expr *mask = UnaryApp::create (NOT, Constant::zero()); /* 0xFF...FF */
-      mask = BinaryApp::create (LSH, mask, tmpreg0->ref ());
-      mask = UnaryApp::create (NOT, mask);
-      Expr::extract_with_bit_vector_of (mask, dst);
-      data.mc->add_assignment (from, (LValue *) dst->ref (), 
-			       BinaryApp::create (AND_OP, dst->ref (), mask, 
-						  0, 1));
-    }
-  data.mc->add_skip (from, *to, 
-		     BinaryApp::create (NEQ, tmpreg0->ref (), 1, 0, 1));
-  data.mc->add_skip (from, from + 1, 
-		     BinaryApp::create (EQ, tmpreg0->ref (), 1, 0, 1));
+  data.mc->add_assignment (from, (LValue *) dst->ref (),
+			   BinaryApp::create (op, dst->ref (),
+					      Constant::create (2, 0, dsz),
+					      0 , dsz));
+  data.mc->add_assignment (from, (LValue *) tempCount->ref (),
+			   BinaryApp::create (SUB, tempCount->ref (),
+					      Constant::one (8), 0, 8),
+			   start_while);
   from++;
+  x86_32_if_then_else (start_while, data, 
+		       BinaryApp::create (NEQ, tempCount->ref (),
+					  Constant::zero (8), 0, 1),
+		       start_while + 1, from);
 
-  /* compute OF */
-  Expr *OF;
-
+  x86_32_if_then_else (from, data, 
+		       BinaryApp::create (EQ, mshift->ref (),
+					  Constant::one (8), 0, 1),
+		       from + 1, from + 2);
+  from++;
+  Expr *ofval;
   if (go_left)
-    {
-      /* OF <- MSB (dst) ^ CF */
-      OF = BinaryApp::create (XOR, dst->ref (), data.get_flag ("cf"), 0, 1);
-    }
+    ofval = BinaryApp::create (XOR, data.get_flag ("cf"),
+			       dst->extract_bit_vector (cfindex, 1));
   else if (keep_sign)
-    {
-      /* OF <- 0 */ 
-      OF = Constant::zero(1);
-    }
+    ofval = Constant::zero (1);
   else
-    {
-      /* OF <- MSB (prevdst) */
-      OF = s_msb (tmpreg1->ref ());
-    }
-  x86_32_assign_OF (from, data, OF);
+    ofval = tempDest->extract_bit_vector (cfindex, 1);
+
+  x86_32_assign_OF (from, data, ofval);
   x86_32_compute_SF (from, data, dst);
   x86_32_compute_ZF (from, data, dst);
-  x86_32_compute_PF (from, data, dst, to);
+  x86_32_compute_PF (from, data, dst, &data.next_ma);
+
+  tempCount->deref ();
+  tempDest->deref ();
+  mshift->deref ();
+  shift->deref ();
+  dst->deref ();
 }
 
 			/* --------------- */
@@ -166,18 +106,16 @@ X86_32_TRANSLATE_2_OP(SAL)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
-  MicrocodeAddress start = data.start_ma;
 
-  s_translate_shift (start, data, dst, bitcount, &data.next_ma, true, true);
+  s_translate_shift (data, dst, bitcount, true, true);
 }
 
 X86_32_TRANSLATE_2_OP(SHL)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
-  MicrocodeAddress start = data.start_ma;
 
-  s_translate_shift (start, data, dst, bitcount, &data.next_ma, true, false);
+  s_translate_shift (data, dst, bitcount, true, false);
 }
 
 X86_32_TRANSLATE_2_OP(SAR)
@@ -186,7 +124,7 @@ X86_32_TRANSLATE_2_OP(SAR)
   Expr *bitcount = op1;
   MicrocodeAddress start = data.start_ma;
 
-  s_translate_shift (start, data, dst, bitcount, &data.next_ma, false, true);
+  s_translate_shift (data, dst, bitcount, false, true);
 }
 
 X86_32_TRANSLATE_2_OP(SHR)
@@ -195,7 +133,7 @@ X86_32_TRANSLATE_2_OP(SHR)
   Expr *bitcount = op1;
   MicrocodeAddress start = data.start_ma;
 
-  s_translate_shift (start, data, dst, bitcount, &data.next_ma, false, false);
+  s_translate_shift (data, dst, bitcount, false, false);
 }
 
 			/* --------------- */
@@ -397,7 +335,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
   MicrocodeAddress start_while (from);
 
   from++;
-  LValue *tempCF = data.get_tmp_register (TMPREG (0), 1);
+  LValue *tempCF = data.get_tmp_register (TMPREG (1), 1);
   data.mc->add_assignment (from, tempCF,
 			   dst->extract_bit_vector (go_left ? dsz - 1 : 0, 1));
   Expr *newdst;
