@@ -175,23 +175,25 @@ loaders_sources = \
 ## decoder module
 x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_cc.def \
-	decoders/binutils/x86-32/x86_32_interrupts.cc \
-	decoders/binutils/x86-32/x86_32_load_store.cc \
-	decoders/binutils/x86-32/x86_32_prefixes.cc \
-	decoders/binutils/x86-32/x86_32_strings.cc  \
-	decoders/binutils/x86-32/x86_32_bits.cc \
-	decoders/binutils/x86-32/x86_32_misc_instructions.cc \
-        decoders/binutils/x86-32/x86_32_stack_instructions.cc  \
-	decoders/binutils/x86-32/x86_32_operators_mov.cc \
-	decoders/binutils/x86-32/x86_32_operators_arithmetics.cc \
-	decoders/binutils/x86-32/x86_32_operators_boolean.cc     \
-	decoders/binutils/x86-32/x86_32_operators_jump.cc        \
-	decoders/binutils/x86-32/x86_32_operators_loops.cc       \
-	decoders/binutils/x86-32/x86_32_operators_shift.cc       \
-        decoders/binutils/x86-32/x86_32_operators_proc_call.cc  \
 	decoders/binutils/x86-32/x86_32_decoder.hh \
 	decoders/binutils/x86-32/x86_32_decoder.cc \
 	decoders/binutils/x86-32/x86_32_decoder.hh \
+        \
+	decoders/binutils/x86-32/x86_32_instr_arithmetics.cc \
+	decoders/binutils/x86-32/x86_32_instr_bits.cc \
+	decoders/binutils/x86-32/x86_32_instr_boolean.cc \
+	decoders/binutils/x86-32/x86_32_instr_call.cc \
+	decoders/binutils/x86-32/x86_32_instr_interrupts.cc \
+	decoders/binutils/x86-32/x86_32_instr_jump.cc \
+	decoders/binutils/x86-32/x86_32_instr_load_store.cc \
+	decoders/binutils/x86-32/x86_32_instr_loops.cc \
+	decoders/binutils/x86-32/x86_32_instr_misc.cc \
+	decoders/binutils/x86-32/x86_32_instr_mov.cc \
+	decoders/binutils/x86-32/x86_32_instr_prefixes.cc \
+	decoders/binutils/x86-32/x86_32_instr_shift.cc \
+	decoders/binutils/x86-32/x86_32_instr_stack.cc \
+	decoders/binutils/x86-32/x86_32_instr_strings.cc \
+        \
 	decoders/binutils/x86-32/x86_32_translate.cc  \
 	decoders/binutils/x86-32/x86_32_translate.hh  \
 	decoders/binutils/x86-32/x86_32_translation_functions.hh \
