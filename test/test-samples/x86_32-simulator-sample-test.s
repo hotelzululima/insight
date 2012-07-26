@@ -5,6 +5,9 @@
 	# set USE_STACK to 1 to initialize %esp register and enable emptyness
 	# of the stack at the end of the test-case.
 	.set	USE_STACK, 0
+
+	# set INIT_EFLAGS to 1 to initialize %eflags register 
+	.set	INIT_EFLAGS, 0
 	
 	.include "x86_32-simulator-header.s"
 	

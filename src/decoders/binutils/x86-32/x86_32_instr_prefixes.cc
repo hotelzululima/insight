@@ -122,7 +122,8 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
 
   data.mc->add_assignment (start, counter, 
 			   BinaryApp::create (SUB, counter->ref (),
-					      Constant::one (csize), csize));
+					      Constant::one (csize), 0,
+					      csize));
 
   if (cond)    
     {
@@ -130,9 +131,8 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
       stopcond = BinaryApp::create (OR, stopcond, cond);
     }
 
-  data.mc->add_skip (start, data.next_ma, stopcond);
-  data.mc->add_skip (start, MicrocodeAddress (data.start_ma.getGlobal ()),
-		     UnaryApp::create (NOT, stopcond->ref (), 0, 1));
+  x86_32_if_then_else (start, data, stopcond, data.next_ma,
+		       MicrocodeAddress (data.start_ma.getGlobal ()));
   
   data.has_prefix = false;
 }

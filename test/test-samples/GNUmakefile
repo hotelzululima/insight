@@ -144,6 +144,11 @@ X86_32_OBJECTS= \
   x86_32-simulator-pushfpopf.bin  \
   x86_32-simulator-pushapopa.bin  \
   \
+  x86_32-simulator-rep-01.bin \
+  x86_32-simulator-rep-02.bin \
+  x86_32-simulator-rep-03.bin \
+  x86_32-simulator-rep-04.bin \
+  \
   x86_32-simulator-rotate-01.bin \
   x86_32-simulator-rotate-02.bin \
   x86_32-simulator-rotate-03.bin \

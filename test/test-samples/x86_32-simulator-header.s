@@ -4,6 +4,9 @@
 	.ifndef	USE_STACK
 	.set	USE_STACK, 0
 	.endif
+	.ifndef	INIT_EFLAGS
+	.set	INIT_EFLAGS, 0
+	.endif
 	
 	.set	okaddr,   0x1000
 	.set	ok2addr,  0x1111
@@ -19,7 +22,12 @@
 	.endif
 
 	.word	entrypoint
-	. = entrypoint	
+	. = entrypoint
+
+	.ifgt	INIT_EFLAGS
+	mov	$0x00, %ah
+	sahf
+	.endif
 	.ifgt	USE_STACK
 initstack:
  	# mandatory to prevent raise of UndefinedValue 	
