@@ -73,13 +73,13 @@ IntervalExprSemantics::MUL_S_eval(IntervalValue v1, IntervalValue v2, int, int)
 
 
 template<> IntervalValue
-IntervalExprSemantics::UDIV_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::DIV_U_eval(IntervalValue v1, IntervalValue, int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::SDIV_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::DIV_S_eval(IntervalValue v1, IntervalValue, int, int)
 {
   return IntervalValue(v1.get_size());
 }
@@ -127,7 +127,13 @@ IntervalExprSemantics::LSH_eval(IntervalValue v1, IntervalValue, int, int)
 }
 
 template<> IntervalValue
-IntervalExprSemantics::RSH_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::RSH_U_eval(IntervalValue v1, IntervalValue, int, int)
+{
+  return IntervalValue(v1.get_size());
+}
+
+template<> IntervalValue
+IntervalExprSemantics::RSH_S_eval(IntervalValue v1, IntervalValue, int, int)
 {
   return IntervalValue(v1.get_size());
 }

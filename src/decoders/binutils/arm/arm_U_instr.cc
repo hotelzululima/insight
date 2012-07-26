@@ -35,7 +35,7 @@ using namespace std;
 template<> void arm_translate<ARM_TOKEN(UDIV)> (arm::parser_data &data,
     Expr *op1, Expr *op2, Expr *op3)
 {
-  Expr* src = BinaryApp::create(UDIV, op2, op3);
+  Expr* src = BinaryApp::create(DIV_U, op2, op3);
   LValue* dst = (LValue*) op1;
 
   data.mc->add_assignment(data.start_ma, dst, src, data.next_ma);

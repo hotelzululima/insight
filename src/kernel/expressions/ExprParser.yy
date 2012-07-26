@@ -100,8 +100,8 @@ using namespace ExprParser;
 
 %token TOK_PLUS TOK_MINUS TOK_STAR TOK_DOLLAR TOK_MUL_S TOK_MUL_U
 %token TOK_ADD TOK_SUB TOK_AND TOK_LAND TOK_LOR TOK_OR  TOK_XOR TOK_LSH 
-%token TOK_RSH TOK_ROR TOK_ROL TOK_NEG TOK_NOT TOK_EQ TOK_POW 
-%token TOK_SDIV TOK_UDIV 
+%token TOK_RSH_S TOK_RSH_U TOK_ROR TOK_ROL TOK_NEG TOK_NOT TOK_EQ TOK_POW 
+%token TOK_DIV_S TOK_DIV_U 
 %token TOK_LT_U TOK_GT_U TOK_LEQ_U TOK_GEQ_U
 %token TOK_LT_S TOK_GT_S TOK_LEQ_S TOK_GEQ_S
 
@@ -227,8 +227,10 @@ opexpr:
   { $$ = BinaryApp::create (XOR,$3,$4, 0, $3->get_bv_size ()); }
 | TOK_LPAR TOK_LSH atomexpr atomexpr TOK_RPAR 
   { $$ = BinaryApp::create (LSH,$3,$4, 0, $3->get_bv_size ()); }
-| TOK_LPAR TOK_RSH atomexpr atomexpr TOK_RPAR 
-  { $$ = BinaryApp::create (RSH,$3,$4, 0, $3->get_bv_size ()); }
+| TOK_LPAR TOK_RSH_U atomexpr atomexpr TOK_RPAR 
+  { $$ = BinaryApp::create (RSH_U,$3,$4, 0, $3->get_bv_size ()); }
+| TOK_LPAR TOK_RSH_S atomexpr atomexpr TOK_RPAR 
+  { $$ = BinaryApp::create (RSH_S,$3,$4, 0, $3->get_bv_size ()); }
 | TOK_LPAR TOK_ROR atomexpr atomexpr TOK_RPAR 
   { $$ = BinaryApp::create (ROR,$3,$4, 0, $3->get_bv_size ()); }
 | TOK_LPAR TOK_ROL atomexpr atomexpr TOK_RPAR 
@@ -260,10 +262,10 @@ opexpr:
 
 | TOK_LPAR TOK_POW atomexpr atomexpr TOK_RPAR 
   { $$ = BinaryApp::create (POW,$3,$4, 0, $3->get_bv_size ()); }
-| TOK_LPAR TOK_SDIV atomexpr atomexpr TOK_RPAR 
-  { $$ = BinaryApp::create (SDIV,$3,$4, 0, $3->get_bv_size ()); }
-| TOK_LPAR TOK_UDIV atomexpr atomexpr TOK_RPAR 
-  { $$ = BinaryApp::create (UDIV,$3,$4, 0, $3->get_bv_size ()); }
+| TOK_LPAR TOK_DIV_S atomexpr atomexpr TOK_RPAR 
+  { $$ = BinaryApp::create (DIV_S,$3,$4, 0, $3->get_bv_size ()); }
+| TOK_LPAR TOK_DIV_U atomexpr atomexpr TOK_RPAR 
+  { $$ = BinaryApp::create (DIV_U,$3,$4, 0, $3->get_bv_size ()); }
 ;
 
 lval:

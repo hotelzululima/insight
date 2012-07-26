@@ -443,7 +443,7 @@ shifted_register:
 |
 	register TOK_COMMA TOK_ASR immediate{
 		//XXX: need to distinguish between ASR and LSR
-		$$ = BinaryApp::create(RSH, $1, $4);
+		$$ = BinaryApp::create(RSH_S, $1, $4);
 	}
 |
 	register TOK_COMMA TOK_LSL immediate{
@@ -451,7 +451,7 @@ shifted_register:
 	}
 |
 	register TOK_COMMA TOK_LSR immediate{
-		$$ = BinaryApp::create(RSH, $1, $4);
+		$$ = BinaryApp::create(RSH_S, $1, $4);
 	}	
 |
 	register TOK_COMMA TOK_ROR immediate{
@@ -466,7 +466,7 @@ shifted_register:
 |
 	register TOK_COMMA TOK_ASR register{
 		//XXX: need to distinguish between ASR and LSR
-		$$ = BinaryApp::create(RSH, $1, $4);
+		$$ = BinaryApp::create(RSH_S, $1, $4);
 	}
 |
 	register TOK_COMMA TOK_LSL register{
@@ -474,7 +474,7 @@ shifted_register:
 	}
 |
 	register TOK_COMMA TOK_LSR register{
-		$$ = BinaryApp::create(RSH, $1, $4);
+		$$ = BinaryApp::create(RSH_S, $1, $4);
 	}	
 |
 	register TOK_COMMA TOK_ROR register{

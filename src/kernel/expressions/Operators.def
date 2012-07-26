@@ -35,8 +35,8 @@ BINARY_OP(ADD, "", true, true) /*! Addition */
 BINARY_OP(SUB, "", false, true) /*! Substraction */
 BINARY_OP(MUL_S, "", true, true) /*! Signed Multiplication */ 
 BINARY_OP(MUL_U, "", true, true) /*! Unsigned Multiplication */ 
-BINARY_OP(SDIV, "sDIV", false, false) /*! Signed Division */
-BINARY_OP(UDIV, "uDIV", false, false) /*! Unsigned Division */
+BINARY_OP(DIV_S, "", false, false) /*! Signed Division */
+BINARY_OP(DIV_U, "", false, false) /*! Unsigned Division */
 BINARY_OP(MODULO, "", false, false) /*! Modulo */
 BINARY_OP(CONCAT, "CC", false, true) /*! Concatenation */
 
@@ -45,7 +45,8 @@ BINARY_OP(AND_OP, "AND", true, true) /*! Bitwise and */
 BINARY_OP(OR, "", true, true) /*! Bitwise or */
 BINARY_OP(XOR, "", true, true) /*! Bitwise xor */
 BINARY_OP(LSH, "", false, false) /*! Left Shift equiv to << = SAL/SHL */
-BINARY_OP(RSH, "", false, false) /*! Right Shift equiv to >> = SAR */
+BINARY_OP(RSH_U, "", false, false) /*! Right Shift equiv to >> = SAR */
+BINARY_OP(RSH_S, "", false, false) /*! Right Shift equiv to >> = SHR */
 BINARY_OP(ROR, "", false, false) /*! Right rol */
 BINARY_OP(ROL, "", false, false) /*! Left rol */
 

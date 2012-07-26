@@ -106,7 +106,8 @@ optype    [bswlqt]
 "LOR"     { return token::TOK_LOR; }
 "XOR"     { return token::TOK_XOR; }
 "LSH"     { return token::TOK_LSH; }
-"RSH"     { return token::TOK_RSH; }
+"RSH_U"   { return token::TOK_RSH_U; }
+"RSH_S"   { return token::TOK_RSH_S; }
 "ROR"     { return token::TOK_ROR; }
 "ROL"     { return token::TOK_ROL; }
 "NEG"     { return token::TOK_NEG; }
@@ -121,8 +122,8 @@ optype    [bswlqt]
 "LEQ_U"   { return token::TOK_LEQ_U;} 
 "GEQ_U"   { return token::TOK_GEQ_U;} 
 "POW"     { return token::TOK_POW;} 
-"SDIV"    { return token::TOK_SDIV;} 
-"UDIV"    { return token::TOK_UDIV;} 
+"DIV_S"    { return token::TOK_DIV_S;} 
+"DIV_U"    { return token::TOK_DIV_U;} 
 "FORALL"  { return token::TOK_FORALL; }
 "EXISTS"  { return token::TOK_EXISTS; }
 "/\\"     { return token::TOK_L_AND; }

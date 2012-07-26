@@ -42,7 +42,7 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
   int dsz = dst->get_bv_size ();
   Expr *mshift = 
     BinaryApp::create (AND_OP, shift->ref (),
-		       Constant::create (0x1F, 0,shift->get_bv_size ()), 
+		       Constant::create (0x1F, 0, shift->get_bv_size ()), 
 		       0, 8);
   
   data.mc->add_assignment (from, (LValue *) tempCount->ref (), mshift->ref ());
@@ -56,13 +56,13 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
 			   dst->extract_bit_vector (cfindex, 1));
   BinaryOp op;
 
-  if (go_left) op = MUL_U;
-  else if (keep_sign) op = SDIV;
-  else op = UDIV;
+  if (go_left) op = LSH;
+  else if (keep_sign) op = RSH_S;
+  else op = RSH_U;
 
   data.mc->add_assignment (from, (LValue *) dst->ref (),
-			   BinaryApp::create (op, dst->ref (),
-					      Constant::create (2, 0, dsz),
+			   BinaryApp::create (op, dst->ref (), 
+					      Constant::one (dsz),
 					      0 , dsz));
   data.mc->add_assignment (from, (LValue *) tempCount->ref (),
 			   BinaryApp::create (SUB, tempCount->ref (),
@@ -88,6 +88,11 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
   else
     ofval = tempDest->extract_bit_vector (cfindex, 1);
 
+  x86_32_if_then_else (from, data, 
+		       BinaryApp::create (EQ, mshift->ref (),
+					  Constant::zero (8), 0, 1),
+		       data.next_ma, from + 1);
+  from++;
   x86_32_assign_OF (from, data, ofval);
   x86_32_compute_SF (from, data, dst);
   x86_32_compute_ZF (from, data, dst);
@@ -352,7 +357,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
     }
   else
     {
-      newdst = BinaryApp::create (UDIV, dst->ref (), 
+      newdst = BinaryApp::create (DIV_U, dst->ref (), 
 				  Constant::create (2, 0, dsz), 0, dsz);
       Expr *cf = rotate_carry ? data.get_flag ("cf") : tempCF->ref ();
       Expr *aux = 

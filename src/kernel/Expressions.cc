@@ -688,7 +688,7 @@ class Rule1: public TermReplacingRule
 					  ba->get_bv_size());
 		return res;
 	      }
-	    else if ((op == UDIV && o->get_op() == UDIV) || 
+	    else if ((op == DIV_U && o->get_op() == DIV_U) || 
 		     (op == MUL_U && o->get_op() == MUL_U))
 	      {
 		arg1 = (Expr *)o->get_arg1()->ref ();

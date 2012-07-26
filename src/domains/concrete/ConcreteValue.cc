@@ -33,7 +33,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-
+#include <utils/bv-manip.hh>
 #include <kernel/Expressions.hh>
 
 using namespace std;
@@ -68,12 +68,7 @@ ConcreteValue ConcreteValue::unknown_value(int size)
 
 word_t ConcreteValue::get() const
 {
-  word_t result = value;
-  if (size < BV_DEFAULT_SIZE)
-    {
-      uword_t mask = ~((~ ((uword_t)0)) << size);
-      result &= mask;
-    }
+  word_t result = BitVectorManip::extract_from_word (value, 0, size);
 
   return result;
 }
@@ -87,7 +82,7 @@ ConcreteValue::operator==(const ConcreteValue &v) const
 void
 ConcreteValue::output_text(std::ostream &os) const
 {
-  os << this->value << dec << "{" << this->size << "}";
+  os << (uint64_t)this->value << dec << "{" << this->size << "}";
 }
 
 MicrocodeAddress 

@@ -171,10 +171,10 @@ ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
       return ND_eval_binary_expr_generic(SetsExprSemantics::MUL_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
     case MUL_S:
       return ND_eval_binary_expr_generic(SetsExprSemantics::MUL_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case UDIV:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::UDIV_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case SDIV:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::SDIV_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case DIV_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::DIV_U_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case DIV_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::DIV_S_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
 
     case AND_OP:
       return ND_eval_binary_expr_generic(SetsExprSemantics::AND_OP_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
@@ -184,8 +184,14 @@ ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
       return ND_eval_binary_expr_generic(SetsExprSemantics::XOR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
     case LSH:
       return ND_eval_binary_expr_generic(SetsExprSemantics::LSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case RSH:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::RSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case RSH_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::RSH_U_eval,  
+					 s_ctxt, e->get_arg1(), e->get_arg2(), 
+					 offset, size);
+    case RSH_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::RSH_S_eval,  
+					 s_ctxt, e->get_arg1(), e->get_arg2(), 
+					 offset, size);
     case ROR:
       return ND_eval_binary_expr_generic(SetsExprSemantics::ROR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
     case ROL:

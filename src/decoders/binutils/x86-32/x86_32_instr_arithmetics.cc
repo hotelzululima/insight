@@ -306,7 +306,7 @@ X86_32_TRANSLATE_1_OP(AAM)
 					0, 1));
   from++;
   data.mc->add_assignment (from, ah, 
-			   BinaryApp::create (UDIV, al->ref (), op1, 0, 8));
+			   BinaryApp::create (DIV_U, al->ref (), op1, 0, 8));
 
   data.mc->add_assignment (from, al, 
 			   BinaryApp::create (MODULO, al->ref (), 
@@ -509,7 +509,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
 					Constant::zero (srcsize), 0, 1));
   from++;
   data.mc->add_assignment (from, (LValue *) temp->ref (),
-			   BinaryApp::create (udiv ? UDIV : SDIV, 
+			   BinaryApp::create (udiv ? DIV_U : DIV_S, 
 					      op->ref (), src->ref ()));
 
   Expr *aux = BinaryApp::create (udiv ? EXTEND_U : EXTEND_S,

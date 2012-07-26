@@ -119,7 +119,7 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
   op1->deref ();
 
   x86_32_assign_CF (from, data, 
-		    BinaryApp::create (RSH, bitbase, bitoffset, 0, 1), to);
+		    BinaryApp::create (RSH_U, bitbase, bitoffset, 0, 1), to);
   if (chg == BT_NO_CHG)
     return;
 

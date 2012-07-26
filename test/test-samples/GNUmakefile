@@ -149,6 +149,11 @@ X86_32_OBJECTS= \
   x86_32-simulator-rotate-03.bin \
   x86_32-simulator-rotate-04.bin \
   \
+  x86_32-simulator-shift-01.bin \
+  x86_32-simulator-shift-02.bin \
+  x86_32-simulator-shift-03.bin \
+  x86_32-simulator-shift-04.bin \
+  \
   x86_32-simulator-scas.bin  \
   x86_32-simulator-sub.bin  \
   x86_32-simulator-setcc.bin \

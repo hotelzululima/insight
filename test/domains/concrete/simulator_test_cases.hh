@@ -104,6 +104,11 @@
   BINARY_FILE (X86_32_ROTATE_3, "x86_32-simulator-rotate-03.bin") \
   BINARY_FILE (X86_32_ROTATE_4, "x86_32-simulator-rotate-04.bin") \
   \
+  BINARY_FILE (X86_32_SHIFT_1, "x86_32-simulator-shift-01.bin") \
+  BINARY_FILE (X86_32_SHIFT_2, "x86_32-simulator-shift-02.bin") \
+  BINARY_FILE (X86_32_SHIFT_3, "x86_32-simulator-shift-03.bin") \
+  BINARY_FILE (X86_32_SHIFT_4, "x86_32-simulator-shift-04.bin") \
+  \
   BINARY_FILE (X86_32_SCAS, "x86_32-simulator-scas.bin") \
   BINARY_FILE (X86_32_SUB, "x86_32-simulator-sub.bin") \
   BINARY_FILE (X86_32_SETCC, "x86_32-simulator-setcc.bin") \

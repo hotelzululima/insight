@@ -130,10 +130,10 @@ eval_binary_expr(BinaryApp *ba)
       APPLY_BINARY(MUL_S_eval);
     case MUL_U:
       APPLY_BINARY(MUL_U_eval);
-    case UDIV:
-      APPLY_BINARY(UDIV_eval);
-    case SDIV:
-      APPLY_BINARY(SDIV_eval);
+    case DIV_U:
+      APPLY_BINARY(DIV_U_eval);
+    case DIV_S:
+      APPLY_BINARY(DIV_S_eval);
 
     case AND_OP:
       APPLY_BINARY(AND_OP_eval);
@@ -143,8 +143,10 @@ eval_binary_expr(BinaryApp *ba)
       APPLY_BINARY(XOR_eval);
     case LSH:
       APPLY_BINARY(LSH_eval);
-    case RSH:
-      APPLY_BINARY(RSH_eval);
+    case RSH_U:
+      APPLY_BINARY(RSH_U_eval);
+    case RSH_S:
+      APPLY_BINARY(RSH_S_eval);
     case ROR:
       APPLY_BINARY(ROR_eval);
     case ROL:

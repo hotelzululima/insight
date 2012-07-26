@@ -61,7 +61,6 @@ BIN_OP_DEF(LAND_eval, &&);
 BIN_OP_DEF(LOR_eval,  ||);
 BIN_OP_DEF(XOR_eval, ^);
 BIN_OP_DEF(LSH_eval, <<);
-BIN_OP_DEF(RSH_eval, >>);
 BIN_OP_DEF(NEQ_eval,  !=);
 BIN_OP_DEF(EQ_eval,  ==);
 BIN_OP_DEF(MODULO_eval, %);
@@ -104,7 +103,36 @@ ConcreteExprSemantics::MUL_U_eval (ConcreteValue v1, ConcreteValue v2,
   return result;
 }
 
-			/* --------------- */
+template<> ConcreteValue 
+ConcreteExprSemantics::RSH_U_eval (ConcreteValue v1, ConcreteValue v2, 
+				   int offset, int size)
+{
+  s_extend_unsigned_to_word_size (v1);
+
+  uword_t v = v1.get () >> (uword_t) v2.get ();
+  
+  v = BitVectorManip::unset_window (v, v1.get_size () - v2.get (), v2.get ());
+
+  ConcreteValue result (size, v);
+
+  assert (offset == 0 && result.get_size () == size);
+
+  return result;
+}
+
+template<> ConcreteValue 
+ConcreteExprSemantics::RSH_S_eval (ConcreteValue v1, ConcreteValue v2, 
+				   int offset, int size)
+{
+  s_extend_signed_to_word_size (v1);
+
+  ConcreteValue result (size, v1.get () >> (uword_t) v2.get ());
+
+  assert (offset == 0 && result.get_size () == size);
+
+  return result;
+}
+
 
 static word_t
 s_cmp_s (ConcreteValue v1, ConcreteValue v2);
@@ -221,8 +249,8 @@ ConcreteExprSemantics::POW_eval(ConcreteValue v1, ConcreteValue v2,
 
 template<>
 ConcreteValue 
-ConcreteExprSemantics::UDIV_eval(ConcreteValue v1, ConcreteValue v2,
-				 int offset, int size)
+ConcreteExprSemantics::DIV_U_eval(ConcreteValue v1, ConcreteValue v2,
+				  int offset, int size)
 {
   word_t val;
   // \todo semantique de unsigned
@@ -242,7 +270,7 @@ ConcreteExprSemantics::UDIV_eval(ConcreteValue v1, ConcreteValue v2,
 
 template<>
 ConcreteValue 
-ConcreteExprSemantics::SDIV_eval(ConcreteValue v1, ConcreteValue v2,
+ConcreteExprSemantics::DIV_S_eval(ConcreteValue v1, ConcreteValue v2,
 				 int offset, int size)
 {
   word_t val;
@@ -254,7 +282,9 @@ ConcreteExprSemantics::SDIV_eval(ConcreteValue v1, ConcreteValue v2,
     }
   else
     {
-      val = v1.get() / v2.get();
+      word_t val1 = BitVectorManip::extend_signed (v1.get(), v1.get_size ());
+      word_t val2 = BitVectorManip::extend_signed (v2.get(), v2.get_size ());
+      val =  val1 / val2;
     }
 
   val = BitVectorManip::extract_from_word (val, offset, size);

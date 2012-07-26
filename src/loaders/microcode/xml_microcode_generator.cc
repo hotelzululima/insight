@@ -172,9 +172,9 @@ xml_of_binary_op(BinaryOp op)
       return xml_atom("times_u");
     case MUL_S:
       return xml_atom("times_s");
-    case SDIV:
+    case DIV_S:
       return xml_atom("divs");
-    case UDIV:
+    case DIV_U:
       return xml_atom("divu");
     case MODULO:
       return xml_atom("mods");
@@ -192,7 +192,9 @@ xml_of_binary_op(BinaryOp op)
       return xml_atom("concat");
     case LSH:
       return xml_atom("lshift");
-    case RSH:
+    case RSH_S:
+      return xml_atom("rshifts");
+    case RSH_U:
       return xml_atom("rshiftu");
     case EQ:
       return xml_atom("eq");

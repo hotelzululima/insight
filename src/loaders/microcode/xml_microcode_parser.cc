@@ -260,8 +260,8 @@ BinaryOp binary_op_of_xml(xmlNodePtr node, char *ident)
   if (strcmp(ident, "minus") == 0) return SUB;
   if (strcmp(ident, "times_s") == 0) return MUL_S;
   if (strcmp(ident, "times_u") == 0) return MUL_U;
-  if (strcmp(ident, "divs") == 0) return SDIV;
-  if (strcmp(ident, "divu") == 0) return UDIV;
+  if (strcmp(ident, "divs") == 0) return DIV_S;
+  if (strcmp(ident, "divu") == 0) return DIV_U;
   if (strcmp(ident, "mods") == 0) return MODULO;
   if (strcmp(ident, "or") == 0) return OR;
   if (strcmp(ident, "and") == 0) return AND_OP;
@@ -270,7 +270,8 @@ BinaryOp binary_op_of_xml(xmlNodePtr node, char *ident)
   if (strcmp(ident, "xor") == 0) return XOR;
   if (strcmp(ident, "concat") == 0) return CONCAT;
   if (strcmp(ident, "lshift") == 0) return LSH;
-  if (strcmp(ident, "rshiftu") == 0) return RSH;
+  if (strcmp(ident, "rshiftu") == 0) return RSH_U;
+  if (strcmp(ident, "rshifts") == 0) return RSH_S;
 
   if (strcmp(ident, "eq") == 0) return EQ;
   if (strcmp(ident, "leqs") == 0) return LEQ_S;
