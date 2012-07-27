@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <kernel/expressions/FormulaAnnotation.hh>
+#include "FormulaAnnotation.hh"
 
 FormulaAnnotation::FormulaAnnotation()
   : Annotation (), formula (NULL) 

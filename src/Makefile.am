@@ -58,6 +58,8 @@ kernel_source = \
 	kernel/RegisterMap.ii 		\
 	kernel/Value.cc 		\
 	kernel/Value.hh 		\
+	kernel/annotations/FormulaAnnotation.cc \
+	kernel/annotations/FormulaAnnotation.hh \
 	kernel/expressions/ConditionalSet.cc 	\
 	kernel/expressions/ConditionalSet.hh	\
 	kernel/expressions/ExprLexer.hh 	\
@@ -65,8 +67,6 @@ kernel_source = \
 	kernel/expressions/ExprParser.yy 	\
 	kernel/expressions/Formula.cc     	\
 	kernel/expressions/Formula.hh     	\
-	kernel/expressions/FormulaAnnotation.cc \
-	kernel/expressions/FormulaAnnotation.hh \
 	kernel/expressions/FormulaVisitor.hh	\
 	kernel/expressions/Operators.cc   	\
 	kernel/expressions/Operators.def  	\
