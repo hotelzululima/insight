@@ -146,8 +146,12 @@ string MicrocodeNode::pp() const
   oss << "[" << loc.pp() << "] ";
 
   /* Annotation */
-  if (is_annotated ())
-    oss << "@" << Annotable::pp() << "@ ";
+  if (is_annotated ()) 
+    {
+      oss << "@";
+      output_annotations (oss);
+      oss << "@ ";
+    }
 
   MicrocodeNode_iterate_successors(*this, succ)
     {

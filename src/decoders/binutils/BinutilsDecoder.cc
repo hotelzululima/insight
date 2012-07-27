@@ -39,7 +39,7 @@
 #include <utility>
 #include <cassert>
 
-#include "kernel/Annotation.hh"
+#include "kernel/annotations/StringAnnotation.hh"
 #include "x86-32/x86_32_decoder.hh"
 #include "arm/arm_decoder.hh"
 
@@ -64,22 +64,6 @@ static int s_binutils_read_memory(bfd_vma memaddr,
 
 /* Custom 'print_address()' function for our decoders */
 static void s_binutils_print_address(bfd_vma, struct disassemble_info *);
-
-class StringAnnotation : public Annotation
-{
-  string comment;
-
-public:
-  StringAnnotation (string s) : Annotation(), comment (s) { }
-  virtual ~StringAnnotation() { } 
-  virtual std::string pp(std::string prefix = "") const { 
-    return prefix + comment;
-  }
-
-  virtual void *clone() const {
-    return new StringAnnotation (comment);
-  }
-};
 
 /* This function return a new _fake_ BFD structure. */
 bfd* new_bfd(void)

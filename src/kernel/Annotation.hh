@@ -30,33 +30,27 @@
 #ifndef KERNEL_ANNOTATION_HH
 #define KERNEL_ANNOTATION_HH
 
-#include <string>
-#include <list>
-#include <map>
-#include <tr1/unordered_map>
-#include <utils/tools.hh>
-
+#include <utils/Object.hh>
 
 
 /*****************************************************************************/
 /*! \brief Annotation are defined here. This is a general use class to
  *  store information in Node of the microcode.
  *****************************************************************************/
-class Annotation
+class Annotation : public Object
 {
 
 public:
   /*! \brief base constructor */
-  Annotation() {};
+  Annotation() {}
 
   /*! \brief copy constructor */
-  Annotation(const Annotation &) {};
+  Annotation(const Annotation &) {}
 
   /*! \brief virtual destructor */
-  virtual ~Annotation() {};
-
-  /*! \brief pretty printing */
-  virtual std::string pp(std::string prefix = "") const = 0;
+  virtual ~Annotation() {}
+  
+  virtual void output_text(std::ostream &) const = 0;
 
   /*! \brief clone the annotation for copy constructor for instance.
    *  Note that the method returns a void pointer instead of
@@ -66,62 +60,6 @@ public:
    *  cast. */
   virtual void *clone() const = 0;
 
-};
-
-
-typedef std::string AnnotationId;
-#define AnnotationMap std::tr1::unordered_map<AnnotationId,Annotation*>
-
-
-
-/* ***************************************************/
-/**
- * \brief  Interface for annotable objects
- */
-/* ***************************************************/
-class Annotable
-{
-private:
-  AnnotationMap amap;
-
-public:
-  Annotable(const AnnotationMap *o = 0);
-  Annotable(AnnotationMap &o);
-
-  /*! \brief Copy constructor */
-  Annotable(const Annotable &o);
-  /*! \brief Destructor */
-  virtual ~Annotable();
-
-  /*! \brief get annotations. Renamed this method in order to
-   * lower the number of name conflicts on methods such as begin().
-   * That's why the inheritance on std::tr1::unordered_map is private */
-  AnnotationMap *get_annotations();
-  /*! \brief get a specific annotation. */
-  Annotation *get_annotation(AnnotationId &id);
-  /*! \brief get a specific annotation. */
-  Annotation *get_annotation(const char id[]);
-
-  /*! \brief add an annotation. Cf. previous remark */
-  void add_annotation(AnnotationId &id, Annotation *a);
-  /*! \brief add an annotation. Cf. previous remark */
-  void add_annotation(const char id[], Annotation *a);
-  /*! \brief returns true if contains at least one annotation */
-  bool is_annotated() const;
-  /*! \brief returns true if contains an annotation of id <id> */
-  bool has_annotation(AnnotationId &id) const;
-
-  /*! \brief returns true if contains an annotation of id <id> */
-  bool has_annotation(const char id[]) const;
-
-  /*! \brief delete an annotation of id <id> */
-  void del_annotation(const char id[]);
-  /*! \brief delete an annotation of id <id> */
-  void del_annotation(AnnotationId &id);
-
-  std::string pp(std::string prefix = "") const;
-private:
-  void copy_from_map(const AnnotationMap &o);
 };
 
 #endif /* KERNEL_ANNOTATION_HH */

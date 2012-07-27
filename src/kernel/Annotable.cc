@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <kernel/Annotation.hh>
+#include <kernel/Annotable.hh>
 
 #include <sstream>
 #include <string>
@@ -82,7 +82,8 @@ void Annotable::del_annotation(AnnotationId &id)
 }
 
 
-AnnotationMap *Annotable::get_annotations()
+Annotable::AnnotationMap *
+Annotable::get_annotations()
 {
   return &amap;
 }
@@ -128,18 +129,17 @@ bool Annotable::is_annotated() const
   return amap.size() > 0;
 }
 
-std::string Annotable::pp(std::string /* prefix */) const
+void 
+Annotable::output_annotations (std::ostream &out) const
 {
-  std::ostringstream oss;
-  oss << "{";
+  out << "{";
   for (AnnotationMap::const_iterator it = amap.begin(); it != amap.end(); it++)
     {
       if (it != amap.begin())
         {
-          oss << ", ";
+          out << ", ";
         }
-      oss << it->first << ":=" << it->second->pp();
+      out << it->first << ":=" << *(it->second);
     }
-  oss << "}";
-  return oss.str();
+  out << "}";
 }

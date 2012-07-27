@@ -53,10 +53,10 @@ FormulaAnnotation::~FormulaAnnotation()
     formula->deref ();
 }
 
-std::string 
-FormulaAnnotation::pp(std::string prefix) const
+void 
+FormulaAnnotation::output_text (std::ostream &out) const
 {
-  return formula->pp(prefix);
+  out << formula->pp();
 }
 
 void *

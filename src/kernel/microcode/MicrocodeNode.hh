@@ -35,7 +35,7 @@
 
 #include <domains/concrete/ConcreteAddress.hh>
 #include <kernel/Architecture.hh>
-#include <kernel/Annotation.hh>
+#include <kernel/Annotable.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/microcode/MicrocodeAddress.hh>
 #include <kernel/microcode/MicrocodeStatements.hh>

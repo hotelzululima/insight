@@ -39,7 +39,8 @@ utils_source = \
 kernel_source = \
 	kernel/Address.cc 		\
 	kernel/Address.hh 		\
-	kernel/Annotation.cc 		\
+	kernel/Annotable.cc 		\
+	kernel/Annotable.hh 		\
 	kernel/Annotation.hh 		\
 	kernel/Architecture.cc 		\
 	kernel/Architecture.hh 	  	\

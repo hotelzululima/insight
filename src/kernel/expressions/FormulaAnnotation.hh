@@ -45,7 +45,7 @@ public:
 
   virtual ~FormulaAnnotation ();
 
-  virtual std::string pp (std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void *clone () const;
 
