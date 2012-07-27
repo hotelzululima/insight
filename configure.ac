@@ -282,6 +282,8 @@ AC_CONFIG_FILES([
 	test/Makefile
 	test/decoders/Makefile
 	test/slicing/Makefile
+	tools/Makefile
+	tools/cfgrecovery/Makefile
 ], [ ], [ ])
 
 AC_OUTPUT

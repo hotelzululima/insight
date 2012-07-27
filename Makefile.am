@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 if WITH_ATF
-SUBDIRS = . src doc test
+SUBDIRS = . src doc test tools
 else
 SUBDIRS = . src doc
 endif
