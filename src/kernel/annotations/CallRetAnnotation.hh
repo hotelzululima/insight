@@ -27,50 +27,31 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <kernel/annotations/CallRetAnnotation.hh>
-#include "x86_32_translation_functions.hh"
- 
-using namespace std;
+#ifndef KERNEL_ANNOTATIONS_CALLRET_ANNOTATION_HH
+#define KERNEL_ANNOTATIONS_CALLRET_ANNOTATION_HH
 
-X86_32_TRANSLATE_1_OP (CALL)
+#include <kernel/Annotable.hh>
+#include <kernel/annotations/BooleanAnnotation.hh>
+
+class CallRetAnnotation : public BooleanAnnotation
 {
-  address_t next = data.next_ma.getGlobal ();
-  MicrocodeAddress start = data.start_ma;
-  MemCell *mc = dynamic_cast<MemCell *> (op1);
+private:
+  CallRetAnnotation (bool is_call);
 
-  assert (mc != NULL);
+public:
+  static Annotable::AnnotationId ID;
 
-  x86_32_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
+  static CallRetAnnotation *create_call ();
+  static CallRetAnnotation *create_ret ();
 
-  Expr *addr = mc->get_addr ();
-  if (addr->is_Constant ())
-    {
-      MicrocodeAddress fct (dynamic_cast<Constant *>(addr)->get_val ());
-      data.mc->add_skip (start, fct);
-    }
-  else
-    {
-      data.mc->add_jump (start, mc->get_addr ()->ref ());
-    }
-  mc->deref ();
+  virtual ~CallRetAnnotation();
 
-  MicrocodeNode *start_node = data.mc->get_node (data.start_ma);
-  start_node->add_annotation (CallRetAnnotation::ID,
-			      CallRetAnnotation::create_call ());
-}
+  virtual void output_text (std::ostream &out) const;
 
-			/* --------------- */
+  virtual void *clone () const;
 
-X86_32_TRANSLATE_0_OP (RET)
-{
-  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
-  MicrocodeAddress start = data.start_ma;
-  x86_32_pop (start, data, tmpr0);
+  virtual bool is_call () const;
+};
 
-  data.mc->add_jump (start, tmpr0->ref ());
 
-  MicrocodeNode *start_node = data.mc->get_node (data.start_ma);
-  start_node->add_annotation (CallRetAnnotation::ID,
-			      CallRetAnnotation::create_ret ());
-}
-
+#endif /* KERNEL_ANNOTATIONS_CALLRET_ANNOTATION_HH */

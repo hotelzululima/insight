@@ -27,50 +27,45 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <kernel/annotations/CallRetAnnotation.hh>
-#include "x86_32_translation_functions.hh"
- 
-using namespace std;
+#include "CallRetAnnotation.hh"
 
-X86_32_TRANSLATE_1_OP (CALL)
-{
-  address_t next = data.next_ma.getGlobal ();
-  MicrocodeAddress start = data.start_ma;
-  MemCell *mc = dynamic_cast<MemCell *> (op1);
+Annotable::AnnotationId CallRetAnnotation::ID ("callret");
 
-  assert (mc != NULL);
-
-  x86_32_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
-
-  Expr *addr = mc->get_addr ();
-  if (addr->is_Constant ())
-    {
-      MicrocodeAddress fct (dynamic_cast<Constant *>(addr)->get_val ());
-      data.mc->add_skip (start, fct);
-    }
-  else
-    {
-      data.mc->add_jump (start, mc->get_addr ()->ref ());
-    }
-  mc->deref ();
-
-  MicrocodeNode *start_node = data.mc->get_node (data.start_ma);
-  start_node->add_annotation (CallRetAnnotation::ID,
-			      CallRetAnnotation::create_call ());
+CallRetAnnotation::CallRetAnnotation (bool is_call)
+  : BooleanAnnotation (is_call) 
+{  
 }
 
-			/* --------------- */
-
-X86_32_TRANSLATE_0_OP (RET)
-{
-  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
-  MicrocodeAddress start = data.start_ma;
-  x86_32_pop (start, data, tmpr0);
-
-  data.mc->add_jump (start, tmpr0->ref ());
-
-  MicrocodeNode *start_node = data.mc->get_node (data.start_ma);
-  start_node->add_annotation (CallRetAnnotation::ID,
-			      CallRetAnnotation::create_ret ());
+CallRetAnnotation::~CallRetAnnotation() 
+{ 
 }
 
+CallRetAnnotation *
+CallRetAnnotation::create_call ()
+{
+  return new CallRetAnnotation (true);
+}
+
+CallRetAnnotation *
+CallRetAnnotation::create_ret ()
+{
+  return new CallRetAnnotation (false);
+}
+
+void 
+CallRetAnnotation::output_text (std::ostream &out) const 
+{
+  out << (is_call () ? "CALL" : "RET");
+}
+
+void *
+CallRetAnnotation::clone () const
+{  
+  return is_call () ? create_call () : create_ret ();
+}
+
+bool 
+CallRetAnnotation::is_call () const 
+{
+  return get_value ();
+}

@@ -58,6 +58,11 @@ kernel_source = \
 	kernel/RegisterMap.ii 		\
 	kernel/Value.cc 		\
 	kernel/Value.hh 		\
+	kernel/annotations/StringAnnotation.hh \
+	kernel/annotations/BooleanAnnotation.hh \
+	kernel/annotations/CallRetAnnotation.hh \
+	kernel/annotations/CallRetAnnotation.cc \
+	kernel/annotations/GenericAnnotation.hh \
 	kernel/annotations/FormulaAnnotation.cc \
 	kernel/annotations/FormulaAnnotation.hh \
 	kernel/expressions/ConditionalSet.cc 	\
