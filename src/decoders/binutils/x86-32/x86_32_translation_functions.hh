@@ -225,7 +225,7 @@ X86_32_TRANSLATE_1_OP(INVLPG);  // NOP / x86_32_instr_misc.cc
 // X86_32_TRANSLATE_0_OP(IRETD); // Ignored until handle of interrupts
 // X86_32_TRANSLATE_0_OP(IRETQ); // Ignored until handle of interrupts
 
-#define X86_32_CC(id, form) X86_32_TRANSLATE_2_OP(J ## id);
+#define X86_32_CC(id, form) X86_32_TRANSLATE_1_OP(J ## id);
 #include "x86_32_cc.def"
 #undef  X86_32_CC
 
