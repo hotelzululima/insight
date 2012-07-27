@@ -126,6 +126,7 @@ x86_32_translate(x86_32::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
     op1->deref ();
     op2->deref ();
     op3->deref ();
+    throw;
   }
 }
 
