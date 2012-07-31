@@ -49,7 +49,7 @@ using namespace std;
 using namespace binutils;
 
 /* global variables */
-ofstream outfile ("cfg.mc", ios_base::in);	/* output file */
+ofstream output ("cfg.mc", ios_base::in);	/* output file */
 string prog_name = "cfgrecovery";	        /* program name  */
 int verbosity = 0;		                /* verbosity level */
 
@@ -72,9 +72,9 @@ usage (int status)
 
       cout << "Rebuild the CFG based on the analysis of the binary." << endl
 	<< endl
-	<< "  -e, --entrypoint ADDR\tforce entry point" << endl
+	<< "  -d, --disas TYPE\tselect disassembler type" << endl
 	<< "  -l, --list\t\tlist all disassembly types" << endl
-	<< "  -t, --type #TYPE\tselect disassembly type" << endl
+	<< "  -e, --entrypoint ADDR\tforce entry point" << endl
 	<< "  -o, --output FILE\twrite output to FILE" << endl
 	<< "  -h, --help\t\tdisplay this help" << endl
 	<< "  -v, --verbose\t\tincrease verbosity level" << endl
@@ -128,23 +128,23 @@ main (int argc, char *argv[])
   /* Long options struct */
   struct option const
     long_opts[] = {
-    {"entrypoint", required_argument, NULL, 'e'},
+    {"disas", required_argument, NULL, 'd'},
     {"list", no_argument, NULL, 'l'},
-    {"type", required_argument, NULL, 't'},
+    {"entrypoint", required_argument, NULL, 'e'},
     {"output", required_argument, NULL, 'o'},
+    {"help", no_argument, NULL, 'h'},
     {"verbose", no_argument, NULL, 'v'},
     {"version", no_argument, NULL, 'V'},
-    {"help", no_argument, NULL, 'h'},
     {NULL, 0, NULL, 0}
   };
 
+  /* Setting the list of disassembly types */
   disas_t disassemblers;
 
-  /* Setting the list of disassembly types */
   disassemblers["linear"] = "linear sweep";
   disassemblers["recursive"] = "recursive traversal";
   disassemblers["predicate"] = "path predicate validation";
-  disassemblers["dare"] = "Directed automated random exploration";
+  disassemblers["dare"] = "directed automated random exploration";
   disassemblers["kinder1"] = "CFG reconstruction by abstract interpretation";
   disassemblers["kinder2"] = "alternating CFG reconstruction";
 
@@ -156,15 +156,11 @@ main (int argc, char *argv[])
 
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "e:hlt:o:vV", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "ld:e:o:hvV", long_opts, NULL)) != -1)
     switch (optc)
       {
-      case 'e':		/* Force entrypoint */
-	entrypoint = new ConcreteAddress(strtoul (optarg, NULL, 0));
-	break;
-
-      case 'h':		/* Display usage and exit */
-	usage (EXIT_SUCCESS);
+      case 'd':		/* Select disassembly type */
+	disassembler = string(optarg);
 	break;
 
       case 'l':		/* List disassembly types */
@@ -178,12 +174,16 @@ main (int argc, char *argv[])
 	exit (EXIT_SUCCESS);
 	break;
 
-      case 't':		/* Select disassembly type */
-	disassembler = string(optarg);
+      case 'e':		/* Force entrypoint */
+	entrypoint = new ConcreteAddress(strtoul (optarg, NULL, 0));
 	break;
 
       case 'o':		/* Output file */
-	outfile.open (optarg, ios_base::in);
+	output.open (optarg, ios_base::in);
+	break;
+
+      case 'h':		/* Display usage and exit */
+	usage (EXIT_SUCCESS);
 	break;
 
       case 'v':		/* Verbosity */
@@ -284,9 +284,9 @@ main (int argc, char *argv[])
   else
     {
       cerr << prog_name
-	   << ": error: '" << disassembler << "' unknown disassembler" << endl
-	   << "try '" << prog_name << " -l' to list all disassemblers" << endl;
-      usage(EXIT_FAILURE);
+	   << ": error: '" << disassembler << "' disassembler is unknown" << endl
+	   << "Type '" << prog_name << " -l' to list all disassemblers" << endl;
+      exit (EXIT_FAILURE);
     }
 
   /* Cleaning all from Insight */
@@ -299,7 +299,7 @@ main (int argc, char *argv[])
   Insight::terminate();
 
   /* Cleaning other stuff */
-  outfile.close ();
+  output.close ();
 
   exit (EXIT_SUCCESS);
 }
