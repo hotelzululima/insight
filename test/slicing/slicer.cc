@@ -54,7 +54,6 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
 {
   cout << "*** Test of slicing algorithm ***" << endl
        << endl
-       << "input file: " << filename << endl
        << "max number of steps: " << max_step_nb << endl
        << "targeted address: " << target_addr << endl
        << "lvalue: " << target_lv << endl

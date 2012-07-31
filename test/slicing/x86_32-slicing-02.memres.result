@@ -1,6 +1,5 @@
 *** Test of slicing algorithm ***
 
-input file: /home/point/LaBRI/Projects/dev/src/insight/build/../test/test-samples/x86_32-slicing-02.bin
 max number of steps: 10
 targeted address: 6
 lvalue: %eax
