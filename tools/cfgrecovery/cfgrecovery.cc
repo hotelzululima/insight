@@ -112,8 +112,10 @@ linearsweep (const ConcreteAddress * entrypoint,
       }
       catch (exception& e)
 	{
-	  *output << mc->pp() << endl;
-	  cerr << prog_name << e.what() << endl;
+	  if (verbosity > 1)
+	    *output << mc->pp() << endl;
+
+	  cerr << prog_name << ": error" << e.what() << endl;
 	  exit(EXIT_FAILURE);
 	}
     }
@@ -229,7 +231,7 @@ main (int argc, char *argv[])
 
   output =  new ostream(buffer);
 
-
+  /* Getting the execfile from command line */
   string execfile_name = argv[optind];
 
   /* Starting insight and initializing the needed objects */
