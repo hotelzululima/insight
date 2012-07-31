@@ -54,9 +54,7 @@ string prog_name = "cfgrecovery";	        /* program name  */
 int verbosity = 0;		                /* verbosity level */
 
 typedef
-  std::tr1::unordered_map < int,
-			    std::string,
-			    std::tr1::hash<int> > disas_map_t;
+  tr1::unordered_map < string, string, tr1::hash<string> > disas_t;
 
 /* usage(status): Display the usage of the program and quit with
  * 'status' as return value. */
@@ -140,25 +138,21 @@ main (int argc, char *argv[])
     {NULL, 0, NULL, 0}
   };
 
-  disas_map_t disas_types;
+  disas_t disassemblers;
 
   /* Setting the list of disassembly types */
-  disas_types[LINEAR_SWEEP] = "Linear sweep";
-  disas_types[RECURSIVE_TRAVERSAL] = "Recursive traversal";
-  disas_types[PATH_PREDICATE] = "Path predicate";
-  disas_types[DART] = "Directed automated random testing";
-  disas_types[KINDER_1] =
-    "CFG reconstruction by abstract interpretation";
-  disas_types[KINDER_2] = "Alternating CFG reconstruction";
-
-  /* Setting default choice */
-  disas_types[DEFAULT] = disas_types[LINEAR_SWEEP];
+  disassemblers["linear"] = "linear sweep";
+  disassemblers["recursive"] = "recursive traversal";
+  disassemblers["predicate"] = "path predicate validation";
+  disassemblers["dare"] = "Directed automated random exploration";
+  disassemblers["kinder1"] = "CFG reconstruction by abstract interpretation";
+  disassemblers["kinder2"] = "alternating CFG reconstruction";
 
   /* Setting default disassembly type */
-  int disas_type = DEFAULT;
+  string disassembler = "linear";
 
   /* Setting entrypoint */
-  ConcreteAddress * entrypoint;
+  ConcreteAddress * entrypoint = NULL;
 
   /* Parsing options */
   while ((optc =
@@ -174,18 +168,18 @@ main (int argc, char *argv[])
 	break;
 
       case 'l':		/* List disassembly types */
-	cout << "Disassembly types (value to pass):" << endl;
-	for (disas_map_t::iterator it = disas_types.begin ();
-	     it != disas_types.end (); ++it)
+	cout << "Disassembler types ('value to pass' = description):" << endl;
+	/* FIXME: Should order the displayed list to get a better output */
+	for (disas_t::iterator it = disassemblers.begin ();
+	     it != disassemblers.end (); ++it)
 	  {
-	    if (it->first != DEFAULT)
-	      cout << " - " << it->second << " (" << it->first << ")" << endl;
+	    cout << "  '" << it->first << "' = " << it->second << endl;
 	  }
 	exit (EXIT_SUCCESS);
 	break;
 
       case 't':		/* Select disassembly type */
-	disas_type = atoi(optarg);
+	disassembler = string(optarg);
 	break;
 
       case 'o':		/* Output file */
@@ -248,50 +242,50 @@ main (int argc, char *argv[])
   BinutilsDecoder * decoder = new BinutilsDecoder(&arch, memory);
 
   /* Initializing Microcode program */
-  Microcode * mc;
+  Microcode * mc = NULL;
 
-  /* Starting disassembly with proper disassembly type */
-  switch (disas_type)
+  /* Starting disassembly with proper disassembler */
+  if (disassembler == "linear")
     {
-    case DEFAULT:
-    case LINEAR_SWEEP:
       if (verbosity > 0)
 	cout << "Starting linear sweep disassembly" << endl;
       mc = linearsweep(entrypoint, memory, decoder);
-      break;
-
-    case RECURSIVE_TRAVERSAL:
+    }
+  else if (disassembler == "recursive")
+    {
       cerr << prog_name
-	   << ": error: disassembly type not yet implemented" << endl;
+	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
       usage(EXIT_FAILURE);
-      break;
-
-    case PATH_PREDICATE:
+    }
+  else if (disassembler == "predicate")
+    {
       cerr << prog_name
-	   << ": error: disassembly type not yet implemented" << endl;
+	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
       usage(EXIT_FAILURE);
-      break;
-
-    case DART:
+    }
+  else if (disassembler == "dare")
+    {
       cerr << prog_name
-	   << ": error: disassembly type not yet implemented" << endl;
+	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
       usage(EXIT_FAILURE);
-      break;
-
-    case KINDER_1:
+    }
+  else if (disassembler == "kinder1")
+    {
       cerr << prog_name
-	   << ": error: disassembly type not yet implemented" << endl;
+	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
       usage(EXIT_FAILURE);
-      break;
-
-    case KINDER_2:
-      break;
-
-    default:
+    }
+  else if (disassembler == "kinder2")
+    {
       cerr << prog_name
-	   << ": error: '" << disas_type << "' unknown disassembly type" << endl
-	   << "Please, try '" << prog_name << " -l' for all possible types"
-	   << endl;
+	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
+      usage(EXIT_FAILURE);
+    }
+  else
+    {
+      cerr << prog_name
+	   << ": error: '" << disassembler << "' unknown disassembler" << endl
+	   << "try '" << prog_name << " -l' to list all disassemblers" << endl;
       usage(EXIT_FAILURE);
     }
 

@@ -33,12 +33,4 @@
 
 #define CFG_RECOVERY_VERSION    "0.1.0"
 
-#define DEFAULT             0
-#define LINEAR_SWEEP        1	/* Linear sweep */
-#define RECURSIVE_TRAVERSAL 2	/* Recursive traversal */
-#define PATH_PREDICATE      3	/* Path predicate */
-#define DART                4	/* Directed automated random testing */
-#define KINDER_1            5	/* CFG reconstruction by abstract interpretation */
-#define KINDER_2            6	/* Alternating CFG reconstruction */
-
 #endif /* TOOLS_CFGRECOVERY_HH */
