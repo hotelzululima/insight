@@ -33,4 +33,13 @@
 
 #define CFG_RECOVERY_VERSION    "0.1.0"
 
+/* global variables */
+std::string prog_name = "cfgrecovery";  /* program name  */
+
+/* global options */
+int verbosity = 0;		   /* verbosity level */
+
+std::ostream * output;                  /* output stream */
+std::ofstream output_file;              /* output file */
+
 #endif /* TOOLS_CFGRECOVERY_HH */

@@ -48,11 +48,6 @@
 using namespace std;
 using namespace binutils;
 
-/* global variables */
-ofstream output ("cfg.mc", ios_base::in);	/* output file */
-string prog_name = "cfgrecovery";	        /* program name  */
-int verbosity = 0;		                /* verbosity level */
-
 typedef
   tr1::unordered_map < string, string, tr1::hash<string> > disas_t;
 
@@ -112,18 +107,25 @@ linearsweep (const ConcreteAddress * entrypoint,
 
   while (memory->is_defined(current))
     {
-      current = decoder->decode(mc, current);
-      cout << mc->pp() << endl;
+      try {
+	current = decoder->decode(mc, current);
+      }
+      catch (exception& e)
+	{
+	  *output << mc->pp() << endl;
+	  cerr << prog_name << e.what() << endl;
+	  exit(EXIT_FAILURE);
+	}
     }
-
   return mc;
 }
 
 int
 main (int argc, char *argv[])
 {
-  /* Option values */
+  /* Various option values */
   int optc;
+  string output_filename;
 
   /* Long options struct */
   struct option const
@@ -179,7 +181,7 @@ main (int argc, char *argv[])
 	break;
 
       case 'o':		/* Output file */
-	output.open (optarg, ios_base::in);
+	output_filename = string(optarg);
 	break;
 
       case 'h':		/* Display usage and exit */
@@ -205,6 +207,29 @@ main (int argc, char *argv[])
       usage (EXIT_FAILURE);
     }
 
+  /* Setting the output */
+  streambuf * buffer;
+
+  if (output_filename != "")
+    {
+      output_file.open(output_filename.c_str());
+      if (!output_file.is_open())
+	{
+	  string err_msg =
+	    prog_name + ": error opening file '" + output_filename + "'";
+	  perror(err_msg.c_str());
+	  exit(EXIT_FAILURE);
+	}
+      buffer = output_file.rdbuf();
+    }
+  else
+    {
+      buffer = cout.rdbuf();
+    }
+
+  output =  new ostream(buffer);
+
+
   string execfile_name = argv[optind];
 
   /* Starting insight and initializing the needed objects */
@@ -225,7 +250,7 @@ main (int argc, char *argv[])
   }
 
   if (verbosity > 0)
-    cout << "Binary format: " << loader->get_format() << endl;
+    *output << "Binary format: " << loader->get_format() << endl;
 
   /* Getting the ConcreteMemory */
   ConcreteMemory * memory = loader->get_memory();
@@ -235,7 +260,7 @@ main (int argc, char *argv[])
     entrypoint = new ConcreteAddress(loader->get_entrypoint());
 
   if (verbosity > 0)
-    cout << "Entrypoint: 0x" << hex << *entrypoint << dec << endl;
+    *output << "Entrypoint: 0x" << hex << *entrypoint << dec << endl;
 
   /* Getting the decoder */
   MicrocodeArchitecture arch(loader->get_architecture());
@@ -248,7 +273,8 @@ main (int argc, char *argv[])
   if (disassembler == "linear")
     {
       if (verbosity > 0)
-	cout << "Starting linear sweep disassembly" << endl;
+	*output << "Starting linear sweep disassembler" << endl;
+
       mc = linearsweep(entrypoint, memory, decoder);
     }
   else if (disassembler == "recursive")
@@ -289,6 +315,9 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
+  /* Displaying the microcode */
+  *output << mc->pp() << endl;
+
   /* Cleaning all from Insight */
   delete mc;
   delete decoder;
@@ -299,7 +328,7 @@ main (int argc, char *argv[])
   Insight::terminate();
 
   /* Cleaning other stuff */
-  output.close ();
+  delete output;
 
   exit (EXIT_SUCCESS);
 }
