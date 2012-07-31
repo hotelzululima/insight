@@ -81,7 +81,9 @@ list<LValue *> dependencies(Expr *e)
 	return r.lv_list;
 }
 
-list<LValue *> nested_dependencies(Expr * e) {
+static list<LValue *> 
+nested_dependencies(const Expr * e) 
+{
   list<LValue *> lv_list;
 
   class DependencyRule : public TermReplacingRule
@@ -107,18 +109,32 @@ list<LValue *> nested_dependencies(Expr * e) {
 // LocatedLValue implementation
 /*****************************************************************************/
 
-LocatedLValue::LocatedLValue(MicrocodeAddress addr, LValue *lv) :
-  pp(ConcreteProgramPoint(addr)),
-  lv(lv)
-{}
-
-LocatedLValue::LocatedLValue(MicrocodeAddress addr, string expr) :
-  pp(ConcreteProgramPoint(addr))
+LocatedLValue::LocatedLValue(const LocatedLValue &other) :
+  pp (other.pp), lv ((LValue *) other.lv->ref ())
 {
-  Expr *e = Expr::parse (NULL, expr);
-  if (!dynamic_cast<LValue *>(e))
-    Log::fatal_error("LocatedLValue constructor: expecting a lvalue");
-  lv = (LValue *) e;
+}
+
+LocatedLValue::LocatedLValue(MicrocodeAddress addr, const LValue *lv) :
+  pp (ConcreteProgramPoint (addr)),
+  lv ((LValue *)lv->ref ())
+{
+}
+
+LocatedLValue::~LocatedLValue()
+{
+  lv->deref ();
+}
+
+const ConcreteProgramPoint &
+LocatedLValue::get_ProgramPoint () const
+{
+  return pp;
+}
+
+const LValue *
+LocatedLValue::get_LValue () const
+{
+  return lv;
 }
 
 /*****************************************************************************/
@@ -233,9 +249,12 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
 			      UnaryApp::create (ua->get_op(), ARG->ref ()));
           bool modified = 
 	    Formula::bottom_up_rewrite_pattern(p, free_variable, v, &arg1);
-          (*phi)->deref ();
           *phi = arg1;
           modified = arg1_modified || modified ;
+
+	  p->deref ();
+	  v->deref ();
+          ua->deref ();
 	  ARG->deref ();
 	  tv->deref ();
 
@@ -254,10 +273,11 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
 	    conditional_rewrite_memref_aux(addr, value,  & arg2);
 
           Formula * new_phi = crm_apply_bin_op(ba->get_op(), arg1, arg2);
-          (*phi)->deref ();
           *phi = new_phi;
+
 	  arg1->deref();
 	  arg2->deref();
+	  ba->deref ();
 
           return arg1_modified || arg2_modified;
         }
@@ -305,6 +325,12 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
 	  (*phi)->deref ();
           *phi = ConjunctiveFormula::create (clauses);
         }
+      else
+	{
+	  for (vector<Formula *>::iterator c = clauses.begin(); 
+	       c != clauses.end(); c++)
+	    (*c)->deref ();
+	}
       return modified;
     }
 
@@ -325,6 +351,12 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
 	  (*phi)->deref ();
           *phi = DisjunctiveFormula::create (clauses);
         }
+      else
+	{
+	  for (vector<Formula *>::iterator c = clauses.begin(); 
+	       c != clauses.end(); c++)
+	    (*c)->deref ();
+	}
       return modified;
     }
 
@@ -355,19 +387,21 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
 /*****************************************************************************/
 
 DataDependencyLocalContext *
-DataDependencyLocalContext::run_backward(StaticArrow *arr)
+DataDependencyLocalContext::run_backward (StaticArrow *arr)
 {
-  Statement *stmt = arr->get_stmt();
+  Statement *stmt = arr->get_stmt ();
 
-  if (stmt->is_External() ||
-      stmt->is_Jump() ||
-      stmt->is_Skip())
+  if (stmt->is_External () || stmt->is_Jump () || stmt->is_Skip ())
     {
-      DataDependencyLocalContext * new_context = new DataDependencyLocalContext(*this);
-      if (!DataDependency::ConsiderJumpCond() || DataDependency::OnlySimpleSets()) return new_context;
+      DataDependencyLocalContext *new_context = 
+	new DataDependencyLocalContext (*this);
+      if (!DataDependency::ConsiderJumpCond () || 
+	  DataDependency::OnlySimpleSets ()) 
+	return new_context;
 
-      Expr *cond = arr->get_condition();
-      if (!cond->eval_level0()) {
+      Expr *cond = arr->get_condition ();
+      if (!cond->eval_level0 ()) 
+	{
     	  Formula *new_lvalues = 
 	    ConjunctiveFormula::create (cond->ref (), 
 					new_context->the_lvalues->ref ());
@@ -378,117 +412,118 @@ DataDependencyLocalContext::run_backward(StaticArrow *arr)
       return new_context;
     }
 
-  // The processing of assignment of form LV := RV (where LV is a left-value and RV is a term) if twofold:
-  // - if LV appear in the current dependencies, then it must be replaced by the set of dependencies of RV
-  //   (note that this replacement is conditional when LV is a memory reference
-  // - if LV appears in a term, then it must be replaced by RV. (in a conditional way also when LV is a memory reference).
-  if (stmt->is_Assignment())
+  if (! stmt->is_Assignment ())
+    Log::fatal_error("slicing: run_backward : statement type unknown");
+
+  // The processing of assignment of form LV := RV (where LV is a left-value 
+  // and RV is a term) is twofold:
+  // - if LV appear in the current dependencies, then it must be replaced by 
+  //   the set of dependencies of RV (note that this replacement is conditional
+  //   when LV is a memory reference)
+  // - if LV appears in a term, then it must be replaced by RV (in a conditional
+  //   way also when LV is a memory reference).
+  LValue *lval = ((Assignment *) stmt)->get_lval ();
+  Expr *rval = ((Assignment *) stmt)->get_rval ();
+  DataDependencyLocalContext *new_context = 
+    new DataDependencyLocalContext (*this);
+
+  Formula *deps = BooleanConstantFormula::create (false);
+  list<LValue *> depends = dependencies (rval);
+  for (list<LValue *>::iterator elt = depends.begin(); elt != depends.end(); 
+       elt++) {
+    ConditionalSet::cs_add(&(deps), *elt);
+    (*elt)->deref ();
+  }
+
+  if (lval->is_RegisterExpr())
     {
-      LValue *lval = ((Assignment *) stmt)->get_lval();
-      Expr *rval = ((Assignment *) stmt)->get_rval();
-      DataDependencyLocalContext *new_context = 
-	new DataDependencyLocalContext(*this);
+      // Here one replaces lval in new_context->the_lvalues by
+      // - the dependencies of rval when lval appears in the occurencies EltSymbol = lval
+      // - directly rval anywhere else
 
-      Formula *deps = BooleanConstantFormula::create (false);
-      list<LValue *> depends = dependencies(rval);
-      for (list<LValue *>::iterator elt = depends.begin(); 
-	   elt != depends.end(); elt++) {
-        ConditionalSet::cs_add(&(deps), *elt);
-	(*elt)->deref ();
-      }
+      Formula *reg_pattern = 
+	Formula::Equality(ConditionalSet::EltSymbol (), lval->ref ());
 
-      if (lval->is_RegisterExpr())
-        {
-          // Here one replaces lval in new_context->the_lvalues by
-          // - the dependencies of rval when lval appears in the occurencies EltSymbol = lval
-          // - directly rval anywhere else
+      // The variable TMP is used to hide form EltSymbol = lval when one replaces lval by rval.
+      Variable *tmp = Variable::create ("TMP");
+      Formula::bottom_up_rewrite_pattern(reg_pattern, std::list<const Variable *>() , tmp, &(new_context->the_lvalues));
+      reg_pattern->deref ();
+      reg_pattern = lval;
+      Formula::bottom_up_rewrite_pattern(reg_pattern, std::list<const Variable *>() , rval, &(new_context->the_lvalues));
 
-          Formula *reg_pattern = 
-	    Formula::Equality(ConditionalSet::EltSymbol (), lval->ref ());
+      // Here one replaces the occurences of EltSymbol = lval by the 
+      // dependencies of rval.
+      Formula::replace_variable_in_place(&(new_context->the_lvalues), tmp, 
+					 deps);
+      tmp->deref ();
+    }
 
-          // The variable TMP is used to hide form EltSymbol = lval when one replaces lval by rval.
-	  Variable *tmp = Variable::create ("TMP");
-          Formula::bottom_up_rewrite_pattern(reg_pattern, std::list<const Variable *>() , tmp, &(new_context->the_lvalues));
-	  reg_pattern->deref ();
-          reg_pattern = lval;
-          Formula::bottom_up_rewrite_pattern(reg_pattern, std::list<const Variable *>() , rval, &(new_context->the_lvalues));
+  if (lval->is_MemCell())
+    {
+      Variable *elt_addr = Variable::create ("ELT_ADDR");
+      Variable *X = Variable::create ("X");
+      // 1. Formally replace all occurencies of "EltSymbol = [x]" for any 
+      // expr x by "ELT_ADDR = x" (ELT_ADDR is a new variable)
+      Formula *m_pattern = 
+	Formula::Equality(ConditionalSet::EltSymbol (), 
+			  MemCell::create (X->ref ()));
+      std::list<const Variable *> free_variables;
+      free_variables.push_back(X);
 
-          // Here one replaces the occurences of EltSymbol = lval by the 
-	  // dependencies of rval.
-          Formula::replace_variable_in_place(&(new_context->the_lvalues), tmp, 
-					     deps);
-	  tmp->deref ();
-        }
+      Formula *tmp = Formula::Equality(elt_addr->ref (), X->ref ());
+      Formula::bottom_up_rewrite_pattern(m_pattern, free_variables,
+					 tmp,
+					 &(new_context->the_lvalues));
+      tmp->deref ();
+      m_pattern->deref ();
 
-      if (lval->is_MemCell())
-        {
-	  Variable *elt_addr = Variable::create ("ELT_ADDR");
-	  Variable *X = Variable::create ("X");
-          // 1. Formally replace all occurencies of "EltSymbol = [x]" for any 
-	  // expr x by "ELT_ADDR = x" (ELT_ADDR is a new variable)
-          Formula *m_pattern = 
-	    Formula::Equality(ConditionalSet::EltSymbol (), 
-			      MemCell::create (X->ref ()));
-          std::list<const Variable *> free_variables;
-          free_variables.push_back(X);
+      // 2. Replace any memory reference of form [x] in phi by (IF (x==addr) THEN value ELSE [x])
+      //    and propagate the replacement all along the terms.
+      //    Note that the previous operation (1) makes avoid doing that on original terms of form EltSymbol = [x].
+      //    Indeed this last case is treated separately, because in this case, when x=addr, [x] must not be replaced
+      //    by the term value, but by the set of all the dependencies of the term value.
+      conditional_rewrite_memref(((MemCell *) lval)->get_addr(), rval, 
+				 &(new_context->the_lvalues));
 
-	  Formula *tmp = Formula::Equality(elt_addr->ref (), X->ref ());
-          Formula::bottom_up_rewrite_pattern(m_pattern, free_variables,
-                                             tmp,
-                                             &(new_context->the_lvalues));
-	  tmp->deref ();
-	  m_pattern->deref ();
+      // 3. As mentionned above, here we replace the original occurences of EltSymbol = [x] by
+      //    (IF (x == addr) THEN { Conditional set encoding dependencies of values} ELSE EltSymbol = [x])
+      m_pattern = Formula::Equality(elt_addr->ref (), X->ref ());
+      tmp =
+	Formula::IfThenElse(Formula::Equality(((MemCell *) lval)->get_addr()->ref (), X->ref ()),
+			    deps->ref (),  
+			    Formula::Equality(ConditionalSet::EltSymbol (),
+					      MemCell::create (X->ref ())));
+      Formula::bottom_up_rewrite_pattern(m_pattern, free_variables, tmp,
+					 &(new_context->the_lvalues));
+      tmp->deref ();
+      m_pattern->deref ();
+      X->deref ();
+      elt_addr->deref ();
+    }
 
-          // 2. Replace any memory reference of form [x] in phi by (IF (x==addr) THEN value ELSE [x])
-          //    and propagate the replacement all along the terms.
-          //    Note that the previous operation (1) makes avoid doing that on original terms of form EltSymbol = [x].
-          //    Indeed this last case is treated separately, because in this case, when x=addr, [x] must not be replaced
-          //    by the term value, but by the set of all the dependencies of the term value.
-          conditional_rewrite_memref(((MemCell *) lval)->get_addr(), rval, 
-				     &(new_context->the_lvalues));
+  // Finally, assignments may have also condition, it is processed here.
+  Expr *cond = arr->get_condition();
+  if (DataDependency::ConsiderJumpCond() && !DataDependency::OnlySimpleSets() && !cond->eval_level0())
+    {
+      Formula *new_lvalues = 
+	ConjunctiveFormula::create (cond->ref (), 
+				    new_context->the_lvalues->ref ());
+      new_context->the_lvalues->deref ();
+      new_context->the_lvalues = new_lvalues;
+    }
 
-          // 3. As mentionned above, here we replace the original occurences of EltSymbol = [x] by
-          //    (IF (x == addr) THEN { Conditional set encoding dependencies of values} ELSE EltSymbol = [x])
-          m_pattern = Formula::Equality(elt_addr->ref (), X->ref ());
-	  tmp =
-	    Formula::IfThenElse(Formula::Equality(((MemCell *) lval)->get_addr()->ref (), X->ref ()),
-				deps->ref (),  
-				Formula::Equality(ConditionalSet::EltSymbol (),
-						  MemCell::create (X->ref ())));
-	  Formula::bottom_up_rewrite_pattern(m_pattern, free_variables, tmp,
-					     &(new_context->the_lvalues));
-	  tmp->deref ();
-	  m_pattern->deref ();
-	  X->deref ();
-	  elt_addr->deref ();
-        }
+  Formula::simplify_level0(&(new_context->the_lvalues));
+  Formula::disjunctive_normal_form(&(new_context->the_lvalues));
 
-      // Finally, assignments may have also condition, it is processed here.
-      Expr *cond = arr->get_condition();
-      if (DataDependency::ConsiderJumpCond() && !DataDependency::OnlySimpleSets() && !cond->eval_level0())
-        {
-          Formula *new_lvalues = 
-	    ConjunctiveFormula::create (cond->ref (), 
-					new_context->the_lvalues->ref ());
-          new_context->the_lvalues->deref ();
-          new_context->the_lvalues = new_lvalues;
-        }
+  if (DataDependency::OnlySimpleSets()) {
+    Formula * old = new_context->the_lvalues;
+    new_context->the_lvalues = 
+      ConditionalSet::cs_flatten (new_context->the_lvalues);
+    old->deref ();
+  }
+  deps->deref ();
 
-      Formula::simplify_level0(&(new_context->the_lvalues));
-      Formula::disjunctive_normal_form(&(new_context->the_lvalues));
-
-      if (DataDependency::OnlySimpleSets()) {
-    	  Formula * old = new_context->the_lvalues;
-    	  new_context->the_lvalues = 
-	    ConditionalSet::cs_flatten (new_context->the_lvalues->ref () );
-    	  old->deref ();
-      }
-      deps->deref ();
-
-      return new_context;
-    } // end of processing of assignment.
-
-  Log::fatal_error("slicing: run_backward : statement type unknown");
+  return new_context;
 }
 
 /*****************************************************************************/
@@ -500,23 +535,29 @@ bool DataDependencyLocalContext::merge(DataDependencyLocalContext *other)
 
 /*****************************************************************************/
 
-Option<DataDependencyLocalContext *> DataDependency::get_local_context(ConcreteProgramPoint pp)
+DataDependencyLocalContext * 
+DataDependency::get_local_context(ConcreteProgramPoint pp)
 {
-  map<ConcreteProgramPoint, DataDependencyLocalContext *>::iterator pair = the_fixpoint.find(pp);
+  DataDependencyLocalContext *result = NULL;
+  map<ConcreteProgramPoint, DataDependencyLocalContext *>::iterator pair = 
+    the_fixpoint.find(pp);
+
   if (pair != the_fixpoint.end())
-    return Option<DataDependencyLocalContext *>(pair->second);
-  else
-    return Option<DataDependencyLocalContext *>();
+    result = pair->second;
+  return result;
 }
 
 /*****************************************************************************/
 
-void DataDependency::update_from_program_point(ConcreteProgramPoint pp)
+void 
+DataDependency::update_from_program_point (ConcreteProgramPoint pp)
 {
-  MicrocodeNode *target_node = the_program->get_node(pp.to_address());
-  for (pair<StmtArrow *, MicrocodeNode *> pred = the_program->get_first_predecessor(target_node);
+  MicrocodeNode *target_node = the_program->get_node (pp.to_address ());
+
+  for (pair<StmtArrow *, MicrocodeNode *> pred = 
+	 the_program->get_first_predecessor(target_node);
        pred.first != 0 && pred.second != 0;
-       pred = the_program->get_next_predecessor(target_node, pred.first))
+       pred = the_program->get_next_predecessor (target_node, pred.first))
     {
       if (pred.first->is_dynamic())
         Log::warningln ("Caution: I ignore all the dynamic arrows "
@@ -527,29 +568,29 @@ void DataDependency::update_from_program_point(ConcreteProgramPoint pp)
 
 /*****************************************************************************/
 
-DataDependency::DataDependency(Microcode *prg, list<LocatedLValue> seeds) :
-  the_program(prg),
-  fixpoint_reached(false)
+DataDependency::DataDependency (Microcode *prg, list<LocatedLValue> seeds) :
+  the_program (prg),
+  fixpoint_reached (false)
 {
-  prg->regular_form();
-  prg->optimize();
+  prg->regular_form ();
+  prg->optimize ();
 
-  for (list<LocatedLValue>::iterator llv = seeds.begin(); llv != seeds.end(); llv++)
+  for (list<LocatedLValue>::iterator llv = seeds.begin (); llv != seeds.end (); 
+       llv++)
     {
-      DataDependencyLocalContext *ctxt;
-      Option<DataDependencyLocalContext *> ctxt_opt = get_local_context(llv->pp);
-      if (ctxt_opt.hasValue())
-        ctxt = ctxt_opt.getValue();
-      else
-        {
-	  if (the_fixpoint.find (llv->pp) != the_fixpoint.end ())
-	    delete the_fixpoint[llv->pp];
-          ctxt = new DataDependencyLocalContext(this);
-          the_fixpoint[llv->pp] = ctxt;
-        }
-      ConditionalSet::cs_add(ctxt->get_watched_lvalues(), (LValue *) llv->lv);
+      ConcreteProgramPoint pp = llv->get_ProgramPoint ();
+      DataDependencyLocalContext *ctxt = get_local_context (pp);
 
-      update_from_program_point(llv->pp);
+      if (ctxt == NULL)
+        {
+	  if (the_fixpoint.find (pp) != the_fixpoint.end ())
+	    delete the_fixpoint[pp];
+          ctxt = new DataDependencyLocalContext (this);
+          the_fixpoint[pp] = ctxt;
+        }
+      ConditionalSet::cs_add (ctxt->get_watched_lvalues (), llv->get_LValue ());
+
+      update_from_program_point (pp);
     }
 }
 
@@ -605,75 +646,87 @@ bool DataDependency::InverseStep()
 
   StaticArrow * the_arrow = pending_arrows.front();
   pending_arrows.pop_front();
-  DataDependencyLocalContext * target_context;
+  DataDependencyLocalContext * target_context = 
+    get_local_context(ConcreteProgramPoint(the_arrow->get_concrete_target()));
 
-  try {
-	  target_context =
-	      get_local_context(ConcreteProgramPoint(the_arrow->get_concrete_target())).getValue();
-  }
-  catch (OptionNoValueExc &) {
-    Log::fatal_error("DataDependency: DataDependency: should be a context here");
-  }
+  if (target_context == NULL)
+    {
+      Log::fatal_error("DataDependency: DataDependency: should be a "
+		       "context here");
+    }
 
-  DataDependencyLocalContext * new_context = target_context->run_backward(the_arrow);
+  DataDependencyLocalContext * new_context = 
+    target_context->run_backward (the_arrow);
 
   Log::separator(2);
   Log::print ("Running backward arrow ", 2);
   Log::emphln ("< " + the_arrow->pp() + " >", 2);
   Log::println ("New context at pp " + the_arrow->get_origin().pp() + " :", 2);
   Log::println ((*(new_context->get_watched_lvalues()))->pp("\t"), 2);
-  Log::print ("Maximum dependencies at pp " + the_arrow->get_origin().pp() + " : ", 2);
+  Log::print ("Maximum dependencies at pp " + the_arrow->get_origin().pp() 
+	      + " : ", 2);
+
   std::vector<Expr*> upper_set =
-      ConditionalSet::cs_possible_values((*(new_context->get_watched_lvalues())));
+    ConditionalSet::cs_possible_values((*(new_context->get_watched_lvalues())));
   print_expressions(&upper_set,2);
   Log::println("",2);
-  ConcreteProgramPoint origin_pp(the_arrow->get_origin());
-  Option<DataDependencyLocalContext *> origin_context = get_local_context(origin_pp);
+
+  ConcreteProgramPoint origin_pp (the_arrow->get_origin());
+  DataDependencyLocalContext *origin_context = get_local_context (origin_pp);
   bool need_update = true;
-  if (origin_context.hasValue()) {
-      need_update = origin_context.getValue()->merge(new_context);
+
+  if (origin_context != NULL)
+    {
+      need_update = origin_context->merge(new_context);
       delete new_context;
-  }
+    }
   else
     {
       if (the_fixpoint.find (origin_pp) != the_fixpoint.end ())
 	delete the_fixpoint[origin_pp];
       the_fixpoint[origin_pp] = new_context;
     }
+  
+  if (need_update) 
+    update_from_program_point (origin_pp);
+  fixpoint_reached = (pending_arrows.size () == 0);
 
-  if (need_update) update_from_program_point(origin_pp);
-  fixpoint_reached = (pending_arrows.size() == 0);
   return fixpoint_reached;
 }
 
-/*****************************************************************************/
-
-void DataDependency::ComputeFixpoint(int max_step_nb)
+void 
+DataDependency::ComputeFixpoint (int max_step_nb)
 {
-  if (!fixpoint_reached) {
-    while (!InverseStep() && (max_step_nb-- > 0)) {}
-    if (max_step_nb > 0) {
-      Log::emphln("DataDependency: Fixpoint Reached!", 2);
-    };
-  }
+  while (!fixpoint_reached && max_step_nb--)
+    InverseStep ();
+
+  if (max_step_nb > 0) 
+    Log::emphln ("DataDependency: Fixpoint Reached!", 2);
 }
 
-/*****************************************************************************/
+Formula * 
+DataDependency::get_dependencies (ConcreteProgramPoint pp, int max_step_nb) 
+{
+  Formula *result;
+  DataDependencyLocalContext *ctxt = get_local_context (pp);
 
-Formula * DataDependency::get_dependencies(ConcreteProgramPoint pp, int max_step_nb) {
-  ComputeFixpoint(max_step_nb);
-  Option<DataDependencyLocalContext *> ctxt_opt = get_local_context(pp);
-  if (ctxt_opt.hasValue())
-    return (*(ctxt_opt.getValue())->get_watched_lvalues())->ref ();
+  ComputeFixpoint (max_step_nb);
+
+  if (ctxt != NULL)
+    result =  (*(ctxt->get_watched_lvalues()))->ref ();
   else
-    return BooleanConstantFormula::create (false);
+    result = BooleanConstantFormula::create (false);
+
+  return result;
 }
 
-/*****************************************************************************/
-
-std::vector<Expr*> DataDependency::get_simple_dependencies(ConcreteProgramPoint pp, int max_step_nb) {
-  Formula * result = get_dependencies(pp,max_step_nb);
-  std::vector<Expr*> simple_result = ConditionalSet::cs_possible_values(result);
+std::vector<Expr*> 
+DataDependency::get_simple_dependencies(ConcreteProgramPoint pp, 
+					int max_step_nb) 
+{
+  Formula *result = get_dependencies (pp, max_step_nb);
+  std::vector<Expr*> simple_result = 
+    ConditionalSet::cs_possible_values (result);
   result->deref ();
 
   return simple_result;
@@ -681,15 +734,23 @@ std::vector<Expr*> DataDependency::get_simple_dependencies(ConcreteProgramPoint 
 
 /*****************************************************************************/
 
-std::vector<StmtArrow*> DataDependency::slice_it(Microcode * prg, MicrocodeAddress seed_loc, Expr * seed) {
-  list<LValue*> seeds = nested_dependencies(seed);
+std::vector<StmtArrow*> 
+DataDependency::slice_it (Microcode *prg, MicrocodeAddress seed_loc, 
+			  const Expr * seed) 
+{
+  list<LValue*> seeds = nested_dependencies (seed);
   list<LocatedLValue> llvs;
+  for (list<LValue*>::iterator s = seeds.begin (); s != seeds.end (); s++)
+    llvs.push_back (LocatedLValue (seed_loc, *s));
+  std::vector<StmtArrow*> result = DataDependency::slice_it (prg, llvs);
   for (list<LValue*>::iterator s = seeds.begin(); s != seeds.end(); s++)
-    llvs.push_back(LocatedLValue(seed_loc, (LValue*)*s));
-  return DataDependency::slice_it(prg,llvs);
+    (*s)->deref ();
+
+  return result;
 }
 
-std::vector<StmtArrow*> DataDependency::slice_it(Microcode * prg, std::list<LocatedLValue> seeds) {
+std::vector<StmtArrow*> 
+DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
   DataDependency::ConsiderJumpCondMode(true);
   DataDependency::OnlySimpleSetsMode(true);
 
@@ -702,38 +763,49 @@ std::vector<StmtArrow*> DataDependency::slice_it(Microcode * prg, std::list<Loca
 
   Log::separator(2);
   Log::println ( "Dependencies:", 2 );
-  for (int n=0; n<(int) nodes->size(); n++) {
-    Log::print ( (*nodes)[n]->get_loc().pp(), 2 );
-    Log::print ( " <== ", 2 );
-    std::vector<Expr*> deps = invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
-    print_expressions(& deps, 2);
-    Log::println("", 2);
-    std::vector<LValue*> lv_deps;
 
-    std::vector<StmtArrow *> * succs = (*nodes)[n]->get_successors();
-    for (int s=0; s<(int) succs->size(); s++) {
-      if ((*succs)[s]->get_stmt()->is_Assignment()) {
-        LValue * the_lv = ((Assignment *) (*succs)[s]->get_stmt())->get_lval();
-        Option<MicrocodeAddress> tgtopt = (*succs)[s]->extract_target();
-        if (tgtopt.hasValue()) {
-          MicrocodeAddress addr = tgtopt.getValue();
-          std::vector<Expr*> tgt_deps = invfix.get_simple_dependencies(addr, max_step_nb);
-          bool influence = false;
-          for (int d=0; d<(int) tgt_deps.size(); d++) {
-            if ((tgt_deps[d]->contains(the_lv)) ||                    // Case 1: one dependency contains the modified lv
-                (tgt_deps[d]->is_MemCell() && the_lv->is_MemCell()))  // Case 2: the modified lv is a memory reference and there is a memory reference in the dependency (brutal!)
-            { influence = true; break; }
-          }
-          if (influence) {
-            Log::emphln ((*succs)[s]->pp(), 2);
-            result.push_back((*succs)[s]);
-          }
-          else
-            Log::println ( (*succs)[s]->pp(), 2);
-        }
-      }
+  for (int n=0; n<(int) nodes->size(); n++) 
+    {
+      Log::print ( (*nodes)[n]->get_loc().pp(), 2 );
+      Log::print ( " <== ", 2 );
+      std::vector<Expr*> deps = 
+	invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
+      print_expressions(& deps, 2);
+      Log::println("", 2);
+
+      std::vector<LValue*> lv_deps;
+
+      std::vector<StmtArrow *> * succs = (*nodes)[n]->get_successors();
+      for (int s=0; s<(int) succs->size(); s++) 
+	{
+	  if (! (*succs)[s]->get_stmt()->is_Assignment()) 
+	    continue;
+
+	  LValue * the_lv = ((Assignment *) (*succs)[s]->get_stmt())->get_lval();
+	  Option<MicrocodeAddress> tgtopt = (*succs)[s]->extract_target();
+	  if (!tgtopt.hasValue()) 
+	    continue;
+
+	  MicrocodeAddress addr = tgtopt.getValue();
+	  std::vector<Expr*> tgt_deps = 
+	    invfix.get_simple_dependencies (addr, max_step_nb);
+	  bool influence = false;
+	  for (int d=0; d<(int) tgt_deps.size(); d++) 
+	    {
+	      if ((tgt_deps[d]->contains(the_lv)) ||                    // Case 1: one dependency contains the modified lv
+		  (tgt_deps[d]->is_MemCell() && the_lv->is_MemCell()))  // Case 2: the modified lv is a memory reference and there is a memory reference in the dependency (brutal!)
+		{ influence = true; break; }
+	    }
+	  for (int d=0; d<(int) tgt_deps.size(); d++) 
+	    tgt_deps[d]->deref ();
+	  if (influence) {
+	    Log::emphln ((*succs)[s]->pp(), 2);
+	    result.push_back((*succs)[s]);
+	  }
+	  else
+	    Log::println ( (*succs)[s]->pp(), 2);
+	}	
     }
-  }
   Log::separator(2);
 
   return result;
@@ -760,16 +832,22 @@ Option<bool> DD_u_follow_edge(Microcode * prg, StmtArrow * arr, list<StmtArrow*>
   return Option<bool>();
 }
 
-bool DataDependency::statement_used(Microcode * prg, StmtArrow* arr) {
-  if (! arr->get_stmt()->is_Assignment()) {
-    // optim: add skip with condition true
-    return true;
-  }
+bool 
+DataDependency::statement_used (Microcode *prg, StmtArrow *arr) 
+{
+  if (! arr->get_stmt ()->is_Assignment ()) 
+    {
+      // optim: add skip with condition true
+      return true;
+    }
+
   LValue * the_lv = ((Assignment *) arr->get_stmt())->get_lval();
-  if (!the_lv->is_RegisterExpr()) {
-    // optim: for MemCells one can do simple but efficient things
-    return true;
-  }
+  if (!the_lv->is_RegisterExpr ()) 
+    {
+      // optim: for MemCells one can do simple but efficient things
+      return true;
+    }
+
   RegisterExpr * the_reg = (RegisterExpr *) the_lv;
 
   list<StmtArrow*> pending_arrows;
@@ -811,19 +889,21 @@ bool DataDependency::statement_used(Microcode * prg, StmtArrow* arr) {
   return false;
 }
 
-std::vector<StmtArrow*> DataDependency::useless_statements(Microcode * prg) {
+std::vector<StmtArrow *> 
+DataDependency::useless_statements (Microcode * prg) 
+{
   vector<StmtArrow*> result;
-  vector<MicrocodeNode *> * nodes = prg->get_nodes();
-  for (int n=0; n<(int) nodes->size(); n++) {
-    vector<StmtArrow *> * succs = (*nodes)[n]->get_successors();
-    for (int s=0; s<(int) succs->size(); s++) {
-      if (!DataDependency::statement_used(prg, (*succs)[s])) {
-        result.push_back((*succs)[s]);
+  vector<MicrocodeNode *> *nodes = prg->get_nodes ();
+
+  for (int n = 0; n< (int) nodes->size (); n++) 
+    {
+      vector<StmtArrow *> *succs = (*nodes)[n]->get_successors ();
+    for (int s = 0; s<(int) succs->size (); s++) 
+      {
+	if (! DataDependency::statement_used (prg, (*succs)[s])) 
+	    result.push_back ((*succs)[s]);
       }
     }
-  }
+
   return result;
 }
-
-/*****************************************************************************/
-/*****************************************************************************/

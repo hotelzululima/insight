@@ -45,13 +45,13 @@ public:
   static Variable *EltSymbol ();
 
   static void cs_simplify(Formula **);
-  static std::vector<Expr*> cs_possible_values(Formula * set);
+  static std::vector<Expr*> cs_possible_values (const Formula * set);
 
   /* Extract the condition for e to belong to set */
   static Formula * cs_condition_for_belonging (Formula * set, Expr * e);
 
   /* Compute the upper set eliminating all the conditions */
-  static Formula * cs_flatten (Formula * set);
+  static Formula * cs_flatten (const Formula * set);
 
   /* Reduces the formula set by replacing EltSymbol by elt (i.e. set [EltSymbol/elt]) */
   static Formula *cs_contains(const Formula *set, const Expr *elt);
@@ -73,11 +73,11 @@ public:
   static bool cs_conditional_union(Formula *cond, Formula **set1, Formula *set2);
 
   /* shortcuts with trivial true condition */
-  static bool cs_union(Formula **set1, Formula *set2);
+  static bool cs_union(Formula **set1, const Formula *set2);
 
   /* return true iff elt has been determined to be in set before.
    * result is put into set */
-  static bool cs_remove(Formula **set, Expr *elt);
+  static bool cs_remove(Formula **set, const Expr *elt);
 };
 
 #endif /* KERNEL_EXPRESSIONS_CONDITIONALSET_HH */

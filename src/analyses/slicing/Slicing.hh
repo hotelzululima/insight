@@ -94,11 +94,16 @@ public:
 };
 
 class LocatedLValue {
-public:
+private:
   ConcreteProgramPoint pp;
   LValue *lv;
-  LocatedLValue(MicrocodeAddress addr, LValue *lv);
-  LocatedLValue(MicrocodeAddress addr, std::string expr);
+public:
+  LocatedLValue(const LocatedLValue &other);
+  LocatedLValue (MicrocodeAddress addr, const LValue *lv);
+  ~LocatedLValue ();
+
+  const ConcreteProgramPoint &get_ProgramPoint () const;
+  const LValue *get_LValue () const;
 };
 
 class DataDependency {
@@ -120,7 +125,7 @@ private:
    * returns true if and only if the fixpoint has been reached. */
   bool InverseStep();
 
-  Option<DataDependencyLocalContext *> get_local_context(ConcreteProgramPoint pp);
+  DataDependencyLocalContext *get_local_context (ConcreteProgramPoint pp);
 
   /*! push the arrows pointing on pp into the pending arrow list */
   void update_from_program_point(ConcreteProgramPoint pp);
@@ -161,7 +166,7 @@ public:
   /* Returns an upper set of the set of arrow that may influence the value of the seed.
    * A seed is a located lvalue, ie. a particular lvalue at a particular program point. */
   static std::vector<StmtArrow*> slice_it(Microcode * prg, std::list<LocatedLValue> seeds);
-  static std::vector<StmtArrow*> slice_it(Microcode * prg, MicrocodeAddress seed_loc, Expr * seed);
+  static std::vector<StmtArrow*> slice_it(Microcode * prg, MicrocodeAddress seed_loc, const Expr *seed);
 
   /* Tells whether a statement is used or not in a piece of microcode.
    * Note that when a not resolved dynamic jump is found, or a missing node,
