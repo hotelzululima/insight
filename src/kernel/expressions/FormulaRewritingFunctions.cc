@@ -51,7 +51,7 @@ Formula *
 not_operator_on_constant (const Formula *phi)
 {
   const UnaryApp *ua = dynamic_cast<const UnaryApp *> (phi);
-  Formula *result;
+  Formula *result = NULL;
 
   if (ua == NULL)
     result = phi->ref ();
@@ -84,7 +84,7 @@ syntaxic_equality_rule (const Formula *phi)
 Formula * 
 expression_simplify (const Formula * phi)
 {
-  Formula *result;
+  Formula *result = NULL;
 
   if (phi->is_Expr ()) 
     {
