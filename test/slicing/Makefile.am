@@ -19,21 +19,25 @@ slicer_LDADD = $(top_builddir)/src/libinsight.la
 TEST_SLICER = ${builddir}/slicer
 
 BASE_TESTS = \
-	x86_32-slicing-01.memres \
-	x86_32-gcd.memres 
+	x86_32-slicing-01.res \
+	x86_32-slicing-02.res \
+        \
+	${dummy}
 
 if WITH_VALGRIND
 BASE_TESTS += \
 	x86_32-slicing-01.memres \
-	x86_32-gcd.memres 
+	x86_32-slicing-02.memres \
+        \
+	${dummy}
 endif
 
-#TESTS = \
-# ${BASE_TESTS} \
-# \
-# check-diff
+TESTS = \
+ ${BASE_TESTS} \
+ \
+ check-diff
 
-TESTS = 
+#TESTS =
 
 EXTRA_DIST=${TESTS:%=%.result} ${CHECKRESULTS} Kyuafile
 

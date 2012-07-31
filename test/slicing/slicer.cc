@@ -65,18 +65,17 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
     new MicrocodeArchitecture (loader->get_architecture ());
   ConcreteMemory *mem = loader->get_memory ();
   Microcode *prg = Build_Microcode (mcarch, mem, ConcreteAddress (0));
-
+  
   Expr *lvalue = Expr::parse (mcarch, target_lv);
   vector<StmtArrow*> stmt_deps =
-        DataDependency::slice_it (prg, 
-				  MicrocodeAddress (target_addr),
-				  lvalue);
-  lvalue->deref ();
-
+    DataDependency::slice_it (prg, MicrocodeAddress (target_addr), lvalue);
+  
   for (int i = 0; i < (int) stmt_deps.size (); i++)
     cout  << stmt_deps[i]->pp() << endl;
   cout << endl;
-    
+
+  lvalue->deref ();
+
   cout << "* Useless statements:" << endl;
 
   std::vector<StmtArrow*> useless_arrows = 
@@ -84,7 +83,7 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
   for (int i = 0; i < (int) useless_arrows.size (); i++)
     cout << useless_arrows[i]->pp() << endl;
   cout << endl;
-  
+
   /* A GARDER : Pour le calcul de dependence en haute precision
   DataDependency invfix(prg_cpy, seeds);
 

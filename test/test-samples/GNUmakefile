@@ -73,6 +73,7 @@ X86_32_OBJECTS= \
   x86_32-xor.bin \
   \
   x86_32-slicing-01.bin \
+  x86_32-slicing-02.bin \
   x86_32-gcd.bin \
   \
   x86_32-simulator-01.bin \

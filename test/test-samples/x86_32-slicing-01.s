@@ -14,7 +14,7 @@ loop:
 	inc %ebp
 	mov $2, %ebp
 	mov %esi, %esp
-	shl $2, %esp
+	imul $4, %esp, %esp
 	add %eax, %esp
 	pushl 2 (%ebp)
 	popl (%ebp)
