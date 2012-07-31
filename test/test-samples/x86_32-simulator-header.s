@@ -8,21 +8,17 @@
 	.set	INIT_EFLAGS, 0
 	.endif
 	
-	.set	okaddr,   0x1000
-	.set	ok2addr,  0x1111
+	.set	okaddr, 0x1000
+	.set	ok2addr, 0x1111
 	.set	erraddr, 0x6666
-	.set 	nominal_entrypoint, 0x0011
-	.set	exception_entrypoint, 0x0066
+	.set	exception_handling_addr, 0x12FA792
 	.set	stack_baseaddr, 0xFFFF
 	
 	.ifgt	EXCEPTION_CHECK
-	.set	entrypoint, exception_entrypoint
+	movb	$0x1, exception_handling_addr
 	.else
-	.set	entrypoint, nominal_entrypoint	
+	movb	$0x0, exception_handling_addr
 	.endif
-
-	.word	entrypoint
-	. = entrypoint
 
 	.ifgt	INIT_EFLAGS
 	mov	$0x00, %ah

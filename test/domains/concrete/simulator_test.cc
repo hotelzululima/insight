@@ -47,10 +47,9 @@
 
 using namespace std;
 
-#define NOMINAL_ENTRYPOINT    0x0011
-#define EXCEPTION_ENTRYPOINT  0x0066
-#define FAILURE_ADDR          0x6666
-#define SUCCESS_ADDR          0x1111
+#define EXCEPTION_HANDLING_ADDR 0x12FA792
+#define FAILURE_ADDR 0x6666
+#define SUCCESS_ADDR 0x1111
 
 static void 
 s_simulate (const char *filename)
@@ -61,16 +60,8 @@ s_simulate (const char *filename)
   BinaryLoader *loader = LoaderFactory::get_BinaryLoader (filename);
   ConcreteMemory *memory = loader->get_memory();
   MicrocodeArchitecture arch (loader->get_architecture ());
-  ConcreteValue entrypoint = 
-    memory->get (ConcreteAddress (0), 4, 
-		 arch.get_reference_arch ()->endianness);
-					  
-  ATF_REQUIRE (entrypoint.get () == NOMINAL_ENTRYPOINT ||
-	       entrypoint.get () == EXCEPTION_ENTRYPOINT);
-
-  bool nominal_entrypoint = (entrypoint.get () == NOMINAL_ENTRYPOINT);  
   Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
-  ConcreteAddress start (entrypoint.get ());
+  ConcreteAddress start = loader->get_entrypoint ();
 
   cout << "Entry-point := " << start << endl;
   Microcode *prg = Build_Microcode (&arch, memory, start);
@@ -78,6 +69,7 @@ s_simulate (const char *filename)
   ctxt->init (ConcreteContext::empty_context ());
   MicrocodeAddress lastaddr;
   MicrocodeAddress newaddr = ctxt->get_current_program_point ().to_address ();
+  ConcreteExecContext::Context *last_context = NULL;
 
   prg->sort ();
 
@@ -93,9 +85,8 @@ s_simulate (const char *filename)
 	    ctxt->get_current_context ().hasValue ()))
 	break;
 
-      ConcreteExecContext::Context *c = 
-	ctxt->get_current_context ().getValue ();
-      c->memory->ConcreteMemory::output_text (cout);
+      last_context =  ctxt->get_current_context ().getValue ();
+      last_context->memory->ConcreteMemory::output_text (cout);
       cout << endl;
 
       ATF_REQUIRE (simulation_can_continue);
@@ -124,7 +115,16 @@ s_simulate (const char *filename)
 	}
     }
 
-  if (nominal_entrypoint)
+  ATF_REQUIRE (last_context != NULL);
+  
+  ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
+  ATF_REQUIRE (last_context->memory->is_defined (exception_handling_addr));
+  
+  ConcreteValue check_exception = 
+    last_context->memory->get (exception_handling_addr, 1, 
+			       arch.get_reference_arch ()->endianness);
+
+  if (! check_exception.get ())
     {
       ATF_REQUIRE (lastaddr.getLocal () == 0);
       ATF_REQUIRE (lastaddr.getGlobal () == FAILURE_ADDR ||

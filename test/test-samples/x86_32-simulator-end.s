@@ -14,4 +14,3 @@ ok2:
 error:  
 	jmp error
 
-	
