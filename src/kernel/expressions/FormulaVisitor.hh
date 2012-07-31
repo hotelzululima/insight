@@ -31,7 +31,6 @@
 #ifndef KERNEL_EXPRESSIONS_FORMULAVISITOR_HH
 #define KERNEL_EXPRESSIONS_FORMULAVISITOR_HH
 
-
 class Constant; 
 class Variable; 
 class UnaryApp; 

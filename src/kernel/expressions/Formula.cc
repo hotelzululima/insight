@@ -41,6 +41,10 @@
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/expressions/FormulaReplaceSubtermRule.hh>
+#include <kernel/expressions/BottomUpRewritePatternRule.hh>
+#include <kernel/expressions/FunctionRewritingRule.hh>
+#include <kernel/expressions/FormulaRewritingFunctions.hh>
 #include <utils/infrastructure.hh>
 #include <utils/tools.hh>
 
@@ -579,33 +583,27 @@ bool Formula::bottom_up_apply_in_place(Formula **phi, FormulaReplacingRule *r)
     }
 }
 
-/*****************************************************************************/
-
-class FormulaReplaceSubtermRule : public FormulaReplacingRule
+bool 
+Formula::bottom_up_apply_in_place (Formula **phi, FormulaRewritingRule *r)
 {
+  (*phi)->acceptVisitor (r);
+  Formula *new_phi = r->get_result ();
+  (*phi)->deref ();
+  bool result = (*phi != new_phi);
+  *phi = new_phi;
 
-public:
-  const Formula *pattern;
-  const Formula *value;
+  return result;
+}
 
-  Formula *f(const Formula *phi)
-  {
-    if (phi->is_Expr())
-      {
-        if (phi == pattern) 
-	  return (Formula *) value->ref ();
-      }
-    return (Formula *) phi->ref ();
-  }
-};
+/*****************************************************************************/
 
 Formula * 
 Formula::replace_subterm (const Formula *pattern, const Formula *value) const
 {
-  FormulaReplaceSubtermRule r;
-  r.pattern = pattern;
-  r.value = value;
-  return bottom_up_apply (&r);
+  FormulaReplaceSubtermRule r (pattern, value);
+  acceptVisitor (&r);
+
+  return r.get_result ();
 }
 
 /*****************************************************************************/
@@ -613,10 +611,7 @@ Formula::replace_subterm (const Formula *pattern, const Formula *value) const
 Formula * 
 Formula::replace_variable (const Variable *v, const Formula *value) const
 {
-  FormulaReplaceSubtermRule r;
-  r.pattern = v;
-  r.value = value;
-  return bottom_up_apply (&r);
+  return replace_subterm (v, value);
 }
 
 Formula * 
@@ -633,62 +628,24 @@ bool
 Formula::replace_variable_in_place(Formula **phi, const Variable *v, 
 				   const Formula *value)
 {
-  FormulaReplaceSubtermRule r;
-  r.pattern = v;
-  r.value = value;
-  try
-    {
-      Formula *new_phi = (*phi)->bottom_up_apply(&r);
-      (*phi)->deref ();
-      *phi = new_phi;
-      return true;
-    }
-  catch (NotApplicable &)
-    {
-      return false;
-    }
+  Formula *F = (*phi)->replace_variable (v, value);
+  bool result = (*phi != F);
+  (*phi)->deref ();
+  *phi = F;
+
+  return result;
 }
 
 /*****************************************************************************/
 
-class BURPRule : public FormulaReplacingRule
+bool 
+Formula::bottom_up_rewrite_pattern(const Formula *pattern, 
+				   const std::list<const Variable *> &free_variables,
+				   const Formula *value,
+				   Formula **phi)
 {
-public:
-  const Formula *pattern;
-  std::list<const Variable *> free_variables;
-  const Formula *value;
+  BottomUpRewritePatternRule r (pattern, free_variables, value);
 
-  Formula *f(const Formula *phi)
-  {
-    try
-      {
-	PatternMatching *vm = 
-	  this->pattern->pattern_matching(phi, free_variables);
-        Formula *value_cpy = (Formula *) this->value->ref ();
-        for (PatternMatching::const_iterator p = vm->begin(); p != vm->end(); 
-	     p++)
-          Formula::replace_variable_in_place (&value_cpy, p->first, p->second);
-	delete vm;
-
-        return value_cpy;
-      }
-    catch (Formula::PatternMatchingFailure &)
-      {
-        throw NotApplicable();
-      }
-  }
-};
-
-bool Formula::bottom_up_rewrite_pattern(const Formula *pattern, 
-					const std::list<const Variable *> &free_variables,
-                                        const Formula *value,
-                                        Formula **phi)
-{
-
-  BURPRule r;
-  r.pattern = pattern;
-  r.value = value;
-  r.free_variables = free_variables;
   return Formula::bottom_up_apply_in_place(phi, &r);
 }
 
@@ -804,561 +761,15 @@ vector<MemCell *> Formula::collect_all_memory_references() const
 }
 
 /*****************************************************************************/
-/* Simplification System                                                     */
-/*****************************************************************************/
 
-class RuleNotApplicableExc {};
-
-/*****************************************************************************/
-/* The following functions are rule of simplification of formula
- * They are applied in the Simplify0Rule class below and applied to terms
- * via the bottom up rewriting system. */
-/*****************************************************************************/
-
-/*! \brief Decide the syntaxic equality of two terms */
-static Formula * 
-SyntaxicEqualityRule(const Formula *phi)
-  throw (RuleNotApplicableExc)
+Formula * 
+Formula::simplify_level0 () const
 {
-  if (phi->is_Expr())
-    if (((Expr *) phi)->is_BinaryApp())
-      {
-        BinaryApp *ap = (BinaryApp *) phi;
-        if (ap->get_op() == EQ)
-          if (ap->get_arg1() == ap->get_arg2())
-            return Constant::create (1);
-      }
+  FunctionRewritingRule r (simplify_formula);
 
-  throw RuleNotApplicableExc();
-}
+  acceptVisitor (r);
 
-/*****************************************************************************/
-
-/*! \brief Simplify Expression */
-static Formula * 
-ExpressionSimplify(const Formula * phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_Expr()) {
-      Expr *e = ((Expr *) phi->ref ());
-      // \todo optim la copie est peut-etre inutile
-      if (Expr::simplify (&e))
-	return e;
-      e->deref ();
-  }
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-/*! \brief Compute the NOT operator on constant.
- *  \todo : Compute all constant operations. */
-static Formula * 
-NOTOperatorOnConstant(const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_Expr())
-    if (((Expr *) phi)->is_UnaryApp())
-      {
-        UnaryApp *un = (UnaryApp *) phi;
-        if (un->get_op() == NOT)
-          if (un->get_arg1()->is_Constant())
-            {
-              if (((Constant *) un->get_arg1())->get_val() == 0)
-                return Constant::create (1);
-              else
-                return Constant::create (0);
-            }
-      }
-
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-/*! \brief LNot Not Expr ---> Expr */
-static Formula * 
-Cancel_LNOT_NOT(const Formula *phi) 
-  throw (RuleNotApplicableExc)
-{
-  Formula * pattern = 
-    NegationFormula::create (UnaryApp::create(LNOT, Variable::create ("X")));
-  Formula * result = pattern->extract_v_pattern("X", phi);
-  pattern->deref ();
-  if (result != NULL) 
-    return result;
-  
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-/*! \brief Compute the Logical Negation operator on constant. */
-static Formula * 
-LogicNegationOperatorOnConstant(const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_NegationFormula()) {
-      try {
-          if (((NegationFormula *) phi)->get_neg()->try_eval_level0().getValue())
-            return Constant::create (0);
-          else
-            return Constant::create (1);
-      }
-      catch (OptionNoValueExc &) {}
-  }
-
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-/*! \brief Simplify the conjunctive formulae (checks which clauses can be computed) */
-static Formula *
-ConjunctionSimplification (const Formula *phi) 
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_ConjunctiveFormula())
-    {
-      ConjunctiveFormula *conj = (ConjunctiveFormula *) phi;
-      bool change = false;
-      vector<Formula *> new_clauses;
-      vector<Formula *>::const_iterator cl = conj->get_clauses().begin ();
-      vector<Formula *>::const_iterator end_cl = conj->get_clauses().end ();
-
-      for (; cl != end_cl; cl++)
-        {
-          if (find(new_clauses.begin(),
-		   new_clauses.end(), *cl) != new_clauses.end())
-            {
-              change = true;  // Cheap optimization
-              continue;
-            }
-
-          try
-            {
-              if ((*cl)->try_eval_level0().getValue())
-                {
-                  change = true;
-                  continue;
-                }
-              else
-                {
-                  return Constant::create (0);
-                }
-            }
-          catch (OptionNoValueExc &)   // eval_level0 did not work
-            {
-              new_clauses.push_back (*cl);
-            }
-        }
-
-      if (change)
-        {
-          if (new_clauses.size() >= 2)
-	    {
-	      for(vector<Formula *>::iterator cl = new_clauses.begin ();
-		  cl != new_clauses.end (); cl++)
-		(*cl) = (Formula *) (*cl)->ref ();
-
-	      return ConjunctiveFormula::create (new_clauses);
-	    }
-
-	  if (new_clauses.size() == 1)
-            {
-              return (Formula *) new_clauses[0]->ref ();
-            }
-          return Constant::create (1);
-        }
-    }
-
-  throw RuleNotApplicableExc();
-}
-
-
-/*****************************************************************************/
-
-/*! \brief Simplify the disjunctive formulae (checks which clauses can be computed) */
-static Formula *
-DisjunctionSimplification (const Formula *phi) 
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_DisjunctiveFormula())
-    {
-      DisjunctiveFormula *conj = (DisjunctiveFormula *) phi;
-      bool change = false;
-      vector<Formula *> new_clauses;
-      vector<Formula *>::const_iterator cl = conj->get_clauses().begin ();
-      vector<Formula *>::const_iterator end_cl = conj->get_clauses().end ();
-
-      for (; cl != end_cl; cl++)
-        {
-          if (find(new_clauses.begin(),
-		   new_clauses.end(), *cl) != new_clauses.end())
-            {
-              change = true;  // Cheap optimization
-              continue;
-            }
-
-          try
-            {
-              if ((*cl)->try_eval_level0().getValue())
-                {
-                  return Constant::create (1);
-                }
-              else
-                {
-                  change = true;
-                  continue;
-                }
-            }
-          catch (OptionNoValueExc &)
-            {
-              new_clauses.push_back (*cl);
-            }
-        }
-
-      if (change)
-        {
-          if (new_clauses.size() >= 2)
-	    {
-	      for(vector<Formula *>::iterator cl = new_clauses.begin ();
-		  cl != new_clauses.end (); cl++)
-		(*cl) = (Formula *) (*cl)->ref ();
-
-	      return DisjunctiveFormula::create (new_clauses);
-	    }
-
-          if (new_clauses.size() == 1)
-            {
-              return (Formula *) new_clauses[0]->ref ();
-            }
-          return Constant::create (0);
-        }
-    }
-
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-static Formula *
-AndAndRule (const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_ConjunctiveFormula())
-    {
-      const vector<Formula *> &conj_clauses = 
-	((ConjunctiveFormula *) phi)->get_clauses();
-      vector<Formula *>::const_iterator psi = conj_clauses.begin();
-
-      while (psi != conj_clauses.end() && !((*psi)->is_ConjunctiveFormula())) 
-	psi++;
-      if (psi != conj_clauses.end() && (*psi)->is_ConjunctiveFormula())
-        {
-	  vector<Formula *> new_clauses;     
-	  ConjunctiveFormula *int_phi = (ConjunctiveFormula *) * psi;
-
-          for (vector<Formula *>::const_iterator c = conj_clauses.begin(); 
-	       c != conj_clauses.end(); c++) {
-            if (c != psi)
-	      new_clauses.push_back ((Formula *)(*c)->ref ());
-	  }
-          // TODO			((ConjunctiveFormula*) phi)->get_clauses().erase(psi);
-
-          vector<Formula *> int_clauses = int_phi->get_clauses();
-          for (vector<Formula *>::iterator c = int_clauses.begin(); 
-	       c != int_clauses.end(); c++)
-            new_clauses.push_back ((Formula *)(*c)->ref ());
-
-          return ConjunctiveFormula::create (new_clauses);
-        }
-    }
-
-  throw RuleNotApplicableExc();
-}
-
-static Formula * 
-OrOrRule(const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_DisjunctiveFormula())
-    {
-      const vector<Formula *> &conj_clauses = 
-	((DisjunctiveFormula *) phi)->get_clauses();
-      vector<Formula *>::const_iterator psi = conj_clauses.begin();
-
-      while (psi != conj_clauses.end() && !((*psi)->is_DisjunctiveFormula())) 
-	psi++;
-      if (psi != conj_clauses.end() && (*psi)->is_DisjunctiveFormula())
-        {
-	  vector<Formula *> new_clauses;     
-	  DisjunctiveFormula *int_phi = (DisjunctiveFormula *) * psi;
-
-          for (vector<Formula *>::const_iterator c = conj_clauses.begin(); 
-	       c != conj_clauses.end(); c++) {
-            if (c != psi)
-	      new_clauses.push_back ((Formula *)(*c)->ref ());
-	  }
-          // TODO			((DisjunctiveFormula*) phi)->get_clauses().erase(psi);
-
-          vector<Formula *> int_clauses = int_phi->get_clauses();
-          for (vector<Formula *>::iterator c = int_clauses.begin(); 
-	       c != int_clauses.end(); c++)
-            new_clauses.push_back ((Formula *)(*c)->ref ());
-
-          return DisjunctiveFormula::create (new_clauses);
-        }
-    }
-
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-static Formula * 
-NotDecrease(const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_NegationFormula())
-    {
-      const Formula *neg = ((NegationFormula *) phi)->get_neg();
-
-      if (neg->is_NegationFormula())
-        return (Formula *)((NegationFormula *) neg)->get_neg()->ref ();
-
-      if (neg->is_ConjunctiveFormula())
-        {
-	  vector<Formula *> new_clauses;
-	  vector<Formula *>::const_iterator c = 
-	    ((ConjunctiveFormula *) neg)->get_clauses().begin ();
-	  vector<Formula *>::const_iterator end = 
-	    ((ConjunctiveFormula *) neg)->get_clauses().end ();
-
-          for (; c != end; c++) {
-	    Formula *cc = (Formula *)(*c)->ref ();
-            new_clauses.push_back (NegationFormula::create (cc));
-	  }
-
-          return DisjunctiveFormula::create (new_clauses);
-        }
-
-      if (neg->is_DisjunctiveFormula())
-        {
-	  vector<Formula *> new_clauses;
-	  vector<Formula *>::const_iterator c = 
-	    ((DisjunctiveFormula *) neg)->get_clauses().begin ();
-	  vector<Formula *>::const_iterator end = 
-	    ((DisjunctiveFormula *) neg)->get_clauses().end ();
-
-          for (; c != end; c++) {
-	    Formula *cc = (Formula *)(*c)->ref ();
-	    new_clauses.push_back (NegationFormula::create (cc));
-	  }
-
-          return ConjunctiveFormula::create (new_clauses);
-        }
-    }
-  throw RuleNotApplicableExc();
-}
-/*****************************************************************************/
-
-static Formula *
-DisjunctiveNormalFormRule(const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  try
-    {
-      return NotDecrease(phi);
-    }
-  catch (RuleNotApplicableExc &) {}
-
-  if (phi->is_ConjunctiveFormula())
-    {
-      const vector<Formula *> &conj_clauses = 
-	((ConjunctiveFormula *) phi)->get_clauses();
-      vector<Formula *>::const_iterator psi = conj_clauses.begin();
-
-      while (psi != conj_clauses.end() && !((*psi)->is_DisjunctiveFormula())) 
-	psi++;
-
-      if (psi != conj_clauses.end() && (*psi)->is_DisjunctiveFormula())
-        {
-	  vector<Formula *> new_clauses;
-          vector<Formula *> disj_clauses = 
-	    ((DisjunctiveFormula *)(*psi))->get_clauses();
-
-          for (vector<Formula *>::iterator disj_cl = disj_clauses.begin(); 
-	       disj_cl != disj_clauses.end(); disj_cl++)
-            {
-              vector<Formula *> new_conj_clauses;
-
-              new_conj_clauses.push_back ((Formula *)(*disj_cl)->ref ());
-
-              for (vector<Formula *>::const_iterator conj_cl = 
-		     conj_clauses.begin(); conj_cl != conj_clauses.end(); 
-		   conj_cl++) {
-                if (conj_cl != psi)
-                  new_conj_clauses.push_back ((Formula *)(*conj_cl)->ref ());
-	      }
-              new_clauses.push_back (ConjunctiveFormula::create (new_conj_clauses));
-            }
-
-          return DisjunctiveFormula::create (new_clauses);
-        }
-    }
-
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-static bool 
-PhiAndNotPhi(const vector<Formula *> &l)
-{
-  if (l.size() <= 1) return false;
-
-  vector<Formula *>::const_iterator phi = l.begin();
-  phi++;
-
-  for (; phi != l.end(); phi++)
-    {
-      for (vector<Formula *>::const_iterator psi = l.begin(); psi != phi; psi++)
-        {
-          if ((*psi)->is_NegationFormula())
-            if (((NegationFormula *)(*psi))->get_neg() == *phi)
-              return true;
-
-          if ((*phi)->is_NegationFormula())
-            {
-              if (((NegationFormula *)(*phi))->get_neg() == *psi)
-                return true;
-            }
-        }
-    }
-  return false;
-}
-
-static Formula * 
-PhiAndNotPhiRule(const Formula *phi)
-  throw (RuleNotApplicableExc)
-{
-  if (phi->is_DisjunctiveFormula())
-    if (PhiAndNotPhi(((DisjunctiveFormula *) phi)->get_clauses()))
-      return Constant::create (1);
-
-  if (phi->is_ConjunctiveFormula())
-    if (PhiAndNotPhi(((ConjunctiveFormula *) phi)->get_clauses()))
-      return Constant::create (0);
-
-  throw RuleNotApplicableExc();
-}
-
-/*****************************************************************************/
-
-#define TRY_RULE(rule)                  \
-  try { return rule(phi); }             \
-  catch (RuleNotApplicableExc &) {}
-
-Formula * Simplify0(const Formula *phi)
-{
-  TRY_RULE(Cancel_LNOT_NOT);
-  TRY_RULE(ExpressionSimplify);
-  TRY_RULE(SyntaxicEqualityRule);
-  TRY_RULE(NOTOperatorOnConstant);
-  TRY_RULE(LogicNegationOperatorOnConstant);
-  TRY_RULE(ConjunctionSimplification);
-  TRY_RULE(DisjunctionSimplification);
-  TRY_RULE(PhiAndNotPhiRule);
-  TRY_RULE(AndAndRule);
-  TRY_RULE(OrOrRule);
-  throw RuleNotApplicableExc();
-}
-
-#undef TRY_RULE
-/*****************************************************************************/
-
-class RuleApplicationWithChangeDetection : public FormulaReplacingRule
-{
-private:
-  Formula * (*the_rule) (const Formula *);
-
-
-public:
-
-  bool changed;
-
-  RuleApplicationWithChangeDetection(const RuleApplicationWithChangeDetection &r) 
-    : FormulaReplacingRule(), the_rule (r.the_rule), changed(r.changed)
-  {
-  }
-
-  RuleApplicationWithChangeDetection(Formula * (*rule) (const Formula *)) : 
-    the_rule (rule), changed(false)
-  {
-  }
-
-  Formula *f(const Formula *phi) 
-  {
-    bool old_changed = changed;
-    changed = true;
-    try { return the_rule(phi); }
-    catch (RuleNotApplicableExc &) {}
-    changed = old_changed;
-    return (Formula *) phi->ref ();
-  }
-
-};
-
-/*****************************************************************************/
-
-static bool 
-apply_rule_in_place(RuleApplicationWithChangeDetection &r, Formula **phi)
-{
-  bool global_changed = false;
-
-  // Apply and apply again until no rule is applicable
-  do {
-    r.changed = false;
-    Formula *simplified = (*phi)->bottom_up_apply (&r);
-    (*phi)->deref ();
-    *phi = simplified;
-    global_changed = global_changed || r.changed;
-  }
-  while (r.changed);
-
-  return global_changed;
-}
-
-/*****************************************************************************/
-
-static Formula *
-apply_rule(RuleApplicationWithChangeDetection &r, const Formula * phi)
-{
-  Formula *copy = phi->ref ();
-
-  // Apply and apply again until no rule is applicable
-  do 
-    {
-      r.changed = false;
-      Formula *new_copy = copy->bottom_up_apply (&r);
-      copy->deref ();
-      copy = new_copy;
-    } 
-  while (r.changed);
-
-  return copy;
-}
-
-/*****************************************************************************/
-
-#define Simplify0Rule RuleApplicationWithChangeDetection(Simplify0)
-
-Formula * Formula::simplify_level0() const
-{
-  RuleApplicationWithChangeDetection r(Simplify0);
-
-  return apply_rule (r, this);
+  return r.get_result();
 }
 
 /*****************************************************************************/
@@ -1366,9 +777,12 @@ Formula * Formula::simplify_level0() const
 
 bool Formula::simplify_level0(Formula **phi)
 {
-  RuleApplicationWithChangeDetection r(Simplify0);
+  Formula *new_phi = (*phi)->simplify_level0 ();
+  int result = (new_phi != *phi);
+  (*phi)->deref ();
+  *phi = new_phi;
 
-  return apply_rule_in_place(r, phi);
+  return result;
 }
 
 /*****************************************************************************/
@@ -1376,9 +790,13 @@ bool Formula::simplify_level0(Formula **phi)
 bool Formula::disjunctive_normal_form(Formula **phi)
 {
   Formula::simplify_level0(phi);
-  RuleApplicationWithChangeDetection r(DisjunctiveNormalFormRule);
-  bool result = apply_rule_in_place (r, phi);
-  Formula::simplify_level0(phi);
+  FunctionRewritingRule r (disjunctive_normal_form_rule);
+  (*phi)->acceptVisitor (r);
+  Formula *new_phi = r.get_result ();
+  bool result = (*phi == new_phi);
+  (*phi)->deref ();
+  *phi = new_phi;
+  Formula::simplify_level0 (phi);
 
   return result;
 }
@@ -1533,8 +951,10 @@ string QuantifiedFormula::pp(std::string prefix) const
   return oss.str();
 }
 
-/*****************************************************************************/
-/*****************************************************************************/
+//
+// FORMULA SHARING
+//
+
 size_t 
 Formula::Hash::operator()(const Formula *const &F) const 
 {
@@ -1596,7 +1016,21 @@ Formula::find_or_add_formula (Formula *F)
   return F;
 }
 
-			/* --------------- */
+//
+// VISITORS 
+//
+
+void 
+Formula::acceptVisitor (FormulaVisitor &visitor)
+{
+  acceptVisitor (&visitor);
+}
+
+void 
+Formula::acceptVisitor (ConstFormulaVisitor &visitor) const
+{
+  acceptVisitor (&visitor);
+}
 
 void 
 BooleanConstantFormula::acceptVisitor (FormulaVisitor *visitor) 

@@ -65,6 +65,10 @@ kernel_source = \
 	kernel/annotations/GenericAnnotation.hh \
 	kernel/annotations/FormulaAnnotation.cc \
 	kernel/annotations/FormulaAnnotation.hh \
+	kernel/expressions/FunctionRewritingRule.hh \
+	kernel/expressions/FunctionRewritingRule.cc \
+	kernel/expressions/BottomUpRewritePatternRule.hh 	\
+	kernel/expressions/BottomUpRewritePatternRule.cc 	\
 	kernel/expressions/ConditionalSet.cc 	\
 	kernel/expressions/ConditionalSet.hh	\
 	kernel/expressions/ExprLexer.hh 	\
@@ -73,6 +77,12 @@ kernel_source = \
 	kernel/expressions/Formula.cc     	\
 	kernel/expressions/Formula.hh     	\
 	kernel/expressions/FormulaVisitor.hh	\
+	kernel/expressions/FormulaRewritingFunctions.hh	\
+	kernel/expressions/FormulaRewritingFunctions.cc	\
+	kernel/expressions/FormulaRewritingRule.hh	\
+	kernel/expressions/FormulaRewritingRule.cc	\
+	kernel/expressions/FormulaReplaceSubtermRule.hh	\
+	kernel/expressions/FormulaReplaceSubtermRule.cc	\
 	kernel/expressions/Operators.cc   	\
 	kernel/expressions/Operators.def  	\
 	kernel/expressions/Operators.hh   	\

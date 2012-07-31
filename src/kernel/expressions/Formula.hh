@@ -32,6 +32,7 @@
 
 #include <kernel/Annotation.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
+#include <kernel/expressions/FormulaRewritingRule.hh>
 #include <utils/Object.hh>
 #include <utils/option.hh>
 #include <utils/infrastructure.hh>
@@ -104,6 +105,8 @@ public:
   static void init ();
   static void terminate ();
   
+  virtual void acceptVisitor (FormulaVisitor &visitor);
+  virtual void acceptVisitor (ConstFormulaVisitor &visitor) const;
   virtual void acceptVisitor (FormulaVisitor *visitor) = 0;
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const = 0;
 
@@ -223,6 +226,7 @@ public:
    * returns true iff there has been indeed some application of the rule; i.e. if
    * at some point the application of the rule did not raise a NotApplicable exception. */
   static bool bottom_up_apply_in_place(Formula **phi, FormulaReplacingRule *r);
+  static bool bottom_up_apply_in_place(Formula **phi, FormulaRewritingRule *r);
 
   /*****************************************************************************/
 
@@ -408,6 +412,12 @@ public:
   virtual Operands get_operands_copy () const;
 
   virtual const Operands &get_operands () const;
+  virtual OperandsConstIterator const_operands_begin () const {
+    return get_operands().begin ();
+  }
+  virtual  OperandsConstIterator const_operands_end () const {
+    return get_operands().end ();
+  }
 
   virtual std::string pp (std::string prefix = "") const = 0;
 
@@ -422,14 +432,15 @@ public:
   pattern_matching(const Formula *e, 
 		   const std::list<const Variable *> &free_variables) const;
 
+  virtual NaryBooleanFormula *
+  create_from_operands (const Operands &ops) const = 0;
+
 protected:
   NaryBooleanFormula (Formula *op);
   NaryBooleanFormula (Formula *op1, Formula *op2);
   NaryBooleanFormula (const Operands &args);
   virtual ~NaryBooleanFormula ();
 
-  virtual NaryBooleanFormula *
-  create_from_operands (const Operands &ops) const = 0;
 private:  
   Operands ops;
 };
@@ -453,13 +464,13 @@ public:
 
   virtual const std::vector<Formula *> &get_clauses() const;
 
+  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
+
 private:
   ConjunctiveFormula (Formula *op1, Formula *op2);
 
   ConjunctiveFormula (const Operands &args);
   virtual ~ConjunctiveFormula ();
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
 };
 
 /*****************************************************************************/
@@ -483,14 +494,14 @@ public:
 
   virtual const std::vector<Formula *> &get_clauses() const;
 
+  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
+
 private:
   DisjunctiveFormula (Formula *op1, Formula *op2);
 
   DisjunctiveFormula (const Operands &args);
 
   virtual ~DisjunctiveFormula();
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
 };
 
 /*****************************************************************************/
@@ -510,12 +521,12 @@ public:
 
   virtual bool has_type_of (const Formula *F) const;
 
+  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
+
 private:
   NegationFormula (Formula *phi);
 
   virtual ~NegationFormula();
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
 };
 
 /*****************************************************************************/
@@ -549,13 +560,13 @@ public:
   pattern_matching(const Formula *e, 
 		   const std::list<const Variable *> &free_variables) const;
 
+  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
+  
 private:
   QuantifiedFormula (bool exist, Variable *var, Formula *phi);
 
 protected:
   virtual ~QuantifiedFormula ();
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
 
   bool exist;
 };
@@ -572,7 +583,7 @@ protected:
  *****************************************************************************/
 class FormulaReplacingRule   /* abstract */
 {
-
+  
 public:
 
   /*! \brief virtual destructor definition for abstract class */
