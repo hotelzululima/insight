@@ -40,8 +40,9 @@
 
 #include <kernel/insight.hh>
 
-#include <loaders/LoaderFactory.hh>
 #include <decoders/binutils/BinutilsDecoder.hh>
+#include <loaders/LoaderFactory.hh>
+#include <loaders/microcode/xml_microcode_generator.hh>
 
 #include "linearsweep.hh"
 
@@ -324,9 +325,7 @@ main (int argc, char *argv[])
     mc->toDot(*output);
   else if (output_format == "xml")
     {
-      cerr << prog_name
-	   << ": error: '" << output_format << "' format is not yet implemented" << endl;
-      usage(EXIT_FAILURE);
+      *output << xml_of_microcode(mc);
     }
   else
     {
