@@ -143,15 +143,8 @@ ATF_TEST_CASE_BODY (check_tautologies)
 static Formula *
 s_replace (Formula *F, Formula *P, Formula *V)
 {
-  Formula *result;
-  try
-    {
-      result = FormulaUtils::replace_subterm (F, P, V);
-    }
-  catch (NotApplicable &)
-    {
-      result = F->ref ();
-    }
+  Formula *result = FormulaUtils::replace_subterm (F, P, V);
+
   F->deref ();
   P->deref ();
   V->deref ();

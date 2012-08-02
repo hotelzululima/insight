@@ -32,6 +32,4 @@
 
 # include <utils/Log.hh>
 
-class NotApplicable {};
-
 #endif /* UTILS_INFRASTRUCTURE_HH */

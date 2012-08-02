@@ -30,20 +30,14 @@
 #ifndef KERNEL_EXPRESSIONS_FORMULA_HH
 #define KERNEL_EXPRESSIONS_FORMULA_HH
 
-#include <kernel/Annotation.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
-#include <kernel/expressions/FormulaRewritingRule.hh>
 #include <utils/Object.hh>
 #include <utils/option.hh>
-#include <utils/infrastructure.hh>
 
-#include <cassert>
 #include <iostream>
-#include <list>
 #include <string>
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
 #include <vector>
+#include <tr1/unordered_set>
 
 /*****************************************************************************/
 /* ATTENTION CHANTIER -- ATTENTION CHANTIER -- ATTENTION CHANTIER            */

@@ -27,28 +27,15 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include "FormulaUtils.hh"
 #include <kernel/expressions/Formula.hh>
 
-#include <algorithm>
+#include <cassert>
 #include <iostream>
-#include <list>
-#include <map>
 #include <sstream>
-#include <tr1/unordered_map>
 #include <typeinfo>
 
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/FormulaVisitor.hh>
-#include <kernel/expressions/FormulaUtils.hh>
-#include <kernel/expressions/FormulaReplaceSubtermRule.hh>
-#include <kernel/expressions/BottomUpRewritePatternRule.hh>
-#include <kernel/expressions/FunctionRewritingRule.hh>
-
-#include <kernel/expressions/BottomUpApplyVisitor.hh>
-#include <utils/infrastructure.hh>
-#include <utils/tools.hh>
 
 using namespace std;
 

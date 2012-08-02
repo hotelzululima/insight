@@ -30,10 +30,7 @@
 #ifndef KERNEL_EXPRESSIONS_HH
 #define KERNEL_EXPRESSIONS_HH
 
-#include <map>
-#include <list>
 #include <string>
-#include <vector>
 
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/expressions/Formula.hh>
@@ -53,8 +50,6 @@ class LValue;     // --> Expr (Abstract)
 class MemCell;    // --> LValue
 class RegisterExpr;   // --> LValue
 // class BitIntLVal; // --> LValue (template)
-/*****************************************************************************/
-class TermReplacingRuleNd;
 /*****************************************************************************/
 
 /*****************************************************************************/
