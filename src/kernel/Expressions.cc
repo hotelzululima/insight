@@ -649,126 +649,139 @@ RegisterExpr::has_type_of (const Formula *F) const
 /* Pattern Matching                                                          */
 /*****************************************************************************/
 
-PatternMatching *
-Variable::pattern_matching(const Formula *e, 
-			  const std::list<const Variable *> &fv) const
-{
-  if (find(fv.begin(), fv.end(), this) != fv.end())
-    {
-      PatternMatching *matching = new PatternMatching();      
-      matching->set (this, e->ref ());
+// PatternMatching *
+// Variable::pattern_matching(const Formula *e, 
+// 			  const std::list<const Variable *> &fv) const
+// {
+//   if (find(fv.begin(), fv.end(), this) != fv.end())
+//     {
+//       PatternMatching *matching = new PatternMatching();      
+//       matching->set (this, e->ref ());
 
-      return matching;
-    }
+//       return matching;
+//     }
 
-  if (this == e)
-    return new PatternMatching ();
+//   if (this == e)
+//     return new PatternMatching ();
 
-  throw PatternMatchingFailure();
-}
+//   throw PatternMatchingFailure();
+// }
 
-PatternMatching *
-Constant::pattern_matching(const Formula *e, 
-			   const std::list<const Variable *> &) const
-{
-  const Constant *ce = dynamic_cast<const Constant *> (e);
+// PatternMatching *
+// Constant::pattern_matching(const Formula *e, 
+// 			   const std::list<const Variable *> &) const
+// {
+//   const Constant *ce = dynamic_cast<const Constant *> (e);
 
-  if (ce == NULL || 
-      get_bv_offset() != ce->get_bv_offset() || 
-      get_bv_size() != ce->get_bv_size() || 
-      this != ce)
-    throw PatternMatchingFailure();
+//   if (ce == NULL || 
+//       get_bv_offset() != ce->get_bv_offset() || 
+//       get_bv_size() != ce->get_bv_size() || 
+//       this != ce)
+//     throw PatternMatchingFailure();
 
-  return new PatternMatching ();
-}
+//   return new PatternMatching ();
+// }
 
-PatternMatching *
-UnaryApp::pattern_matching(const Formula *e, 
-			   const std::list<const Variable *> &fv) const
-{
-  const UnaryApp *ce = dynamic_cast<const UnaryApp *> (e);
+// PatternMatching *
+// UnaryApp::pattern_matching(const Formula *e, 
+// 			   const std::list<const Variable *> &fv) const
+// {
+//   const UnaryApp *ce = dynamic_cast<const UnaryApp *> (e);
 
-  if (ce != NULL && 
-      get_bv_offset () == ce->get_bv_offset () &&
-      get_bv_size () == ce->get_bv_size () &&
-      get_op () == ce->get_op ())
-    return get_arg1()->pattern_matching(ce->get_arg1 (), fv);
+//   if (ce != NULL && 
+//       get_bv_offset () == ce->get_bv_offset () &&
+//       get_bv_size () == ce->get_bv_size () &&
+//       get_op () == ce->get_op ())
+//     {
+//       PatternMatching *res = 
+// 	get_arg1()->pattern_matching(ce->get_arg1 (), fv);
+//       PatternMatching *res2 = 
+// 	PatternMatching::match (ce->get_arg1 (), get_arg1 (), fv);
+//       assert (res2->equal (res));
+//       delete res2;
 
-  throw PatternMatchingFailure();
-}
+//       return res;
+//     }
 
-PatternMatching *
-BinaryApp::pattern_matching(const Formula *e, 
-			    const std::list<const Variable *> &fv) const
-{
-  const BinaryApp *ce = dynamic_cast<const BinaryApp *> (e);
+//   throw PatternMatchingFailure();
+// }
 
-  if (ce != NULL && 
-      get_bv_offset () == ce->get_bv_offset () &&
-      get_bv_size () == ce->get_bv_size () &&
-      get_op () == ce->get_op ())
-    {
-      PatternMatching *pm1 = get_arg1()->pattern_matching(ce->get_arg1(), fv);
-      try
-	{
-	  PatternMatching *pm2 = 
-	    get_arg2()->pattern_matching(ce->get_arg2(), fv);
-	  pm1->merge (pm2);
-	  delete pm2;
+// PatternMatching *
+// BinaryApp::pattern_matching(const Formula *e, 
+// 			    const std::list<const Variable *> &fv) const
+// {
+//   const BinaryApp *ce = dynamic_cast<const BinaryApp *> (e);
 
-	  return pm1;
-	}
-      catch (PatternMatchingFailure &)
-	{
-	  delete pm1;
-	}
-    }
+//   if (ce != NULL && 
+//       get_bv_offset () == ce->get_bv_offset () &&
+//       get_bv_size () == ce->get_bv_size () &&
+//       get_op () == ce->get_op ())
+//     {
+//       PatternMatching *pm1 = get_arg1()->pattern_matching(ce->get_arg1(), fv);
+//       try
+// 	{
+// 	  PatternMatching *pm2 = 
+// 	    get_arg2()->pattern_matching(ce->get_arg2(), fv);
+// 	  pm1->merge (pm2);
+// 	  delete pm2;
 
-  throw PatternMatchingFailure ();
-}
+// 	  PatternMatching *res2 = 
+// 	    PatternMatching::match (e, this, fv);
+// 	  assert (res2->equal (pm1));
+// 	  delete res2;
 
-PatternMatching *
-TernaryApp::pattern_matching(const Formula *,
-			    const std::list<const Variable *> &) const
-{
-	 //XXX: need to implement this func
-  throw PatternMatchingFailure ();
-}
+// 	  return pm1;
+// 	}
+//       catch (PatternMatchingFailure &)
+// 	{
+// 	  delete pm1;
+// 	}
+//     }
+
+//   throw PatternMatchingFailure ();
+// }
+
+// PatternMatching *
+// TernaryApp::pattern_matching(const Formula *,
+// 			    const std::list<const Variable *> &) const
+// {
+// 	 //XXX: need to implement this func
+//   throw PatternMatchingFailure ();
+// }
 
 
-PatternMatching *
-MemCell::pattern_matching(const Formula *e, 
-			  const std::list<const Variable *> &fv) const
-{
-  const MemCell *ce = dynamic_cast<const MemCell *> (e);
+// PatternMatching *
+// MemCell::pattern_matching(const Formula *e, 
+// 			  const std::list<const Variable *> &fv) const
+// {
+//   const MemCell *ce = dynamic_cast<const MemCell *> (e);
 
-  if (ce != NULL && 
-      get_bv_offset() == ce->get_bv_offset() &&
-      get_bv_size() == ce->get_bv_size())
-    {
-      Expr *addr1 = get_addr();
-      Expr *addr2 = ce->get_addr();
+//   if (ce != NULL && 
+//       get_bv_offset() == ce->get_bv_offset() &&
+//       get_bv_size() == ce->get_bv_size())
+//     {
+//       Expr *addr1 = get_addr();
+//       Expr *addr2 = ce->get_addr();
 
-      return addr1->pattern_matching (addr2, fv);
-    }
-  throw PatternMatchingFailure ();
-}
+//       return addr1->pattern_matching (addr2, fv);
+//     }
+//   throw PatternMatchingFailure ();
+// }
 
-PatternMatching *
-RegisterExpr::pattern_matching(const Formula *e, 
-			   const std::list<const Variable *> &) const
-{
-  const RegisterExpr *ce = dynamic_cast<const RegisterExpr *> (e);
+// PatternMatching *
+// RegisterExpr::pattern_matching(const Formula *e, 
+// 			   const std::list<const Variable *> &) const
+// {
+//   const RegisterExpr *ce = dynamic_cast<const RegisterExpr *> (e);
 
-  if (ce == NULL || 
-      get_bv_offset() != ce->get_bv_offset() || 
-      get_bv_size() != ce->get_bv_size() || 
-      this != ce)
-    throw PatternMatchingFailure();
+//   if (ce == NULL || 
+//       get_bv_offset() != ce->get_bv_offset() || 
+//       get_bv_size() != ce->get_bv_size() || 
+//       this != ce)
+//     throw PatternMatchingFailure();
 
-  return new PatternMatching ();
-}
-
+//   return new PatternMatching ();
+// }
 
 /*****************************************************************************/
 /* Syntaxic equality of expressions                                          */

@@ -106,14 +106,15 @@ public:
     std::list<const Variable *> free_variables; 
 
     free_variables.push_back(X);
-    try {
-      PatternMatching * matchings = 
-	elt_def_pattern->pattern_matching(e, free_variables);
+    try 
+      {
+	PatternMatching * matchings = 
+	  PatternMatching::match (e, elt_def_pattern, free_variables);
 
-      assert (matchings->has (X));
-      add_elt ((Expr*) matchings->get (X)->ref ());
-      delete matchings;
-    } catch (Expr::PatternMatchingFailure &) {}
+	assert (matchings->has (X));
+	add_elt ((Expr*) matchings->get (X)->ref ());
+	delete matchings;
+      } catch (PatternMatching::Failure &) {}
     X->deref ();
     elt_def_pattern->deref ();
   }

@@ -52,12 +52,7 @@ BottomUpRewritePatternRule::rewrite (const Formula *phi)
   try
     {
       PatternMatching *vm = 
-	pattern->pattern_matching (phi, free_variables);
-      
-      PatternMatching *vm2 = 
 	PatternMatching::match (phi, pattern, free_variables);
-      assert (vm2->equal (vm));
-      delete vm2;
       
       
       Formula *value_cpy = (Formula *) value->ref ();
@@ -69,7 +64,7 @@ BottomUpRewritePatternRule::rewrite (const Formula *phi)
       
       result = value_cpy;
     }
-  catch (Formula::PatternMatchingFailure &)
+  catch (PatternMatching::Failure &)
     {
       result = phi->ref ();
     }

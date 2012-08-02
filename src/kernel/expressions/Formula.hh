@@ -85,7 +85,7 @@ class QuantifiedFormula;     // --> NaryBooleanFormula
 
 class FormulaReplacingRule;
 
-class PatternMatching;
+//class PatternMatching;
 
 /*****************************************************************************/
 /*! \brief This is the base class for encoding Logical formulae.
@@ -193,11 +193,11 @@ public:
   /* 'this' is the pattern. Each variable of it is matched into e.
    * if the matching does not work, it throws a PatternMatchingFailure
    * exception. */
-  class PatternMatchingFailure {};
+  //  class PatternMatchingFailure {};
 
-  virtual PatternMatching * 
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const = 0;
+  //  virtual PatternMatching * 
+  //  pattern_matching(const Formula *e, 
+  //		   const std::list<const Variable *> &free_variables) const = 0;
 
   /* return the matchin of var_id if 'this' matchs phi. Or NULL if 'this' does not match phi. */
   Formula * extract_v_pattern(std::string var_id, const Formula * phi) const;
@@ -296,9 +296,9 @@ public:
 
   virtual bool equal (const Formula *F) const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
 
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
@@ -330,9 +330,9 @@ public:
 
   virtual bool equal (const Formula *F) const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
 
   virtual NaryBooleanFormula *
   create_from_operands (const Operands &ops) const = 0;
@@ -458,9 +458,9 @@ public:
 
   virtual bool has_type_of (const Formula *F) const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
 
   virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
   

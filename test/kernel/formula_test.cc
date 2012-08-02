@@ -253,7 +253,8 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
 
   try
     {
-      PatternMatching *PM = pattern->pattern_matching (F, free_variables);
+      PatternMatching *PM = 
+	PatternMatching::match (F, pattern, free_variables);
 
       F->deref ();
 
@@ -286,7 +287,7 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       T->deref ();
       Z->deref ();
     }
-  catch(Formula::PatternMatchingFailure &)
+  catch(PatternMatching::Failure &)
     {
       ATF_FAIL ("pattern matching failure");
     }

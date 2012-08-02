@@ -195,7 +195,7 @@ public:
     if (E == F)
       result = new PatternMatching ();
     else 
-      throw Expr::PatternMatchingFailure();  
+      throw PatternMatching::Failure ();  
   }
 
   virtual void visit (const ConjunctiveFormula *E) {

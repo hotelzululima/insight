@@ -214,9 +214,9 @@ public:
 
   std::string pp(std::string prefix = "") const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 };
@@ -271,9 +271,9 @@ public:
   virtual unsigned int get_depth() const;
 
   std::string pp(std::string prefix = "") const;
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 };
@@ -319,9 +319,9 @@ public:
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 };
@@ -375,9 +375,9 @@ public:
   virtual unsigned int get_depth() const;
   std::string pp(std::string prefix = "") const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 };
@@ -417,11 +417,9 @@ public:
   virtual unsigned int get_depth() const;
   std::string pp(std::string prefix = "") const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e,
-      const std::list<const Variable *> &free_variables) const;
-
   // virtual PatternMatching *
+  // pattern_matching(const Formula *e,
+  //     const std::list<const Variable *> &free_variables) const;
 
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
@@ -491,9 +489,9 @@ public:
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
 
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
@@ -538,9 +536,9 @@ public:
 
   std::string pp(std::string prefix = "") const;
 
-  virtual PatternMatching *
-  pattern_matching(const Formula *e, 
-		   const std::list<const Variable *> &free_variables) const;
+  // virtual PatternMatching *
+  // pattern_matching(const Formula *e, 
+  // 		   const std::list<const Variable *> &free_variables) const;
 
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;

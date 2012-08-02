@@ -525,12 +525,14 @@ Formula::extract_v_pattern(std::string var_id, const Formula *phi) const
     {
       std::list<const Variable *> fv;
       fv.push_back(v);
-      PatternMatching *vm = this->pattern_matching(phi, fv);
+      PatternMatching *vm = 
+	PatternMatching::match (phi, this, fv);
+      //this->pattern_matching(phi, fv);
       if (vm->has (v))
 	result = (Formula *) vm->get (v)->ref ();
       delete vm;
     }
-  catch (Expr::PatternMatchingFailure &) {}      // TODO: PatternMatchingFailure should be defined somewhere else than in Expr  
+  catch (PatternMatching::Failure &) {}      // TODO: PatternMatchingFailure should be defined somewhere else than in Expr  
   v->deref ();
 
   return result;
@@ -539,72 +541,72 @@ Formula::extract_v_pattern(std::string var_id, const Formula *phi) const
 
 /*****************************************************************************/
 
-PatternMatching *
-BooleanConstantFormula::pattern_matching(const Formula *e, 
-					 const std::list<const Variable *> &) const
-{
-  if (this == e)
-    return new PatternMatching ();
+// PatternMatching *
+// BooleanConstantFormula::pattern_matching(const Formula *e, 
+// 					 const std::list<const Variable *> &) const
+// {
+//   if (this == e)
+//     return new PatternMatching ();
 
-  throw Expr::PatternMatchingFailure();
-}
+//   throw Expr::PatternMatchingFailure();
+// }
 
-PatternMatching *
-NaryBooleanFormula::pattern_matching(const Formula *e, 
-				     const std::list<const Variable *> &free_variables) const
-{
-  if (! has_type_of (e))
-    throw Expr::PatternMatchingFailure();
+// PatternMatching *
+// NaryBooleanFormula::pattern_matching(const Formula *e, 
+// 				     const std::list<const Variable *> &free_variables) const
+// {
+//   if (! has_type_of (e))
+//     throw Expr::PatternMatchingFailure();
     
-  Operands clause1 = get_operands ();
-  Operands clause2 = ((NaryBooleanFormula *) e)->get_operands ();
+//   Operands clause1 = get_operands ();
+//   Operands clause2 = ((NaryBooleanFormula *) e)->get_operands ();
 
-  if (clause1.size() != clause2.size())
-    throw Expr::PatternMatchingFailure();
+//   if (clause1.size() != clause2.size())
+//     throw Expr::PatternMatchingFailure();
 
-  OperandsIterator c1 = clause1.begin();
-  OperandsIterator c2 = clause2.begin();
+//   OperandsIterator c1 = clause1.begin();
+//   OperandsIterator c2 = clause2.begin();
 
-  PatternMatching *matching = NULL;
+//   PatternMatching *matching = NULL;
 
-  try
-    {
-      matching = (*c1)->pattern_matching(*c2, free_variables);
-      for (c1++, c2++; c1 != clause1.end() && c2 != clause2.end(); c1++, c2++)
-	{
-	  PatternMatching *local_matching = 
-	    (*c1)->pattern_matching(*c2, free_variables);
-	  matching->merge (local_matching);
-	  delete local_matching;
-	}
-    }
-  catch (PatternMatchingFailure &)
-    {
-      if (matching != NULL)
-	delete matching;
-      throw;
-    }
+//   try
+//     {
+//       matching = (*c1)->pattern_matching(*c2, free_variables);
+//       for (c1++, c2++; c1 != clause1.end() && c2 != clause2.end(); c1++, c2++)
+// 	{
+// 	  PatternMatching *local_matching = 
+// 	    (*c1)->pattern_matching(*c2, free_variables);
+// 	  matching->merge (local_matching);
+// 	  delete local_matching;
+// 	}
+//     }
+//   catch (PatternMatchingFailure &)
+//     {
+//       if (matching != NULL)
+// 	delete matching;
+//       throw;
+//     }
   
-  return matching;
-}
+//   return matching;
+// }
 
-PatternMatching *
-QuantifiedFormula::pattern_matching (const Formula *e, 
-				     const std::list<const Variable *> &free_variables) const
-{
-  const QuantifiedFormula *qf = dynamic_cast<const QuantifiedFormula *> (e);
+// PatternMatching *
+// QuantifiedFormula::pattern_matching (const Formula *e, 
+// 				     const std::list<const Variable *> &free_variables) const
+// {
+//   const QuantifiedFormula *qf = dynamic_cast<const QuantifiedFormula *> (e);
 
-  if (qf == NULL || qf->is_exist () != is_exist ())
-    throw Expr::PatternMatchingFailure();
+//   if (qf == NULL || qf->is_exist () != is_exist ())
+//     throw Expr::PatternMatchingFailure();
 
-  if (get_variable() != qf->get_variable())
-    throw Expr::PatternMatchingFailure();
+//   if (get_variable() != qf->get_variable())
+//     throw Expr::PatternMatchingFailure();
 
-  PatternMatching *res =
-    get_body()->pattern_matching (qf->get_body(), free_variables);
+//   PatternMatching *res =
+//     get_body()->pattern_matching (qf->get_body(), free_variables);
 
-  return res;
-}
+//   return res;
+// }
 
 
 /*****************************************************************************/
