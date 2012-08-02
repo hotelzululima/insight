@@ -27,7 +27,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
+#include "FormulaUtils.hh"
 #include <kernel/expressions/Formula.hh>
 
 #include <algorithm>
@@ -41,10 +41,12 @@
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/expressions/FormulaUtils.hh>
 #include <kernel/expressions/FormulaReplaceSubtermRule.hh>
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 #include <kernel/expressions/FunctionRewritingRule.hh>
-#include <kernel/expressions/FormulaRewritingFunctions.hh>
+
+#include <kernel/expressions/BottomUpApplyVisitor.hh>
 #include <utils/infrastructure.hh>
 #include <utils/tools.hh>
 
@@ -513,143 +515,6 @@ QuantifiedFormula::hash () const
 }
 
 /*****************************************************************************/
-/* Bottom Up Replacing                                                       */
-/*****************************************************************************/
-
-Formula *
-BooleanConstantFormula::bottom_up_apply (FormulaReplacingRule *r) const
-  throw (NotApplicable)
-{
-  return r->f(this);
-}
-
-Formula *
-NaryBooleanFormula::bottom_up_apply (FormulaReplacingRule *r) const
-  throw (NotApplicable)
-{
-  bool applied = false;
-  Operands new_ops;
-
-  for (OperandsConstIterator it = ops.begin(); it != ops.end(); it++)
-    {
-      Formula *new_f;
-
-      try
-	{
-	  new_f = (*it)->bottom_up_apply (r);
-	  applied = true;
-	}
-      catch (NotApplicable &) 
-	{
-	  new_f = (Formula *) (*it)->ref ();
-	}
-      new_ops.push_back (new_f);
-    }
-  
-  Formula *tmp = create_from_operands (new_ops);
-  Formula *result = NULL;
-
-  try
-    {
-      result = r->f (tmp);
-    }
-  catch (NotApplicable &)
-    {
-      if (applied) 
-	result = (Formula *) tmp->ref ();
-    }
-  tmp->deref ();
-
-  if (result == NULL)
-    throw NotApplicable();
-
-  return result;
-}
-
-/*****************************************************************************/
-
-bool Formula::bottom_up_apply_in_place(Formula **phi, FormulaReplacingRule *r)
-{
-  try
-    {
-      Formula *new_phi = (*phi)->bottom_up_apply (r);
-      (*phi)->deref ();
-      *phi = new_phi;
-      return true;
-    }
-  catch (NotApplicable &)
-    {
-      return false;
-    }
-}
-
-bool 
-Formula::bottom_up_apply_in_place (Formula **phi, FormulaRewritingRule *r)
-{
-  (*phi)->acceptVisitor (r);
-  Formula *new_phi = r->get_result ();
-  (*phi)->deref ();
-  bool result = (*phi != new_phi);
-  *phi = new_phi;
-
-  return result;
-}
-
-/*****************************************************************************/
-
-Formula * 
-Formula::replace_subterm (const Formula *pattern, const Formula *value) const
-{
-  FormulaReplaceSubtermRule r (pattern, value);
-  acceptVisitor (&r);
-
-  return r.get_result ();
-}
-
-/*****************************************************************************/
-
-Formula * 
-Formula::replace_variable (const Variable *v, const Formula *value) const
-{
-  return replace_subterm (v, value);
-}
-
-Formula * 
-Formula::replace_variable (string v_id, const Formula *value) const
-{
-  Variable *v = Variable::create (v_id);
-  Formula *result = replace_variable (v, value);
-  v->deref ();
-
-  return result;
-}
-
-bool 
-Formula::replace_variable_in_place(Formula **phi, const Variable *v, 
-				   const Formula *value)
-{
-  Formula *F = (*phi)->replace_variable (v, value);
-  bool result = (*phi != F);
-  (*phi)->deref ();
-  *phi = F;
-
-  return result;
-}
-
-/*****************************************************************************/
-
-bool 
-Formula::bottom_up_rewrite_pattern(const Formula *pattern, 
-				   const std::list<const Variable *> &free_variables,
-				   const Formula *value,
-				   Formula **phi)
-{
-  BottomUpRewritePatternRule r (pattern, free_variables, value);
-
-  return Formula::bottom_up_apply_in_place(phi, &r);
-}
-
-/*****************************************************************************/
 
 Formula * 
 Formula::extract_v_pattern(std::string var_id, const Formula *phi) const
@@ -735,71 +600,12 @@ QuantifiedFormula::pattern_matching (const Formula *e,
   if (get_variable() != qf->get_variable())
     throw Expr::PatternMatchingFailure();
 
-  return get_body()->pattern_matching (qf->get_body(), free_variables);
+  PatternMatching *res =
+    get_body()->pattern_matching (qf->get_body(), free_variables);
+
+  return res;
 }
 
-/*****************************************************************************/
-
-class CollectMemCell : public FormulaReplacingRule
-{
-public:
-  vector < MemCell * > mem_cells;
-  Formula *f(const Formula *phi)
-  {
-    if (phi->is_Expr())
-      if (((Expr *) phi)->is_MemCell())
-        mem_cells.push_back((MemCell *) phi);
-    return (Formula *) phi->ref ();
-  }
-};
-
-vector<MemCell *> Formula::collect_all_memory_references() const
-{
-  CollectMemCell collector;
-  bottom_up_apply (&collector);
-  return collector.mem_cells;
-}
-
-/*****************************************************************************/
-
-Formula * 
-Formula::simplify_level0 () const
-{
-  FunctionRewritingRule r (simplify_formula);
-
-  acceptVisitor (r);
-
-  return r.get_result();
-}
-
-/*****************************************************************************/
-
-
-bool Formula::simplify_level0(Formula **phi)
-{
-  Formula *new_phi = (*phi)->simplify_level0 ();
-  int result = (new_phi != *phi);
-  (*phi)->deref ();
-  *phi = new_phi;
-
-  return result;
-}
-
-/*****************************************************************************/
-
-bool Formula::disjunctive_normal_form(Formula **phi)
-{
-  Formula::simplify_level0(phi);
-  FunctionRewritingRule r (disjunctive_normal_form_rule);
-  (*phi)->acceptVisitor (r);
-  Formula *new_phi = r.get_result ();
-  bool result = (*phi == new_phi);
-  (*phi)->deref ();
-  *phi = new_phi;
-  Formula::simplify_level0 (phi);
-
-  return result;
-}
 
 /*****************************************************************************/
 

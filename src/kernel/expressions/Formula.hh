@@ -163,14 +163,6 @@ public:
    *  - compute expression when possible (\todo: not complete, at the moment: just NOT operator)
    *  - delete trivial clauses in conjunction and disjunction.
    */
-  Formula * simplify_level0() const;
-
-  /* do it in place, return true if there has been a simplification */
-  static bool simplify_level0(Formula **phi);
-
-  /* Puts the formula into the form \/ /\ \phi_i */
-  static bool disjunctive_normal_form(Formula **phi);
-
   /*! \brief simple syntaxic evaluation: try to transform a true
       formula into a bool. */
   Option<bool> try_eval_level0() const;
@@ -195,85 +187,6 @@ public:
 
   virtual bool has_type_of (const Formula *) const { return false; };
 
-  /*****************************************************************************/
-  // Rewriting tools
-  /*****************************************************************************/
-
-  /*! \brief bottom-up application of formula transformation rule. The
-   *  rule is applied recursively from bottom leaves to top.
-   *
-   *  \param r contains a rule of formula transformation (see
-   *  FormulaReplacingRule class).
-   *  \return the new address of the formula after replacement. Note that
-   *  this address may be the same as the current instance.
-   *
-   *  \remark The function does the replacement in place. This means
-   *  that the current instance of expression is a priori
-   *  modified. However, the function returns the new address of the
-   *  formula, because, if the type of the root of the formula (the top)
-   *  change, a new allocation must be done. This behaviour is
-   *  designed for efficiency, saving memory re-allocations as much as
-   *  possible.
-   *
-   *  \todo a non destructive bottom_up_apply function with duplication. */
-  virtual Formula *bottom_up_apply (FormulaReplacingRule *r) const
-    throw (NotApplicable) = 0;
-
-  /* The parameter e points to the location where is the formula. The function
-   * may modify the location of the expression resulting, and so the ** is
-   * necessary.
-   *
-   * returns true iff there has been indeed some application of the rule; i.e. if
-   * at some point the application of the rule did not raise a NotApplicable exception. */
-  static bool bottom_up_apply_in_place(Formula **phi, FormulaReplacingRule *r);
-  static bool bottom_up_apply_in_place(Formula **phi, FormulaRewritingRule *r);
-
-  /*****************************************************************************/
-
-  /*! \brief Replace a subterm pattern in place (by using bottom_up_apply_in_place function).
-   *  \param pattern The subterm to be replaced.
-   *  \param value The value to be put in place of v.
-   *  \return the new address of the term after replacement. Note that
-   *  this address may be the same as the current instance.
-   *
-   *  \todo : faire pareil pour les termes
-   */
-  Formula *replace_subterm (const Formula *pattern, const Formula *value) const;
-
-  /*! \brief Replace variable in place (by using bottom_up_apply_in_place function).
-   *  \param v The variable to be replaced.
-   *  \param value The value to be put in place of v.
-   *  \return the new address of the term after replacement. Note that
-   *  this address may be the same as the current instance.
-   *
-   *  Caution: if the variable is quantified, then value must be also
-   *  a variable.
-   */
-  Formula *replace_variable (const Variable *v, const Formula *value) const;
-  static bool replace_variable_in_place(Formula **phi, const Variable *v, 
-					const Formula *value);
-
-  /*! \brief Replace variable in place (by using bottom_up_apply_in_place function).
-   *  \param v The variable to be replaced defined by its identifier.
-   *  \param value The value to be put in place of v.
-   *  \return the new address of the term after replacement. Note that
-   *  this address may be the same as the current instance.
-   *
-   *  Caution: if the variable is quantified, then value must be also
-   *  a variable.
-   */
-  Formula *replace_variable (std::string v_id, const Formula *value) const;
-
-  /*! \brief Replace a pattern pattern by a term value into phi. Pattern contains
-   *  some free variables (defined by the list free_variables), which are matched
-   *  into phi if possible. These variables are then replaced into value by the
-   *  matching terms. Then value is glued in place of pattern into phi.
-   *
-   *  The operation is done anywhere it is possible in phi by a bottom up process. */
-  static bool bottom_up_rewrite_pattern(const Formula *pattern,
-                                        const std::list<const Variable *> &free_variables,
-					const Formula * value,
-                                        Formula ** phi);
 
   /*****************************************************************************/
 
@@ -290,11 +203,6 @@ public:
   Formula * extract_v_pattern(std::string var_id, const Formula * phi) const;
 
   /*****************************************************************************/
-
-  /*! \brief Collect all the addresses of the pointers pointing to
-   *  memory references in the formula
-   *  TODO: tres specifique, a bouger probablement ailleurs */
-  std::vector<MemCell *> collect_all_memory_references() const;
 
   /*****************************************************************************/
 
@@ -384,9 +292,6 @@ public:
 
   virtual std::string pp(std::string prefix = "") const;
 
-  virtual Formula *bottom_up_apply (FormulaReplacingRule *r) const
-    throw (NotApplicable);
-
   virtual size_t hash () const;
 
   virtual bool equal (const Formula *F) const;
@@ -424,9 +329,6 @@ public:
   virtual size_t hash () const;
 
   virtual bool equal (const Formula *F) const;
-
-  virtual Formula *bottom_up_apply (FormulaReplacingRule *r) const
-    throw (NotApplicable);
 
   virtual PatternMatching *
   pattern_matching(const Formula *e, 
