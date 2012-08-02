@@ -77,6 +77,7 @@ usage (int status)
 	<< "  -d, --disas TYPE\tselect disassembler type" << endl
 	<< "  -l, --list\t\tlist all disassembly types" << endl
 	<< "  -e, --entrypoint ADDR\tforce entry point" << endl
+	<< "  -f, --format FMT\toutput format mc|dot|xml (default: mc)" << endl
 	<< "  -o, --output FILE\twrite output to FILE" << endl
 	<< "  -h, --help\t\tdisplay this help" << endl
 	<< "  -v, --verbose\t\tincrease verbosity level" << endl
@@ -110,12 +111,16 @@ main (int argc, char *argv[])
   int optc;
   string output_filename;
 
+  /* Default output format (_mc_, dot, xml) */
+  string output_format = "mc";
+
   /* Long options struct */
   struct option const
     long_opts[] = {
     {"disas", required_argument, NULL, 'd'},
     {"list", no_argument, NULL, 'l'},
     {"entrypoint", required_argument, NULL, 'e'},
+    {"format", required_argument, NULL, 'f'},
     {"output", required_argument, NULL, 'o'},
     {"help", no_argument, NULL, 'h'},
     {"verbose", no_argument, NULL, 'v'},
@@ -141,7 +146,7 @@ main (int argc, char *argv[])
 
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "ld:e:o:hvV", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "ld:e:f:o:hvV", long_opts, NULL)) != -1)
     switch (optc)
       {
       case 'd':		/* Select disassembly type */
@@ -163,7 +168,21 @@ main (int argc, char *argv[])
 	entrypoint = new ConcreteAddress(strtoul (optarg, NULL, 0));
 	break;
 
-      case 'o':		/* Output file */
+      case 'f':		/* Output file format */
+	output_format = string(optarg);
+
+	/* Checking if the format is known */
+	if ((output_format != "mc")  &&
+	    (output_format != "dot") &&
+	    (output_format != "xml"))
+	  {
+	    cerr << prog_name
+		 << ": error: '" << output_format << "' unknown format" << endl;
+	    usage(EXIT_FAILURE);
+	  }
+	break;
+
+      case 'o':		/* Output file name */
 	output_filename = string(optarg);
 	break;
 
@@ -233,7 +252,7 @@ main (int argc, char *argv[])
   }
 
   if (verbosity > 0)
-    *output << "Binary format: " << loader->get_format() << endl;
+    cout << "Binary format: " << loader->get_format() << endl;
 
   /* Getting the ConcreteMemory */
   ConcreteMemory * memory = loader->get_memory();
@@ -243,7 +262,7 @@ main (int argc, char *argv[])
     entrypoint = new ConcreteAddress(loader->get_entrypoint());
 
   if (verbosity > 0)
-    *output << "Entrypoint: 0x" << hex << *entrypoint << dec << endl;
+    cout << "Entrypoint: 0x" << hex << *entrypoint << dec << endl;
 
   /* Getting the decoder */
   MicrocodeArchitecture arch(loader->get_architecture());
@@ -256,7 +275,7 @@ main (int argc, char *argv[])
   if (disassembler == "linear")
     {
       if (verbosity > 0)
-	*output << "Starting linear sweep disassembler" << endl;
+	cout << "Starting linear sweep disassembler" << endl;
 
       mc = linearsweep(entrypoint, memory, decoder);
     }
@@ -299,7 +318,22 @@ main (int argc, char *argv[])
     }
 
   /* Displaying the microcode */
-  *output << mc->pp() << endl;
+  if (output_format == "mc")
+    *output << mc->pp() << endl;
+  else if (output_format == "dot")
+    mc->toDot(*output);
+  else if (output_format == "xml")
+    {
+      cerr << prog_name
+	   << ": error: '" << output_format << "' format is not yet implemented" << endl;
+      usage(EXIT_FAILURE);
+    }
+  else
+    {
+      cerr << prog_name
+	   << ": error: '" << output_format << "' unknown format" << endl;
+      usage(EXIT_FAILURE);
+    }
 
   /* Cleaning all from Insight */
   delete mc;

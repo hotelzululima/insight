@@ -57,5 +57,6 @@ linearsweep (const ConcreteAddress * entrypoint,
 	  exit(EXIT_FAILURE);
 	}
     }
+
   return mc;
 }
