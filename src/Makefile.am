@@ -78,6 +78,8 @@ kernel_source = \
 	kernel/expressions/ExprParser.yy 	\
 	kernel/expressions/Formula.cc     	\
 	kernel/expressions/Formula.hh     	\
+	kernel/expressions/FormulaUtils.hh	\
+	kernel/expressions/FormulaUtils.cc	\
 	kernel/expressions/FormulaVisitor.hh	\
 	kernel/expressions/FormulaRewritingFunctions.hh	\
 	kernel/expressions/FormulaRewritingFunctions.cc	\
