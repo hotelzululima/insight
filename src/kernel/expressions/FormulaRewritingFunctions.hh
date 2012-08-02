@@ -43,9 +43,6 @@ extern Formula *
 syntaxic_equality_rule (const Formula *phi);
   
 extern Formula * 
-expression_simplify (const Formula * phi);
-  
-extern Formula * 
 not_operator_on_constant (const Formula *phi);
   
 extern Formula * 
@@ -75,8 +72,23 @@ disjunctive_normal_form_rule (const Formula *phi);
 extern Formula * 
 phi_and_not_phi_rule (const Formula *phi);
   
+extern Formula *
+compute_constants (const Formula *phi);
+
+extern Formula *
+void_operations (const Formula *phi);
+
+extern Formula * 
+bit_field_computation (const Formula *phi);
+
+extern Formula * 
+binary_operations_simplification (const Formula *phi);
+
 extern Formula * 
 simplify_formula (const Formula *phi);
+
+extern Formula * 
+simplify_expr (const Formula *phi);
 
 
 #endif /* ! FORMULAREWRITINGFUNCTIONS_HH */
