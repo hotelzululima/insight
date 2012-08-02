@@ -38,6 +38,8 @@
 #include <utils/infrastructure.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/PatternMatching.hh>
+#include <kernel/expressions/BottomUpApplyVisitor.hh>
+#include <kernel/expressions/FormulaUtils.hh>
 
 using namespace std;
 
@@ -55,7 +57,7 @@ inline Expr *IsIn (const Expr *elt)
 
 void ConditionalSet::cs_simplify(Formula **set)
 {
-  Formula::simplify_level0(set);
+  FormulaUtils::simplify_level0 (set);
 }
 
 // ATTENTION CHANTIER CHANTIER CHANTIER
@@ -79,21 +81,24 @@ Formula * ConditionalSet::cs_condition_for_belonging (Formula * set, Expr *) {
 }
 
 
-class ExtractEltRule : public FormulaReplacingRule
+class ExtractEltRule : public ConstBottomUpApplyVisitor
 {
 public:
   std::vector<Expr *> elt_list;
-  void add_elt (Expr * e) {
+
+  void add_elt (Expr * e) 
+  {
     for (int i=0; i<(int) elt_list.size(); i++)
       if (e == elt_list[i]) 
 	{
 	  e->deref ();
 	  return;
 	}
-    elt_list.push_back(e);
+    elt_list.push_back (e);
   };
 
-  Formula * f(const Formula *e) {
+  void apply (const Formula *e) 
+  {
     Variable *X = Variable::create ("X"); 
     Formula * elt_def_pattern = 
       Formula::Equality((Expr *) ConditionalSet::EltSymbol (), 
@@ -111,8 +116,6 @@ public:
     } catch (Expr::PatternMatchingFailure &) {}
     X->deref ();
     elt_def_pattern->deref ();
-
-    throw NotApplicable();
   }
 };
 
@@ -120,7 +123,7 @@ std::vector<Expr*>
 ConditionalSet::cs_possible_values (const Formula *set) 
 {
   ExtractEltRule r;
-  try { set->bottom_up_apply (&r)->deref (); } catch (NotApplicable &) {};
+  set->acceptVisitor (r);
   return r.elt_list;
 }
 
@@ -143,8 +146,8 @@ Formula *
 ConditionalSet::cs_contains (const Formula *set, const Expr *elt)
 {
   Variable *eltsym = ConditionalSet::EltSymbol ();
-  Formula *new_set = set->replace_variable (eltsym, elt);  
-  Formula::simplify_level0 (&new_set);
+  Formula *new_set = FormulaUtils::replace_variable (set, eltsym, elt);  
+  FormulaUtils::simplify_level0 (&new_set);
   eltsym->deref ();
 
   return new_set;
@@ -165,7 +168,7 @@ bool ConditionalSet::cs_conditional_add(Formula *cond, Formula **set, Expr *elt)
   if (!ConditionalSet::cs_compute_contains(*set, elt))
     {
       Formula::add_disjunctive_clause(set, Formula::implies(cond, IsIn(elt)));
-      Formula::simplify_level0(set);
+      FormulaUtils::simplify_level0(set);
       return true;
     }
   else return false;
@@ -175,15 +178,15 @@ bool
 ConditionalSet::cs_conditional_union(Formula *cond, Formula **set1, 
 				     Formula *set2)
 {
-  Formula *tmp = Formula::implies(set2->ref (), (*set1)->ref ());
-  Formula *included = tmp->simplify_level0();
-  tmp->deref ();
+  Formula *included = Formula::implies(set2->ref (), (*set1)->ref ());
+
+  FormulaUtils::simplify_level0 (&included);
 
   if (!(included->eval_level0()))
     {
       included->deref ();
       Formula::add_disjunctive_clause(set1, Formula::implies(cond, set2));
-      Formula::simplify_level0(set1);
+      FormulaUtils::simplify_level0(set1);
 
       return true;
     }
@@ -199,7 +202,7 @@ ConditionalSet::cs_remove(Formula **set, const Expr *elt)
 {
   bool was_in = cs_compute_contains (*set, elt);
   Formula::add_conjunctive_clause (set, NegationFormula::create (IsIn (elt)));
-  Formula::simplify_level0 (set);
+  FormulaUtils::simplify_level0 (set);
 
   return was_in;
 }
@@ -212,7 +215,7 @@ ConditionalSet::cs_add(Formula **set, const Expr *elt)
   if (! result)
     {
       Formula::add_disjunctive_clause (set, IsIn (elt));
-      Formula::simplify_level0 (set);
+      FormulaUtils::simplify_level0 (set);
     }
 
   return result;
@@ -225,14 +228,13 @@ ConditionalSet::cs_union(Formula **set1, const Formula *set2)
 
   if (! result)
     {
-      Formula *tmp = Formula::implies (set2->ref (), (*set1)->ref ());
-      Formula *included = tmp->simplify_level0 ();
-      tmp->deref ();
+      Formula *included = Formula::implies (set2->ref (), (*set1)->ref ());
+      FormulaUtils::simplify_level0 (&included);
 
       if (! included->eval_level0 ())
 	{
 	  Formula::add_disjunctive_clause (set1, set2->ref ());
-	  Formula::simplify_level0(set1);
+	  FormulaUtils::simplify_level0(set1);
 	  result = true;
 	}
       included->deref ();
