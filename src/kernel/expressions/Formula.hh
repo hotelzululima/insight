@@ -473,28 +473,4 @@ protected:
   bool exist;
 };
 
-/*****************************************************************************/
-/*! \brief Term replacement rule
- *
- *  This class encloses formula transformation rules. To be used, this
- *  class must be implemented. For instance, look at
- *  FormulaReplaceVariableRule class.
- *
- *  Caution: The image of an Expr instance (an expression) must be
- *  also an Expr instance.
- *****************************************************************************/
-class FormulaReplacingRule   /* abstract */
-{
-  
-public:
-
-  /*! \brief virtual destructor definition for abstract class */
-  virtual ~FormulaReplacingRule() {};
-
-  /*! \brief The replacement function. This is the crucial point to be
-   *   implemented. */
-  virtual Formula *f(const Formula *) = 0;
-};
-
-
 #endif /* KERNEL_EXPRESSIONS_FORMULA_HH */
