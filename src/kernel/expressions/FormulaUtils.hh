@@ -85,6 +85,12 @@ namespace FormulaUtils
   template <typename ContainerType, typename ExprType>
   ContainerType
   collect_subterms_of_type (const Formula *F, bool eliminate_duplicate);  
+
+  /* return the matchin of var_id if 'this' matchs phi. Or NULL if 'this' does 
+     not match phi. */
+  extern Formula * 
+  extract_v_pattern (std::string var_id, const Formula *phi, 
+		     const Formula *pattern);
 };
 
 # include <kernel/expressions/FormulaUtils.ii>

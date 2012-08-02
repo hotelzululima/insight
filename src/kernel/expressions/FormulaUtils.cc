@@ -30,6 +30,7 @@
  */
 #include <kernel/expressions/FormulaUtils.hh>
 
+#include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/FormulaRewritingFunctions.hh>
 #include <kernel/expressions/FormulaReplaceSubtermRule.hh>
 #include <kernel/expressions/BottomUpApplyVisitor.hh>
@@ -148,6 +149,32 @@ FormulaUtils::simplify (Expr **E)
 	result = FormulaUtils::bottom_up_rewrite_and_assign (F, r);
       result = true;
     }
+
+  return result;
+}
+
+Formula * 
+FormulaUtils::extract_v_pattern (std::string var_id, const Formula *phi, 
+				 const Formula *pattern)
+{
+  Formula *result = NULL;
+  Variable *v = Variable::create (var_id); 
+  try
+    {
+      PatternMatching::VarList fv;
+      fv.push_back(v);
+
+      PatternMatching *vm = 
+	PatternMatching::match (phi, pattern, fv);
+
+      if (vm->has (v))
+	result = (Formula *) vm->get (v)->ref ();
+      delete vm;
+    }
+  catch (PatternMatching::Failure &) 
+    {
+    }
+  v->deref ();
 
   return result;
 }

@@ -31,11 +31,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <kernel/expressions/FormulaRewritingFunctions.hh>
+
 #include <algorithm>
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/FormulaRewritingFunctions.hh>
+#include <kernel/expressions/FormulaUtils.hh>
 
 using namespace std;
 
@@ -87,7 +89,7 @@ cancel_lnot_not (const Formula *phi)
 {
   Formula *pattern = 
     NegationFormula::create (UnaryApp::create (LNOT, Variable::create ("X")));
-  Formula *result = pattern->extract_v_pattern ("X", phi);
+  Formula *result = FormulaUtils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
   return result;
