@@ -37,6 +37,7 @@
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/PatternMatching.hh>
+#include <kernel/expressions/FormulaUtils.hh>
 
 using namespace std;
 
@@ -52,14 +53,15 @@ s_parse_formula (const string &s)
 
 static bool
 s_check_is_true (Formula *F)
-{
-  Formula *sF = F->simplify_level0();
-  Option<bool> value = sF->try_eval_level0 ();
+{  
+  Formula *tmp = F->ref ();
+  FormulaUtils::simplify_level0 (&tmp);
+  Option<bool> value = tmp->try_eval_level0 ();
   bool result = value.hasValue ();
 
   if (result)
     result = value.getValue();
-  sF->deref ();
+  tmp->deref ();
 
   return result;
 }
@@ -144,7 +146,7 @@ s_replace (Formula *F, Formula *P, Formula *V)
   Formula *result;
   try
     {
-      result = F->replace_subterm (P, V);
+      result = FormulaUtils::replace_subterm (F, P, V);
     }
   catch (NotApplicable &)
     {
