@@ -28,20 +28,34 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TOOLS_CFGRECOVERY_HH
-#define TOOLS_CFGRECOVERY_HH
+#include <stdlib.h>
 
-#include <fstream>
-#include <string>
+#include "linearsweep.hh"
 
-#define CFG_RECOVERY_VERSION    "0.1.0"
+using namespace std;
 
-/* global variables */
-const std::string prog_name = "cfgrecovery";  /* program name  */
+/* Linear sweep disassembly method */
+Microcode *
+linearsweep (const ConcreteAddress * entrypoint,
+	     ConcreteMemory * memory,
+	     Decoder * decoder)
+{
+  Microcode * mc = new Microcode();
+  ConcreteAddress current = *entrypoint;
 
-/* global options */
-extern int verbosity;	                       /* verbosity level */
-extern std::ostream * output;                  /* output stream */
-extern std::ofstream output_file;              /* output file */
+  while (memory->is_defined(current))
+    {
+      try {
+	current = decoder->decode(mc, current);
+      }
+      catch (exception& e)
+	{
+	  if (verbosity > 1)
+	    *output << mc->pp() << endl;
 
-#endif /* TOOLS_CFGRECOVERY_HH */
+	  cerr << prog_name << ": error" << e.what() << endl;
+	  exit(EXIT_FAILURE);
+	}
+    }
+  return mc;
+}

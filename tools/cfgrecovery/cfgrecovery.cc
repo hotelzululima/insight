@@ -43,6 +43,8 @@
 #include <loaders/LoaderFactory.hh>
 #include <decoders/binutils/BinutilsDecoder.hh>
 
+#include "linearsweep.hh"
+
 #include "cfgrecovery.hh"
 
 using namespace std;
@@ -50,6 +52,11 @@ using namespace binutils;
 
 typedef
   tr1::unordered_map < string, string, tr1::hash<string> > disas_t;
+
+/* Global options */
+int verbosity = 0;	           /* verbosity level */
+ostream * output;                  /* output stream */
+ofstream output_file;              /* output file */
 
 /* usage(status): Display the usage of the program and quit with
  * 'status' as return value. */
@@ -94,32 +101,6 @@ version ()
     << "to be exhaustive or trustable for now." << endl;
 
   exit (EXIT_SUCCESS);
-}
-
-/* Linear sweep disassembly method */
-Microcode *
-linearsweep (const ConcreteAddress * entrypoint,
-	     ConcreteMemory * memory,
-	     Decoder * decoder)
-{
-  Microcode * mc = new Microcode();
-  ConcreteAddress current = *entrypoint;
-
-  while (memory->is_defined(current))
-    {
-      try {
-	current = decoder->decode(mc, current);
-      }
-      catch (exception& e)
-	{
-	  if (verbosity > 1)
-	    *output << mc->pp() << endl;
-
-	  cerr << prog_name << ": error" << e.what() << endl;
-	  exit(EXIT_FAILURE);
-	}
-    }
-  return mc;
 }
 
 int

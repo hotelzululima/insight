@@ -3,6 +3,7 @@
 bin_PROGRAMS = cfgrecovery
 
 cfgrecovery_SOURCES = \
+	linearsweep.cc linearsweep.hh \
 	cfgrecovery.cc cfgrecovery.hh
 
 cfgrecovery_CPPFLAGS = @BINUTILS_CFLAGS@ -I$(top_srcdir)/src
