@@ -54,13 +54,8 @@ class MemCell;    // --> LValue
 class RegisterExpr;   // --> LValue
 // class BitIntLVal; // --> LValue (template)
 /*****************************************************************************/
-class TermReplacingRule;
 class TermReplacingRuleNd;
-class BottomUpInfo;
-class TopBottomInfo;
 /*****************************************************************************/
-
-// \todo : sub-expression sharing
 
 /*****************************************************************************/
 /*! \brief
@@ -157,120 +152,6 @@ public:
   virtual bool has_type_of (const Formula *F) const = 0;
 
   /*****************************************************************************/
-  // Rewriting operations
-  /*****************************************************************************/
-
-  /*! \brief bottom-up application of term transformation rule. The
-   *  rule is applied recursively from bottom leaves to top.
-   *
-   *  \param r contains a rule of term transformation (see
-   *  TermReplacingRule class). Note that during implementation of
-   *  the rule, the function f may raise NotApplicable exception if
-   *  the rule is not applicable. The mechanism allows to know whether
-   *  a rule has indeed been applied or not.
-   *
-   *  \param bottom_up_info belongs to the mechanism of transmitting
-   *  information from bottom to up. More precisely, a pass may want to
-   *  transmit information from operations done
-   *  at bottom to operation done at upper levels. bottom_up_info is used
-   *  for that. When f is applied at some point, it can put some information in
-   *  the bottom_up_info object (and before, read information coming from
-   *  previous f applications), this information is then kept and transmitted
-   *  to next operations. If you do not need such a mechanism, just put NULL
-   *  in it and it shall be ignored. The information is read and modified
-   *  in the action function of the rule to be applied (TermReplacingRule::f).
-   *  To use it, the user must derive its own class form BottomUpInfo.
-   *
-   *  \param top_bottom_info this enforces a mechanism to transmit information
-   *  collected during the descent to a node of the term. This means that
-   *  when the processing arrives to a given term, then top_bottom_info
-   *  has seen and processed all the terms enclosing this term from the top (the
-   *  root) to the considered term. To use it, the user must derive
-   *  its own class from TopBottomInfo.
-   *
-   *  \return the new address of the term after replacement. Note that
-   *  this address may be the same as the current instance.
-   *
-   *  \remark The function does the replacement in place. This means
-   *  that the current instance of expression is a priori
-   *  modified. However, the function returns the new address of the
-   *  term, because, if the type of the root of the term (the top)
-   *  change, a new allocation must be done. This behavior is
-   *  designed for efficiency, saving memory re-allocations as much as
-   *  possible.
-   *
-   *  \todo a non destructive bottom_up_apply function with duplication.
-   *  raise a NotApplicable exception if there is no change */
-  virtual Expr * bottom_up_apply (TermReplacingRule *r,
-				  TopBottomInfo *top_bottom_info = NULL,
-				  BottomUpInfo **bottom_up_info = NULL) const = 0;
-
-  /*! The parameter e points to the location where is the expression. Caution
-   *  The function may modify the location of the resulting expression.
-   *  Returns true iff there has been indeed some application of the rule. */
-  static bool bottom_up_apply_in_place(Expr ** e,
-                                       TermReplacingRule * r,
-                                       TopBottomInfo * top_bottom_info = NULL,
-                                       BottomUpInfo ** bottom_up_info = NULL);
-
-  /*! Applies rules until no one can be applied.
-   *  Return true iff at least one rule has been applied and modified the term.
-   *  If max_pass_nb = -1 then there is no loop guard. */
-  static bool bottom_up_apply_in_place_closure(Expr ** e,
-					       std::vector<TermReplacingRule *> rules,
-					       int max_pass_nb = -1);
-
-  /*! \brief bottum up application of non-deterministic term replacement rule.
-   *  This transformation is NOT performed IN-PLACE !
-   *  \param  r the rule to apply
-   *  \returns  a list of clone of this expr, where replacement has been done */
-  virtual std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const = 0;
-
-  /*****************************************************************************/
-
-  /*! \brief apply the replacing to the current expression as an
-   *  atomic formula. This is the implementation of
-   *  Formula::bottom_up_apply_in_place.
-   *
-   *  Caution, the case where an expression should be replaced by a
-   *  formula works only when the expression is directly belonging
-   *  to a formula. \todo extend that */
-  virtual Formula *bottom_up_apply (FormulaReplacingRule *r) const
-    throw (NotApplicable);
-
-  /*****************************************************************************/
-  // Pattern matching mechanism.
-  /*****************************************************************************/
-
-  /*! Replace variable in place (by using bottom_up_apply_in_place function).
-   *  \param v The variable to be replaced.
-   *  \param value The value to be put in place of v.
-   *  \return the new address of the term after replacement. Note that
-   *  this address may be the same as the current instance. */
-  Expr *replace_variable (const Variable *v, const Expr *value) const;
-  static bool replace_variable_in_place(Expr **e, const Variable *v, 
-					const Expr *value);
-
-  /*! Replace variable in place (by using bottom_up_apply_in_place function).
-   *  \param v The variable to be replaced defined by its identifier.
-   *  \param value The value to be put in place of v.
-   *  \return the new address of the term after replacement. Note that
-   *  this address may be the same as the current instance. */
-  Expr *replace_variable (std::string v_id, const Expr *value) const;
-
-  // \todo move all this somewhere else (?)
-  // \todo Group all the rewrittings in a separate file with all the
-  // rewrite patterns for the formula also, in order to have
-  // everything at the same place.
-
-  /*****************************************************************************/
-  /*****************************************************************************/
-
-  /*! \brief expression simplification. Returns true iff there has been some
-   *  simplification. Result is put in place. */
-  static bool simplify (Expr ** e);
-
-  /*****************************************************************************/
   // Basic Queries
   /*****************************************************************************/
 
@@ -331,10 +212,6 @@ public:
   virtual unsigned int get_depth() const;
   bool contains(Expr *o) const;
 
-  /* See Expr class for documentation */
-  Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
-
   std::string pp(std::string prefix = "") const;
 
   virtual PatternMatching *
@@ -385,11 +262,6 @@ public:
 
   constant_t get_val() const;
 
-  /* See Expr class for documentation */
-  Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
-
-
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Formula *F) const;
   virtual size_t hash () const;
@@ -438,8 +310,6 @@ public:
 
   /* See Expr class for documentation */
   std::string pp(std::string prefix = "") const;
-  Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Formula *F) const;
@@ -495,9 +365,6 @@ public:
   Expr *get_arg1() const;
   Expr *get_arg2() const;
 
-  /* See Expr class for documentation */
-  Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Formula *F) const;
@@ -554,10 +421,7 @@ public:
   pattern_matching(const Formula *e,
       const std::list<const Variable *> &free_variables) const;
 
-  /* See Expr class for documentation */
-  Expr *bottom_up_apply(TermReplacingRule *r, TopBottomInfo *top_bottom_info =
-      NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
+  // virtual PatternMatching *
 
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
@@ -618,8 +482,6 @@ public:
 
   /* See Expr class for documentation */
   std::string pp(std::string prefix = "") const;
-  Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Formula *F) const;
@@ -666,10 +528,6 @@ public:
   const RegisterDesc *get_descriptor () const;
   const std::string &get_name() const;
 
-  /* See Expr class for documentation */
-  Expr *bottom_up_apply (TermReplacingRule *r, TopBottomInfo *top_bottom_info = NULL, BottomUpInfo **bottom_up_info = NULL) const;
-  std::list<Expr *> bottom_up_apply_nd(TermReplacingRuleNd *r) const;
-
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Formula *F) const;
   virtual size_t hash () const;
@@ -686,76 +544,6 @@ public:
 
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
-};
-
-/*****************************************************************************/
-/*****************************************************************************/
-/*! \brief
- *  This class encloses term transformation rules to be used
- *  with bottom_up_apply_in_place method.
- *  To be used, this class must be implemented. For example, look at
- *  ReplaceVariableRule class.
- *****************************************************************************/
-class TermReplacingRule   /* abstract */ {
-public:
-
-  /*! \brief virtual destructor definition for abstract class */
-  virtual ~TermReplacingRule() {};
-
-  /*! \brief The replacement function. This is the crucial point to be
-   *   implemented.
-   *   f is supposed to receive the bottom-up information via the
-   *   double pointer, and use it to transmit this information, modified as
-   *   user want to next applications of f.
-   *   Note that it is in charge to delete useless information.
-   *   One should put NULL in the pointer to say that it is not used.
-   *   This behaviour should be taken into account be the developer.
-   *   TopBottomInfo carry some user information coming from the root
-   *   of the term. Before calling f to a given node, the TopBottomInfo
-   *   object has been run over all the expression from root by applying
-   *   its push operation on it. */
-  virtual Expr *f(const Expr *, TopBottomInfo *, BottomUpInfo **) = 0;
-};
-/*****************************************************************************/
-/*! \brief
- *  This class encloses non-deterministic term transformation rules to be
- *  used with the method bottom_up_apply_nd.
- *  To be used, this class must be implemented. For example, look at
- *  ReplaceVariableRule class.
- *****************************************************************************/
-class TermReplacingRuleNd /* abstract */ {
-public:
-
-  /*! \brief virtual destructor definition for abstract class */
-  virtual ~TermReplacingRuleNd() {};
-
-  /*! \brief The replacement function. This is the crucial point to be
-   *   implemented. */
-  virtual std::list<Expr *> f(const Expr *) = 0;
-};
-
-/*****************************************************************************/
-/*! see bottom_up_apply_in_place above for documentation. */
-class BottomUpInfo /* abstract */ {
-public:
-  virtual ~BottomUpInfo() {};
-
-  /* make a new bottom up info by grouping the left and right information.
-   * 'this' is supposed to be the left information. After execution, the
-   * resulting info must be in 'this'.
-   * Note that this is the charge of the user to reuse or to delete *right.
-   * Note that the asymmetry of the implementation is the easiest way
-   *      to design the mechanism in order to use inheritance instead of
-   *      template. */
-  virtual void group(BottomUpInfo *right) = 0;
-};
-/*****************************************************************************/
-/*! see bottom_up_apply_in_place above for documentation. */
-class TopBottomInfo /* abstract */ {
-public:
-  virtual ~TopBottomInfo() {};
-  virtual TopBottomInfo *clone() const = 0;
-  virtual void push(const Expr *) = 0;
 };
 
 std::ostream &operator<< (std::ostream &o, Expr &e);
