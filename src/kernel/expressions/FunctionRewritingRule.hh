@@ -41,17 +41,14 @@ class FunctionRewritingRule : public FormulaRewritingRule
 public:
 
   typedef Formula *RewriteFormulaFunc (const Formula *);
-  typedef Expr *RewriteExprFunc (const Expr *);
 
-  FunctionRewritingRule (RewriteFormulaFunc *fRW, RewriteExprFunc *eRW = 0);
+  FunctionRewritingRule (RewriteFormulaFunc *fRW);
   virtual ~FunctionRewritingRule ();
 
   virtual Formula *rewrite (const Formula *F);
-  virtual Expr *rewrite (const Expr *E);
 
 private:
   RewriteFormulaFunc *rewrite_formula;
-  RewriteExprFunc *rewrite_expression;
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_FUNCTIONREWRITINGRULE_HH */

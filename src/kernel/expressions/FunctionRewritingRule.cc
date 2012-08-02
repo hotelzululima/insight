@@ -29,11 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "FunctionRewritingRule.hh"
+#include <kernel/expressions/Formula.hh>
+#include <kernel/expressions/FunctionRewritingRule.hh>
 
-FunctionRewritingRule::FunctionRewritingRule (RewriteFormulaFunc *fRW, 
-					  RewriteExprFunc *eRW)
-  : FormulaRewritingRule (), rewrite_formula (fRW), rewrite_expression (eRW) 
+FunctionRewritingRule::FunctionRewritingRule (RewriteFormulaFunc *fRW)
+  : FormulaRewritingRule (), rewrite_formula (fRW)
 {
 }
 
@@ -45,18 +45,9 @@ Formula *
 FunctionRewritingRule::rewrite (const Formula *F)
 {
   Formula *result = rewrite_formula (F);
+  if (result == NULL)
+    result = F->ref ();
 
   return result;
 }
 
-Expr *
-FunctionRewritingRule::rewrite (const Expr *E)
-{
-  Expr *result;
-  if (rewrite_expression)
-    result = rewrite_expression (E);
-  else
-    result = (Expr *) rewrite ((const Formula *) E);
-
-  return result;
-}
