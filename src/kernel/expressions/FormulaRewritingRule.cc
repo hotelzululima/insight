@@ -110,7 +110,13 @@ FormulaRewritingRule::visit (const TernaryApp *ta)
 void 
 FormulaRewritingRule::visit (const MemCell *mc)
 {
-  result = rewrite (mc);
+  Expr *arg = mc->get_addr ();
+  arg->acceptVisitor (this);
+  arg = dynamic_cast<Expr *> (arg);
+
+  Expr *tmp = MemCell::create (arg, mc->get_bv_offset (), mc->get_bv_size ());
+  result = rewrite (tmp);
+  tmp->deref ();  
 }
 
 void 
@@ -172,12 +178,6 @@ Formula *
 FormulaRewritingRule::rewrite (const Formula *F)
 {
   return F->ref ();
-}
-
-Expr *
-FormulaRewritingRule::rewrite (const Expr *E)
-{
-  return (Expr *) rewrite ((const Formula *) E);
 }
 
 Formula *

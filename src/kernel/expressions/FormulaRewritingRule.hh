@@ -62,7 +62,6 @@ public:
   virtual void visit (const QuantifiedFormula *);
 
   virtual Formula *rewrite (const Formula *F);
-  virtual Expr *rewrite (const Expr *F);
 
   virtual Formula *get_result () const;
 
