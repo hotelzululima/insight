@@ -52,10 +52,10 @@ class LocatedLValue;
  *  e depends on some lvalue like [%12 + 2], then %12 will not be listed
  *  into the dependencies. Indeed collecting [%12 + 2], and not %12 indicates
  *  the real dependency, and is actually more precise. */
-std::list<LValue *> dependencies(Expr *e);
+std::list<const LValue *> dependencies(Expr *e);
 
 /* same as before but with nested dependencies */
-std::list<LValue *> nested_dependencies(Expr * e);
+std::list<const LValue *> nested_dependencies(Expr * e);
 
 /*! An instance of this class will be associated to each program point, here is
  * the kernel of the slicing algorithm, i.e. the back step along arrows. */

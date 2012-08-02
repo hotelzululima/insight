@@ -33,76 +33,54 @@
 #include <utils/tools.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/ConditionalSet.hh>
+#include <kernel/expressions/FormulaUtils.hh>
 #include "Slicing.hh"
 
 using namespace std;
+using namespace FormulaUtils;
 
 /*****************************************************************************/
 // Computation of the dependencies of an expression
 /*****************************************************************************/
 
-/** The method consists in doing a pass on the term in order
- *  to collect all the lvalue used in the computation of e.
- *  One do not consider nested l-value (see doc in header file) */
-list<LValue *> dependencies(Expr *e)
+class ExtractLValueVisitor : public ConstBottomUpApplyVisitor
 {
-	// We use top bottom information for not considering nested l-value.
-	class DRTBI : public TopBottomInfo
-	{
-	public:
-	  int done;
-	  DRTBI() : done(0) {};
-	  DRTBI(int done) : done(done) {};
-	  TopBottomInfo *clone() const { return new DRTBI(done); };
-	  void push(const Expr *e) { if (e->is_MemCell() || done > 0) done++; };
-	};
+public:
+  ExtractLValueVisitor () : result (), lv (NULL) { }
+  list<const LValue *> result;
+  const LValue *lv;
+  
+  void pre (const Formula *F) 
+  {
+    if (lv == NULL)
+      lv = dynamic_cast<const LValue *> (F);
+  }
+  
+  void apply (const Formula *F) 
+  {
+    if (lv == NULL)
+      return;
 
-	// This rule just collect the lvalue that it meets.
-	class DependencyRule : public TermReplacingRule
-	{
-	public:
-	  list<LValue *> lv_list;
+    if (lv == F)
+      {
+	result.push_back (lv);
+	lv = NULL;
+      }
+  }
+};
 
-	  Expr * f(const Expr *e, TopBottomInfo *tbinfo, BottomUpInfo **)
-	  {
-	    if (((DRTBI *) tbinfo)->done > 1) 
-	      return e->ref ();
-	    if (e->is_LValue())
-	      lv_list.push_back((LValue *) e->ref ());
-	    return e->ref ();
-	  }
-	};
+list<const LValue *> dependencies(Expr *e)
+{
+  ExtractLValueVisitor ev;
+  e->acceptVisitor (ev);
 
-	DependencyRule r;
-	DRTBI *drtbi = new DRTBI();
-	e->bottom_up_apply (&r, drtbi, NULL)->deref ();
-	delete drtbi;
-
-	return r.lv_list;
+  return ev.result;
 }
 
-static list<LValue *> 
+static list<const LValue *> 
 nested_dependencies(const Expr * e) 
 {
-  list<LValue *> lv_list;
-
-  class DependencyRule : public TermReplacingRule
-  {
-  public:
-    list<LValue *> lv_list;
-
-    Expr * f(const Expr *e, TopBottomInfo *, BottomUpInfo **)
-    {
-      if (e->is_LValue())
-        lv_list.push_back((LValue *) e->ref ());
-      return e->ref ();
-    }
-  };
-
-  DependencyRule r;
-  e->bottom_up_apply (&r, NULL, NULL)->deref ();
-
-  return r.lv_list;
+  return collect_subterms_of_type<list<const LValue *>, LValue> (e, false);
 }
 
 /*****************************************************************************/
@@ -173,9 +151,10 @@ bool conditional_rewrite_memref(const Expr *addr, const Formula *value, Formula 
   bool modified = conditional_rewrite_memref_aux(addr, value, phi);
   Formula * m_pattern = 
     Formula::Equality(Variable::create ("TERM_VALUE"), (Expr *) X->ref ());
-  std::list<const Variable *> free_variables; 
+
+  VarList free_variables; 
   free_variables.push_back(X);
-  Formula::bottom_up_rewrite_pattern(m_pattern, free_variables, X, phi);
+  bottom_up_rewrite_pattern_and_assign (phi, m_pattern, free_variables, X);
   X->deref ();
   m_pattern->deref ();
 
@@ -190,12 +169,12 @@ crm_apply_bin_op(BinaryOp op, const Formula *arg1, const Formula *arg2)
   Formula *arg2_pattern = arg2->ref ();
   Formula *p = 
     Formula::Equality(Variable::create ("TERM_VALUE"), Varg2->ref ());
-  std::list<const Variable *> free_variables; 
+  VarList free_variables; 
   free_variables.push_back(Varg2);
   Formula * v =
     Formula::Equality(Variable::create ("TERM_VALUE"),
 		      BinaryApp::create (op, Varg1->ref (), Varg2->ref ()));
-  Formula::bottom_up_rewrite_pattern(p, free_variables, v, &arg2_pattern);
+  bottom_up_rewrite_pattern_and_assign (&arg2_pattern, p, free_variables, v );
   p->deref ();
   v->deref ();
 
@@ -203,7 +182,8 @@ crm_apply_bin_op(BinaryOp op, const Formula *arg1, const Formula *arg2)
   p = Formula::Equality(Variable::create ("TERM_VALUE"), Varg1->ref ());
   free_variables.clear(); 
   free_variables.push_back(Varg1);
-  Formula::bottom_up_rewrite_pattern(p, free_variables, arg2_pattern, &result);
+  bottom_up_rewrite_pattern_and_assign (&result, p, free_variables, 
+					arg2_pattern);
   p->deref ();
   arg2_pattern->deref ();
   Varg1->deref ();
@@ -242,13 +222,13 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
           bool arg1_modified = 
 	    conditional_rewrite_memref_aux(addr, value, &arg1);
           Formula *p = Formula::Equality(tv->ref (), ARG->ref ());
-          std::list<const Variable *> free_variable; 
+	  VarList free_variable; 
 	  free_variable.push_back(ARG);
           Formula *v =
             Formula::Equality(tv->ref (),
 			      UnaryApp::create (ua->get_op(), ARG->ref ()));
           bool modified = 
-	    Formula::bottom_up_rewrite_pattern(p, free_variable, v, &arg1);
+	    bottom_up_rewrite_pattern_and_assign (&arg1, p, free_variable, v);
           *phi = arg1;
           modified = arg1_modified || modified ;
 
@@ -428,11 +408,10 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
     new DataDependencyLocalContext (*this);
 
   Formula *deps = BooleanConstantFormula::create (false);
-  list<LValue *> depends = dependencies (rval);
-  for (list<LValue *>::iterator elt = depends.begin(); elt != depends.end(); 
+  list<const LValue *> depends = dependencies (rval);
+  for (list<const LValue *>::iterator elt = depends.begin(); elt != depends.end(); 
        elt++) {
     ConditionalSet::cs_add(&(deps), *elt);
-    (*elt)->deref ();
   }
 
   if (lval->is_RegisterExpr())
@@ -446,15 +425,16 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
 
       // The variable TMP is used to hide form EltSymbol = lval when one replaces lval by rval.
       Variable *tmp = Variable::create ("TMP");
-      Formula::bottom_up_rewrite_pattern(reg_pattern, std::list<const Variable *>() , tmp, &(new_context->the_lvalues));
+      bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues),
+					    reg_pattern, VarList (), tmp);
       reg_pattern->deref ();
       reg_pattern = lval;
-      Formula::bottom_up_rewrite_pattern(reg_pattern, std::list<const Variable *>() , rval, &(new_context->the_lvalues));
+      bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues), 
+					    reg_pattern, VarList (), rval);
 
       // Here one replaces the occurences of EltSymbol = lval by the 
       // dependencies of rval.
-      Formula::replace_variable_in_place(&(new_context->the_lvalues), tmp, 
-					 deps);
+      replace_variable_and_assign (&(new_context->the_lvalues), tmp, deps);
       tmp->deref ();
     }
 
@@ -467,13 +447,12 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       Formula *m_pattern = 
 	Formula::Equality(ConditionalSet::EltSymbol (), 
 			  MemCell::create (X->ref ()));
-      std::list<const Variable *> free_variables;
+      VarList free_variables;
       free_variables.push_back(X);
 
       Formula *tmp = Formula::Equality(elt_addr->ref (), X->ref ());
-      Formula::bottom_up_rewrite_pattern(m_pattern, free_variables,
-					 tmp,
-					 &(new_context->the_lvalues));
+      bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues),
+					    m_pattern, free_variables, tmp);
       tmp->deref ();
       m_pattern->deref ();
 
@@ -493,8 +472,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
 			    deps->ref (),  
 			    Formula::Equality(ConditionalSet::EltSymbol (),
 					      MemCell::create (X->ref ())));
-      Formula::bottom_up_rewrite_pattern(m_pattern, free_variables, tmp,
-					 &(new_context->the_lvalues));
+      bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues), 
+					    m_pattern, free_variables, tmp);
       tmp->deref ();
       m_pattern->deref ();
       X->deref ();
@@ -512,8 +491,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       new_context->the_lvalues = new_lvalues;
     }
 
-  Formula::simplify_level0(&(new_context->the_lvalues));
-  Formula::disjunctive_normal_form(&(new_context->the_lvalues));
+  FormulaUtils::simplify_level0(&(new_context->the_lvalues));
+  rewrite_in_DNF (&(new_context->the_lvalues));
 
   if (DataDependency::OnlySimpleSets()) {
     Formula * old = new_context->the_lvalues;
@@ -738,13 +717,11 @@ std::vector<StmtArrow*>
 DataDependency::slice_it (Microcode *prg, MicrocodeAddress seed_loc, 
 			  const Expr * seed) 
 {
-  list<LValue*> seeds = nested_dependencies (seed);
+  list<const LValue*> seeds = nested_dependencies (seed);
   list<LocatedLValue> llvs;
-  for (list<LValue*>::iterator s = seeds.begin (); s != seeds.end (); s++)
+  for (list<const LValue*>::iterator s = seeds.begin (); s != seeds.end (); s++)
     llvs.push_back (LocatedLValue (seed_loc, *s));
   std::vector<StmtArrow*> result = DataDependency::slice_it (prg, llvs);
-  for (list<LValue*>::iterator s = seeds.begin(); s != seeds.end(); s++)
-    (*s)->deref ();
 
   return result;
 }
