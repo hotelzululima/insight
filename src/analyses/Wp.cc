@@ -30,28 +30,39 @@
 
 #include <list>
 #include <set>
+#include <kernel/expressions/FormulaUtils.hh>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/Microcode.hh>
 #include <utils/graph.hh>
 
 using namespace std;
+using namespace FormulaUtils;
 
+typedef std::list<const MemCell *> MemCellContainer;
 
 /*! construct subsets and their complements */
 template <typename T>
-std::vector< std::pair<std::vector<T>, std::vector<T> > > construct_all_subsets(std::vector<T> s) {
-  std::vector< std::pair<std::vector<T>, std::vector<T> > > subsets;
+std::vector< std::pair<T, T> > 
+construct_all_subsets(const T &s) 
+{
+  std::vector< std::pair<T, T > > subsets;
   std::vector<bool> belongs;
-  for (unsigned int i = 0; i < s.size() + 1; i++) belongs.push_back(false);
+  for (unsigned int i = 0; i < s.size() + 1; i++) 
+    belongs.push_back (false);
 
   while (!belongs[s.size()])
-    {
-      std::vector<T> subset;
-      std::vector<T> complement;
-      for (unsigned int i = 0; i < s.size(); i++)
-        if (belongs[i]) subset.push_back(s[i]);
-        else complement.push_back(s[i]);
-      subsets.push_back(std::pair<std::vector<T>, std::vector<T> >(subset, complement));
+    {      
+      int i = 0;
+      T subset;
+      T complement;
+      for (typename T::const_iterator e = s.begin (); e != s.end (); e++, i++)
+	{
+	  if (belongs[i]) 
+	    subset.push_back(*e);
+	  else 
+	    complement.push_back(*e);
+	}
+      subsets.push_back(std::pair<T, T >(subset, complement));
 
       unsigned int k = 0;
       do {
@@ -64,25 +75,6 @@ std::vector< std::pair<std::vector<T>, std::vector<T> > > construct_all_subsets(
   return subsets;
 }
 
-template <typename T>
-std::vector<T *> delete_repetition(std::vector<T *> s)
-{
-  std::vector<T *> s_set;
-  for (unsigned int i = 0; i < s.size(); i++)
-    {
-      bool found = false;
-      for (unsigned int j = 0; j < s_set.size(); j++)
-        if (s[i] == s_set[j])
-          {
-            found = true;
-            continue;
-          }
-      if (found) continue;
-      s_set.push_back(s[i]);
-    }
-  return s_set;
-}
-
 Formula * weakest_precondition(Formula * post, Statement *stmt)
 {
   if (stmt->is_Assignment())
@@ -92,8 +84,9 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
       if (assmt->get_lval()->is_RegisterExpr())
         {
           Formula *original_cpy = post->ref ();
-          Formula *result = original_cpy->replace_subterm (assmt->get_lval(), 
-							   assmt->get_rval());
+          Formula *result = 
+	    replace_subterm (original_cpy, assmt->get_lval(), 
+					   assmt->get_rval());
           if (result != original_cpy) 
 	    original_cpy->deref ();
           return result;
@@ -104,17 +97,18 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
           MemCell * mc = dynamic_cast<MemCell *>(assmt->get_lval());
 
           // 1. construct the list of all memory references appearing in this
-          vector<MemCell *> all_memrefs = 
-	    delete_repetition(post->collect_all_memory_references());
+          MemCellContainer all_memrefs = 
+	    collect_subterms_of_type<MemCellContainer, MemCell> (post, true);
           if (all_memrefs.size() == 0) return post;
 
           // 2. construct the list of all the subsets of memory references (to be replaced by an enumerator)
-          vector< pair<vector<MemCell *>, vector<MemCell *> > > all_subsets = construct_all_subsets(all_memrefs);
+          vector< pair<MemCellContainer, MemCellContainer > > all_subsets = 
+	    construct_all_subsets(all_memrefs);
 
           // 3. construct the formula
 	  vector<Formula *> phi_clauses;
 
-          for (vector< pair<vector<MemCell *>, vector<MemCell *> > >::iterator
+          for (vector< pair<MemCellContainer, MemCellContainer > >::iterator
                subset = all_subsets.begin();
                subset != all_subsets.end();
                subset++)
@@ -123,7 +117,7 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
               // Hypothesis : all addresses of all memcell in *subset are equal to those of mc
               // and all the other ones are different from those of mc
               Formula * hyp = Constant::create (1);  // true by default
-              for (vector<MemCell *>::iterator mcel = (*subset).first.begin(); mcel != (*subset).first.end(); mcel++) {
+              for (MemCellContainer::iterator mcel = (*subset).first.begin(); mcel != (*subset).first.end(); mcel++) {
                   Formula *n_hyp = 
 		    hyp->add_conjunctive_clause(BinaryApp::create (EQ, mc->get_addr()->ref (),
 								   (*mcel)->get_addr()->ref ()));
@@ -132,7 +126,7 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 		    hyp = n_hyp;
                   }
               }
-              for (vector<MemCell *>::iterator mcel = (*subset).second.begin(); mcel != (*subset).second.end(); mcel++) {
+              for (MemCellContainer::iterator mcel = (*subset).second.begin(); mcel != (*subset).second.end(); mcel++) {
                   Formula *n_hyp =
                 		  hyp->add_conjunctive_clause(UnaryApp::create (LNOT, BinaryApp::create (EQ, mc->get_addr()->ref (),
                 	                                                                      (*mcel)->get_addr()->ref ())));
@@ -144,15 +138,16 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 
               // Replace all the terms pointed by elements of subset by the right member of assmt
               Formula * psi = post->ref ();
-              for (vector<MemCell *>::iterator mcel = (*subset).first.begin(); 
+              for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
 		   mcel != (*subset).first.end(); mcel++)
-                psi->replace_subterm (*mcel, (Expr *) assmt->get_rval());
+		replace_subterm (psi, *mcel, 
+					       (Expr *) assmt->get_rval());
 
               phi_clauses.push_back (Formula::implies (hyp, psi));
             }
 
-	  ConjunctiveFormula *phi = ConjunctiveFormula::create (phi_clauses);
-          Formula::simplify_level0((Formula**) &phi);
+	  Formula *phi = ConjunctiveFormula::create (phi_clauses);
+          simplify_level0 (&phi);
           return phi;
         }
 
@@ -172,9 +167,10 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 
 Formula * weakest_precondition(Formula * post, StmtArrow *arrow)
 {
-  Formula * phi = Formula::implies(arrow->get_condition(),
-		                           weakest_precondition(post, arrow->get_stmt()));
-  Formula::simplify_level0(&phi);
+  Formula *phi = 
+    Formula::implies(arrow->get_condition(),
+		     weakest_precondition(post, arrow->get_stmt()));
+  simplify_level0 (&phi);
   Log::separator(2);
   Log::print("Backward step on :\n" + phi->pp() + "\n", 2);
   return phi;
