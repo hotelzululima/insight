@@ -69,6 +69,8 @@ kernel_source = \
 	kernel/expressions/FunctionRewritingRule.cc \
 	kernel/expressions/BottomUpRewritePatternRule.hh 	\
 	kernel/expressions/BottomUpRewritePatternRule.cc 	\
+	kernel/expressions/BottomUpApplyVisitor.hh \
+	kernel/expressions/BottomUpApplyVisitor.cc \
 	kernel/expressions/ConditionalSet.cc 	\
 	kernel/expressions/ConditionalSet.hh	\
 	kernel/expressions/ExprLexer.hh 	\
