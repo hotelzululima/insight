@@ -59,8 +59,6 @@ class TermReplacingRuleNd;
 class BottomUpInfo;
 class TopBottomInfo;
 /*****************************************************************************/
-class ExprIterator; // Iterator on exprs
-/*****************************************************************************/
 
 // \todo : sub-expression sharing
 
@@ -266,14 +264,6 @@ public:
   // everything at the same place.
 
   /*****************************************************************************/
-
-  /*! \brief iterators on the expression
-   *  \author RT */
-  ExprIterator *begin_prefix();
-  ExprIterator *begin_infix();
-  ExprIterator *begin_postfix();
-  ExprIterator *end();
-
   /*****************************************************************************/
 
   /*! \brief expression simplification. Returns true iff there has been some
@@ -766,35 +756,6 @@ public:
   virtual ~TopBottomInfo() {};
   virtual TopBottomInfo *clone() const = 0;
   virtual void push(const Expr *) = 0;
-};
-
-/*****************************************************************************/
-/*****************************************************************************/
-/*! \brief ExprIterator class
- *  \author RT
- *  This class provides iterators on an arbitrary expression
- *****************************************************************************/
-
-enum ExprIteratorMode {ITERATE_PREFIX, ITERATE_INFIX, ITERATE_POSTFIX};
-
-class ExprIterator
-{
-private:
-  ExprIteratorMode mode;
-  int indice;
-  ExprIterator *ss;
-  Expr *expr;
-  bool eof;
-  int max_indice;
-
-public:
-  ExprIterator();
-  ExprIterator(Expr *expr, ExprIteratorMode mode = ITERATE_INFIX);
-  Expr *operator*();
-  ExprIterator &operator++(int i);
-  bool operator==(const ExprIterator &o);
-  bool operator!=(const ExprIterator &o);
-  virtual ~ExprIterator();
 };
 
 std::ostream &operator<< (std::ostream &o, Expr &e);
