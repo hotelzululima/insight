@@ -33,11 +33,11 @@
 #include <utils/tools.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/ConditionalSet.hh>
-#include <kernel/expressions/FormulaUtils.hh>
+#include <kernel/expressions/ExprUtils.hh>
 #include "Slicing.hh"
 
 using namespace std;
-using namespace FormulaUtils;
+using namespace ExprUtils;
 
 /*****************************************************************************/
 // Computation of the dependencies of an expression
@@ -466,7 +466,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       new_context->the_lvalues = new_lvalues;
     }
 
-  FormulaUtils::simplify_level0(&(new_context->the_lvalues));
+  ExprUtils::simplify_level0(&(new_context->the_lvalues));
   rewrite_in_DNF (&(new_context->the_lvalues));
 
   if (DataDependency::OnlySimpleSets()) {

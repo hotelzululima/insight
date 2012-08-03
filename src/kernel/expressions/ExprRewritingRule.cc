@@ -28,38 +28,38 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <kernel/expressions/FormulaRewritingRule.hh>
+#include <kernel/expressions/ExprRewritingRule.hh>
 
 #include <cassert>
 #include <kernel/Expressions.hh>
 
 
-FormulaRewritingRule::FormulaRewritingRule () 
-  : ConstFormulaVisitor ()
+ExprRewritingRule::ExprRewritingRule () 
+  : ConstExprVisitor ()
 {
   result = NULL;
 }
 
-FormulaRewritingRule::~FormulaRewritingRule ()
+ExprRewritingRule::~ExprRewritingRule ()
 {
   if (result != NULL)
     result->deref ();
 }
 
 void 
-FormulaRewritingRule::visit (const Constant *c)
+ExprRewritingRule::visit (const Constant *c)
 {
   result = rewrite (c);
 }
 
 void 
-FormulaRewritingRule::visit (const Variable *v)
+ExprRewritingRule::visit (const Variable *v)
 {
   result = rewrite (v);
 }
 
 void 
-FormulaRewritingRule::visit (const UnaryApp *ua)
+ExprRewritingRule::visit (const UnaryApp *ua)
 {
   Expr *arg = ua->get_arg1 ();
   arg->acceptVisitor (this);
@@ -72,7 +72,7 @@ FormulaRewritingRule::visit (const UnaryApp *ua)
 }
 
 void 
-FormulaRewritingRule::visit (const BinaryApp *ba)
+ExprRewritingRule::visit (const BinaryApp *ba)
 {
   Expr *arg1 = ba->get_arg1 ();
   arg1->acceptVisitor (this);
@@ -89,7 +89,7 @@ FormulaRewritingRule::visit (const BinaryApp *ba)
 }
 
 void 
-FormulaRewritingRule::visit (const TernaryApp *ta)
+ExprRewritingRule::visit (const TernaryApp *ta)
 {
   Expr *arg1 = ta->get_arg1 ();
   arg1->acceptVisitor (this);
@@ -110,7 +110,7 @@ FormulaRewritingRule::visit (const TernaryApp *ta)
 }
 
 void 
-FormulaRewritingRule::visit (const MemCell *mc)
+ExprRewritingRule::visit (const MemCell *mc)
 {
   Expr *arg = mc->get_addr ();
   arg->acceptVisitor (this);
@@ -122,13 +122,13 @@ FormulaRewritingRule::visit (const MemCell *mc)
 }
 
 void 
-FormulaRewritingRule::visit (const RegisterExpr *reg)
+ExprRewritingRule::visit (const RegisterExpr *reg)
 {
   result = rewrite (reg);
 }
 
 void 
-FormulaRewritingRule::visit (const QuantifiedExpr *F)
+ExprRewritingRule::visit (const QuantifiedExpr *F)
 {
   F->get_variable ()->acceptVisitor (this);
   Variable *var = dynamic_cast<Variable *> (result);
@@ -143,13 +143,13 @@ FormulaRewritingRule::visit (const QuantifiedExpr *F)
 }
 
 Expr *
-FormulaRewritingRule::rewrite (const Expr *F)
+ExprRewritingRule::rewrite (const Expr *F)
 {
   return F->ref ();
 }
 
 Expr *
-FormulaRewritingRule::get_result () const
+ExprRewritingRule::get_result () const
 {
   if (result != NULL)
     return result->ref ();

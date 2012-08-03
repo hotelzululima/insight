@@ -28,39 +28,71 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <algorithm>
-#include <kernel/expressions/BottomUpApplyVisitor.hh>
 
-namespace FormulaUtils 
+#ifndef KERNEL_EXPRESSIONS_EXPRUTILS_HH
+# define KERNEL_EXPRESSIONS_EXPRUTILS_HH
+
+# include <string>
+# include <list>
+# include <vector>
+# include <kernel/Expressions.hh>
+# include <kernel/expressions/ExprRewritingRule.hh>
+
+namespace ExprUtils
 {
+  typedef std::list<const Variable *> VarList;
+
+  extern Expr *
+  replace_subterm (const Expr *F, 
+		   const Expr *pattern, const Expr *value);
+
+  extern Expr * 
+  replace_variable (const Expr *F, 
+		    const Variable *v, const Expr *value);
+
+  extern bool 
+  replace_variable_and_assign (Expr **phi, 
+			       const Variable *v, const Expr *value);
+
+
+  extern Expr *
+  bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r);
+
+  extern bool 
+  bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r);
+
+  extern Expr *
+  bottom_up_rewrite_pattern (const Expr *Phi,
+			     const Expr *pattern,
+			     const VarList &free_variables,
+			     const Expr *value);
+  
+  extern bool 
+  bottom_up_rewrite_pattern_and_assign (Expr **phi,
+					const Expr *pattern,
+					const VarList &free_variables,
+					const Expr * value);
+
+  extern bool
+  rewrite_in_DNF (Expr **phi);
+
+  extern bool
+  simplify_level0 (Expr **F);
+
+  extern bool
+  simplify (Expr **E);
 
   template <typename ContainerType, typename ExprType>
   ContainerType
-  collect_subterms_of_type (const Expr *F, bool eliminate_duplicate)
-  {
-    class Collector : public ConstBottomUpApplyVisitor
-    {
-      bool nodup;
-    public:
-      Collector (bool eliminate_duplicate) : nodup (eliminate_duplicate) {
-      }
+  collect_subterms_of_type (const Expr *F, bool eliminate_duplicate);  
 
-      ContainerType result;      
-      void apply (const Expr *phi)
-      {
-	const ExprType *e = dynamic_cast<const ExprType *> (phi);
-	if (e != NULL)
-	  {
-	    if (!nodup || 
-		find (result.begin (), result.end (), e) == result.end ())
-	      result.push_back (e);
-	  }
-      }
-    };
-
-    Collector collector (eliminate_duplicate);
-    F->acceptVisitor (collector);
-
-    return collector.result;
-  }
+  /* return the matchin of var_id if 'this' matchs phi. Or NULL if 'this' does 
+     not match phi. */
+  extern Expr * 
+  extract_v_pattern (std::string var_id, const Expr *phi, 
+		     const Expr *pattern);
 };
+
+# include <kernel/expressions/ExprUtils.ii>
+
+#endif /* ! KERNEL_EXPRESSIONS_EXPRUTILS_HH */

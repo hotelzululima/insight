@@ -36,7 +36,7 @@
 #include <string>
 #include <tr1/unordered_map>
 #include <tr1/unordered_map>
-#include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/expressions/ExprVisitor.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
 #include <utils/infrastructure.hh>
@@ -1072,62 +1072,62 @@ ostream &operator<< (ostream &o, Expr &e)
 			/* --------------- */
 
 void 
-Expr::acceptVisitor (FormulaVisitor &visitor)
+Expr::acceptVisitor (ExprVisitor &visitor)
 {
   acceptVisitor (&visitor);
 }
 
 void 
-Expr::acceptVisitor (ConstFormulaVisitor &visitor) const
+Expr::acceptVisitor (ConstExprVisitor &visitor) const
 {
   acceptVisitor (&visitor);
 }
 
 
 void 
-Constant::acceptVisitor (FormulaVisitor *visitor)
+Constant::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-Variable::acceptVisitor (FormulaVisitor *visitor)
+Variable::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-UnaryApp::acceptVisitor (FormulaVisitor *visitor)
+UnaryApp::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-BinaryApp::acceptVisitor (FormulaVisitor *visitor)
+BinaryApp::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-TernaryApp::acceptVisitor (FormulaVisitor *visitor)
+TernaryApp::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-MemCell::acceptVisitor (FormulaVisitor *visitor)
+MemCell::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-RegisterExpr::acceptVisitor (FormulaVisitor *visitor)
+RegisterExpr::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
  
 void 
-QuantifiedExpr::acceptVisitor (FormulaVisitor *visitor)
+QuantifiedExpr::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
@@ -1135,49 +1135,49 @@ QuantifiedExpr::acceptVisitor (FormulaVisitor *visitor)
 			/* --------------- */
 
 void 
-Constant::acceptVisitor (ConstFormulaVisitor *visitor) const 
+Constant::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-Variable::acceptVisitor (ConstFormulaVisitor *visitor) const 
+Variable::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-UnaryApp::acceptVisitor (ConstFormulaVisitor *visitor) const 
+UnaryApp::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-BinaryApp::acceptVisitor (ConstFormulaVisitor *visitor) const 
+BinaryApp::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-TernaryApp::acceptVisitor (ConstFormulaVisitor *visitor) const 
+TernaryApp::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-MemCell::acceptVisitor (ConstFormulaVisitor *visitor) const 
+MemCell::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-RegisterExpr::acceptVisitor (ConstFormulaVisitor *visitor) const 
+RegisterExpr::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
  
 void 
-QuantifiedExpr::acceptVisitor (ConstFormulaVisitor *visitor) const 
+QuantifiedExpr::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
@@ -1185,39 +1185,39 @@ QuantifiedExpr::acceptVisitor (ConstFormulaVisitor *visitor) const
 void 
 Expr::init ()
 {
-  formula_store = new FormulaStore (100);
+  expr_store = new ExprStore (100);
 }
 
 void 
 Expr::terminate () 
 {
-  if (Expr::formula_store == NULL)
+  if (Expr::expr_store == NULL)
     return;
    
-  if (Expr::formula_store->size () > 0)
+  if (Expr::expr_store->size () > 0)
     {      
-      int nb = Expr::formula_store->size ();
-      FormulaStore::iterator i = Expr::formula_store->begin ();
-      FormulaStore::iterator end = Expr::formula_store->end ();
-      cerr << "**** some formulas have not been deleted:" << endl;
+      int nb = Expr::expr_store->size ();
+      ExprStore::iterator i = Expr::expr_store->begin ();
+      ExprStore::iterator end = Expr::expr_store->end ();
+      cerr << "**** some exprs have not been deleted:" << endl;
       for (; i != end; i++, nb--)
 	{
 	  assert (nb > 0);
 	  cerr << "**** refcount = " << (*i)->refcount 
-	       << " formula = " << (*i)->pp () << endl;
+	       << " expr = " << (*i)->pp () << endl;
 	}
 	  
     }
-  delete Expr::formula_store;
-  Expr::formula_store = NULL;
+  delete Expr::expr_store;
+  Expr::expr_store = NULL;
 }
 
 void 
 Expr::dumpStore ()
 {
-  int nb = Expr::formula_store->size ();
-  FormulaStore::iterator i = Expr::formula_store->begin ();
-  FormulaStore::iterator end = Expr::formula_store->end ();
+  int nb = Expr::expr_store->size ();
+  ExprStore::iterator i = Expr::expr_store->begin ();
+  ExprStore::iterator end = Expr::expr_store->end ();
   for (; i != end; i++, nb--)
     {
       assert (nb > 0);
@@ -1226,7 +1226,7 @@ Expr::dumpStore ()
 }
 
 //
-// FORMULA SHARING
+// EXPR SHARING
 //
 
 size_t 
@@ -1242,7 +1242,7 @@ Expr::Equal::operator()(const Expr *const &F1, const Expr * const &F2) const
 }
 
 
-Expr::FormulaStore *Expr::formula_store = NULL;
+Expr::ExprStore *Expr::expr_store = NULL;
 
 Expr *
 Expr::ref () const
@@ -1260,22 +1260,22 @@ Expr::deref ()
   refcount--; 
   if (refcount == 0) 
     {
-      assert (formula_store->find (this) != formula_store->end ());
-      formula_store->erase (this);
+      assert (expr_store->find (this) != expr_store->end ());
+      expr_store->erase (this);
 
       delete this; 
     }
 }
 
 Expr *
-Expr::find_or_add_formula (Expr *F)
+Expr::find_or_add_expr (Expr *F)
 {
-  FormulaStore::iterator i = formula_store->find (F);
+  ExprStore::iterator i = expr_store->find (F);
   assert (F->refcount == 0);
 
-  if (i == formula_store->end ())
+  if (i == expr_store->end ())
     {
-      formula_store->insert (F);
+      expr_store->insert (F);
       F->refcount = 1;
     }
   else

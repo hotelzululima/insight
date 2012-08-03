@@ -28,52 +28,55 @@
  * SUCH DAMAGE.
  */
 
-#ifndef KERNEL_EXPRESSIONS_FORMULAVISITOR_HH
-#define KERNEL_EXPRESSIONS_FORMULAVISITOR_HH
+#include <kernel/annotations/ExprAnnotation.hh>
 
-class Constant; 
-class Variable; 
-class UnaryApp; 
-class BinaryApp; 
-class TernaryApp; 
-class MemCell; 
-class RegisterExpr; 
-class QuantifiedExpr; 
-
-class FormulaVisitor 
+ExprAnnotation::ExprAnnotation()
+  : Annotation (), expr (NULL) 
 {
-protected :
-  FormulaVisitor () { }
+}
 
-public :
-  virtual ~FormulaVisitor () { }
-
-  virtual void visit (Constant *) { } 
-  virtual void visit (Variable *) { } 
-  virtual void visit (UnaryApp *) { }
-  virtual void visit (BinaryApp *) { } 
-  virtual void visit (TernaryApp *) { } 
-  virtual void visit (MemCell *) { }
-  virtual void visit (RegisterExpr *) { }
-  virtual void visit (QuantifiedExpr *) { }
-};  
-
-class ConstFormulaVisitor 
+ExprAnnotation::ExprAnnotation (const ExprAnnotation &other) 
+  : Annotation (other), expr (NULL)
 {
-protected :
-  ConstFormulaVisitor () { }
+  set_expr (other.expr);
+}
 
-public :
-  virtual ~ConstFormulaVisitor () { }
+ExprAnnotation::ExprAnnotation (Expr *F)
+  : Annotation ()
+{
+  expr = F->ref ();
+}
 
-  virtual void visit (const Constant *) { } 
-  virtual void visit (const Variable *) { } 
-  virtual void visit (const UnaryApp *) { }
-  virtual void visit (const BinaryApp *) { } 
-  virtual void visit (const TernaryApp *) { } 
-  virtual void visit (const MemCell *) { }
-  virtual void visit (const RegisterExpr *) { }
-  virtual void visit (const QuantifiedExpr *) { }
-};  
+ExprAnnotation::~ExprAnnotation()
+{
+  if (expr != NULL)
+    expr->deref ();
+}
 
-#endif /* KERNEL_EXPRESSIONS_FORMULAVISITOR_HH */
+void 
+ExprAnnotation::output_text (std::ostream &out) const
+{
+  out << expr->pp();
+}
+
+void *
+ExprAnnotation::clone() const
+{ 
+  return new ExprAnnotation (expr);
+}
+
+void 
+ExprAnnotation::set_expr (Expr *F)
+{
+  if (expr != NULL)
+    expr->deref ();
+  expr = F->ref ();  
+}
+
+			/* --------------- */
+
+const Expr *
+ExprAnnotation::get_expr () const
+{
+  return expr;
+}

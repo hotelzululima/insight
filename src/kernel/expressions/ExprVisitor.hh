@@ -27,35 +27,53 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef KERNEL_ANNOTATIONS_FORMULA_ANNOTATION_HH
-#define KERNEL_ANNOTATIONS_FORMULA_ANNOTATION_HH
 
-#include <string>
-#include <kernel/Annotation.hh>
-#include <kernel/Expressions.hh>
+#ifndef KERNEL_EXPRESSIONS_EXPRVISITOR_HH
+#define KERNEL_EXPRESSIONS_EXPRVISITOR_HH
 
-class FormulaAnnotation : public Annotation
+class Constant; 
+class Variable; 
+class UnaryApp; 
+class BinaryApp; 
+class TernaryApp; 
+class MemCell; 
+class RegisterExpr; 
+class QuantifiedExpr; 
+
+class ExprVisitor 
 {
-public:
-  FormulaAnnotation ();
+protected :
+  ExprVisitor () { }
 
-  FormulaAnnotation (const FormulaAnnotation &other);
+public :
+  virtual ~ExprVisitor () { }
 
-  FormulaAnnotation (Expr *F);
+  virtual void visit (Constant *) { } 
+  virtual void visit (Variable *) { } 
+  virtual void visit (UnaryApp *) { }
+  virtual void visit (BinaryApp *) { } 
+  virtual void visit (TernaryApp *) { } 
+  virtual void visit (MemCell *) { }
+  virtual void visit (RegisterExpr *) { }
+  virtual void visit (QuantifiedExpr *) { }
+};  
 
-  virtual ~FormulaAnnotation ();
+class ConstExprVisitor 
+{
+protected :
+  ConstExprVisitor () { }
 
-  virtual void output_text (std::ostream &out) const;
+public :
+  virtual ~ConstExprVisitor () { }
 
-  virtual void *clone () const;
+  virtual void visit (const Constant *) { } 
+  virtual void visit (const Variable *) { } 
+  virtual void visit (const UnaryApp *) { }
+  virtual void visit (const BinaryApp *) { } 
+  virtual void visit (const TernaryApp *) { } 
+  virtual void visit (const MemCell *) { }
+  virtual void visit (const RegisterExpr *) { }
+  virtual void visit (const QuantifiedExpr *) { }
+};  
 
-  virtual void set_formula (Expr *F);
-
-  virtual const Expr *get_formula () const;
-
-private:
-  Expr *formula;
-};
-
-
-#endif /* KERNEL_ANNOTATIONS_FORMULA_ANNOTATION_HH */
+#endif /* KERNEL_EXPRESSIONS_EXPRVISITOR_HH */

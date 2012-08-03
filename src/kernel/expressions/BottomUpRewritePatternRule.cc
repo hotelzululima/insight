@@ -30,7 +30,7 @@
  */
 
 #include <kernel/expressions/PatternMatching.hh>
-#include <kernel/expressions/FormulaUtils.hh>
+#include <kernel/expressions/ExprUtils.hh>
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 
 BottomUpRewritePatternRule::BottomUpRewritePatternRule (const Expr *p, 
@@ -56,8 +56,8 @@ BottomUpRewritePatternRule::rewrite (const Expr *phi)
             
       Expr *value_cpy = value->ref ();
       for (PatternMatching::const_iterator p = vm->begin(); p != vm->end(); p++)
-	FormulaUtils::replace_variable_and_assign (&value_cpy, p->first, 
-						   p->second);
+	ExprUtils::replace_variable_and_assign (&value_cpy, p->first, 
+						p->second);
       delete vm;
       
       result = value_cpy;

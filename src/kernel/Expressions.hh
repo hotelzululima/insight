@@ -37,8 +37,8 @@
 #include <kernel/expressions/Operators.hh>
 #include <tr1/unordered_set>
 
-class FormulaVisitor;
-class ConstFormulaVisitor;
+class ExprVisitor;
+class ConstExprVisitor;
 
 /*****************************************************************************/
 /* Summary                                                                   */
@@ -53,6 +53,7 @@ class TernaryApp;  // --> Expr
 class LValue;     // --> Expr (Abstract)
 class MemCell;    // --> LValue
 class RegisterExpr;   // --> LValue
+class QuantifiedExpr;   // --> LValue
 // class BitIntLVal; // --> LValue (template)
 /*****************************************************************************/
 
@@ -102,10 +103,10 @@ public:
   static void init ();
   static void terminate ();
   
-  virtual void acceptVisitor (FormulaVisitor &visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor &visitor) const;
-  virtual void acceptVisitor (FormulaVisitor *visitor) = 0;
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const = 0;
+  virtual void acceptVisitor (ExprVisitor &visitor);
+  virtual void acceptVisitor (ConstExprVisitor &visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor) = 0;
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const = 0;
 
   virtual size_t hash () const;
   virtual bool equal (const Expr *F) const = 0;
@@ -116,15 +117,15 @@ public:
 
   static Expr *createOr (Expr *arg1, Expr *arg2);
 
-  /*! \brief construct the formula A ==> B.
+  /*! \brief construct the expr A ==> B.
    *  Caution A and B are not copied */
   static Expr *createImplies (Expr *A, Expr *B);
 
-  /*! \brief construct the formula (cond /\ A) \/ ((Not cont) /\ B).
+  /*! \brief construct the expr (cond /\ A) \/ ((Not cont) /\ B).
    *  Caution A and B are not copied */
   static Expr *createIfThenElse (Expr *cond, Expr *A, Expr *B);
 
-  /*! \brief construct the formula, actually the expression (EQ A B).
+  /*! \brief construct the expr, actually the expression (EQ A B).
    *  Caution A and B are not copied */
   static Expr *createEquality (Expr *A, Expr *B);
 
@@ -165,10 +166,10 @@ public:
    *  - delete trivial clauses in conjunction and disjunction.
    */
   /*! \brief simple syntaxic evaluation: try to transform a true
-      formula into a bool. */
+      expr into a bool. */
   Option<bool> try_eval_level0() const;
 
-  /*! \brief return true iff the formula can be reduce to true. */
+  /*! \brief return true iff the expr can be reduce to true. */
   bool eval_level0() const;
 
   /*****************************************************************************/
@@ -233,18 +234,18 @@ public:
 
 
 protected:
-  static Expr *find_or_add_formula (Expr *F);
+  static Expr *find_or_add_expr (Expr *F);
 
   template<typename C>
   static C *find_or_add (C *F) { 
-    Expr *res = find_or_add_formula (F);
+    Expr *res = find_or_add_expr (F);
     return dynamic_cast<C *> (res);
   }
   
 private:
-  typedef std::tr1::unordered_set<Expr *, Expr::Hash, Expr::Equal> FormulaStore;  
+  typedef std::tr1::unordered_set<Expr *, Expr::Hash, Expr::Equal> ExprStore;  
 
-  static FormulaStore *formula_store;
+  static ExprStore *expr_store;
   static void dumpStore ();
   mutable int refcount;
 };
@@ -256,7 +257,7 @@ private:
  *  They are not element of the microcode language.
  *  Variables are used for term operations. A variable is just
  *  a leaf defined by an identifier (a string). They can be used to define
- *  parameters of some piece of code for instance, or of a logical formula.
+ *  parameters of some piece of code for instance, or of a logical expr.
  *****************************************************************************/
 class Variable : public Expr {
 private:
@@ -288,8 +289,8 @@ public:
 
   std::string pp(std::string prefix = "") const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 /*****************************************************************************/
@@ -346,8 +347,8 @@ public:
 
   std::string pp(std::string prefix = "") const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 /*****************************************************************************/
@@ -391,8 +392,8 @@ public:
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 /*****************************************************************************/
@@ -444,8 +445,8 @@ public:
   virtual unsigned int get_depth() const;
   std::string pp(std::string prefix = "") const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 /******************************************************************************/
@@ -481,8 +482,8 @@ public:
   virtual unsigned int get_depth() const;
   std::string pp(std::string prefix = "") const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 class QuantifiedExpr : public Expr {
@@ -517,8 +518,8 @@ public:
   virtual unsigned int get_depth() const;
   std::string pp(std::string prefix = "") const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 
@@ -587,8 +588,8 @@ public:
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 /*****************************************************************************/
@@ -630,8 +631,8 @@ public:
 
   std::string pp(std::string prefix = "") const;
 
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
 std::ostream &operator<< (std::ostream &o, Expr &e);

@@ -32,9 +32,9 @@
 # define KERNEL_EXPRESSIONS_BOTTOMUPREWRITEPATTERNRULE_HH
 
 # include <list>
-# include <kernel/expressions/FormulaRewritingRule.hh>
+# include <kernel/expressions/ExprRewritingRule.hh>
 
-class BottomUpRewritePatternRule : public FormulaRewritingRule
+class BottomUpRewritePatternRule : public ExprRewritingRule
 {
 private:
   const Expr *pattern;

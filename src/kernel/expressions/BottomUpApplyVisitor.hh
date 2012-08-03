@@ -31,9 +31,9 @@
 #ifndef BOTTOMUPAPPLYVISITOR_HH
 # define BOTTOMUPAPPLYVISITOR_HH
 
-# include <kernel/expressions/FormulaVisitor.hh>
+# include <kernel/expressions/ExprVisitor.hh>
 
-class BottomUpApplyVisitor : public FormulaVisitor 
+class BottomUpApplyVisitor : public ExprVisitor 
 {
 protected :
   BottomUpApplyVisitor ();
@@ -54,7 +54,7 @@ public :
   virtual void apply (Expr *) = 0;
 };  
 
-class ConstBottomUpApplyVisitor : public ConstFormulaVisitor 
+class ConstBottomUpApplyVisitor : public ConstExprVisitor 
 {
 protected :
   ConstBottomUpApplyVisitor ();

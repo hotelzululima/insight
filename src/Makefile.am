@@ -63,8 +63,8 @@ kernel_source = \
 	kernel/annotations/CallRetAnnotation.hh \
 	kernel/annotations/CallRetAnnotation.cc \
 	kernel/annotations/GenericAnnotation.hh \
-	kernel/annotations/FormulaAnnotation.cc \
-	kernel/annotations/FormulaAnnotation.hh \
+	kernel/annotations/ExprAnnotation.cc \
+	kernel/annotations/ExprAnnotation.hh \
 	kernel/expressions/FunctionRewritingRule.hh \
 	kernel/expressions/FunctionRewritingRule.cc \
 	kernel/expressions/BottomUpRewritePatternRule.hh 	\
@@ -76,15 +76,16 @@ kernel_source = \
 	kernel/expressions/ExprLexer.hh 	\
 	kernel/expressions/ExprLexer.ll		\
 	kernel/expressions/ExprParser.yy 	\
-	kernel/expressions/FormulaUtils.hh	\
-	kernel/expressions/FormulaUtils.cc	\
-	kernel/expressions/FormulaVisitor.hh	\
-	kernel/expressions/FormulaRewritingFunctions.hh	\
-	kernel/expressions/FormulaRewritingFunctions.cc	\
-	kernel/expressions/FormulaRewritingRule.hh	\
-	kernel/expressions/FormulaRewritingRule.cc	\
-	kernel/expressions/FormulaReplaceSubtermRule.hh	\
-	kernel/expressions/FormulaReplaceSubtermRule.cc	\
+	kernel/expressions/ExprUtils.hh	\
+	kernel/expressions/ExprUtils.cc	\
+	kernel/expressions/ExprUtils.ii	\
+	kernel/expressions/ExprVisitor.hh	\
+	kernel/expressions/ExprRewritingFunctions.hh	\
+	kernel/expressions/ExprRewritingFunctions.cc	\
+	kernel/expressions/ExprRewritingRule.hh	\
+	kernel/expressions/ExprRewritingRule.cc	\
+	kernel/expressions/ExprReplaceSubtermRule.hh	\
+	kernel/expressions/ExprReplaceSubtermRule.cc	\
 	kernel/expressions/Operators.cc   	\
 	kernel/expressions/Operators.def  	\
 	kernel/expressions/Operators.hh   	\

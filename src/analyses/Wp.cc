@@ -31,13 +31,13 @@
 
 #include <list>
 #include <set>
-#include <kernel/expressions/FormulaUtils.hh>
+#include <kernel/expressions/ExprUtils.hh>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/Microcode.hh>
 #include <utils/graph.hh>
 
 using namespace std;
-using namespace FormulaUtils;
+using namespace ExprUtils;
 
 typedef std::list<const MemCell *> MemCellContainer;
 
@@ -116,7 +116,7 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
   vector< pair<MemCellContainer, MemCellContainer > > all_subsets = 
     construct_all_subsets(all_memrefs);
 
-  // 3. construct the formula
+  // 3. construct the expr
   vector<Expr *> phi_clauses;
 
   Expr *phi = Constant::True ();

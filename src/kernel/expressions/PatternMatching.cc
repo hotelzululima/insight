@@ -31,12 +31,12 @@
 #include <algorithm>
 
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/expressions/ExprVisitor.hh>
 #include <kernel/expressions/PatternMatching.hh>
 
 using namespace std;
 
-class PatternMatchingVisitor : public ConstFormulaVisitor {
+class PatternMatchingVisitor : public ConstExprVisitor {
 public :
   typedef PatternMatching::VarList VarList;
 

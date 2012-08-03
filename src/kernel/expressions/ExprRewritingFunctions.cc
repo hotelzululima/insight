@@ -28,18 +28,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <kernel/expressions/FormulaRewritingFunctions.hh>
+#include <kernel/expressions/ExprRewritingFunctions.hh>
 
 #include <algorithm>
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/FormulaUtils.hh>
+#include <kernel/expressions/ExprUtils.hh>
 
 using namespace std;
 
 void
-rewrite_in_place (FunctionRewritingRule::RewriteFormulaFunc *func, 
+rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func, 
 		  Expr **pF) 
 {
   Expr *newF = func (*pF);
@@ -86,7 +86,7 @@ cancel_lnot_not (const Expr *phi)
 {
   Expr *pattern = Expr::createNot (UnaryApp::create (NOT, 
 						     Variable::create ("X")));
-  Expr *result = FormulaUtils::extract_v_pattern ("X", phi, pattern);
+  Expr *result = ExprUtils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
   return result;
@@ -499,7 +499,7 @@ binary_operations_simplification (const Expr *e)
 Expr * 
 simplify_formula (const Expr *phi)
 {
-  static FunctionRewritingRule::RewriteFormulaFunc *functions[] = {
+  static FunctionRewritingRule::RewriteExprFunc *functions[] = {
     cancel_lnot_not, 
     simplify_expr, 
     syntaxic_equality_rule, 
@@ -513,7 +513,7 @@ simplify_formula (const Expr *phi)
     NULL 
   };
 
-  FunctionRewritingRule::RewriteFormulaFunc **f;
+  FunctionRewritingRule::RewriteExprFunc **f;
   Expr *result = phi->ref ();
   for (f = functions; *f && result == phi; f++)
     rewrite_in_place (*f, &result);
@@ -524,7 +524,7 @@ simplify_formula (const Expr *phi)
 Expr * 
 simplify_expr (const Expr *phi)
 {
-  static FunctionRewritingRule::RewriteFormulaFunc *functions[] = {
+  static FunctionRewritingRule::RewriteExprFunc *functions[] = {
     compute_constants, 
     void_operations, 
     bit_field_computation, 
@@ -532,7 +532,7 @@ simplify_expr (const Expr *phi)
     NULL 
   };
 
-  FunctionRewritingRule::RewriteFormulaFunc **f;
+  FunctionRewritingRule::RewriteExprFunc **f;
   Expr *result = phi->ref ();
   for (f = functions; *f && result == phi; f++)
     rewrite_in_place (*f, &result);

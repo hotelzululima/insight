@@ -32,8 +32,8 @@
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/FunctionRewritingRule.hh>
 
-FunctionRewritingRule::FunctionRewritingRule (RewriteFormulaFunc *fRW)
-  : FormulaRewritingRule (), rewrite_formula (fRW)
+FunctionRewritingRule::FunctionRewritingRule (RewriteExprFunc *fRW)
+  : ExprRewritingRule (), rewrite_expr (fRW)
 {
 }
 
@@ -44,7 +44,7 @@ FunctionRewritingRule::~FunctionRewritingRule ()
 Expr *
 FunctionRewritingRule::rewrite (const Expr *F)
 {
-  Expr *result = rewrite_formula (F);
+  Expr *result = rewrite_expr (F);
   if (result == NULL)
     result = F->ref ();
 

@@ -28,38 +28,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef KERNEL_EXPRESSIONS_FORMULAREWRITINGRULE_HH
-# define KERNEL_EXPRESSIONS_FORMULAREWRITINGRULE_HH
 
-# include <kernel/expressions/FormulaVisitor.hh>
+#include <kernel/Expressions.hh>
+#include "ExprReplaceSubtermRule.hh"
 
-class Expr;
 
-class FormulaRewritingRule : public ConstFormulaVisitor 
+ExprReplaceSubtermRule::ExprReplaceSubtermRule (const Expr *p, const Expr *v)
+  : pattern (p), value (v)
 {
+}
 
-protected:
-  FormulaRewritingRule ();
+ExprReplaceSubtermRule::~ExprReplaceSubtermRule ()
+{
+}
 
-public:
-
-  virtual ~FormulaRewritingRule ();
-
-  virtual void visit (const Constant *);
-  virtual void visit (const Variable *);
-  virtual void visit (const UnaryApp *);
-  virtual void visit (const BinaryApp *);
-  virtual void visit (const TernaryApp *);
-  virtual void visit (const MemCell *);
-  virtual void visit (const RegisterExpr *);
-  virtual void visit (const QuantifiedExpr *);
-
-  virtual Expr *rewrite (const Expr *F) = 0;
-
-  virtual Expr *get_result () const;
-
-private:
-  Expr *result;
-};
-
-#endif /* ! KERNEL_EXPRESSIONS_FORMULAREWRITINGRULE_HH */
+Expr *
+ExprReplaceSubtermRule::rewrite (const Expr *phi)
+{
+  if (phi == pattern) 
+    return value->ref ();
+  return phi->ref ();
+}

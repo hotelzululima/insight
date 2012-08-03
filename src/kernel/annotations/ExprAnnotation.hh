@@ -27,56 +27,35 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef KERNEL_ANNOTATIONS_EXPR_ANNOTATION_HH
+#define KERNEL_ANNOTATIONS_EXPR_ANNOTATION_HH
 
-#include "FormulaAnnotation.hh"
+#include <string>
+#include <kernel/Annotation.hh>
+#include <kernel/Expressions.hh>
 
-FormulaAnnotation::FormulaAnnotation()
-  : Annotation (), formula (NULL) 
+class ExprAnnotation : public Annotation
 {
-}
+public:
+  ExprAnnotation ();
 
-FormulaAnnotation::FormulaAnnotation (const FormulaAnnotation &other) 
-  : Annotation (other), formula (NULL)
-{
-  set_formula (other.formula);
-}
+  ExprAnnotation (const ExprAnnotation &other);
 
-FormulaAnnotation::FormulaAnnotation (Expr *F)
-  : Annotation ()
-{
-  formula = F->ref ();
-}
+  ExprAnnotation (Expr *F);
 
-FormulaAnnotation::~FormulaAnnotation()
-{
-  if (formula != NULL)
-    formula->deref ();
-}
+  virtual ~ExprAnnotation ();
 
-void 
-FormulaAnnotation::output_text (std::ostream &out) const
-{
-  out << formula->pp();
-}
+  virtual void output_text (std::ostream &out) const;
 
-void *
-FormulaAnnotation::clone() const
-{ 
-  return new FormulaAnnotation (formula);
-}
+  virtual void *clone () const;
 
-void 
-FormulaAnnotation::set_formula (Expr *F)
-{
-  if (formula != NULL)
-    formula->deref ();
-  formula = F->ref ();  
-}
+  virtual void set_expr (Expr *F);
 
-			/* --------------- */
+  virtual const Expr *get_expr () const;
 
-const Expr *
-FormulaAnnotation::get_formula () const
-{
-  return formula;
-}
+private:
+  Expr *expr;
+};
+
+
+#endif /* KERNEL_ANNOTATIONS_EXPR_ANNOTATION_HH */

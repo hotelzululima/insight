@@ -31,21 +31,21 @@
 #ifndef KERNEL_EXPRESSIONS_FUNCTIONREWRITINGRULE_HH
 # define KERNEL_EXPRESSIONS_FUNCTIONREWRITINGRULE_HH
 
-# include <kernel/expressions/FormulaRewritingRule.hh>
+# include <kernel/expressions/ExprRewritingRule.hh>
 
-class FunctionRewritingRule : public FormulaRewritingRule
+class FunctionRewritingRule : public ExprRewritingRule
 {
 public:
 
-  typedef Expr *RewriteFormulaFunc (const Expr *);
+  typedef Expr *RewriteExprFunc (const Expr *);
 
-  FunctionRewritingRule (RewriteFormulaFunc *fRW);
+  FunctionRewritingRule (RewriteExprFunc *fRW);
   virtual ~FunctionRewritingRule ();
 
   virtual Expr *rewrite (const Expr *F);
 
 private:
-  RewriteFormulaFunc *rewrite_formula;
+  RewriteExprFunc *rewrite_expr;
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_FUNCTIONREWRITINGRULE_HH */

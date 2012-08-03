@@ -28,37 +28,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <kernel/expressions/FormulaUtils.hh>
+#include <kernel/expressions/ExprUtils.hh>
 
 #include <kernel/expressions/PatternMatching.hh>
-#include <kernel/expressions/FormulaRewritingFunctions.hh>
-#include <kernel/expressions/FormulaReplaceSubtermRule.hh>
+#include <kernel/expressions/ExprRewritingFunctions.hh>
+#include <kernel/expressions/ExprReplaceSubtermRule.hh>
 #include <kernel/expressions/BottomUpApplyVisitor.hh>
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 #include <kernel/Expressions.hh>
 
 
-using namespace FormulaUtils;
+using namespace ExprUtils;
 
 Expr *
-FormulaUtils::replace_subterm (const Expr *F, const Expr *pattern, 
+ExprUtils::replace_subterm (const Expr *F, const Expr *pattern, 
 			       const Expr *value)
 {
-  FormulaReplaceSubtermRule r (pattern, value);
+  ExprReplaceSubtermRule r (pattern, value);
   F->acceptVisitor (&r);
 
   return r.get_result ();
 }
 
 Expr * 
-FormulaUtils::replace_variable (const Expr *F, 
+ExprUtils::replace_variable (const Expr *F, 
 				const Variable *v, const Expr *value)
 {
   return replace_subterm (F, v, value);
 }
 
 bool 
-FormulaUtils::replace_variable_and_assign (Expr **phi, 
+ExprUtils::replace_variable_and_assign (Expr **phi, 
 					   const Variable *v, 
 					   const Expr *value)
 {
@@ -71,7 +71,7 @@ FormulaUtils::replace_variable_and_assign (Expr **phi,
 }
 
 Expr *
-FormulaUtils::bottom_up_rewrite (const Expr *phi, FormulaRewritingRule &r)
+ExprUtils::bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r)
 {
   phi->acceptVisitor (r);
 
@@ -79,8 +79,7 @@ FormulaUtils::bottom_up_rewrite (const Expr *phi, FormulaRewritingRule &r)
 }
 
 bool 
-FormulaUtils::bottom_up_rewrite_and_assign (Expr **phi, 
-					    FormulaRewritingRule &r)
+ExprUtils::bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r)
 {
   Expr *new_phi = bottom_up_rewrite (*phi, r);
   bool result = (*phi != new_phi);
@@ -92,61 +91,61 @@ FormulaUtils::bottom_up_rewrite_and_assign (Expr **phi,
 }
 
 Expr *
-FormulaUtils::bottom_up_rewrite_pattern (const Expr *phi,
+ExprUtils::bottom_up_rewrite_pattern (const Expr *phi,
 					 const Expr *pattern,
 					 const VarList &fv,
 					 const Expr *value)
 {
   BottomUpRewritePatternRule r (pattern, fv, value);
 
-  return FormulaUtils::bottom_up_rewrite (phi, r);
+  return ExprUtils::bottom_up_rewrite (phi, r);
 }
   
 bool 
-FormulaUtils::bottom_up_rewrite_pattern_and_assign (Expr **phi,
+ExprUtils::bottom_up_rewrite_pattern_and_assign (Expr **phi,
 						    const Expr *pattern,
 						    const VarList &fv,
 						    const Expr *value)
 {
   BottomUpRewritePatternRule r (pattern, fv, value);
 
-  return FormulaUtils::bottom_up_rewrite_and_assign (phi, r);
+  return ExprUtils::bottom_up_rewrite_and_assign (phi, r);
 }
 
 bool
-FormulaUtils::rewrite_in_DNF (Expr **phi)
+ExprUtils::rewrite_in_DNF (Expr **phi)
 {
   FunctionRewritingRule r (disjunctive_normal_form_rule);
 
-  FormulaUtils::simplify_level0 (phi);
-  bool result = FormulaUtils::bottom_up_rewrite_and_assign (phi, r);
-  FormulaUtils::simplify_level0 (phi);
+  ExprUtils::simplify_level0 (phi);
+  bool result = ExprUtils::bottom_up_rewrite_and_assign (phi, r);
+  ExprUtils::simplify_level0 (phi);
 
   return result;
 }
 
 bool
-FormulaUtils::simplify_level0 (Expr **F)
+ExprUtils::simplify_level0 (Expr **F)
 {
   FunctionRewritingRule r (simplify_formula);
 
-  bool result = FormulaUtils::bottom_up_rewrite_and_assign (F, r);
+  bool result = ExprUtils::bottom_up_rewrite_and_assign (F, r);
 
   return result;
 }
 
 
 bool
-FormulaUtils::simplify (Expr **E)
+ExprUtils::simplify (Expr **E)
 {
   Expr **F = (Expr **) E;
   FunctionRewritingRule r (simplify_expr);
 
-  bool result = FormulaUtils::bottom_up_rewrite_and_assign (F, r);
+  bool result = ExprUtils::bottom_up_rewrite_and_assign (F, r);
   if (result)
     {
       while (result)
-	result = FormulaUtils::bottom_up_rewrite_and_assign (F, r);
+	result = ExprUtils::bottom_up_rewrite_and_assign (F, r);
       result = true;
     }
 
@@ -154,8 +153,8 @@ FormulaUtils::simplify (Expr **E)
 }
 
 Expr * 
-FormulaUtils::extract_v_pattern (std::string var_id, const Expr *phi, 
-				 const Expr *pattern)
+ExprUtils::extract_v_pattern (std::string var_id, const Expr *phi, 
+			      const Expr *pattern)
 {
   Expr *result = NULL;
   Variable *v = Variable::create (var_id); 

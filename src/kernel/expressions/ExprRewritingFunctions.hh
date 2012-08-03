@@ -28,14 +28,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef FORMULAREWRITINGFUNCTIONS_HH
-# define FORMULAREWRITINGFUNCTIONS_HH
+#ifndef KERNEL_EXPRESSIONS_EXPRREWRITINGFUNCTIONS_HH
+# define KERNEL_EXPRESSIONS_EXPRREWRITINGFUNCTIONS_HH
 
 # include <kernel/Expressions.hh>
 # include <kernel/expressions/FunctionRewritingRule.hh>
 
 extern void
-rewrite_in_place (FunctionRewritingRule::RewriteFormulaFunc *func, 
+rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func, 
 		  Expr **pF);
   
 extern Expr * 
@@ -90,4 +90,4 @@ extern Expr *
 simplify_expr (const Expr *phi);
 
 
-#endif /* ! FORMULAREWRITINGFUNCTIONS_HH */
+#endif /* !KERNEL_EXPRESSIONS_EXPRREWRITINGFUNCTIONS_HH */

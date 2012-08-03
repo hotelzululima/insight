@@ -31,7 +31,7 @@
 #include <kernel/Expressions.hh>
 #include "BottomUpApplyVisitor.hh"
 
-BottomUpApplyVisitor::BottomUpApplyVisitor() : FormulaVisitor () 
+BottomUpApplyVisitor::BottomUpApplyVisitor() : ExprVisitor () 
 { 
 }
 
@@ -110,7 +110,7 @@ BottomUpApplyVisitor::pre (Expr *)
 {
 }
 
-ConstBottomUpApplyVisitor::ConstBottomUpApplyVisitor() : ConstFormulaVisitor () 
+ConstBottomUpApplyVisitor::ConstBottomUpApplyVisitor() : ConstExprVisitor () 
 { 
 }
 

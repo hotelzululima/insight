@@ -37,12 +37,12 @@
 #include <kernel/Expressions.hh>
 #include <kernel/Insight.hh>
 #include <kernel/expressions/PatternMatching.hh>
-#include <kernel/expressions/FormulaUtils.hh>
+#include <kernel/expressions/ExprUtils.hh>
 
 using namespace std;
 
 static Expr *
-s_parse_formula (const string &s)
+s_parse_expr (const string &s)
 {
   Expr *F = Expr::parse (NULL, s);
 
@@ -55,7 +55,7 @@ static bool
 s_check_is_true (Expr *F)
 {  
   Expr *tmp = F->ref ();
-  FormulaUtils::simplify_level0 (&tmp);
+  ExprUtils::simplify_level0 (&tmp);
   Option<bool> value = tmp->try_eval_level0 ();
   bool result = value.hasValue ();
 
@@ -102,31 +102,31 @@ ATF_TEST_CASE (check_tautologies);
 
 ATF_TEST_CASE_HEAD (check_tautologies)
 { 
-  set_md_var ("descr", "check that some simple formulas are tautologies");
+  set_md_var ("descr", "check that some simple exprs are tautologies");
 } 
 
 ATF_TEST_CASE_BODY (check_tautologies) 
 { 
   Insight::init ();
-  Expr *F = s_parse_formula ("(LNOT (X /\\ (LNOT X)))");
+  Expr *F = s_parse_expr ("(LNOT (X /\\ (LNOT X)))");
 
   ATF_REQUIRE (F != NULL);
   CHK_TAUTOLOGY (F);
   F->deref ();
 
-  F = s_parse_formula ("(X \\/ LNOT X)");
+  F = s_parse_expr ("(X \\/ LNOT X)");
   ATF_REQUIRE (F != NULL);
   CHK_TAUTOLOGY (F);
   F->deref ();
 
-  F = s_parse_formula ("(X /\\ X)");
+  F = s_parse_expr ("(X /\\ X)");
   ATF_REQUIRE (F != NULL);
-  Expr *G = s_parse_formula ("X");
+  Expr *G = s_parse_expr ("X");
   ATF_REQUIRE (G != NULL);
   CHK_EQUIV (F, G);
   F->deref ();
 
-  F = s_parse_formula ("(X \\/ X)");
+  F = s_parse_expr ("(X \\/ X)");
   ATF_REQUIRE (F != NULL);
   CHK_EQUIV (F, G);
   G->deref ();
@@ -142,7 +142,7 @@ ATF_TEST_CASE_BODY (check_tautologies)
 static Expr *
 s_replace (Expr *F, Expr *P, Expr *V)
 {
-  Expr *result = FormulaUtils::replace_subterm (F, P, V);
+  Expr *result = ExprUtils::replace_subterm (F, P, V);
 
   F->deref ();
   P->deref ();
@@ -167,23 +167,23 @@ ATF_TEST_CASE_BODY(check_replacement)
    * and check equivalence with X || Y 
    */
 
-  Expr *F = s_parse_formula ("Y \\/ X");
-  Expr *X = s_parse_formula ("X");
-  Expr *Y = s_parse_formula ("Y");
-  Expr *tmp = s_parse_formula ("tmp");
+  Expr *F = s_parse_expr ("Y \\/ X");
+  Expr *X = s_parse_expr ("X");
+  Expr *Y = s_parse_expr ("Y");
+  Expr *tmp = s_parse_expr ("tmp");
 
   F = s_replace (F, Y->ref (), tmp->ref ()); /* F <- replace (Y || X) Y tmp */  
-  Expr *aux = s_parse_formula ("tmp \\/ X");
+  Expr *aux = s_parse_expr ("tmp \\/ X");
   CHK_EQUIV (F, aux);
   aux->deref ();
 
   F = s_replace (F, X->ref (), Y->ref ()); /* F <- replace (tmp || X) X Y */
-  aux = s_parse_formula ("tmp \\/ Y");
+  aux = s_parse_expr ("tmp \\/ Y");
   CHK_EQUIV (F, aux);
   aux->deref ();
 
   F = s_replace (F, tmp->ref (), X->ref ()); /* F <- replace (tmp || Y) tmp X */
-  aux = s_parse_formula ("X \\/ Y");
+  aux = s_parse_expr ("X \\/ Y");
   CHK_EQUIV (F, aux);
   aux->deref ();
   F->deref ();
@@ -197,10 +197,10 @@ ATF_TEST_CASE_BODY(check_replacement)
    * replace $F (MUL 2 X) Z)
    * and (EQ Z (ADD X X));
    */
-  F = s_replace (s_parse_formula ("(EQ (2 MUL_U X)  (X + X))"),
-		 s_parse_formula ("2 MUL_U X"), 
-		 s_parse_formula ("Z"));
-  aux = s_parse_formula ("(EQ Z  (X + X))");
+  F = s_replace (s_parse_expr ("(EQ (2 MUL_U X)  (X + X))"),
+		 s_parse_expr ("2 MUL_U X"), 
+		 s_parse_expr ("Z"));
+  aux = s_parse_expr ("(EQ Z  (X + X))");
   CHK_EQUIV (F, aux);
   F->deref ();
   aux->deref ();
@@ -229,14 +229,14 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
    * PM[Z] <=> X
    */
 
-  Expr *F = s_parse_formula ("(EQ (2 MUL_U X)  (X + X))");
-  Expr *pattern = s_parse_formula ("(EQ Y (ADD T Z))");
+  Expr *F = s_parse_expr ("(EQ (2 MUL_U X)  (X + X))");
+  Expr *pattern = s_parse_expr ("(EQ Y (ADD T Z))");
   list<const Variable *> free_variables;
-  Variable *Y = dynamic_cast<Variable *> (s_parse_formula ("Y"));
+  Variable *Y = dynamic_cast<Variable *> (s_parse_expr ("Y"));
   ATF_REQUIRE (Y != NULL);
-  Variable *T = dynamic_cast<Variable *> (s_parse_formula ("T"));
+  Variable *T = dynamic_cast<Variable *> (s_parse_expr ("T"));
   ATF_REQUIRE (T != NULL);
-  Variable *Z = dynamic_cast<Variable *> (s_parse_formula ("Z"));
+  Variable *Z = dynamic_cast<Variable *> (s_parse_expr ("Z"));
   ATF_REQUIRE (Z != NULL);
 
   free_variables.push_back (Y);
@@ -255,21 +255,21 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       F = 
 	BinaryApp::create (EQ, 
 			   dynamic_cast<const Expr *>(PM->get (Y))->ref (), 
-			   dynamic_cast<Expr *>(s_parse_formula ("2 MUL_U X")));
+			   dynamic_cast<Expr *>(s_parse_expr ("2 MUL_U X")));
       CHK_TAUTOLOGY (F);
       F->deref ();
 
       ATF_REQUIRE (PM->has (T));
       F = BinaryApp::create (EQ, 
 			     dynamic_cast<const Expr *>(PM->get (T))->ref (), 
-			     dynamic_cast<Expr *>(s_parse_formula ("X")));
+			     dynamic_cast<Expr *>(s_parse_expr ("X")));
       CHK_TAUTOLOGY (F);
       F->deref ();
 
       ATF_REQUIRE (PM->has (Z));
       F = BinaryApp::create (EQ, 
 			     dynamic_cast<const Expr *>(PM->get (Z))->ref (), 
-			     dynamic_cast<Expr *>(s_parse_formula ("X")));
+			     dynamic_cast<Expr *>(s_parse_expr ("X")));
       CHK_TAUTOLOGY (F);
       delete PM;
       Y->deref ();
