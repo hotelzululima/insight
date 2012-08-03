@@ -37,9 +37,7 @@ TESTS = \
  \
  check-diff
 
-#TESTS =
-
-EXTRA_DIST=${TESTS:%=%.result} ${CHECKRESULTS} Kyuafile
+EXTRA_DIST=${TESTS:%=%.result} ${TESTS:%.res=%.spec.sh} ${CHECKRESULTS} Kyuafile
 
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}

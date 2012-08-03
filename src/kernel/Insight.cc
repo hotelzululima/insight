@@ -32,7 +32,6 @@
 
 #include "kernel/Expressions.hh"
 #include "kernel/Architecture.hh"
-#include "kernel/expressions/Formula.hh"
 
 
 static int init_count = 0;
