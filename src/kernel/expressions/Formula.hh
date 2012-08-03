@@ -171,7 +171,6 @@ public:
   bool is_QuantifiedFormula() const;
   bool is_ExistentialFormula() const;
   bool is_UniversalFormula() const;
-  bool is_BooleanConstantFormula() const;
   bool is_TrueFormula() const;
   bool is_FalseFormula() const;
 
@@ -244,34 +243,6 @@ public:
   virtual std::string pp(std::string prefix = "") const = 0;
 
 };
-
-class BooleanConstantFormula : public AtomicFormula
-{
-private:
-  BooleanConstantFormula (bool value); 
-  
-  bool value;
-
-  virtual ~BooleanConstantFormula();
-
-public:
-
-  static BooleanConstantFormula *create (bool value);
-
-  virtual bool get_value () const;
-
-  virtual bool has_type_of (const Formula *F) const;
-
-  virtual std::string pp(std::string prefix = "") const;
-
-  virtual size_t hash () const;
-
-  virtual bool equal (const Formula *F) const;
-
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
-};
-
 
 class NaryBooleanFormula : public Formula
 {

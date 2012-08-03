@@ -797,6 +797,7 @@ string Constant::pp(std::string prefix) const
 {
   ostringstream oss;
   oss << prefix << "0x" << hex << uppercase << val << bv_pp();
+
   return oss.str();
 }
 

@@ -132,7 +132,7 @@ Formula *
 ConditionalSet::cs_flatten (const Formula *set) 
 {
   std::vector<Expr*> all_values = cs_possible_values (set);
-  Formula *flat_set = BooleanConstantFormula::create (false);
+  Formula *flat_set = Constant::False ();
 
   for (int i = 0; i< (int) all_values.size (); i++) 
     {

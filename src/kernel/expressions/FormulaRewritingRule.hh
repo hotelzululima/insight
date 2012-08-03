@@ -55,7 +55,6 @@ public:
   virtual void visit (const MemCell *);
   virtual void visit (const RegisterExpr *);
 
-  virtual void visit (const BooleanConstantFormula *);
   virtual void visit (const ConjunctiveFormula *);
   virtual void visit (const DisjunctiveFormula *);
   virtual void visit (const NegationFormula *);

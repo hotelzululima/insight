@@ -125,13 +125,6 @@ FormulaRewritingRule::visit (const RegisterExpr *reg)
   result = rewrite (reg);
 }
 
-
-void 
-FormulaRewritingRule::visit (const BooleanConstantFormula *c)
-{
-  result = rewrite (c);
-}
-
 void 
 FormulaRewritingRule::visit (const NaryBooleanFormula *F)
 {

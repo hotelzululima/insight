@@ -122,7 +122,7 @@ LocatedLValue::get_LValue () const
 DataDependencyLocalContext::DataDependencyLocalContext(DataDependency *fixpoint_structure) :
   fixpoint_structure(fixpoint_structure)
 {
-  the_lvalues = BooleanConstantFormula::create (false);
+  the_lvalues = Constant::False ();
 }
 
 /*****************************************************************************/
@@ -407,7 +407,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
   DataDependencyLocalContext *new_context = 
     new DataDependencyLocalContext (*this);
 
-  Formula *deps = BooleanConstantFormula::create (false);
+  Formula *deps = Constant::False ();
   list<const LValue *> depends = dependencies (rval);
   for (list<const LValue *>::iterator elt = depends.begin(); elt != depends.end(); 
        elt++) {
@@ -694,7 +694,7 @@ DataDependency::get_dependencies (ConcreteProgramPoint pp, int max_step_nb)
   if (ctxt != NULL)
     result =  (*(ctxt->get_watched_lvalues()))->ref ();
   else
-    result = BooleanConstantFormula::create (false);
+    result = Constant::False ();
 
   return result;
 }

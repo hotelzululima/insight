@@ -191,13 +191,6 @@ public:
     result = new PatternMatching ();  
   }
 
-  virtual void visit (const BooleanConstantFormula *E) {
-    if (E == F)
-      result = new PatternMatching ();
-    else 
-      throw PatternMatching::Failure ();  
-  }
-
   virtual void visit (const ConjunctiveFormula *E) {
     visit ((const NaryBooleanFormula *) E);
   }

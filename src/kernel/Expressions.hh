@@ -229,6 +229,9 @@ protected:
 
 public:
 
+  static inline Constant *True () { return create (1, 0, 1); }
+  static inline Constant *False () { return create (0, 0, 1); }
+
   static inline Constant *zero (int size = BV_DEFAULT_SIZE) { 
     return create (0, 0, size); 
   }

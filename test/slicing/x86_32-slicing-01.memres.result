@@ -519,12 +519,12 @@ Maximum dependencies at pp (0x5,0) : { %eax  }
 ================================================================================
 Running backward arrow < StaticArrow (0x0,0) %eax := 0x4  --> (0x5,0) >
 New context at pp (0x0,0) :
-	FALSE
+	0x0{0;1}
 Maximum dependencies at pp (0x0,0) : {  }
 ================================================================================
 Running backward arrow < StaticArrow (0x0,0) %eax := 0x4  --> (0x5,0) >
 New context at pp (0x0,0) :
-	FALSE
+	0x0{0;1}
 Maximum dependencies at pp (0x0,0) : {  }
 DataDependency: Fixpoint Reached!
 {  }

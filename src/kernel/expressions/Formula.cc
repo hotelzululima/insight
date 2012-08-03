@@ -87,10 +87,6 @@ Formula::dumpStore ()
 /*****************************************************************************/
 Formula::Formula() : refcount(0) {}
 
-BooleanConstantFormula::BooleanConstantFormula (bool val) : value (val)
-{
-}
-
 NaryBooleanFormula::NaryBooleanFormula (Formula *op)
 {
   ops.push_back (op);
@@ -171,12 +167,6 @@ DisjunctiveFormula::create_from_operands (const Operands &ops) const
   return create (ops);
 }
 
-BooleanConstantFormula *
-BooleanConstantFormula::create (bool value)
-{
-  return find_or_add (new BooleanConstantFormula (value));
-}
-
 NegationFormula::NegationFormula (Formula *phi)
   : NaryBooleanFormula (phi)
 {
@@ -247,10 +237,6 @@ NegationFormula::~NegationFormula()
 {
 }
 
-BooleanConstantFormula::~BooleanConstantFormula()
-{
-}
-
 QuantifiedFormula::~QuantifiedFormula ()
 {
 }
@@ -308,25 +294,18 @@ bool Formula::is_UniversalFormula() const
   return bcf != NULL && ! bcf->is_exist ();
 }
 
-bool Formula::is_BooleanConstantFormula() const
-{
-  const BooleanConstantFormula *bcf = 
-    dynamic_cast<const BooleanConstantFormula *>(this);
-  return bcf != NULL;
-}
-
 bool Formula::is_TrueFormula() const
 {
-  const BooleanConstantFormula *bcf = 
-    dynamic_cast<const BooleanConstantFormula *>(this);
-  return bcf != NULL && bcf->get_value ();
+  const Constant *bcf = 
+    dynamic_cast<const Constant *>(this);
+  return bcf != NULL && (bcf->get_bv_size () == 1) && bcf->get_val ();
 }
 
 bool Formula::is_FalseFormula() const
 {
-  const BooleanConstantFormula *bcf = 
-    dynamic_cast<const BooleanConstantFormula *>(this);
-  return bcf != NULL && ! bcf->get_value ();
+  const Constant *bcf = 
+    dynamic_cast<const Constant *>(this);
+  return bcf != NULL && (bcf->get_bv_size () == 1) && ! bcf->get_val ();
 }
 
 /*****************************************************************************/
@@ -349,11 +328,6 @@ bool NegationFormula::has_type_of(const Formula *F) const
 bool QuantifiedFormula::has_type_of(const Formula *F) const
 {
   return dynamic_cast<const QuantifiedFormula *>(F);
-}
-
-bool BooleanConstantFormula::has_type_of(const Formula *F) const
-{
-  return dynamic_cast<const BooleanConstantFormula *>(F);
 }
 
 /*****************************************************************************/
@@ -403,12 +377,6 @@ const Formula *NegationFormula::get_neg() const
 }
 
 bool 
-BooleanConstantFormula::get_value () const 
-{
-  return value;
-}
-
-bool 
 QuantifiedFormula::is_exist () const 
 {
   return exist;
@@ -429,13 +397,6 @@ QuantifiedFormula::get_body() const
 /*****************************************************************************/
 /* Syntactic Equality                                                        */
 /*****************************************************************************/
-
-bool BooleanConstantFormula::equal (const Formula *e) const
-{
-  const BooleanConstantFormula *bcf = 
-    dynamic_cast<const BooleanConstantFormula *> (e);
-  return bcf != NULL && value == bcf->get_value ();
-}
 
 bool 
 NaryBooleanFormula::equal (const Formula *F) const 
@@ -472,12 +433,6 @@ size_t
 Formula::hash () const
 {
   return std::tr1::hash<const char*>()(typeid(*this).name());
-}
-
-size_t
-BooleanConstantFormula::hash () const
-{
-  return this->Formula::hash () + value ? 113 : 77;
 }
 
 size_t 
@@ -604,13 +559,6 @@ Formula::to_string () const
   return pp ("");
 }
 
-string BooleanConstantFormula::pp(std::string prefix) const
-{
-  ostringstream oss;
-  oss << prefix << (value ? "TRUE" : "FALSE");
-  return oss.str();
-}
-
 static string 
 pp_NaryBooleanFormula (std::string prefix, const char *opstr, const char *sep, 
 		       const NaryBooleanFormula::Operands &operands)
@@ -733,12 +681,6 @@ Formula::acceptVisitor (ConstFormulaVisitor &visitor) const
 }
 
 void 
-BooleanConstantFormula::acceptVisitor (FormulaVisitor *visitor) 
-{
-  visitor->visit (this);
-}
-
-void 
 ConjunctiveFormula::acceptVisitor (FormulaVisitor *visitor) 
 {
   visitor->visit (this);
@@ -763,12 +705,6 @@ NegationFormula::acceptVisitor (FormulaVisitor *visitor)
 }
 
 			/* --------------- */
-
-void 
-BooleanConstantFormula::acceptVisitor (ConstFormulaVisitor *visitor) const 
-{
-  visitor->visit (this);
-}
 
 void 
 ConjunctiveFormula::acceptVisitor (ConstFormulaVisitor *visitor) const 
