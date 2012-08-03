@@ -42,10 +42,10 @@ class Annotation : public Object
 
 public:
   /*! \brief base constructor */
-  Annotation() {}
+  Annotation() : Object() {}
 
   /*! \brief copy constructor */
-  Annotation(const Annotation &) {}
+  Annotation(const Annotation &a) : Object(a) {}
 
   /*! \brief virtual destructor */
   virtual ~Annotation() {}
