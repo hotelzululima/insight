@@ -174,7 +174,7 @@ Architecture **Architecture::architectures = NULL;
 void 
 Architecture::init ()
 { 
-  int nb_architectures = (int) Unknown * (int) UnknownEndian;
+  int nb_architectures = (int) Unknown * (int) UnknownEndian + 1;
   architectures = new Architecture *[nb_architectures];
   for (int i = 0; i < nb_architectures; i++)
     architectures[i] = NULL;
@@ -183,7 +183,7 @@ Architecture::init ()
 void 
 Architecture::terminate ()
 {
-  int nb_architectures = (int) Unknown * (int) UnknownEndian;
+  int nb_architectures = (int) Unknown * (int) UnknownEndian + 1;
   for (int i = 0; i < nb_architectures; i++)
     delete architectures[i];
 
