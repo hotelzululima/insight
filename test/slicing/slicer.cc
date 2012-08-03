@@ -42,7 +42,7 @@
 #include <domains/ExprSemantics.hh>
 #include <kernel/Insight.hh>
 #include <kernel/Microcode.hh>
-#include <kernel/expressions/Formula.hh>
+#include <kernel/Insight.hh>
 #include <loaders/LoaderFactory.hh>
 
 

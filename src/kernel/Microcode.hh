@@ -39,6 +39,7 @@
 #include <utils/path.hh>
 #include <utils/tools.hh>
 
+class MCPath;
 class Expr;
 
 /*****************************************************************************/

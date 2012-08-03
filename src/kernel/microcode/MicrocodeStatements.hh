@@ -31,6 +31,7 @@
 #ifndef KERNEL_MICROCODE_MICROCODE_STATEMENTS_HH
 #define KERNEL_MICROCODE_MICROCODE_STATEMENTS_HH
 
+#include <vector>
 #include <kernel/Expressions.hh>
 
 /*****************************************************************************/

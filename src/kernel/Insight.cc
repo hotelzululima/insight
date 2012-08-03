@@ -30,6 +30,7 @@
 
 #include "kernel/Insight.hh"
 
+#include "kernel/Expressions.hh"
 #include "kernel/Architecture.hh"
 #include "kernel/expressions/Formula.hh"
 
@@ -39,10 +40,11 @@ static int init_count = 0;
 void 
 Insight::init()
 {
-  if (init_count == 0) {
-      Architecture::init();
-      Formula::init();
-  }
+  if (init_count == 0)
+    {
+      Architecture::init ();
+      Expr::init ();
+    }
   init_count++;
 }
 
@@ -50,8 +52,9 @@ void
 Insight::terminate()
 {
   init_count--;
-  if (init_count == 0) {
-      Formula::terminate();
-      Architecture::terminate();
-  }
+  if (init_count == 0)
+    {
+      Expr::terminate ();
+      Architecture::terminate ();
+    }
 }

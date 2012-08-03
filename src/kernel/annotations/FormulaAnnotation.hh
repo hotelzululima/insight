@@ -32,7 +32,7 @@
 
 #include <string>
 #include <kernel/Annotation.hh>
-#include <kernel/expressions/Formula.hh>
+#include <kernel/Expressions.hh>
 
 class FormulaAnnotation : public Annotation
 {
@@ -41,7 +41,7 @@ public:
 
   FormulaAnnotation (const FormulaAnnotation &other);
 
-  FormulaAnnotation (Formula *F);
+  FormulaAnnotation (Expr *F);
 
   virtual ~FormulaAnnotation ();
 
@@ -49,12 +49,12 @@ public:
 
   virtual void *clone () const;
 
-  virtual void set_formula (Formula *F);
+  virtual void set_formula (Expr *F);
 
-  virtual const Formula *get_formula () const;
+  virtual const Expr *get_formula () const;
 
 private:
-  Formula *formula;
+  Expr *formula;
 };
 
 

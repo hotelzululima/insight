@@ -36,7 +36,6 @@
 #include <string>
 #include <tr1/unordered_map>
 #include <tr1/unordered_map>
-#include <kernel/expressions/Formula.hh>
 #include <kernel/expressions/FormulaVisitor.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
@@ -49,24 +48,13 @@
 using namespace std;
 
 
-unsigned long long debug_nb_expr_in_heap = 0;
-
-unsigned long long get_debug_nb_expr_in_heap()
-{
-  return debug_nb_expr_in_heap;
-};
-
-/*****************************************************************************/
-
 Expr::Expr(int bv_offset, int bv_size) 
-  : Formula(), bv_offset(bv_offset), bv_size(bv_size)
+  : bv_offset(bv_offset), bv_size(bv_size), refcount(0)
 {
-  debug_nb_expr_in_heap++;
 }
 
 Expr::~Expr()
 {
-  debug_nb_expr_in_heap--;
 };
 
 Expr *
@@ -796,49 +784,49 @@ Expr::is_FalseFormula () const
 /*****************************************************************************/
 
 bool 
-Variable::has_type_of (const Formula *F) const
+Variable::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const Variable *>(F);
 }
 
 bool 
-Constant::has_type_of (const Formula *F) const
+Constant::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const Constant *>(F);
 }
 
 bool 
-UnaryApp::has_type_of (const Formula *F) const
+UnaryApp::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const UnaryApp *>(F);
 }
 
 bool 
-BinaryApp::has_type_of (const Formula *F) const
+BinaryApp::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const BinaryApp *>(F);
 }
 
 bool
-TernaryApp::has_type_of (const Formula *F) const
+TernaryApp::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const TernaryApp *>(F);
 }
 
 bool 
-MemCell::has_type_of (const Formula *F) const
+MemCell::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const MemCell *>(F);
 }
 
 bool 
-RegisterExpr::has_type_of (const Formula *F) const
+RegisterExpr::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const RegisterExpr *>(F);
 }
 
 bool 
-QuantifiedExpr::has_type_of (const Formula *F) const
+QuantifiedExpr::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const QuantifiedExpr *>(F);
 }
@@ -858,7 +846,7 @@ bool Variable::operator<(const Variable &other) const
 /*****************************************************************************/
 
 template <class T> const T *
-s_check_bv (const T *t, const Formula *F)
+s_check_bv (const T *t, const Expr *F)
 {
   const T *e = dynamic_cast<const T *> (F);
 
@@ -870,35 +858,35 @@ s_check_bv (const T *t, const Formula *F)
   return NULL;
 }
 
-bool Variable::equal (const Formula *F) const
+bool Variable::equal (const Expr *F) const
 {
   const Variable *e = s_check_bv<Variable> (this, F);
 
   return (e != NULL && id == e->id);
 }
 
-bool Constant::equal (const Formula *F) const
+bool Constant::equal (const Expr *F) const
 {
   const Constant *e = s_check_bv<Constant> (this, F);
   
   return (e != NULL && val == e->val);
 }
 
-bool UnaryApp::equal (const Formula *F) const
+bool UnaryApp::equal (const Expr *F) const
 {
   const UnaryApp *e = s_check_bv<UnaryApp> (this, F);
 
   return (e != NULL && op == e->op && arg1 == e->arg1);
 }
 
-bool BinaryApp::equal (const Formula *F) const
+bool BinaryApp::equal (const Expr *F) const
 {
   const BinaryApp *e = s_check_bv<BinaryApp> (this, F);
 
   return (e != NULL && op == e->op && arg1 == e->arg1 && arg2 == e->arg2);
 }
 
-bool TernaryApp::equal(const Formula *F) const
+bool TernaryApp::equal(const Expr *F) const
 {
   const TernaryApp *e = s_check_bv<TernaryApp> (this, F);
 
@@ -906,21 +894,21 @@ bool TernaryApp::equal(const Formula *F) const
       && arg3 == e->arg3);
 }
 
-bool MemCell::equal (const Formula *F) const
+bool MemCell::equal (const Expr *F) const
 {
   const MemCell *e = s_check_bv<MemCell> (this, F);
 
   return (e != NULL && tag == e->tag && addr == e->addr);
 }
 
-bool RegisterExpr::equal (const Formula *F) const
+bool RegisterExpr::equal (const Expr *F) const
 {
   const RegisterExpr *e = s_check_bv<RegisterExpr> (this, F);
 
   return (e != NULL && e->regdesc == regdesc);
 }
 
-bool QuantifiedExpr::equal (const Formula *F) const
+bool QuantifiedExpr::equal (const Expr *F) const
 {
   const QuantifiedExpr *e = s_check_bv<QuantifiedExpr> (this, F);
 
@@ -1084,6 +1072,19 @@ ostream &operator<< (ostream &o, Expr &e)
 			/* --------------- */
 
 void 
+Expr::acceptVisitor (FormulaVisitor &visitor)
+{
+  acceptVisitor (&visitor);
+}
+
+void 
+Expr::acceptVisitor (ConstFormulaVisitor &visitor) const
+{
+  acceptVisitor (&visitor);
+}
+
+
+void 
 Constant::acceptVisitor (FormulaVisitor *visitor)
 {
   visitor->visit (this); 
@@ -1181,3 +1182,109 @@ QuantifiedExpr::acceptVisitor (ConstFormulaVisitor *visitor) const
   visitor->visit (this); 
 }
  
+void 
+Expr::init ()
+{
+  formula_store = new FormulaStore (100);
+}
+
+void 
+Expr::terminate () 
+{
+  if (Expr::formula_store == NULL)
+    return;
+   
+  if (Expr::formula_store->size () > 0)
+    {      
+      int nb = Expr::formula_store->size ();
+      FormulaStore::iterator i = Expr::formula_store->begin ();
+      FormulaStore::iterator end = Expr::formula_store->end ();
+      cerr << "**** some formulas have not been deleted:" << endl;
+      for (; i != end; i++, nb--)
+	{
+	  assert (nb > 0);
+	  cerr << "**** refcount = " << (*i)->refcount 
+	       << " formula = " << (*i)->pp () << endl;
+	}
+	  
+    }
+  delete Expr::formula_store;
+  Expr::formula_store = NULL;
+}
+
+void 
+Expr::dumpStore ()
+{
+  int nb = Expr::formula_store->size ();
+  FormulaStore::iterator i = Expr::formula_store->begin ();
+  FormulaStore::iterator end = Expr::formula_store->end ();
+  for (; i != end; i++, nb--)
+    {
+      assert (nb > 0);
+      cerr << (*i)->pp () << endl;
+    }
+}
+
+//
+// FORMULA SHARING
+//
+
+size_t 
+Expr::Hash::operator()(const Expr *const &F) const 
+{
+  return F->hash ();
+}
+
+bool 
+Expr::Equal::operator()(const Expr *const &F1, const Expr * const &F2) const
+{  
+  return F1->equal (F2);
+}
+
+
+Expr::FormulaStore *Expr::formula_store = NULL;
+
+Expr *
+Expr::ref () const
+{ 
+  assert (refcount > 0);
+
+  refcount++; 
+  return (Expr *) this;
+}
+
+void 
+Expr::deref () 
+{ 
+  assert (refcount > 0);
+  refcount--; 
+  if (refcount == 0) 
+    {
+      assert (formula_store->find (this) != formula_store->end ());
+      formula_store->erase (this);
+
+      delete this; 
+    }
+}
+
+Expr *
+Expr::find_or_add_formula (Expr *F)
+{
+  FormulaStore::iterator i = formula_store->find (F);
+  assert (F->refcount == 0);
+
+  if (i == formula_store->end ())
+    {
+      formula_store->insert (F);
+      F->refcount = 1;
+    }
+  else
+    {
+      if (F != *i)
+	delete F;
+      F = *i;
+      F->ref ();
+    }
+
+  return F;
+}

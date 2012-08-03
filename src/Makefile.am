@@ -76,8 +76,6 @@ kernel_source = \
 	kernel/expressions/ExprLexer.hh 	\
 	kernel/expressions/ExprLexer.ll		\
 	kernel/expressions/ExprParser.yy 	\
-	kernel/expressions/Formula.cc     	\
-	kernel/expressions/Formula.hh     	\
 	kernel/expressions/FormulaUtils.hh	\
 	kernel/expressions/FormulaUtils.cc	\
 	kernel/expressions/FormulaVisitor.hh	\
@@ -310,10 +308,10 @@ decoders/binutils/arm/arm_scanner.cc : 	\
 lib_LTLIBRARIES = libinsight.la
 
 libinsight_la_SOURCES =  \
+	$(kernel_source) 	\
 	$(analyses_sources) 	\
 	$(decoders_sources) 	\
 	$(domains_source) 	\
-	$(kernel_source) 	\
 	$(loaders_sources) 	\
 	$(utils_source)
 

@@ -32,9 +32,13 @@
 
 #include <string>
 
+#include <utils/option.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
-#include <kernel/expressions/Formula.hh>
 #include <kernel/expressions/Operators.hh>
+#include <tr1/unordered_set>
+
+class FormulaVisitor;
+class ConstFormulaVisitor;
 
 /*****************************************************************************/
 /* Summary                                                                   */
@@ -72,7 +76,7 @@ class RegisterExpr;   // --> LValue
  *  The Expr class is abstract, and LValue also, they are used for type
  *  organisation.
  *****************************************************************************/
-class Expr : public Formula /* Abstract */ {
+class Expr  {
 private:
 
   /*! \brief The value of each expression is restricted to a
@@ -95,8 +99,16 @@ protected:
 
 public:
 
+  static void init ();
+  static void terminate ();
+  
+  virtual void acceptVisitor (FormulaVisitor &visitor);
+  virtual void acceptVisitor (ConstFormulaVisitor &visitor) const;
+  virtual void acceptVisitor (FormulaVisitor *visitor) = 0;
+  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const = 0;
+
   virtual size_t hash () const;
-  virtual Expr *ref () const { return (Expr *) Formula::ref (); }
+  virtual bool equal (const Expr *F) const = 0;
 
   static Expr *createNot (Expr *arg);
 
@@ -182,7 +194,7 @@ public:
   bool is_FalseFormula () const;
 
 
-  virtual bool has_type_of (const Formula *F) const = 0;
+  virtual bool has_type_of (const Expr *F) const = 0;
 
   /*****************************************************************************/
   // Basic Queries
@@ -206,6 +218,35 @@ public:
 
   static Expr *parse (MicrocodeArchitecture *arch, 
 		      const std::string &input);
+
+  struct Hash { 
+    size_t operator()(const Expr *const &F) const; 
+  };
+
+  struct Equal { 
+    bool operator()(const Expr *const &F1, const Expr * const &F2) const; 
+  };
+
+  Expr *ref () const;
+
+  void deref ();
+
+
+protected:
+  static Expr *find_or_add_formula (Expr *F);
+
+  template<typename C>
+  static C *find_or_add (C *F) { 
+    Expr *res = find_or_add_formula (F);
+    return dynamic_cast<C *> (res);
+  }
+  
+private:
+  typedef std::tr1::unordered_set<Expr *, Expr::Hash, Expr::Equal> FormulaStore;  
+
+  static FormulaStore *formula_store;
+  static void dumpStore ();
+  mutable int refcount;
 };
 
 /*****************************************************************************/
@@ -237,9 +278,9 @@ public:
 
 
   /*! \brief syntactic equality of variables */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
   
   bool operator<(const Variable &other) const;  /* needed for using variables as key of maps */
   virtual unsigned int get_depth() const;
@@ -296,9 +337,9 @@ public:
   constant_t get_val() const;
 
   /*! \brief syntaxic equality of registers */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
@@ -343,9 +384,9 @@ public:
   std::string pp(std::string prefix = "") const;
 
   /*! \brief syntaxic equality of registers */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
@@ -395,9 +436,9 @@ public:
 
 
   /*! \brief syntaxic equality of registers */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
@@ -432,9 +473,9 @@ public:
   Expr *get_arg3() const;
   TernaryOp get_op() const;
 
-  virtual bool equal(const Formula *F) const;
+  virtual bool equal(const Expr *F) const;
   virtual size_t hash() const;
-  virtual bool has_type_of(const Formula *F) const;
+  virtual bool has_type_of(const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
@@ -468,9 +509,9 @@ public:
 
 
   /*! \brief syntaxic equality of registers */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
@@ -539,9 +580,9 @@ public:
   std::string pp(std::string prefix = "") const;
 
   /*! \brief syntaxic equality of registers */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
@@ -580,9 +621,9 @@ public:
   const std::string &get_name() const;
 
   /*! \brief syntaxic equality of registers */
-  virtual bool equal (const Formula *F) const;
+  virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
-  virtual bool has_type_of (const Formula *F) const;
+  virtual bool has_type_of (const Expr *F) const;
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;

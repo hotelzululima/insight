@@ -37,7 +37,6 @@
 #include <kernel/Architecture.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/Formula.hh>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <utils/option.hh>
 #include <utils/map-helpers.hh>

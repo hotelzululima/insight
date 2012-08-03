@@ -41,7 +41,7 @@ FormulaAnnotation::FormulaAnnotation (const FormulaAnnotation &other)
   set_formula (other.formula);
 }
 
-FormulaAnnotation::FormulaAnnotation (Formula *F)
+FormulaAnnotation::FormulaAnnotation (Expr *F)
   : Annotation ()
 {
   formula = F->ref ();
@@ -66,7 +66,7 @@ FormulaAnnotation::clone() const
 }
 
 void 
-FormulaAnnotation::set_formula (Formula *F)
+FormulaAnnotation::set_formula (Expr *F)
 {
   if (formula != NULL)
     formula->deref ();
@@ -75,7 +75,7 @@ FormulaAnnotation::set_formula (Formula *F)
 
 			/* --------------- */
 
-const Formula *
+const Expr *
 FormulaAnnotation::get_formula () const
 {
   return formula;

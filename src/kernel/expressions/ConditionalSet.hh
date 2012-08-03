@@ -30,6 +30,7 @@
 #ifndef KERNEL_EXPRESSIONS_CONDITIONALSET_HH
 #define KERNEL_EXPRESSIONS_CONDITIONALSET_HH
 
+#include <vector>
 #include <kernel/Expressions.hh>
 
 /* This class encloses static methods to manipulate logical formulae as encoding
