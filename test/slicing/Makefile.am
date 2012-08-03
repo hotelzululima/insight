@@ -46,22 +46,27 @@ MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
 %.res : %.spec.sh ${TEST_SAMPLES_DIR}/%.bin ${TEST_SLICER}
-	 @ source $<; \
+	 @ . $<; \
           ${TEST_SLICER} ${TEST_SAMPLES_DIR}/`basename $< .spec.sh`.bin \
            $${SLICING_MAX_STEPS} $${SLICING_ADDR} $${SLICING_LVALUE} > $@ 2>&1
 
 %.memres : %.spec.sh ${TEST_SAMPLES_DIR}/%.bin ${TEST_SLICER}
-	 @ source $<; ${MEMCHECK} \
+	 @ . $<; ${MEMCHECK} \
           ${TEST_SLICER} ${TEST_SAMPLES_DIR}/`basename $< .spec.sh`.bin \
            $${SLICING_MAX_STEPS} $${SLICING_ADDR} $${SLICING_LVALUE} > $@ 2>&1
 
 check-diff : ${BASE_TESTS}
+	@ > check-diff
+if WITH_VALGRIND
 	@ for t in ${BASE_TESTS}; do \
           TNAME=`basename $${t} .res`; \
           if test "$${t}" = "$${TNAME}.res"; then \
-            diff -q "$${TNAME}.res" "$${TNAME}.memres" > check-diff; \
+            diff -q "$${TNAME}.res" "$${TNAME}.memres" >> check-diff; \
           fi; \
         done
+else
+	@ echo WARNING: Valgrind not used >&2
+endif
 
 .SECONDARY:
 
@@ -71,6 +76,3 @@ save: ${TESTS}
             REF="${srcdir}/$$(basename $${T}).result"; \
             cp -f $${T} $${REF}; \
           done
-
-
-
