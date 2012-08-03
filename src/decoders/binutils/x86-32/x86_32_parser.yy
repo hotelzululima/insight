@@ -935,7 +935,7 @@ using namespace x86_32;
 %token  TOK_XSAVE            "XSAVE"
 %token  TOK_XSAVEOPT         "XSAVEOPT"
 %token  TOK_XSETBV           "XSETBV"
-
+%token  TOK_EIZ              "EIZ"
 
 %type <expr> operand register section memory_reference base_index_scale
 
@@ -1001,6 +1001,10 @@ TOK_REGISTER
     {
       delete $1;
     }
+}
+| TOK_EIZ
+{
+  $$ = Constant::zero(BV_DEFAULT_SIZE);
 }
  ;
 

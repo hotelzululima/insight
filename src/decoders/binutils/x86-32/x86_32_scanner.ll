@@ -935,6 +935,8 @@ optype    [bswlqt]
                 }
 
  /* Registers */
+"%eiz" { return token::TOK_EIZ; }
+
 "%"{varname} {
                 yylval->stringValue = new string (yytext + 1);
 	        return token::TOK_REGISTER;
