@@ -40,9 +40,9 @@ using namespace std;
 
 void
 rewrite_in_place (FunctionRewritingRule::RewriteFormulaFunc *func, 
-		  Formula **pF) 
+		  Expr **pF) 
 {
-  Formula *newF = func (*pF);
+  Expr *newF = func (*pF);
 
   if (newF != NULL)
     {
@@ -52,11 +52,11 @@ rewrite_in_place (FunctionRewritingRule::RewriteFormulaFunc *func,
     }
 }
 
-Formula * 
-not_operator_on_constant (const Formula *phi)
+Expr * 
+not_operator_on_constant (const Expr *phi)
 {
   const UnaryApp *ua = dynamic_cast<const UnaryApp *> (phi);
-  Formula *result = NULL;
+  Expr *result = NULL;
 
   if (ua != NULL && ua->get_op () == NOT && ua->get_arg1()->is_Constant ())
     {
@@ -69,11 +69,11 @@ not_operator_on_constant (const Formula *phi)
   return result;
 }
 
-Formula * 
-syntaxic_equality_rule (const Formula *phi)
+Expr * 
+syntaxic_equality_rule (const Expr *phi)
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
-  Formula *result = NULL;
+  Expr *result = NULL;
 
   if (ba != NULL && ba->get_op () == EQ && ba->get_arg1 () == ba->get_arg2 ())
     result = Constant::one (1);
@@ -81,27 +81,27 @@ syntaxic_equality_rule (const Formula *phi)
   return result;
 }
 
-Formula * 
-cancel_lnot_not (const Formula *phi) 
+Expr * 
+cancel_lnot_not (const Expr *phi) 
 {
-  Formula *pattern = 
-    NegationFormula::create (UnaryApp::create (LNOT, Variable::create ("X")));
-  Formula *result = FormulaUtils::extract_v_pattern ("X", phi, pattern);
+  Expr *pattern = Expr::createNot (UnaryApp::create (NOT, 
+						     Variable::create ("X")));
+  Expr *result = FormulaUtils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
   return result;
 }
 
-Formula * 
-logical_negation_operator_on_constant (const Formula *phi)
+Expr * 
+logical_negation_operator_on_constant (const Expr *phi)
 {
-  const NegationFormula *nf = dynamic_cast<const NegationFormula *> (phi);
-  Formula *result = NULL;
-
-  if (nf == NULL)
+  if (!phi->is_NegationFormula ())
     return NULL;
 
-  Option<bool> val = nf->get_neg ()->try_eval_level0 ();
+  const UnaryApp *nf = dynamic_cast<const UnaryApp *> (phi);
+  Expr *result = NULL;
+
+  Option<bool> val = nf->get_arg1 ()->try_eval_level0 ();
   if (val.hasValue ())
     {
       if (val.getValue ())
@@ -113,15 +113,14 @@ logical_negation_operator_on_constant (const Formula *phi)
   return result;
 }
 
-Formula *
-conjunction_simplification (const Formula *phi) 
+Expr *
+conjunction_simplification (const Expr *phi) 
 {
-  const ConjunctiveFormula *conj = 
-    dynamic_cast<const ConjunctiveFormula *> (phi);
-  Formula *result = NULL;
-
-  if (conj == NULL)
+  if (!phi->is_ConjunctiveFormula ())
     return NULL;
+
+  const BinaryApp *conj = dynamic_cast<const BinaryApp *> (phi);
+  Expr *result = NULL;
 
   if (conj->get_arg1 () == conj->get_arg2 ())
     result = conj->get_arg1 ()->ref ();
@@ -136,15 +135,14 @@ conjunction_simplification (const Formula *phi)
   return result;
 }
 
-Formula *
-disjunction_simplification (const Formula *phi) 
+Expr *
+disjunction_simplification (const Expr *phi) 
 {
-  const DisjunctiveFormula *disj = 
-    dynamic_cast<const DisjunctiveFormula *> (phi);
-  Formula *result = NULL;
-
-  if (disj == NULL)
+  if (!phi->is_DisjunctiveFormula ())
     return NULL;
+
+  const BinaryApp *disj = dynamic_cast<const BinaryApp *> (phi);
+  Expr *result = NULL;
 
   if (disj->get_arg1 () == disj->get_arg2 ())
     result = disj->get_arg1 ()->ref ();
@@ -159,94 +157,91 @@ disjunction_simplification (const Formula *phi)
   return result;
 }
 
-Formula * 
-and_and_rule (const Formula *phi)
+Expr * 
+and_and_rule (const Expr *phi)
 {
-  const ConjunctiveFormula *conj = 
-    dynamic_cast<const ConjunctiveFormula *> (phi);
-  Formula *result = NULL;
-
-  if (conj == NULL)
+  if (!phi->is_ConjunctiveFormula ())
     return NULL;
 
-  ConjunctiveFormula *arg1 = 
-    dynamic_cast <ConjunctiveFormula *> (conj->get_arg1 ());
+  const BinaryApp *conj = dynamic_cast<const BinaryApp *> (phi);
+  Expr *result = NULL;
+
+  if (! conj->get_arg1()->is_ConjunctiveFormula ())
+    return NULL;
+
+  BinaryApp *arg1 = dynamic_cast <BinaryApp *> (conj->get_arg1 ());
   
   // (arg1.1 and  arg1.2) and  arg2 --> arg1.1 and  (arg1.2 and  arg2)
   if (arg1 != NULL) 
     {
-      result = ConjunctiveFormula::create (arg1->get_arg2 ()->ref (), 
+      result = BinaryApp::createAnd (arg1->get_arg2 ()->ref (), 
 					   conj->get_arg2 ()->ref ());
-      result = ConjunctiveFormula::create (arg1->get_arg1 ()->ref (), 
+      result = BinaryApp::createAnd (arg1->get_arg1 ()->ref (), 
 					   result);
     }
 
   return result;
 }
 
-Formula * 
-or_or_rule (const Formula *phi)
+Expr * 
+or_or_rule (const Expr *phi)
 {
-  const DisjunctiveFormula *disj = 
-    dynamic_cast<const DisjunctiveFormula *> (phi);
-  Formula *result = NULL;
-
-  if (disj == NULL)
+  if (!phi->is_DisjunctiveFormula ())
     return NULL;
 
-  DisjunctiveFormula *arg1 = 
-    dynamic_cast <DisjunctiveFormula *> (disj->get_arg1 ());
+  const BinaryApp *disj = dynamic_cast<const BinaryApp *> (phi);
+  Expr *result = NULL;
+
+  if (! disj->get_arg1()->is_DisjunctiveFormula ())
+    return NULL;
+
+  BinaryApp *arg1 = dynamic_cast <BinaryApp *> (disj->get_arg1 ());
   
   // (arg1.1 or  arg1.2) or  arg2 --> arg1.1 or  (arg1.2 or  arg2)
   if (arg1 != NULL) 
     {
-      result = DisjunctiveFormula::create (arg1->get_arg2 ()->ref (), 
+      result = BinaryApp::createOr (arg1->get_arg2 ()->ref (), 
 					   disj->get_arg2 ()->ref ());
-      result = DisjunctiveFormula::create (arg1->get_arg1 ()->ref (), 
+      result = BinaryApp::createOr (arg1->get_arg1 ()->ref (), 
 					   result);
     }
 
   return result;
 }
 
-Formula * 
-not_decrease (const Formula *phi)
+Expr * 
+not_decrease (const Expr *phi)
 {
-  const NegationFormula *nf = 
-    dynamic_cast<const NegationFormula *> (phi);
-  Formula *result = NULL;
-
-  if (nf == NULL)
+  if (!phi->is_NegationFormula ())
     return NULL;
 
-  const Formula *arg = nf->get_neg ();
+  const UnaryApp *nf = dynamic_cast<const UnaryApp *> (phi);
+  Expr *result = NULL;
+
+  const Expr *arg = nf->get_arg1 ();
 
   if (arg->is_NegationFormula ())
-    result = ((NegationFormula *) arg)->get_neg ()->ref ();
-  else if (arg->is_ConjunctiveFormula ())
+    result = ((UnaryApp *) arg)->get_arg1 ()->ref ();
+  else if (arg->is_ConjunctiveFormula () || arg->is_DisjunctiveFormula ())
     {
-      ConjunctiveFormula *conj = (ConjunctiveFormula *) arg;
+      BinaryApp *ba = (BinaryApp *) arg;
 
-      Formula *arg1 = NegationFormula::create (conj->get_arg1 ()->ref ());
-      Formula *arg2 = NegationFormula::create (conj->get_arg2 ()->ref ());
-      result = DisjunctiveFormula::create (arg1, arg2);
+      Expr *arg1 = UnaryApp::createNot (ba->get_arg1 ()->ref ());
+      Expr *arg2 = UnaryApp::createNot (ba->get_arg2 ()->ref ());
+
+      if (ba->get_op() == OR)
+	result = BinaryApp::createOr (arg1, arg2);
+      else
+	result = BinaryApp::createAnd (arg1, arg2);
     }
-  else if (arg->is_DisjunctiveFormula ())
-    {
-      DisjunctiveFormula *conj = (DisjunctiveFormula *) arg;
-
-      Formula *arg1 = NegationFormula::create (conj->get_arg1 ()->ref ());
-      Formula *arg2 = NegationFormula::create (conj->get_arg2 ()->ref ());
-      result = ConjunctiveFormula::create (arg1, arg2);
-    }    
 
   return result;
 }
 
-Formula *
-disjunctive_normal_form_rule (const Formula *phi)
+Expr *
+disjunctive_normal_form_rule (const Expr *phi)
 {
-  Formula *result = not_decrease (phi);
+  Expr *result = not_decrease (phi);
 
   if (result != NULL)
     {
@@ -259,80 +254,73 @@ disjunctive_normal_form_rule (const Formula *phi)
 	}
     }
 
-  const ConjunctiveFormula *conj = 
-    dynamic_cast <const ConjunctiveFormula *> (phi);
-
-  if (conj == NULL)
+  if (! phi->is_ConjunctiveFormula ())
     return NULL;
 
-  DisjunctiveFormula *disj = 
-    dynamic_cast<DisjunctiveFormula *> (conj->get_arg1 ());
-  Formula *other;
-  if (disj != NULL)
-    other = conj->get_arg2 ();
-  else 
+  const BinaryApp *conj = dynamic_cast <const BinaryApp *> (phi);
+
+  BinaryApp *disj = NULL;
+  Expr *other;
+
+  if (conj->get_arg1 ()->is_DisjunctiveFormula ())
     {
-      disj = dynamic_cast<DisjunctiveFormula *> (conj->get_arg2 ());
-      if (disj != NULL)
-	other = conj->get_arg1 ();
+      disj = (BinaryApp *) conj->get_arg1 ();
+      other = conj->get_arg2 ();
+    }
+  else if (conj->get_arg2 ()->is_DisjunctiveFormula ())
+    {
+      disj = (BinaryApp *) conj->get_arg2 ();
+      other = conj->get_arg1 ();
     }
 
   if (disj != NULL)
     {
-      Formula *c1 = 
-	ConjunctiveFormula::create (disj->get_arg1 ()->ref (), other->ref ());
-      Formula *c2 = 
-	ConjunctiveFormula::create (disj->get_arg2 ()->ref (), other->ref ());
-      result = DisjunctiveFormula::create (c1, c2);
+      Expr *c1 = Expr::createAnd (disj->get_arg1 ()->ref (), other->ref ());
+      Expr *c2 = Expr::createAnd (disj->get_arg2 ()->ref (), other->ref ());
+      result = Expr::createOr (c1, c2);
     }
 
   return result;
 }
 
 static bool 
-s_phi_and_not_phi (const Formula *a1, const Formula *a2)
+s_phi_and_not_phi (const Expr *a1, const Expr *a2)
 {
   if (a1->is_NegationFormula () && 
-      ((NegationFormula *) a1)->get_neg () == a2)
+      ((UnaryApp *) a1)->get_arg1 () == a2)
     return true;
 
   if (a2->is_NegationFormula () && 
-      ((NegationFormula *) a2)->get_neg () == a1)
+      ((UnaryApp *) a2)->get_arg1 () == a1)
     return true;
 
   return false;
 }
 
-Formula * 
-phi_and_not_phi_rule (const Formula *phi)
+Expr * 
+phi_and_not_phi_rule (const Expr *phi)
 {
-  Formula *result = NULL;
+  Expr *result = NULL;
+  BinaryApp *ba = (BinaryApp *) phi;
 
-  if (phi->is_DisjunctiveFormula() &&
-      s_phi_and_not_phi (((DisjunctiveFormula *) phi)->get_arg1 (),
-			 ((DisjunctiveFormula *) phi)->get_arg2 ()))
+  if (phi->is_DisjunctiveFormula() && 
+      s_phi_and_not_phi (ba->get_arg1 (),ba->get_arg2 ()))
     result = Constant::True ();
   else if (phi->is_ConjunctiveFormula() && 
-	   s_phi_and_not_phi (((DisjunctiveFormula *) phi)->get_arg1 (),
-			      ((DisjunctiveFormula *) phi)->get_arg2 ()))
-    result = Constant::False ();
+	   s_phi_and_not_phi (ba->get_arg1 (), ba->get_arg2 ()))
+    result = Constant::False (); 
 
   return result;
 }
 
-Formula *
-compute_constants (const Formula *phi)
+Expr *
+compute_constants (const Expr *e)
 {
-  Formula *result = NULL;
-  const Expr *e = dynamic_cast<const Expr *> (phi);
-
-  if (e == NULL)
-    return NULL;
-
+  Expr *result = NULL;
   int offset = e->get_bv_offset ();
   int size = e->get_bv_size ();
 
-  if (e->is_UnaryApp()) 
+  if (e->is_UnaryApp ()) 
     {
       const UnaryApp * ua = (const UnaryApp *) e;
       Expr * arg = ua->get_arg1();
@@ -379,18 +367,18 @@ compute_constants (const Formula *phi)
   return result;
 }
 
-Formula *
-void_operations (const Formula *e)
+Expr *
+void_operations (const Expr *e)
 {
-  Formula *result = NULL;
-  const BinaryApp *ba = dynamic_cast<const BinaryApp*> (e);
+  Expr *result = NULL;
+  const BinaryApp *ba = dynamic_cast<const BinaryApp *> (e);
 
   if (ba == NULL)
     return NULL;
 
   BinaryOp op = ba->get_op();
 
-  if ((op == SUB || op == XOR) && ba->get_arg1() == ba->get_arg2()) 
+  if ((op == SUB || op == XOR) && ba->get_arg1 () == ba->get_arg2 ()) 
     {
       result = Constant::create (0, ba->get_bv_offset(),  ba->get_bv_size());
     }
@@ -398,10 +386,10 @@ void_operations (const Formula *e)
   return result;
 }
 
-Formula * 
-bit_field_computation (const Formula *e)
+Expr * 
+bit_field_computation (const Expr *e)
 {
-  Formula *result = NULL;
+  Expr *result = NULL;
   const Constant *c = dynamic_cast<const Constant *> (e);
 
   if (c == NULL)
@@ -427,10 +415,10 @@ bit_field_computation (const Formula *e)
   return result;
 }
 
-Formula * 
-binary_operations_simplification (const Formula *e)
+Expr * 
+binary_operations_simplification (const Expr *e)
 {
-  Formula *result = NULL;
+  Expr *result = NULL;
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (e);
 
   if (ba == NULL)
@@ -508,8 +496,8 @@ binary_operations_simplification (const Formula *e)
   return result;
 }
 
-Formula * 
-simplify_formula (const Formula *phi)
+Expr * 
+simplify_formula (const Expr *phi)
 {
   static FunctionRewritingRule::RewriteFormulaFunc *functions[] = {
     cancel_lnot_not, 
@@ -526,15 +514,15 @@ simplify_formula (const Formula *phi)
   };
 
   FunctionRewritingRule::RewriteFormulaFunc **f;
-  Formula *result = phi->ref ();
+  Expr *result = phi->ref ();
   for (f = functions; *f && result == phi; f++)
     rewrite_in_place (*f, &result);
 
   return result;
 }
 
-Formula * 
-simplify_expr (const Formula *phi)
+Expr * 
+simplify_expr (const Expr *phi)
 {
   static FunctionRewritingRule::RewriteFormulaFunc *functions[] = {
     compute_constants, 
@@ -545,7 +533,7 @@ simplify_expr (const Formula *phi)
   };
 
   FunctionRewritingRule::RewriteFormulaFunc **f;
-  Formula *result = phi->ref ();
+  Expr *result = phi->ref ();
   for (f = functions; *f && result == phi; f++)
     rewrite_in_place (*f, &result);
 

@@ -41,10 +41,10 @@
 
 using namespace std;
 
-static Formula *
+static Expr *
 s_parse_formula (const string &s)
 {
-  Formula *F = Formula::parse (NULL, s);
+  Expr *F = Expr::parse (NULL, s);
 
   ATF_REQUIRE (F != NULL);
 
@@ -52,9 +52,9 @@ s_parse_formula (const string &s)
 }
 
 static bool
-s_check_is_true (Formula *F)
+s_check_is_true (Expr *F)
 {  
-  Formula *tmp = F->ref ();
+  Expr *tmp = F->ref ();
   FormulaUtils::simplify_level0 (&tmp);
   Option<bool> value = tmp->try_eval_level0 ();
   bool result = value.hasValue ();
@@ -68,7 +68,7 @@ s_check_is_true (Formula *F)
 
 #define CHK_TAUTOLOGY(f) s_check_tautology (f, __FILE__, __LINE__)
 static void
-s_check_tautology (Formula *F, const char *file, int line)
+s_check_tautology (Expr *F, const char *file, int line)
 {
   if (! s_check_is_true (F))
     {
@@ -81,13 +81,12 @@ s_check_tautology (Formula *F, const char *file, int line)
 
 #define CHK_EQUIV(f1, f2) s_check_equivalence (f1, f2, __FILE__, __LINE__)
 static void
-s_check_equivalence (Formula *F1, Formula *F2, const char *file, int line)
+s_check_equivalence (Expr *F1, Expr *F2, const char *file, int line)
 {
-  Formula *c1 = ConjunctiveFormula::create (F1->ref (), F2->ref ());
-  Formula *c2 = 
-    ConjunctiveFormula::create (NegationFormula::create (F1->ref ()),
-				NegationFormula::create (F2->ref ()));
-  Formula *F = DisjunctiveFormula::create (c1, c2);
+  Expr *c1 = Expr::createAnd (F1->ref (), F2->ref ());
+  Expr *c2 = Expr::createAnd (Expr::createNot (F1->ref ()),
+			      Expr::createNot (F2->ref ()));
+  Expr *F = Expr::createOr (c1, c2);
   if (!s_check_is_true (F))
     {
       ostringstream oss;
@@ -109,7 +108,7 @@ ATF_TEST_CASE_HEAD (check_tautologies)
 ATF_TEST_CASE_BODY (check_tautologies) 
 { 
   Insight::init ();
-  Formula *F = s_parse_formula ("(LNOT (X /\\ (LNOT X)))");
+  Expr *F = s_parse_formula ("(LNOT (X /\\ (LNOT X)))");
 
   ATF_REQUIRE (F != NULL);
   CHK_TAUTOLOGY (F);
@@ -122,7 +121,7 @@ ATF_TEST_CASE_BODY (check_tautologies)
 
   F = s_parse_formula ("(X /\\ X)");
   ATF_REQUIRE (F != NULL);
-  Formula *G = s_parse_formula ("X");
+  Expr *G = s_parse_formula ("X");
   ATF_REQUIRE (G != NULL);
   CHK_EQUIV (F, G);
   F->deref ();
@@ -140,10 +139,10 @@ ATF_TEST_CASE_BODY (check_tautologies)
 
 			/* --------------- */
 
-static Formula *
-s_replace (Formula *F, Formula *P, Formula *V)
+static Expr *
+s_replace (Expr *F, Expr *P, Expr *V)
 {
-  Formula *result = FormulaUtils::replace_subterm (F, P, V);
+  Expr *result = FormulaUtils::replace_subterm (F, P, V);
 
   F->deref ();
   P->deref ();
@@ -168,13 +167,13 @@ ATF_TEST_CASE_BODY(check_replacement)
    * and check equivalence with X || Y 
    */
 
-  Formula *F = s_parse_formula ("Y \\/ X");
-  Formula *X = s_parse_formula ("X");
-  Formula *Y = s_parse_formula ("Y");
-  Formula *tmp = s_parse_formula ("tmp");
+  Expr *F = s_parse_formula ("Y \\/ X");
+  Expr *X = s_parse_formula ("X");
+  Expr *Y = s_parse_formula ("Y");
+  Expr *tmp = s_parse_formula ("tmp");
 
   F = s_replace (F, Y->ref (), tmp->ref ()); /* F <- replace (Y || X) Y tmp */  
-  Formula *aux = s_parse_formula ("tmp \\/ X");
+  Expr *aux = s_parse_formula ("tmp \\/ X");
   CHK_EQUIV (F, aux);
   aux->deref ();
 
@@ -230,8 +229,8 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
    * PM[Z] <=> X
    */
 
-  Formula *F = s_parse_formula ("(EQ (2 MUL_U X)  (X + X))");
-  Formula *pattern = s_parse_formula ("(EQ Y (ADD T Z))");
+  Expr *F = s_parse_formula ("(EQ (2 MUL_U X)  (X + X))");
+  Expr *pattern = s_parse_formula ("(EQ Y (ADD T Z))");
   list<const Variable *> free_variables;
   Variable *Y = dynamic_cast<Variable *> (s_parse_formula ("Y"));
   ATF_REQUIRE (Y != NULL);
@@ -252,7 +251,6 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       F->deref ();
 
       ATF_REQUIRE (PM->has (Y));
-      ATF_REQUIRE (PM->get (Y)->is_Expr ());
       
       F = 
 	BinaryApp::create (EQ, 
@@ -262,7 +260,6 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       F->deref ();
 
       ATF_REQUIRE (PM->has (T));
-      ATF_REQUIRE (PM->get (T)->is_Expr ());
       F = BinaryApp::create (EQ, 
 			     dynamic_cast<const Expr *>(PM->get (T))->ref (), 
 			     dynamic_cast<Expr *>(s_parse_formula ("X")));
@@ -270,7 +267,6 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       F->deref ();
 
       ATF_REQUIRE (PM->has (Z));
-      ATF_REQUIRE (PM->get (Z)->is_Expr ());
       F = BinaryApp::create (EQ, 
 			     dynamic_cast<const Expr *>(PM->get (Z))->ref (), 
 			     dynamic_cast<Expr *>(s_parse_formula ("X")));

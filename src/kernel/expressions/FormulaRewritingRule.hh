@@ -34,8 +34,6 @@
 # include <kernel/expressions/FormulaVisitor.hh>
 
 class Expr;
-class Formula;
-class NaryBooleanFormula;
 
 class FormulaRewritingRule : public ConstFormulaVisitor 
 {
@@ -54,20 +52,14 @@ public:
   virtual void visit (const TernaryApp *);
   virtual void visit (const MemCell *);
   virtual void visit (const RegisterExpr *);
+  virtual void visit (const QuantifiedExpr *);
 
-  virtual void visit (const ConjunctiveFormula *);
-  virtual void visit (const DisjunctiveFormula *);
-  virtual void visit (const NegationFormula *);
-  virtual void visit (const QuantifiedFormula *);
+  virtual Expr *rewrite (const Expr *F) = 0;
 
-  virtual Formula *rewrite (const Formula *F);
-
-  virtual Formula *get_result () const;
+  virtual Expr *get_result () const;
 
 private:
-  Formula *result;
-
-  virtual void visit (const NaryBooleanFormula *);
+  Expr *result;
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_FORMULAREWRITINGRULE_HH */

@@ -36,7 +36,7 @@ namespace FormulaUtils
 
   template <typename ContainerType, typename ExprType>
   ContainerType
-  collect_subterms_of_type (const Formula *F, bool eliminate_duplicate)
+  collect_subterms_of_type (const Expr *F, bool eliminate_duplicate)
   {
     class Collector : public ConstBottomUpApplyVisitor
     {
@@ -46,7 +46,7 @@ namespace FormulaUtils
       }
 
       ContainerType result;      
-      void apply (const Formula *phi)
+      void apply (const Expr *phi)
       {
 	const ExprType *e = dynamic_cast<const ExprType *> (phi);
 	if (e != NULL)

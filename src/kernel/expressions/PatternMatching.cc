@@ -31,7 +31,6 @@
 #include <algorithm>
 
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/Formula.hh>
 #include <kernel/expressions/FormulaVisitor.hh>
 #include <kernel/expressions/PatternMatching.hh>
 
@@ -42,13 +41,13 @@ public :
   typedef PatternMatching::VarList VarList;
 
 private:
-  const Formula *F;
+  const Expr *F;
   const VarList &free_variables;
 
   PatternMatching *result;
 
 public: 
-  PatternMatchingVisitor (const Formula *form, 
+  PatternMatchingVisitor (const Expr *form, 
 			  const VarList &FV)
     : F (form), free_variables (FV), result (NULL) { 
   } 
@@ -191,21 +190,8 @@ public:
     result = new PatternMatching ();  
   }
 
-  virtual void visit (const ConjunctiveFormula *E) {
-    visit ((const NaryBooleanFormula *) E);
-  }
-
-  virtual void visit (const DisjunctiveFormula *E) {
-    visit ((const NaryBooleanFormula *) E);
-  }
-
-  virtual void visit (const NegationFormula *E) {
-    visit ((const NaryBooleanFormula *) E);
-  }
-
-  virtual void visit (const QuantifiedFormula *E) {
-    const QuantifiedFormula *qf = 
-      dynamic_cast<const QuantifiedFormula *> (F);
+  virtual void visit (const QuantifiedExpr *E) {
+    const QuantifiedExpr *qf = dynamic_cast<const QuantifiedExpr *> (F);
 
     if (qf == NULL || qf->is_exist () != E->is_exist ())
       throw PatternMatching::Failure ();
@@ -215,48 +201,6 @@ public:
 
     result = PatternMatching::match (qf->get_body (), E->get_body (), 
 				     free_variables);
-  }
-
-private:
-  void visit (const NaryBooleanFormula *E) {
-    if (! E->has_type_of (F))
-      throw PatternMatching::Failure();
- 
-    NaryBooleanFormula::Operands clause1 = E->get_operands ();
-    NaryBooleanFormula::Operands clause2 = 
-      ((NaryBooleanFormula *) F)->get_operands ();
-
-    if (clause1.size () != clause2.size ())
-      throw PatternMatching::Failure ();
-
-    NaryBooleanFormula::OperandsIterator c1 = clause1.begin ();
-    NaryBooleanFormula::OperandsIterator c2 = clause2.begin ();
-
-    try
-      {
-	for (; c1 != clause1.end() && c2 != clause2.end(); c1++, c2++)
-	  {
-	    PatternMatching *pm = 
-	      PatternMatching::match (*c2, *c1, free_variables);
-
-	    if (result == NULL)
-	      result = pm;
-	    else
-	      {
-		result->merge (pm);
-		delete pm;
-	      }
-	  }
-      }
-    catch (PatternMatching::Failure &e)
-      {
-	if (result != NULL)
-	  {
-	    delete result;
-	    result = NULL;
-	  }
-	throw;
-      }
   }
 };
 
@@ -276,10 +220,10 @@ void
 PatternMatching::merge (const PatternMatching *other)
 {
   for (const_iterator i = other->begin(); i != other->end(); i++)
-    set (i->first, (Formula *) i->second->ref ());
+    set (i->first, (Expr *) i->second->ref ());
 }
 
-const Formula *
+const Expr *
 PatternMatching::get (const Variable *v) const
 {
   const_iterator p = matching.find (v);
@@ -298,12 +242,12 @@ PatternMatching::has (const Variable *v) const
 }
 
 void 
-PatternMatching::set (const Variable *v, Formula *F)
+PatternMatching::set (const Variable *v, Expr *F)
 {
   iterator p = matching.find (v);
   if (p != matching.end ())
     {
-      Formula *old = p->second;
+      Expr *old = p->second;
       matching.erase (v);
       old->deref ();
     }
@@ -347,7 +291,7 @@ PatternMatching::equal (const PatternMatching *other) const
 }
 
 PatternMatching * 
-PatternMatching::match (const Formula *F, const Formula *pattern, 
+PatternMatching::match (const Expr *F, const Expr *pattern, 
 			const VarList &free_variables)
   throw (Failure)
 {

@@ -28,9 +28,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <kernel/expressions/Formula.hh>
+#include <kernel/expressions/FormulaRewritingRule.hh>
+
+#include <cassert>
 #include <kernel/Expressions.hh>
-#include "FormulaRewritingRule.hh"
+
 
 FormulaRewritingRule::FormulaRewritingRule () 
   : ConstFormulaVisitor ()
@@ -61,7 +63,7 @@ FormulaRewritingRule::visit (const UnaryApp *ua)
 {
   Expr *arg = ua->get_arg1 ();
   arg->acceptVisitor (this);
-  arg = dynamic_cast<Expr *> (result);
+  arg = (Expr *) (result);
 
   Expr *tmp = UnaryApp::create (ua->get_op (), arg,
 				ua->get_bv_offset (), ua->get_bv_size ());
@@ -126,54 +128,27 @@ FormulaRewritingRule::visit (const RegisterExpr *reg)
 }
 
 void 
-FormulaRewritingRule::visit (const NaryBooleanFormula *F)
+FormulaRewritingRule::visit (const QuantifiedExpr *F)
 {
-  NaryBooleanFormula::Operands new_ops;
-  NaryBooleanFormula::OperandsConstIterator it = F->const_operands_begin ();
-  NaryBooleanFormula::OperandsConstIterator end = F->const_operands_end ();
+  F->get_variable ()->acceptVisitor (this);
+  Variable *var = dynamic_cast<Variable *> (result);
+  assert (var != NULL);
 
-  for (; it != end; it++)
-    {
-      (*it)->acceptVisitor (this);
-      new_ops.push_back (result);
-    }
-  
-  Formula *tmp = F->create_from_operands (new_ops);
+  F->get_body ()->acceptVisitor (this);
+  Expr *body = result;
+
+  Expr *tmp = QuantifiedExpr::create (F->is_exist (), var, body);
   result = rewrite (tmp);
   tmp->deref ();
 }
 
-void 
-FormulaRewritingRule::visit (const ConjunctiveFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
-}
-
-void 
-FormulaRewritingRule::visit (const DisjunctiveFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
-}
-
-void 
-FormulaRewritingRule::visit (const NegationFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
-}
-
-void 
-FormulaRewritingRule::visit (const QuantifiedFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
-}
-
-Formula *
-FormulaRewritingRule::rewrite (const Formula *F)
+Expr *
+FormulaRewritingRule::rewrite (const Expr *F)
 {
   return F->ref ();
 }
 
-Formula *
+Expr *
 FormulaRewritingRule::get_result () const
 {
   if (result != NULL)

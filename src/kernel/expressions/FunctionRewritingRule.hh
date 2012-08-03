@@ -37,12 +37,12 @@ class FunctionRewritingRule : public FormulaRewritingRule
 {
 public:
 
-  typedef Formula *RewriteFormulaFunc (const Formula *);
+  typedef Expr *RewriteFormulaFunc (const Expr *);
 
   FunctionRewritingRule (RewriteFormulaFunc *fRW);
   virtual ~FunctionRewritingRule ();
 
-  virtual Formula *rewrite (const Formula *F);
+  virtual Expr *rewrite (const Expr *F);
 
 private:
   RewriteFormulaFunc *rewrite_formula;

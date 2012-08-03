@@ -96,49 +96,20 @@ BottomUpApplyVisitor::visit (RegisterExpr *reg)
 }
  
 void 
-BottomUpApplyVisitor::visit (ConjunctiveFormula *F)
+BottomUpApplyVisitor::visit (QuantifiedExpr *qe)
 {
-  visit ((NaryBooleanFormula *) F);
-}
- 
-void 
-BottomUpApplyVisitor::visit (DisjunctiveFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
-}
- 
-void 
-BottomUpApplyVisitor::visit (NegationFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
-}
- 
-void 
-BottomUpApplyVisitor::visit (QuantifiedFormula *F)
-{
-  visit ((NaryBooleanFormula *) F);
+  pre (qe);
+  qe->get_variable ()->acceptVisitor (this);
+  qe->get_body ()->acceptVisitor (this);
+  apply (qe);
 }
 
+
 void 
-BottomUpApplyVisitor::pre (Formula *)
+BottomUpApplyVisitor::pre (Expr *)
 {
 }
 
-void 
-BottomUpApplyVisitor::visit (NaryBooleanFormula *F) 
-{
-  pre (F);
-
-  NaryBooleanFormula::Operands new_ops;
-  NaryBooleanFormula::OperandsConstIterator it = F->const_operands_begin ();
-  NaryBooleanFormula::OperandsConstIterator end = F->const_operands_end ();
-
-  for (; it != end; it++)
-    (*it)->acceptVisitor (this);
-  apply (F);
-}
-
- 
 ConstBottomUpApplyVisitor::ConstBottomUpApplyVisitor() : ConstFormulaVisitor () 
 { 
 }
@@ -202,46 +173,17 @@ ConstBottomUpApplyVisitor::visit (const RegisterExpr *reg)
   pre (reg);
   apply (reg);
 }
- 
-void 
-ConstBottomUpApplyVisitor::visit (const ConjunctiveFormula *F)
-{
-  visit ((const NaryBooleanFormula *) F);
-}
- 
-void 
-ConstBottomUpApplyVisitor::visit (const DisjunctiveFormula *F)
-{
-  visit ((const NaryBooleanFormula *) F);
-}
- 
-void 
-ConstBottomUpApplyVisitor::visit (const NegationFormula *F)
-{
-  visit ((const NaryBooleanFormula *) F);
-}
- 
-void 
-ConstBottomUpApplyVisitor::visit (const QuantifiedFormula *F)
-{
-  visit ((const NaryBooleanFormula *) F);
-}
- 
-void 
-ConstBottomUpApplyVisitor::pre (const Formula *)
-{
-}
 
 void 
-ConstBottomUpApplyVisitor::visit (const NaryBooleanFormula *F) 
+ConstBottomUpApplyVisitor::visit (const QuantifiedExpr *qe)
 {
-  pre (F);
-  NaryBooleanFormula::Operands new_ops;
-  NaryBooleanFormula::OperandsConstIterator it = F->const_operands_begin ();
-  NaryBooleanFormula::OperandsConstIterator end = F->const_operands_end ();
-
-  for (; it != end; it++)
-    (*it)->acceptVisitor (this);
-  apply (F);
+  pre (qe);
+  qe->get_variable ()->acceptVisitor (this);
+  qe->get_body ()->acceptVisitor (this);
+  apply (qe);
 }
-
+ 
+void 
+ConstBottomUpApplyVisitor::pre (const Expr *)
+{
+}

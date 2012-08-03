@@ -40,9 +40,9 @@
 
 using namespace FormulaUtils;
 
-Formula *
-FormulaUtils::replace_subterm (const Formula *F, const Formula *pattern, 
-			       const Formula *value)
+Expr *
+FormulaUtils::replace_subterm (const Expr *F, const Expr *pattern, 
+			       const Expr *value)
 {
   FormulaReplaceSubtermRule r (pattern, value);
   F->acceptVisitor (&r);
@@ -50,19 +50,19 @@ FormulaUtils::replace_subterm (const Formula *F, const Formula *pattern,
   return r.get_result ();
 }
 
-Formula * 
-FormulaUtils::replace_variable (const Formula *F, 
-				const Variable *v, const Formula *value)
+Expr * 
+FormulaUtils::replace_variable (const Expr *F, 
+				const Variable *v, const Expr *value)
 {
   return replace_subterm (F, v, value);
 }
 
 bool 
-FormulaUtils::replace_variable_and_assign (Formula **phi, 
+FormulaUtils::replace_variable_and_assign (Expr **phi, 
 					   const Variable *v, 
-					   const Formula *value)
+					   const Expr *value)
 {
-  Formula *F = replace_variable (*phi, v, value);
+  Expr *F = replace_variable (*phi, v, value);
   bool result = (*phi != F);
   (*phi)->deref ();
   *phi = F;
@@ -70,8 +70,8 @@ FormulaUtils::replace_variable_and_assign (Formula **phi,
   return result;
 }
 
-Formula *
-FormulaUtils::bottom_up_rewrite (const Formula *phi, FormulaRewritingRule &r)
+Expr *
+FormulaUtils::bottom_up_rewrite (const Expr *phi, FormulaRewritingRule &r)
 {
   phi->acceptVisitor (r);
 
@@ -79,10 +79,10 @@ FormulaUtils::bottom_up_rewrite (const Formula *phi, FormulaRewritingRule &r)
 }
 
 bool 
-FormulaUtils::bottom_up_rewrite_and_assign (Formula **phi, 
+FormulaUtils::bottom_up_rewrite_and_assign (Expr **phi, 
 					    FormulaRewritingRule &r)
 {
-  Formula *new_phi = bottom_up_rewrite (*phi, r);
+  Expr *new_phi = bottom_up_rewrite (*phi, r);
   bool result = (*phi != new_phi);
 
   (*phi)->deref ();
@@ -91,11 +91,11 @@ FormulaUtils::bottom_up_rewrite_and_assign (Formula **phi,
   return result;
 }
 
-Formula *
-FormulaUtils::bottom_up_rewrite_pattern (const Formula *phi,
-					 const Formula *pattern,
+Expr *
+FormulaUtils::bottom_up_rewrite_pattern (const Expr *phi,
+					 const Expr *pattern,
 					 const VarList &fv,
-					 const Formula *value)
+					 const Expr *value)
 {
   BottomUpRewritePatternRule r (pattern, fv, value);
 
@@ -103,10 +103,10 @@ FormulaUtils::bottom_up_rewrite_pattern (const Formula *phi,
 }
   
 bool 
-FormulaUtils::bottom_up_rewrite_pattern_and_assign (Formula **phi,
-						    const Formula *pattern,
+FormulaUtils::bottom_up_rewrite_pattern_and_assign (Expr **phi,
+						    const Expr *pattern,
 						    const VarList &fv,
-						    const Formula *value)
+						    const Expr *value)
 {
   BottomUpRewritePatternRule r (pattern, fv, value);
 
@@ -114,7 +114,7 @@ FormulaUtils::bottom_up_rewrite_pattern_and_assign (Formula **phi,
 }
 
 bool
-FormulaUtils::rewrite_in_DNF (Formula **phi)
+FormulaUtils::rewrite_in_DNF (Expr **phi)
 {
   FunctionRewritingRule r (disjunctive_normal_form_rule);
 
@@ -126,7 +126,7 @@ FormulaUtils::rewrite_in_DNF (Formula **phi)
 }
 
 bool
-FormulaUtils::simplify_level0 (Formula **F)
+FormulaUtils::simplify_level0 (Expr **F)
 {
   FunctionRewritingRule r (simplify_formula);
 
@@ -139,7 +139,7 @@ FormulaUtils::simplify_level0 (Formula **F)
 bool
 FormulaUtils::simplify (Expr **E)
 {
-  Formula **F = (Formula **) E;
+  Expr **F = (Expr **) E;
   FunctionRewritingRule r (simplify_expr);
 
   bool result = FormulaUtils::bottom_up_rewrite_and_assign (F, r);
@@ -153,22 +153,21 @@ FormulaUtils::simplify (Expr **E)
   return result;
 }
 
-Formula * 
-FormulaUtils::extract_v_pattern (std::string var_id, const Formula *phi, 
-				 const Formula *pattern)
+Expr * 
+FormulaUtils::extract_v_pattern (std::string var_id, const Expr *phi, 
+				 const Expr *pattern)
 {
-  Formula *result = NULL;
+  Expr *result = NULL;
   Variable *v = Variable::create (var_id); 
   try
     {
       PatternMatching::VarList fv;
       fv.push_back(v);
 
-      PatternMatching *vm = 
-	PatternMatching::match (phi, pattern, fv);
+      PatternMatching *vm = PatternMatching::match (phi, pattern, fv);
 
       if (vm->has (v))
-	result = (Formula *) vm->get (v)->ref ();
+	result = (Expr *) vm->get (v)->ref ();
       delete vm;
     }
   catch (PatternMatching::Failure &) 

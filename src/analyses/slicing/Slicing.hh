@@ -66,14 +66,14 @@ class DataDependencyLocalContext {
 
   /* Here are the lvalue to watch. This is a set encoded by a logical
    * formula (see ConditionalSet.h) */
-  Formula * the_lvalues;
+  Expr * the_lvalues;
 
 public:
   DataDependencyLocalContext(DataDependency * fixpoint_structure);
   DataDependencyLocalContext(const DataDependencyLocalContext &other);
   ~DataDependencyLocalContext();
   DataDependency * get_global_context() { return fixpoint_structure; };
-  Formula ** get_watched_lvalues() { return & the_lvalues; };
+  Expr ** get_watched_lvalues() { return & the_lvalues; };
 
 public:
 
@@ -147,7 +147,7 @@ public:
   /*! Get the result at program point pp from the current state of the fixpoint.
    *  If the fixpoint has not been reached already, then
    *  one does at most max_step_nb more step before returning the result. */
-  Formula * get_dependencies(ConcreteProgramPoint pp, int max_step_nb);
+  Expr * get_dependencies(ConcreteProgramPoint pp, int max_step_nb);
 
   /*! Get the result at program point pp from the current state of the fixpoint.
    *  This simplified version gives all the possibilities.

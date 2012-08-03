@@ -76,7 +76,7 @@ construct_all_subsets(const T &s)
   return subsets;
 }
 
-Formula * weakest_precondition(Formula * post, Statement *stmt)
+Expr * weakest_precondition(Expr * post, Statement *stmt)
 {
   if (stmt->is_Skip())
     return post;
@@ -91,10 +91,9 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 
   if (assmt->get_lval()->is_RegisterExpr())
     {
-      Formula *original_cpy = post->ref ();
-      Formula *result = 
-	replace_subterm (original_cpy, assmt->get_lval(), 
-			 assmt->get_rval());
+      Expr *original_cpy = post->ref ();
+      Expr *result = 
+	replace_subterm (original_cpy, assmt->get_lval(), assmt->get_rval());
       if (result != original_cpy) 
 	original_cpy->deref ();
       return result;
@@ -118,9 +117,9 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
     construct_all_subsets(all_memrefs);
 
   // 3. construct the formula
-  vector<Formula *> phi_clauses;
+  vector<Expr *> phi_clauses;
 
-  Formula *phi = Constant::True ();
+  Expr *phi = Constant::True ();
   for (vector< pair<MemCellContainer, MemCellContainer > >::iterator
 	 subset = all_subsets.begin();
        subset != all_subsets.end();
@@ -130,13 +129,13 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
       // Hypothesis : all addresses of all memcell in *subset are equal to 
       // those of mc
       // and all the other ones are different from those of mc
-      Formula * hyp = Constant::True ();  // true by default
+      Expr * hyp = Constant::True ();  // true by default
       for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
 	   mcel != (*subset).first.end(); mcel++) 
 	{
 	  Expr *c = BinaryApp::create (EQ, mc->get_addr()->ref (),
 				       (*mcel)->get_addr()->ref ());
-	  hyp = ConjunctiveFormula::create (c, hyp);
+	  hyp = BinaryApp::createAnd (c, hyp);
 	}
 
       for (MemCellContainer::iterator mcel = (*subset).second.begin(); 
@@ -146,42 +145,42 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 	    UnaryApp::create (LNOT, 
 			      BinaryApp::create (EQ, mc->get_addr()->ref (),
 						 (*mcel)->get_addr()->ref ()));
-	  hyp = ConjunctiveFormula::create (c, hyp);
+	  hyp = BinaryApp::createAnd (c, hyp);
 	}
 
       // Replace all the terms pointed by elements of subset by the right 
       // member of assmt
-      Formula * psi = post->ref ();
+      Expr * psi = post->ref ();
       for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
 	   mcel != (*subset).first.end(); mcel++)
 	replace_subterm (psi, *mcel, (Expr *) assmt->get_rval());
 
-      phi = ConjunctiveFormula::create (Formula::implies (hyp, psi), phi);
+      phi = Expr::createAnd (Expr::createImplies (hyp, psi), phi);
     }
 
-  simplify_level0 (&phi);
+  simplify_level0 ((Expr **) &phi);
 
   return phi;
 }
 
 /*****************************************************************************/
 
-Formula * weakest_precondition(Formula * post, StmtArrow *arrow)
+Expr * weakest_precondition(Expr * post, StmtArrow *arrow)
 {
-  Formula *phi = 
-    Formula::implies(arrow->get_condition(),
-		     weakest_precondition(post, arrow->get_stmt()));
+  Expr *phi = 
+    Expr::createImplies (arrow->get_condition(),
+			 weakest_precondition(post, arrow->get_stmt()));
   simplify_level0 (&phi);
   Log::separator(2);
   Log::print("Backward step on :\n" + phi->pp() + "\n", 2);
   return phi;
 }
 
-Formula * weakest_precondition(Formula * post, MCPath &p)
+Expr * weakest_precondition(Expr * post, MCPath &p)
 {
-  Formula * phi = post;
+  Expr * phi = post;
   for (MCPath_reverse_iterator arr = p.rbegin(); arr != p.rend(); ++arr) {
-      Formula * new_phi = weakest_precondition(phi, *arr);
+      Expr * new_phi = weakest_precondition(phi, *arr);
       if (phi != post && phi != new_phi) { // \todo comment phi pourrait etre != de this ?...
 	phi->deref ();
 	phi = new_phi;

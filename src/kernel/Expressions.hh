@@ -72,7 +72,7 @@ class RegisterExpr;   // --> LValue
  *  The Expr class is abstract, and LValue also, they are used for type
  *  organisation.
  *****************************************************************************/
-class Expr : public AtomicFormula /* Abstract */ {
+class Expr : public Formula /* Abstract */ {
 private:
 
   /*! \brief The value of each expression is restricted to a
@@ -98,7 +98,23 @@ public:
   virtual size_t hash () const;
   virtual Expr *ref () const { return (Expr *) Formula::ref (); }
 
-  /*****************************************************************************/
+  static Expr *createNot (Expr *arg);
+
+  static Expr *createAnd (Expr *arg1, Expr *arg2);
+
+  static Expr *createOr (Expr *arg1, Expr *arg2);
+
+  /*! \brief construct the formula A ==> B.
+   *  Caution A and B are not copied */
+  static Expr *createImplies (Expr *A, Expr *B);
+
+  /*! \brief construct the formula (cond /\ A) \/ ((Not cont) /\ B).
+   *  Caution A and B are not copied */
+  static Expr *createIfThenElse (Expr *cond, Expr *A, Expr *B);
+
+  /*! \brief construct the formula, actually the expression (EQ A B).
+   *  Caution A and B are not copied */
+  static Expr *createEquality (Expr *A, Expr *B);
 
   /*! \brief the size of the bit vector. */
   int get_bv_size() const;
@@ -131,6 +147,18 @@ public:
   static void
   extract_with_bit_vector_size_of (Expr *&e, const Expr *other);
 
+  /*! \brief simplification of lower level:
+   *  - simplify syntactic equality
+   *  - compute expression when possible (\todo: not complete, at the moment: just NOT operator)
+   *  - delete trivial clauses in conjunction and disjunction.
+   */
+  /*! \brief simple syntaxic evaluation: try to transform a true
+      formula into a bool. */
+  Option<bool> try_eval_level0() const;
+
+  /*! \brief return true iff the formula can be reduce to true. */
+  bool eval_level0() const;
+
   /*****************************************************************************/
   // Type checking
   /*****************************************************************************/
@@ -143,6 +171,16 @@ public:
   bool is_LValue() const;
   bool is_MemCell() const;
   bool is_RegisterExpr() const;
+
+  bool is_DisjunctiveFormula () const;
+  bool is_ConjunctiveFormula () const;
+  bool is_NegationFormula () const;
+  bool is_QuantifiedFormula () const;
+  bool is_ExistentialFormula () const;
+  bool is_UniversalFormula () const;
+  bool is_TrueFormula () const;
+  bool is_FalseFormula () const;
+
 
   virtual bool has_type_of (const Formula *F) const = 0;
 
@@ -369,8 +407,6 @@ public:
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 };
 
-
-
 /******************************************************************************/
 class TernaryApp: public Expr {
 
@@ -408,6 +444,42 @@ public:
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 };
 
+class QuantifiedExpr : public Expr {
+private:
+  bool exist;
+  Variable *var;
+  Expr *body;
+
+  QuantifiedExpr (bool exist, Variable *var, Expr *body);
+
+  virtual ~QuantifiedExpr();
+
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
+public:
+  static QuantifiedExpr *create (bool exist, Variable *var, Expr *body);
+  static QuantifiedExpr *createExist (Variable *var, Expr *body);
+  static QuantifiedExpr *createForall (Variable *var, Expr *body);
+
+  virtual bool is_exist () const;
+  virtual Variable *get_variable () const;
+  virtual Expr *get_body () const;
+
+
+  /*! \brief syntaxic equality of registers */
+  virtual bool equal (const Formula *F) const;
+  virtual size_t hash () const;
+  virtual bool has_type_of (const Formula *F) const;
+
+  bool contains(Expr *o) const;
+  virtual unsigned int get_depth() const;
+  std::string pp(std::string prefix = "") const;
+
+  virtual void acceptVisitor (FormulaVisitor *visitor);
+  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
+};
+
 
 /*****************************************************************************/
 /*! \brief
@@ -420,6 +492,8 @@ public:
 class LValue : public Expr   /* Abstract class */ {
 public:
   LValue(int bv_offset, int bv_size);
+  virtual LValue *ref () const { return (LValue *) Expr::ref (); }
+
 };
 
 /*! \brief The tag identifies different address spaces */

@@ -59,7 +59,7 @@ unsigned long long get_debug_nb_expr_in_heap()
 /*****************************************************************************/
 
 Expr::Expr(int bv_offset, int bv_size) 
-  : AtomicFormula(), bv_offset(bv_offset), bv_size(bv_size)
+  : Formula(), bv_offset(bv_offset), bv_size(bv_size)
 {
   debug_nb_expr_in_heap++;
 }
@@ -68,6 +68,71 @@ Expr::~Expr()
 {
   debug_nb_expr_in_heap--;
 };
+
+Expr *
+Expr::createNot (Expr *arg1)
+{
+  return UnaryApp::create (NOT, (Expr *) arg1, 0, 1);
+}
+
+
+Expr * 
+Expr::createImplies (Expr *A, Expr *B)
+{
+  return createAnd (createNot (A), B);
+}
+
+Expr * 
+Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
+{
+  return createOr (createAnd (cond->ref (), A),
+		   createAnd (createNot (cond), B));
+}
+
+Expr * 
+Expr::createEquality (Expr *A, Expr *B)
+{
+  return BinaryApp::create (EQ, A, B);
+}
+
+Expr *
+Expr::createAnd (Expr *arg1, Expr *arg2)
+{
+  return BinaryApp::create (AND_OP, arg1, arg2, 0, 1);
+}
+
+Expr *
+Expr::createOr (Expr *arg1, Expr*arg2)
+{
+  return BinaryApp::create (OR,  arg1, arg2, 0, 1);
+}
+
+Option<bool> 
+Expr::try_eval_level0() const
+{
+  Option<bool> result;
+
+  if (is_TrueFormula ()) 
+    result = Option<bool> (true);
+  if (is_FalseFormula ()) 
+    result = Option<bool> (false);
+  else if (is_Constant ()) 
+    {
+      if (((Constant *)this)->get_val() == 0) 
+	result = Option<bool>(false);
+      else 
+	result = Option<bool>(true);
+    }
+  return result;
+}
+
+bool 
+Expr::eval_level0() const
+{
+  try { return try_eval_level0().getValue(); }
+  catch (OptionNoValueExc &) { return false; }
+}
+
 
 /*****************************************************************************/
 
@@ -372,6 +437,63 @@ TernaryApp::~TernaryApp()
   arg3->deref ();
 }
 
+//
+// QUANTIFIED EXPR METHODS
+//
+QuantifiedExpr::QuantifiedExpr (bool exist_, Variable *var_, Expr *body_)
+  : Expr (0, 1), exist (exist_), var (var_), body (body_)
+{
+}
+
+QuantifiedExpr::~QuantifiedExpr()
+{
+  var->deref ();
+  body->deref ();
+}
+
+bool 
+QuantifiedExpr::is_exist () const
+{
+  return exist;
+}
+
+Variable *
+QuantifiedExpr::get_variable () const
+{
+  return var;
+}
+
+Expr *
+QuantifiedExpr::get_body () const
+{
+  return body;
+}
+
+Expr *
+QuantifiedExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+{
+  assert (new_bv_size == 1 && new_bv_offset == 0);
+
+  return QuantifiedExpr::create (exist, (Variable *) var->ref (), body->ref ());
+}
+
+QuantifiedExpr *
+QuantifiedExpr::create (bool exist, Variable *var, Expr *body)
+{
+  return find_or_add (new QuantifiedExpr (exist, var, body));
+}
+
+QuantifiedExpr *
+QuantifiedExpr::createExist (Variable *var, Expr *body)
+{
+  return create (true, var, body);
+}
+
+QuantifiedExpr *
+QuantifiedExpr::createForall (Variable *var, Expr *body)
+{
+  return create (false, var, body);
+}
 
 /*****************************************************************************/
 
@@ -465,6 +587,7 @@ RegisterExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const
   return RegisterExpr::create (regdesc, new_bv_offset, new_bv_size);
 }
 
+
 /*****************************************************************************/
 
 unsigned int Variable::get_depth() const
@@ -508,6 +631,11 @@ unsigned int RegisterExpr::get_depth() const
   return 1;
 }
 
+unsigned int QuantifiedExpr::get_depth() const
+{
+  return 1 + body->get_depth ();
+}
+
 /*****************************************************************************/
 
 bool Variable::contains(Expr *o) const
@@ -546,9 +674,10 @@ bool RegisterExpr::contains(Expr *o) const
   return equal (o);
 }
 
-/*****************************************************************************/
-
-
+bool QuantifiedExpr::contains (Expr *o) const
+{
+  return equal (o) || var->contains (o) || body->contains (o);
+}
 
 /*****************************************************************************/
 
@@ -600,6 +729,70 @@ bool Expr::is_RegisterExpr() const
   return dynamic_cast<RegisterExpr *>(non_const_this);
 }
 
+bool
+Expr::is_DisjunctiveFormula () const
+{
+  const BinaryApp *ba = dynamic_cast<const BinaryApp *>(this);
+
+  return ba != NULL && ba->get_op () == OR && ba->get_bv_size () == 1;  
+}
+
+bool 
+Expr::is_ConjunctiveFormula () const
+{
+  const BinaryApp *ba = dynamic_cast<const BinaryApp *>(this);
+
+  return ba != NULL && ba->get_op () == AND_OP && ba->get_bv_size () == 1;  
+}
+
+bool 
+Expr::is_NegationFormula () const
+{
+  const UnaryApp *ua = dynamic_cast<const UnaryApp *>(this);
+
+  return ua != NULL && ua->get_op() == NOT && ua->get_bv_size () == 1;
+}
+
+bool 
+Expr::is_QuantifiedFormula () const
+{
+  const QuantifiedExpr *ua = dynamic_cast<const QuantifiedExpr *>(this);
+
+  return ua != NULL;
+}
+
+bool 
+Expr::is_ExistentialFormula () const
+{
+  const QuantifiedExpr *qe = dynamic_cast<const QuantifiedExpr *>(this);
+
+  return qe != NULL && qe->is_exist ();
+}
+
+bool 
+Expr::is_UniversalFormula () const
+{
+  const QuantifiedExpr *qe = dynamic_cast<const QuantifiedExpr *>(this);
+  
+  return qe != NULL && ! qe->is_exist ();
+}
+
+bool 
+Expr::is_TrueFormula () const
+{
+  const Constant *bcf = dynamic_cast<const Constant *>(this);
+
+  return bcf != NULL && (bcf->get_bv_size () == 1) && bcf->get_val ();
+}
+
+bool 
+Expr::is_FalseFormula () const
+{
+  const Constant *bcf = dynamic_cast<const Constant *>(this);
+
+  return bcf != NULL && (bcf->get_bv_size () == 1) && ! bcf->get_val ();
+}
+
 /*****************************************************************************/
 
 bool 
@@ -642,6 +835,12 @@ bool
 RegisterExpr::has_type_of (const Formula *F) const
 {
   return dynamic_cast<const RegisterExpr *>(F);
+}
+
+bool 
+QuantifiedExpr::has_type_of (const Formula *F) const
+{
+  return dynamic_cast<const QuantifiedExpr *>(F);
 }
 
 /*****************************************************************************/
@@ -721,6 +920,13 @@ bool RegisterExpr::equal (const Formula *F) const
   return (e != NULL && e->regdesc == regdesc);
 }
 
+bool QuantifiedExpr::equal (const Formula *F) const
+{
+  const QuantifiedExpr *e = s_check_bv<QuantifiedExpr> (this, F);
+
+  return (e != NULL && e->exist == exist && e->var == var && e->body == body);
+}
+
 /*****************************************************************************/
 size_t 
 Expr::hash () const 
@@ -772,6 +978,12 @@ size_t
 RegisterExpr::hash () const 
 {   
   return 13 * this->Expr::hash() + regdesc->hashcode ();
+}
+
+size_t 
+QuantifiedExpr::hash () const 
+{   
+  return (exist ? 111 :149) * var->hash () + body->hash ();
 }
 
 
@@ -851,6 +1063,16 @@ string RegisterExpr::pp(std::string prefix) const
   return oss.str();
 }
 
+string QuantifiedExpr::pp(std::string prefix) const
+{
+  ostringstream oss;
+  oss << prefix 
+      << (exist ? "<" : "[") << var->pp () << (exist ? ">" : "]") 
+      << "(" << body->pp () << ")";
+
+  return oss.str();
+}
+
 /*****************************************************************************/
 
 
@@ -903,6 +1125,12 @@ RegisterExpr::acceptVisitor (FormulaVisitor *visitor)
   visitor->visit (this); 
 }
  
+void 
+QuantifiedExpr::acceptVisitor (FormulaVisitor *visitor)
+{
+  visitor->visit (this); 
+}
+ 
 			/* --------------- */
 
 void 
@@ -943,6 +1171,12 @@ MemCell::acceptVisitor (ConstFormulaVisitor *visitor) const
  
 void 
 RegisterExpr::acceptVisitor (ConstFormulaVisitor *visitor) const 
+{
+  visitor->visit (this); 
+}
+ 
+void 
+QuantifiedExpr::acceptVisitor (ConstFormulaVisitor *visitor) const 
 {
   visitor->visit (this); 
 }

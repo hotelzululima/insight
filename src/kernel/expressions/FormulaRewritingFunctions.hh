@@ -31,64 +31,63 @@
 #ifndef FORMULAREWRITINGFUNCTIONS_HH
 # define FORMULAREWRITINGFUNCTIONS_HH
 
-# include <kernel/expressions/Formula.hh>
+# include <kernel/Expressions.hh>
 # include <kernel/expressions/FunctionRewritingRule.hh>
-
 
 extern void
 rewrite_in_place (FunctionRewritingRule::RewriteFormulaFunc *func, 
-		  Formula **pF);
+		  Expr **pF);
   
-extern Formula * 
-syntaxic_equality_rule (const Formula *phi);
+extern Expr * 
+syntaxic_equality_rule (const Expr *phi);
   
-extern Formula * 
-not_operator_on_constant (const Formula *phi);
+extern Expr * 
+not_operator_on_constant (const Expr *phi);
   
-extern Formula * 
-cancel_lnot_not (const Formula *phi) ;
+extern Expr * 
+cancel_lnot_not (const Expr *phi) ;
   
-extern Formula * 
-logical_negation_operator_on_constant (const Formula *phi);
+extern Expr * 
+logical_negation_operator_on_constant (const Expr *phi);
   
-extern Formula *
-conjunction_simplification (const Formula *phi);
+extern Expr *
+conjunction_simplification (const Expr *phi);
   
-extern Formula *
-disjunction_simplification (const Formula *phi);
+extern Expr *
+disjunction_simplification (const Expr *phi);
   
-extern Formula * 
-and_and_rule (const Formula *phi);
+extern Expr * 
+and_and_rule (const Expr *phi);
   
-extern Formula * 
-or_or_rule (const Formula *phi);
+extern Expr * 
+or_or_rule (const Expr *phi);
   
-extern Formula * 
-not_decrease (const Formula *phi);
+extern Expr * 
+not_decrease (const Expr *phi);
   
-extern Formula *
-disjunctive_normal_form_rule (const Formula *phi);
+extern Expr *
+disjunctive_normal_form_rule (const Expr *phi);
   
-extern Formula * 
-phi_and_not_phi_rule (const Formula *phi);
+extern Expr * 
+phi_and_not_phi_rule (const Expr *phi);
   
-extern Formula *
-compute_constants (const Formula *phi);
+extern Expr *
+compute_constants (const Expr *phi);
 
-extern Formula *
-void_operations (const Formula *phi);
+extern Expr *
+void_operations (const Expr *phi);
 
-extern Formula * 
-bit_field_computation (const Formula *phi);
+extern Expr * 
+bit_field_computation (const Expr *phi);
 
-extern Formula * 
-binary_operations_simplification (const Formula *phi);
+extern Expr * 
+binary_operations_simplification (const Expr *phi);
 
-extern Formula * 
-simplify_formula (const Formula *phi);
+extern Expr * 
+simplify_formula (const Expr *phi);
 
-extern Formula * 
-simplify_expr (const Formula *phi);
+extern Expr * 
+simplify_expr (const Expr *phi);
 
 
 #endif /* ! FORMULAREWRITINGFUNCTIONS_HH */

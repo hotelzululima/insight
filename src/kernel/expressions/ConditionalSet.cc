@@ -51,19 +51,18 @@ ConditionalSet::EltSymbol ()
 
 inline Expr *IsIn (const Expr *elt) 
 {
-  return BinaryApp::create (EQ, (Expr*) ConditionalSet::EltSymbol (), 
-			    (Expr*) elt->ref ());
+  return BinaryApp::create (EQ, ConditionalSet::EltSymbol (), elt->ref ());
 }
 
-void ConditionalSet::cs_simplify(Formula **set)
+void ConditionalSet::cs_simplify(Expr **set)
 {
   FormulaUtils::simplify_level0 (set);
 }
 
 // ATTENTION CHANTIER CHANTIER CHANTIER
-Formula * ConditionalSet::cs_condition_for_belonging (Formula * set, Expr *) {
+Expr * ConditionalSet::cs_condition_for_belonging (Expr * set, Expr *) {
 
-  Formula * simple_set = set->ref ();
+  Expr * simple_set = set->ref ();
   cs_simplify (&simple_set);
   
   throw std::runtime_error ("cs_condition_for_belonging");
@@ -87,12 +86,11 @@ public:
     elt_list.push_back (e);
   };
 
-  void apply (const Formula *e) 
+  void apply (const Expr *e) 
   {
     Variable *X = Variable::create ("X"); 
-    Formula * elt_def_pattern = 
-      Formula::Equality((Expr *) ConditionalSet::EltSymbol (), 
-			(Expr *) X->ref ());
+    Expr * elt_def_pattern = 
+      Expr::createEquality(ConditionalSet::EltSymbol (), X->ref ());
     std::list<const Variable *> free_variables; 
 
     free_variables.push_back(X);
@@ -102,7 +100,7 @@ public:
 	  PatternMatching::match (e, elt_def_pattern, free_variables);
 
 	assert (matchings->has (X));
-	add_elt ((Expr*) matchings->get (X)->ref ());
+	add_elt (matchings->get (X)->ref ());
 	delete matchings;
       } catch (PatternMatching::Failure &) {}
     X->deref ();
@@ -111,18 +109,18 @@ public:
 };
 
 std::vector<Expr*> 
-ConditionalSet::cs_possible_values (const Formula *set) 
+ConditionalSet::cs_possible_values (const Expr *set) 
 {
   ExtractEltRule r;
   set->acceptVisitor (r);
   return r.elt_list;
 }
 
-Formula * 
-ConditionalSet::cs_flatten (const Formula *set) 
+Expr * 
+ConditionalSet::cs_flatten (const Expr *set) 
 {
   std::vector<Expr*> all_values = cs_possible_values (set);
-  Formula *flat_set = Constant::False ();
+  Expr *flat_set = Constant::False ();
 
   for (int i = 0; i< (int) all_values.size (); i++) 
     {
@@ -133,11 +131,11 @@ ConditionalSet::cs_flatten (const Formula *set)
   return flat_set;
 }
 
-Formula *
-ConditionalSet::cs_contains (const Formula *set, const Expr *elt)
+Expr *
+ConditionalSet::cs_contains (const Expr *set, const Expr *elt)
 {
   Variable *eltsym = ConditionalSet::EltSymbol ();
-  Formula *new_set = FormulaUtils::replace_variable (set, eltsym, elt);  
+  Expr *new_set = FormulaUtils::replace_variable (set, eltsym, elt);  
   FormulaUtils::simplify_level0 (&new_set);
   eltsym->deref ();
 
@@ -145,21 +143,20 @@ ConditionalSet::cs_contains (const Formula *set, const Expr *elt)
 }
 
 bool 
-ConditionalSet::cs_compute_contains (const Formula *set, const Expr *elt)
+ConditionalSet::cs_compute_contains (const Expr *set, const Expr *elt)
 {
-  Formula *result = ConditionalSet::cs_contains (set, elt);
+  Expr *result = ConditionalSet::cs_contains (set, elt);
   bool result_bool = result->eval_level0 ();
   result->deref ();
 
   return result_bool;
 }
 
-bool ConditionalSet::cs_conditional_add(Formula *cond, Formula **set, Expr *elt)
+bool ConditionalSet::cs_conditional_add(Expr *cond, Expr **set, Expr *elt)
 {
   if (!ConditionalSet::cs_compute_contains(*set, elt))
     {
-      Formula *tmp = 
-	DisjunctiveFormula::create (Formula::implies(cond, IsIn(elt)), *set);
+      Expr *tmp = Expr::createOr (Expr::createImplies (cond, IsIn(elt)), *set);
       *set = tmp;
       FormulaUtils::simplify_level0(set);
       return true;
@@ -168,17 +165,17 @@ bool ConditionalSet::cs_conditional_add(Formula *cond, Formula **set, Expr *elt)
 }
 
 bool 
-ConditionalSet::cs_conditional_union(Formula *cond, Formula **set1, 
-				     Formula *set2)
+ConditionalSet::cs_conditional_union(Expr *cond, Expr **set1, 
+				     Expr *set2)
 {
-  Formula *included = Formula::implies(set2->ref (), (*set1)->ref ());
+  Expr *included = Expr::createImplies (set2->ref (), (*set1)->ref ());
 
   FormulaUtils::simplify_level0 (&included);
 
   if (!(included->eval_level0()))
     {
       included->deref ();
-      *set1 = DisjunctiveFormula::create (Formula::implies(cond, set2), *set1);
+      *set1 = Expr::createOr (Expr::createImplies (cond, set2), *set1);
       FormulaUtils::simplify_level0 (set1);
 
       return true;
@@ -191,24 +188,23 @@ ConditionalSet::cs_conditional_union(Formula *cond, Formula **set1,
 }
 
 bool 
-ConditionalSet::cs_remove(Formula **set, const Expr *elt)
+ConditionalSet::cs_remove(Expr **set, const Expr *elt)
 {
   bool was_in = cs_compute_contains (*set, elt);
-  *set = ConjunctiveFormula::create (*set, 
-				     NegationFormula::create (IsIn (elt)));
+  *set = Expr::createAnd (*set, Expr::createNot (IsIn (elt)));
   FormulaUtils::simplify_level0 (set);
 
   return was_in;
 }
 
 bool 
-ConditionalSet::cs_add(Formula **set, const Expr *elt)
+ConditionalSet::cs_add(Expr **set, const Expr *elt)
 {
   bool result = ConditionalSet::cs_compute_contains(*set, elt);
 
   if (! result)
     {
-      *set = DisjunctiveFormula::create (IsIn (elt), *set);
+      *set = Expr::createOr (IsIn (elt), *set);
       FormulaUtils::simplify_level0 (set);
     }
 
@@ -216,18 +212,18 @@ ConditionalSet::cs_add(Formula **set, const Expr *elt)
 }
 
 bool 
-ConditionalSet::cs_union(Formula **set1, const Formula *set2)
+ConditionalSet::cs_union(Expr **set1, const Expr *set2)
 {
   bool result = (set2 == *set1);
 
   if (! result)
     {
-      Formula *included = Formula::implies (set2->ref (), (*set1)->ref ());
+      Expr *included = Expr::createImplies (set2->ref (), (*set1)->ref ());
       FormulaUtils::simplify_level0 (&included);
 
       if (! included->eval_level0 ())
 	{
-	  *set1 = DisjunctiveFormula::create (set2->ref (), *set1);
+	  *set1 = Expr::createOr (set2->ref (), *set1);
 	  FormulaUtils::simplify_level0(set1);
 	  result = true;
 	}

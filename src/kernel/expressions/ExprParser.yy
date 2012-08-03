@@ -44,9 +44,6 @@ namespace ExprParser {
   namespace ExprParser {
     extern Expr *
     parse_Expr (const MicrocodeArchitecture *arch, const std::string &input);
-
-    extern Formula *
-    parse_Formula (const MicrocodeArchitecture *arch, const std::string &input);
   };
  }
 
@@ -77,7 +74,6 @@ namespace ExprParser {
   std::string   *stringValue;
   Expr     *expr;
   Variable *variable;
-  Formula  *formula;
 };
 
 %code {
@@ -110,7 +106,7 @@ using namespace ExprParser;
 %token                TOK_EOF      0 "end of buffer (EOF)"
 %token <intValue>     TOK_INTEGER    "integer value (INTEGER)"
 
-%type <formula> start formula
+%type <expr> start formula
 %type <expr> constant expr addexpr mulexpr unaryexpr veryatomexpr atomexpr lval
 %type <expr> opexpr 
 %type <variable> variable 
@@ -128,15 +124,15 @@ formula :
 | TOK_LPAR formula TOK_RPAR
   { $$ = $2; }
 | formula TOK_L_AND formula 
-  { $$ = ConjunctiveFormula::create ($1, $3); }
+  { $$ = Expr::createAnd ($1, $3); }
 | formula TOK_L_OR formula 
-  { $$ = DisjunctiveFormula::create ($1, $3); }
+  { $$ = Expr::createOr ($1, $3); }
 | TOK_L_NOT formula 
-  { $$ = NegationFormula::create ($2); }
+  { $$ = Expr::createNot ((Expr *) $2); }
 | TOK_FORALL variable formula 
-  { $$ = QuantifiedFormula::createA ($2,$3); }
+  { $$ = QuantifiedExpr::createForall ($2, $3); }
 | TOK_EXISTS variable formula 
-  { $$ = QuantifiedFormula::createE ($2,$3); }
+  { $$ = QuantifiedExpr::createExist ($2, $3); }
 ;
 
 constant :
@@ -310,8 +306,8 @@ Parser::error(const Parser::location_type &loc, const string &msg)
   Log::errorln (oss.str ());
 }
 
-Formula *
-Formula::parse (MicrocodeArchitecture *arch, const std::string &input)
+Expr *
+Expr::parse (MicrocodeArchitecture *arch, const std::string &input)
 {
   ExprParser::ClientData data;
 
@@ -326,23 +322,5 @@ Formula::parse (MicrocodeArchitecture *arch, const std::string &input)
   ExprParser::terminate_lexer ();
 
   return data.result;
-}
-
-Expr *
-Expr::parse (MicrocodeArchitecture *arch, const std::string &input)
-{
-  Formula *result = Formula::parse (arch, input);
-
-  if (result == NULL)
-    return NULL;
-
-  if (! result->is_Expr ())
-    {
-      Log::errorln ("not a valid expression");
-      result->deref ();
-      return NULL;
-    }
-  
-  return dynamic_cast<Expr *> (result);
 }
 

@@ -30,7 +30,7 @@
 #ifndef KERNEL_EXPRESSIONS_CONDITIONALSET_HH
 #define KERNEL_EXPRESSIONS_CONDITIONALSET_HH
 
-#include <kernel/expressions/Formula.hh>
+#include <kernel/Expressions.hh>
 
 /* This class encloses static methods to manipulate logical formulae as encoding
  * sets of elements. It uses a special symbol EltSymbol. A formula phi contains
@@ -44,40 +44,40 @@ public:
 
   static Variable *EltSymbol ();
 
-  static void cs_simplify(Formula **);
-  static std::vector<Expr*> cs_possible_values (const Formula * set);
+  static void cs_simplify(Expr **);
+  static std::vector<Expr*> cs_possible_values (const Expr * set);
 
   /* Extract the condition for e to belong to set */
-  static Formula * cs_condition_for_belonging (Formula * set, Expr * e);
+  static Expr * cs_condition_for_belonging (Expr * set, Expr * e);
 
   /* Compute the upper set eliminating all the conditions */
-  static Formula * cs_flatten (const Formula * set);
+  static Expr * cs_flatten (const Expr * set);
 
   /* Reduces the formula set by replacing EltSymbol by elt (i.e. set [EltSymbol/elt]) */
-  static Formula *cs_contains(const Formula *set, const Expr *elt);
+  static Expr *cs_contains(const Expr *set, const Expr *elt);
 
   /* Returns true iff set[EltSymbol/elt] can be reduced to true */
-  static bool cs_compute_contains(const Formula *set, const Expr *elt);
+  static bool cs_compute_contains(const Expr *set, const Expr *elt);
 
   /* return true iff elt could not be decided to be in set (result is put in set).
    * the new set contains elt iff the old set did already or cond is true).
    * Note the expression elt is copied */
-  static bool cs_conditional_add(Formula *cond, Formula **set, Expr *elt);
+  static bool cs_conditional_add(Expr *cond, Expr **set, Expr *elt);
 
   /* shortcuts with trivial true condition (elt is cloned) */
-  static bool cs_add(Formula **set, const Expr *elt);
+  static bool cs_add(Expr **set, const Expr *elt);
 
   /* return true iff set2 has not been determined to be included in set1 (result is put in set1),
    * the new set1 contains set2 iff the old set1 did or cond is true.
    * the formula set2 is copied */
-  static bool cs_conditional_union(Formula *cond, Formula **set1, Formula *set2);
+  static bool cs_conditional_union(Expr *cond, Expr **set1, Expr *set2);
 
   /* shortcuts with trivial true condition */
-  static bool cs_union(Formula **set1, const Formula *set2);
+  static bool cs_union(Expr **set1, const Expr *set2);
 
   /* return true iff elt has been determined to be in set before.
    * result is put into set */
-  static bool cs_remove(Formula **set, const Expr *elt);
+  static bool cs_remove(Expr **set, const Expr *elt);
 };
 
 #endif /* KERNEL_EXPRESSIONS_CONDITIONALSET_HH */

@@ -35,7 +35,7 @@
 namespace ExprParser {
   struct ClientData
   {
-    Formula *result;
+    Expr *result;
     MicrocodeArchitecture *arch;
     std::string input;
   };

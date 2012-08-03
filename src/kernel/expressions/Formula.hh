@@ -70,13 +70,6 @@ class StmtArrow;
 
 class MCPath;
 
-class AtomicFormula; // (abstract) --> Formula
-class NaryBooleanFormula;  // --> Formula
-class ConjunctiveFormula;  // --> NaryBooleanFormula
-class DisjunctiveFormula;  // --> NaryBooleanFormula
-class NegationFormula;     // --> NaryBooleanFormula
-class QuantifiedFormula;     // --> NaryBooleanFormula
-
 /*****************************************************************************/
 /*! \brief This is the base class for encoding Logical formulae.
  *  Formulae are defined as terms like expression.
@@ -130,31 +123,7 @@ public:
   /* Simplification System                                                     */
   /*****************************************************************************/
 
-  /*! \brief simplification of lower level:
-   *  - simplify syntactic equality
-   *  - compute expression when possible (\todo: not complete, at the moment: just NOT operator)
-   *  - delete trivial clauses in conjunction and disjunction.
-   */
-  /*! \brief simple syntaxic evaluation: try to transform a true
-      formula into a bool. */
-  Option<bool> try_eval_level0() const;
-
-  /*! \brief return true iff the formula can be reduce to true. */
-  bool eval_level0() const;
-
   /*****************************************************************************/
-
-  bool is_Expr() const;
-  bool is_AtomicFormula() const;
-  bool is_ConjunctiveFormula() const;
-  bool is_DisjunctiveFormula() const;
-  bool is_NegationFormula() const;
-
-  bool is_QuantifiedFormula() const;
-  bool is_ExistentialFormula() const;
-  bool is_UniversalFormula() const;
-  bool is_TrueFormula() const;
-  bool is_FalseFormula() const;
 
   virtual bool has_type_of (const Formula *) const { return false; };
 
@@ -179,9 +148,6 @@ public:
 
   void deref ();
 
-  static Formula *parse (MicrocodeArchitecture *arch, 
-			 const std::string &input);
-
 protected:
   static Formula *find_or_add_formula (Formula *F);
 
@@ -197,191 +163,6 @@ private:
   static FormulaStore *formula_store;
   static void dumpStore ();
   mutable int refcount;
-};
-
-/*****************************************************************************/
-/*! \brief Here are defined atomic formula. At the moment, the only atomic
- *  formula are expressions, evaluated to be true iff it is
- *  equal to 1. However, this intermediate class (between Formula and
- *  Expr) should be usefull for future extension of the logical language. */
-class AtomicFormula : public Formula   /* Abstract */
-{
-  /*****************************************************************************/
-
-protected:
-  /* \brief base constructor */
-  AtomicFormula() : Formula() {};
-
-  virtual ~AtomicFormula() {}
-
-public:
-
-
-  /*! \brief virtual destructor definition for abstract class */
-
-  /*****************************************************************************/
-
-  /*! \brief pretty printing */
-  virtual std::string pp(std::string prefix = "") const = 0;
-
-};
-
-class NaryBooleanFormula : public Formula
-{
-public:
-  typedef std::vector<Formula *> Operands;
-  typedef Operands::iterator OperandsIterator;
-  typedef Operands::const_iterator OperandsConstIterator;
-
-
-
-  virtual Operands get_operands_copy () const;
-
-  virtual const Operands &get_operands () const;
-  virtual OperandsConstIterator const_operands_begin () const {
-    return get_operands().begin ();
-  }
-  virtual  OperandsConstIterator const_operands_end () const {
-    return get_operands().end ();
-  }
-
-  virtual std::string pp (std::string prefix = "") const = 0;
-
-  virtual size_t hash () const;
-
-  virtual bool equal (const Formula *F) const;
-
-  virtual NaryBooleanFormula *
-  create_from_operands (const Operands &ops) const = 0;
-
-protected:
-  NaryBooleanFormula (Formula *op);
-  NaryBooleanFormula (Formula *op1, Formula *op2);
-  NaryBooleanFormula (const Operands &args);
-  virtual ~NaryBooleanFormula ();
-
-private:  
-  Operands ops;
-};
-
-class ConjunctiveFormula : public NaryBooleanFormula
-{
-public:
-
-  static ConjunctiveFormula *create (Formula *A, Formula *B);
-
-  static ConjunctiveFormula *create (const Operands &args);
-
-  virtual Formula *get_arg1 () const { return get_operands ()[0]; }
-  virtual Formula *get_arg2 () const { return get_operands ()[1]; }
-
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
-
-  virtual std::string pp (std::string prefix = "") const;
-
-  virtual bool has_type_of (const Formula *F) const;
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
-
-private:
-  ConjunctiveFormula (Formula *op1, Formula *op2);
-
-  ConjunctiveFormula (const Operands &args);
-  virtual ~ConjunctiveFormula ();
-};
-
-/*****************************************************************************/
-
-class DisjunctiveFormula : public NaryBooleanFormula
-{
-public:
-
-  static DisjunctiveFormula *create (Formula *A, Formula *B);
-
-  static DisjunctiveFormula *create (const Operands &args);
-
-  virtual Formula *get_arg1 () const { return get_operands ()[0]; }
-  virtual Formula *get_arg2 () const { return get_operands ()[1]; }
-
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
-
-  virtual std::string pp(std::string prefix = "") const;
-
-  virtual bool has_type_of (const Formula *F) const;
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
-
-private:
-  DisjunctiveFormula (Formula *op1, Formula *op2);
-
-  DisjunctiveFormula (const Operands &args);
-
-  virtual ~DisjunctiveFormula();
-};
-
-/*****************************************************************************/
-
-class NegationFormula : public NaryBooleanFormula
-{
-public:
-
-  static NegationFormula *create (Formula *phi);
-
-  const Formula *get_neg() const;
-
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
-
-  virtual std::string pp(std::string prefix = "") const;
-
-  virtual bool has_type_of (const Formula *F) const;
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
-
-private:
-  NegationFormula (Formula *phi);
-
-  virtual ~NegationFormula();
-};
-
-/*****************************************************************************/
-class QuantifiedFormula : public NaryBooleanFormula
-{
-
-public:
-
-  static QuantifiedFormula *create (bool exist, Variable *var, Formula *phi);
-  static QuantifiedFormula *createE (Variable *var, Formula *phi);
-  static QuantifiedFormula *createA (Variable *var, Formula *phi);
-
-  bool is_exist () const;
-
-  virtual void acceptVisitor (FormulaVisitor *visitor);
-  virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
-
-  const Variable *get_variable() const;
-
-  const Formula *get_body() const;
-
-  virtual std::string pp(std::string prefix = "") const;
-
-  virtual size_t hash () const;
-
-  virtual bool equal (const Formula *F) const;
-
-  virtual bool has_type_of (const Formula *F) const;
-
-  virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
-  
-private:
-  QuantifiedFormula (bool exist, Variable *var, Formula *phi);
-
-protected:
-  virtual ~QuantifiedFormula ();
-
-  bool exist;
 };
 
 #endif /* KERNEL_EXPRESSIONS_FORMULA_HH */

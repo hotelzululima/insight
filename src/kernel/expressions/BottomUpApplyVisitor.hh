@@ -48,16 +48,10 @@ public :
   virtual void visit (TernaryApp *);
   virtual void visit (MemCell *); 
   virtual void visit (RegisterExpr *); 
+  virtual void visit (QuantifiedExpr *); 
 
-  virtual void visit (ConjunctiveFormula *); 
-  virtual void visit (DisjunctiveFormula *); 
-  virtual void visit (NegationFormula *); 
-  virtual void visit (QuantifiedFormula *); 
-
-  virtual void pre (Formula *);
-  virtual void apply (Formula *) = 0;
-
-  virtual void visit (NaryBooleanFormula *); 
+  virtual void pre (Expr *);
+  virtual void apply (Expr *) = 0;
 };  
 
 class ConstBottomUpApplyVisitor : public ConstFormulaVisitor 
@@ -75,16 +69,10 @@ public :
   virtual void visit (const TernaryApp *);
   virtual void visit (const MemCell *);
   virtual void visit (const RegisterExpr *);
+  virtual void visit (const QuantifiedExpr *); 
 
-  virtual void visit (const ConjunctiveFormula *); 
-  virtual void visit (const DisjunctiveFormula *); 
-  virtual void visit (const NegationFormula *); 
-  virtual void visit (const QuantifiedFormula *); 
-
-  virtual void pre (const Formula *);
-  virtual void apply (const Formula *) = 0;
-
-  virtual void visit (const NaryBooleanFormula *); 
+  virtual void pre (const Expr *);
+  virtual void apply (const Expr *) = 0;
 };  
 
 

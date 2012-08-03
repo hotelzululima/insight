@@ -36,14 +36,14 @@
 class FormulaReplaceSubtermRule : public FormulaRewritingRule
 {
 private:
-  const Formula *pattern;
-  const Formula *value;
+  const Expr *pattern;
+  const Expr *value;
 
 public :
-  FormulaReplaceSubtermRule (const Formula *p, const Formula *v);
+  FormulaReplaceSubtermRule (const Expr *p, const Expr *v);
   virtual ~FormulaReplaceSubtermRule ();
 
-  virtual Formula *rewrite (const Formula *phi);
+  virtual Expr *rewrite (const Expr *phi);
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_FORMULAREPLACESUBTERMRULE_HH */

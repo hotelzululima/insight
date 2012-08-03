@@ -50,13 +50,13 @@ public:
   list<const LValue *> result;
   const LValue *lv;
   
-  void pre (const Formula *F) 
+  void pre (const Expr *F) 
   {
     if (lv == NULL)
       lv = dynamic_cast<const LValue *> (F);
   }
   
-  void apply (const Formula *F) 
+  void apply (const Expr *F) 
   {
     if (lv == NULL)
       return;
@@ -139,18 +139,18 @@ DataDependencyLocalContext::~DataDependencyLocalContext()
 }
 /*****************************************************************************/
 
-bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Formula **phi);
-static Formula *
-crm_apply_bin_op(BinaryOp op, const Formula *A, const Formula *B);
+bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value, Expr **phi);
+static Expr *
+crm_apply_bin_op(BinaryOp op, const Expr *A, const Expr *B);
 
 /* Replace any memory reference of form [x] in phi by (IF (x==addr) THEN value ELSE [x])
  * and propagate the replacement all along the terms. */
-bool conditional_rewrite_memref(const Expr *addr, const Formula *value, Formula **phi)
+bool conditional_rewrite_memref(const Expr *addr, const Expr *value, Expr **phi)
 {
   Variable *X = Variable::create ("X");
   bool modified = conditional_rewrite_memref_aux(addr, value, phi);
-  Formula * m_pattern = 
-    Formula::Equality(Variable::create ("TERM_VALUE"), (Expr *) X->ref ());
+  Expr * m_pattern = 
+    Expr::createEquality(Variable::create ("TERM_VALUE"), (Expr *) X->ref ());
 
   VarList free_variables; 
   free_variables.push_back(X);
@@ -161,25 +161,25 @@ bool conditional_rewrite_memref(const Expr *addr, const Formula *value, Formula 
   return modified;
 }
 
-static Formula * 
-crm_apply_bin_op(BinaryOp op, const Formula *arg1, const Formula *arg2)
+static Expr * 
+crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2)
 {
   Variable *Varg1 = Variable::create ("ARG1");
   Variable *Varg2 = Variable::create ("ARG2");
-  Formula *arg2_pattern = arg2->ref ();
-  Formula *p = 
-    Formula::Equality(Variable::create ("TERM_VALUE"), Varg2->ref ());
+  Expr *arg2_pattern = arg2->ref ();
+  Expr *p = 
+    Expr::createEquality(Variable::create ("TERM_VALUE"), Varg2->ref ());
   VarList free_variables; 
   free_variables.push_back(Varg2);
-  Formula * v =
-    Formula::Equality(Variable::create ("TERM_VALUE"),
+  Expr * v =
+    Expr::createEquality(Variable::create ("TERM_VALUE"),
 		      BinaryApp::create (op, Varg1->ref (), Varg2->ref ()));
   bottom_up_rewrite_pattern_and_assign (&arg2_pattern, p, free_variables, v );
   p->deref ();
   v->deref ();
 
-  Formula *result = arg1->ref ();
-  p = Formula::Equality(Variable::create ("TERM_VALUE"), Varg1->ref ());
+  Expr *result = arg1->ref ();
+  p = Expr::createEquality(Variable::create ("TERM_VALUE"), Varg1->ref ());
   free_variables.clear(); 
   free_variables.push_back(Varg1);
   bottom_up_rewrite_pattern_and_assign (&result, p, free_variables, 
@@ -192,92 +192,46 @@ crm_apply_bin_op(BinaryOp op, const Formula *arg1, const Formula *arg2)
   return result;
 }
 
-bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, 
-				    Formula **phi)
+bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value, 
+				    Expr **phi)
 {
-  if ((*phi)->is_Expr())
+  if (((Expr *) *phi)->is_ConjunctiveFormula())
     {
-      if (((Expr *) *phi)->is_MemCell())
-        {
-	  MemCell *mc = (MemCell *)(*phi);
-	  Expr *tv = Variable::create ("TERM_VALUE");
-	  
-          *phi = 
-	    Formula::IfThenElse(Formula::Equality(addr->ref (), 
-						  mc->get_addr()->ref ()),
-				Formula::Equality(tv->ref (), 
-						  (Expr *) value->ref ()),
-				Formula::Equality(tv->ref (), mc->ref ()));
-	  tv->deref ();
-	  mc->deref ();
-
-          return true;
-        }
-
-      if (((Expr *) *phi)->is_UnaryApp())
-        {
-	  UnaryApp *ua = (UnaryApp *) *phi;
-	  Variable *tv = Variable::create ("TERM_VALUE");
-	  Variable *ARG = Variable::create ("ARG");
-          Formula *arg1 = (Formula *) ua->get_arg1()->ref ();
-          bool arg1_modified = 
-	    conditional_rewrite_memref_aux(addr, value, &arg1);
-          Formula *p = Formula::Equality(tv->ref (), ARG->ref ());
-	  VarList free_variable; 
-	  free_variable.push_back(ARG);
-          Formula *v =
-            Formula::Equality(tv->ref (),
-			      UnaryApp::create (ua->get_op(), ARG->ref ()));
-          bool modified = 
-	    bottom_up_rewrite_pattern_and_assign (&arg1, p, free_variable, v);
-          *phi = arg1;
-          modified = arg1_modified || modified ;
-
-	  p->deref ();
-	  v->deref ();
-          ua->deref ();
-	  ARG->deref ();
-	  tv->deref ();
-
-          return modified;
-        }
-
-      if (((Expr *) *phi)->is_BinaryApp())
-        {
-	  BinaryApp *ba = (BinaryApp *) * phi;
-          Formula *arg1 = (Formula *) ba->get_arg1 ()->ref ();
-          bool arg1_modified = 
-	    conditional_rewrite_memref_aux(addr, value,  & arg1);
-
-          Formula *arg2 = (Formula *) ba->get_arg2 ()->ref ();
-          bool arg2_modified = 
-	    conditional_rewrite_memref_aux(addr, value,  & arg2);
-
-          Formula * new_phi = crm_apply_bin_op(ba->get_op(), arg1, arg2);
-          *phi = new_phi;
-
-	  arg1->deref();
-	  arg2->deref();
-	  ba->deref ();
-
-          return arg1_modified || arg2_modified;
-        }
-
-      Formula * phi_sav = *phi;
-      *phi = Formula::Equality(Variable::create ("TERM_VALUE"), 
-			       (Expr *) (*phi)->ref ());
-      phi_sav->deref ();
-
-      return true;
+      Expr *arg1 = ((BinaryApp *) * phi)->get_arg1 ()->ref ();
+      Expr *arg2 = ((BinaryApp *) * phi)->get_arg2 ()->ref ();
+      
+      conditional_rewrite_memref_aux (addr, value, &arg1);
+      conditional_rewrite_memref_aux (addr, value, &arg2);
+      Expr *tmp = BinaryApp::createAnd ((Expr *) arg1, (Expr *) arg2);
+      bool modified = (tmp != *phi);
+      (*phi)->deref ();
+      *phi = tmp;
+      
+      return modified;
     }
 
+  if (((Expr *) *phi)->is_DisjunctiveFormula())
+    {
+      Expr *arg1 = ((BinaryApp *) * phi)->get_arg1 ()->ref ();
+      Expr *arg2 = ((BinaryApp *) * phi)->get_arg2 ()->ref ();
+      
+      conditional_rewrite_memref_aux (addr, value, &arg1);
+      conditional_rewrite_memref_aux (addr, value, &arg2);
+      Expr *tmp = BinaryApp::createOr ((Expr *) arg1, (Expr *) arg2);
+      bool modified = (tmp != *phi);
+      (*phi)->deref ();
+      *phi = tmp;
+      
+      return modified;
+    }
+  
   if ((*phi)->is_NegationFormula())
     {
-      Formula *neg = ((NegationFormula *) * phi)->get_neg ()->ref ();
+      Expr *neg = ((UnaryApp *) * phi)->get_arg1 ()->ref ();
       if (conditional_rewrite_memref_aux(addr, value, &neg))
         {
 	  (*phi)->deref ();
-	  *phi = NegationFormula::create (neg);
+	  *phi = Expr::createNot (neg);
 
           return true;
         }
@@ -289,46 +243,16 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value,
       return false;
     }
 
-  if ((*phi)->is_ConjunctiveFormula())
-    {
-      Formula *arg1 = ((ConjunctiveFormula *) * phi)->get_arg1 ()->ref ();
-      Formula *arg2 = ((ConjunctiveFormula *) * phi)->get_arg2 ()->ref ();
-
-      conditional_rewrite_memref_aux (addr, value, &arg1);
-      conditional_rewrite_memref_aux (addr, value, &arg2);
-      Formula *tmp = ConjunctiveFormula::create (arg1, arg2);
-      bool modified = (tmp != *phi);
-      (*phi)->deref ();
-      *phi = tmp;
-
-      return modified;
-    }
-
-  if ((*phi)->is_DisjunctiveFormula())
-    {
-      Formula *arg1 = ((DisjunctiveFormula *) * phi)->get_arg1 ()->ref ();
-      Formula *arg2 = ((DisjunctiveFormula *) * phi)->get_arg2 ()->ref ();
-
-      conditional_rewrite_memref_aux (addr, value, &arg1);
-      conditional_rewrite_memref_aux (addr, value, &arg2);
-      Formula *tmp = DisjunctiveFormula::create (arg1, arg2);
-      bool modified = (tmp != *phi);
-      (*phi)->deref ();
-      *phi = tmp;
-
-      return modified;
-    }
-
   if ((*phi)->is_QuantifiedFormula())
     {
-      QuantifiedFormula *ephi = (QuantifiedFormula *) *phi;
-      Formula *body = ephi->get_body ()->ref ();
+      QuantifiedExpr *ephi = (QuantifiedExpr *) *phi;
+      Expr *body = ephi->get_body ()->ref ();
 
       if (conditional_rewrite_memref_aux(addr, value, &body))
         {
 	  Variable *nv = (Variable *) ephi->get_variable ()->ref ();
 
-	  *phi = QuantifiedFormula::create (ephi->is_exist (), nv, body);
+	  *phi = QuantifiedExpr::create (ephi->is_exist (), nv, body);
 
 	  ephi->deref ();
           return true;
@@ -340,7 +264,79 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value,
       return false;
     }
 
-  return false;
+  if ((*phi)->is_MemCell())
+    {
+      MemCell *mc = (MemCell *)(*phi);
+      Expr *tv = Variable::create ("TERM_VALUE");
+	
+      *phi = 
+	Expr::createIfThenElse(Expr::createEquality (addr->ref (), 
+						    mc->get_addr()->ref ()),
+			       Expr::createEquality (tv->ref (), 
+						     (Expr *) value->ref ()),
+			       Expr::createEquality (tv->ref (), mc->ref ()));
+      tv->deref ();
+      mc->deref ();
+      
+      return true;
+    }
+
+  if ((*phi)->is_UnaryApp())
+    {
+      UnaryApp *ua = (UnaryApp *) *phi;
+      Variable *tv = Variable::create ("TERM_VALUE");
+      Variable *ARG = Variable::create ("ARG");
+      Expr *arg1 = ua->get_arg1()->ref ();
+      bool arg1_modified = 
+	conditional_rewrite_memref_aux(addr, value, &arg1);
+      Expr *p = Expr::createEquality(tv->ref (), ARG->ref ());
+      VarList free_variable; 
+      free_variable.push_back(ARG);
+      Expr *v =
+	Expr::createEquality(tv->ref (),
+			  UnaryApp::create (ua->get_op(), ARG->ref ()));
+      bool modified = 
+	bottom_up_rewrite_pattern_and_assign (&arg1, p, free_variable, v);
+      *phi = arg1;
+      modified = arg1_modified || modified ;
+      
+      p->deref ();
+      v->deref ();
+      ua->deref ();
+      ARG->deref ();
+      tv->deref ();
+      
+      return modified;
+    }
+
+  if (((Expr *) *phi)->is_BinaryApp())
+    {
+      BinaryApp *ba = (BinaryApp *) * phi;
+      Expr *arg1 = (Expr *) ba->get_arg1 ()->ref ();
+      bool arg1_modified = 
+	conditional_rewrite_memref_aux(addr, value,  & arg1);
+      
+      Expr *arg2 = (Expr *) ba->get_arg2 ()->ref ();
+      bool arg2_modified = 
+	conditional_rewrite_memref_aux(addr, value,  & arg2);
+      
+      Expr * new_phi = crm_apply_bin_op(ba->get_op(), arg1, arg2);
+      *phi = new_phi;
+      
+      arg1->deref();
+      arg2->deref();
+      ba->deref ();
+      
+      return arg1_modified || arg2_modified;
+    }
+
+
+  Expr * phi_sav = *phi;
+  *phi = Expr::createEquality(Variable::create ("TERM_VALUE"), 
+			      (Expr *) (*phi)->ref ());
+  phi_sav->deref ();
+  
+  return true;
 }
 
 /*****************************************************************************/
@@ -361,8 +357,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       Expr *cond = arr->get_condition ();
       if (!cond->eval_level0 ()) 
 	{
-    	  Formula *new_lvalues = 
-	    ConjunctiveFormula::create (cond->ref (), 
+    	  Expr *new_lvalues = 
+	    BinaryApp::createAnd (cond->ref (), 
 					new_context->the_lvalues->ref ());
     	  new_context->the_lvalues->deref ();
           new_context->the_lvalues = new_lvalues;
@@ -386,7 +382,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
   DataDependencyLocalContext *new_context = 
     new DataDependencyLocalContext (*this);
 
-  Formula *deps = Constant::False ();
+  Expr *deps = Constant::False ();
   list<const LValue *> depends = dependencies (rval);
   for (list<const LValue *>::iterator elt = depends.begin(); elt != depends.end(); 
        elt++) {
@@ -399,8 +395,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       // - the dependencies of rval when lval appears in the occurencies EltSymbol = lval
       // - directly rval anywhere else
 
-      Formula *reg_pattern = 
-	Formula::Equality(ConditionalSet::EltSymbol (), lval->ref ());
+      Expr *reg_pattern = 
+	Expr::createEquality(ConditionalSet::EltSymbol (), lval->ref ());
 
       // The variable TMP is used to hide form EltSymbol = lval when one replaces lval by rval.
       Variable *tmp = Variable::create ("TMP");
@@ -423,13 +419,13 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       Variable *X = Variable::create ("X");
       // 1. Formally replace all occurencies of "EltSymbol = [x]" for any 
       // expr x by "ELT_ADDR = x" (ELT_ADDR is a new variable)
-      Formula *m_pattern = 
-	Formula::Equality(ConditionalSet::EltSymbol (), 
+      Expr *m_pattern = 
+	Expr::createEquality(ConditionalSet::EltSymbol (), 
 			  MemCell::create (X->ref ()));
       VarList free_variables;
       free_variables.push_back(X);
 
-      Formula *tmp = Formula::Equality(elt_addr->ref (), X->ref ());
+      Expr *tmp = Expr::createEquality(elt_addr->ref (), X->ref ());
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues),
 					    m_pattern, free_variables, tmp);
       tmp->deref ();
@@ -445,12 +441,12 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
 
       // 3. As mentionned above, here we replace the original occurences of EltSymbol = [x] by
       //    (IF (x == addr) THEN { Conditional set encoding dependencies of values} ELSE EltSymbol = [x])
-      m_pattern = Formula::Equality(elt_addr->ref (), X->ref ());
+      m_pattern = Expr::createEquality(elt_addr->ref (), X->ref ());
       tmp =
-	Formula::IfThenElse(Formula::Equality(((MemCell *) lval)->get_addr()->ref (), X->ref ()),
+	Expr::createIfThenElse(Expr::createEquality(((MemCell *) lval)->get_addr()->ref (), X->ref ()),
 			    deps->ref (),  
-			    Formula::Equality(ConditionalSet::EltSymbol (),
-					      MemCell::create (X->ref ())));
+			    Expr::createEquality(ConditionalSet::EltSymbol (),
+						 MemCell::create (X->ref ())));
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues), 
 					    m_pattern, free_variables, tmp);
       tmp->deref ();
@@ -463,8 +459,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
   Expr *cond = arr->get_condition();
   if (DataDependency::ConsiderJumpCond() && !DataDependency::OnlySimpleSets() && !cond->eval_level0())
     {
-      Formula *new_lvalues = 
-	ConjunctiveFormula::create (cond->ref (), 
+      Expr *new_lvalues = 
+	BinaryApp::createAnd (cond->ref (), 
 				    new_context->the_lvalues->ref ());
       new_context->the_lvalues->deref ();
       new_context->the_lvalues = new_lvalues;
@@ -474,7 +470,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
   rewrite_in_DNF (&(new_context->the_lvalues));
 
   if (DataDependency::OnlySimpleSets()) {
-    Formula * old = new_context->the_lvalues;
+    Expr * old = new_context->the_lvalues;
     new_context->the_lvalues = 
       ConditionalSet::cs_flatten (new_context->the_lvalues);
     old->deref ();
@@ -662,10 +658,10 @@ DataDependency::ComputeFixpoint (int max_step_nb)
     Log::emphln ("DataDependency: Fixpoint Reached!", 2);
 }
 
-Formula * 
+Expr * 
 DataDependency::get_dependencies (ConcreteProgramPoint pp, int max_step_nb) 
 {
-  Formula *result;
+  Expr *result;
   DataDependencyLocalContext *ctxt = get_local_context (pp);
 
   ComputeFixpoint (max_step_nb);
@@ -682,7 +678,7 @@ std::vector<Expr*>
 DataDependency::get_simple_dependencies(ConcreteProgramPoint pp, 
 					int max_step_nb) 
 {
-  Formula *result = get_dependencies (pp, max_step_nb);
+  Expr *result = get_dependencies (pp, max_step_nb);
   std::vector<Expr*> simple_result = 
     ConditionalSet::cs_possible_values (result);
   result->deref ();

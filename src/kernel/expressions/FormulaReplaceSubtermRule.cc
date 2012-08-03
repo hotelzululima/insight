@@ -29,12 +29,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <kernel/expressions/Formula.hh>
+#include <kernel/Expressions.hh>
 #include "FormulaReplaceSubtermRule.hh"
 
 
-FormulaReplaceSubtermRule::FormulaReplaceSubtermRule (const Formula *p, 
-						      const Formula *v)
+FormulaReplaceSubtermRule::FormulaReplaceSubtermRule (const Expr *p, 
+						      const Expr *v)
   : pattern (p), value (v)
 {
 }
@@ -43,8 +43,8 @@ FormulaReplaceSubtermRule::~FormulaReplaceSubtermRule ()
 {
 }
 
-Formula *
-FormulaReplaceSubtermRule::rewrite (const Formula *phi)
+Expr *
+FormulaReplaceSubtermRule::rewrite (const Expr *phi)
 {
   if (phi == pattern) 
     return value->ref ();

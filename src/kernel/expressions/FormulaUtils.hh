@@ -35,62 +35,62 @@
 # include <string>
 # include <list>
 # include <vector>
-# include <kernel/expressions/Formula.hh>
+# include <kernel/Expressions.hh>
 # include <kernel/expressions/FormulaRewritingRule.hh>
 
 namespace FormulaUtils
 {
   typedef std::list<const Variable *> VarList;
 
-  extern Formula *
-  replace_subterm (const Formula *F, 
-		   const Formula *pattern, const Formula *value);
+  extern Expr *
+  replace_subterm (const Expr *F, 
+		   const Expr *pattern, const Expr *value);
 
-  extern Formula * 
-  replace_variable (const Formula *F, 
-		    const Variable *v, const Formula *value);
-
-  extern bool 
-  replace_variable_and_assign (Formula **phi, 
-			       const Variable *v, const Formula *value);
-
-
-  extern Formula *
-  bottom_up_rewrite (const Formula *phi, FormulaRewritingRule &r);
+  extern Expr * 
+  replace_variable (const Expr *F, 
+		    const Variable *v, const Expr *value);
 
   extern bool 
-  bottom_up_rewrite_and_assign (Formula **phi, FormulaRewritingRule &r);
+  replace_variable_and_assign (Expr **phi, 
+			       const Variable *v, const Expr *value);
 
-  extern Formula *
-  bottom_up_rewrite_pattern (const Formula *Phi,
-			     const Formula *pattern,
+
+  extern Expr *
+  bottom_up_rewrite (const Expr *phi, FormulaRewritingRule &r);
+
+  extern bool 
+  bottom_up_rewrite_and_assign (Expr **phi, FormulaRewritingRule &r);
+
+  extern Expr *
+  bottom_up_rewrite_pattern (const Expr *Phi,
+			     const Expr *pattern,
 			     const VarList &free_variables,
-			     const Formula *value);
+			     const Expr *value);
   
   extern bool 
-  bottom_up_rewrite_pattern_and_assign (Formula **phi,
-					const Formula *pattern,
+  bottom_up_rewrite_pattern_and_assign (Expr **phi,
+					const Expr *pattern,
 					const VarList &free_variables,
-					const Formula * value);
+					const Expr * value);
 
   extern bool
-  rewrite_in_DNF (Formula **phi);
+  rewrite_in_DNF (Expr **phi);
 
   extern bool
-  simplify_level0 (Formula **F);
+  simplify_level0 (Expr **F);
 
   extern bool
   simplify (Expr **E);
 
   template <typename ContainerType, typename ExprType>
   ContainerType
-  collect_subterms_of_type (const Formula *F, bool eliminate_duplicate);  
+  collect_subterms_of_type (const Expr *F, bool eliminate_duplicate);  
 
   /* return the matchin of var_id if 'this' matchs phi. Or NULL if 'this' does 
      not match phi. */
-  extern Formula * 
-  extract_v_pattern (std::string var_id, const Formula *phi, 
-		     const Formula *pattern);
+  extern Expr * 
+  extract_v_pattern (std::string var_id, const Expr *phi, 
+		     const Expr *pattern);
 };
 
 # include <kernel/expressions/FormulaUtils.ii>

@@ -38,10 +38,7 @@ class BinaryApp;
 class TernaryApp; 
 class MemCell; 
 class RegisterExpr; 
-class ConjunctiveFormula; 
-class DisjunctiveFormula; 
-class NegationFormula; 
-class QuantifiedFormula; 
+class QuantifiedExpr; 
 
 class FormulaVisitor 
 {
@@ -58,11 +55,7 @@ public :
   virtual void visit (TernaryApp *) { } 
   virtual void visit (MemCell *) { }
   virtual void visit (RegisterExpr *) { }
-
-  virtual void visit (ConjunctiveFormula *) { }
-  virtual void visit (DisjunctiveFormula *) { }
-  virtual void visit (NegationFormula *) { }
-  virtual void visit (QuantifiedFormula *) { }
+  virtual void visit (QuantifiedExpr *) { }
 };  
 
 class ConstFormulaVisitor 
@@ -80,11 +73,7 @@ public :
   virtual void visit (const TernaryApp *) { } 
   virtual void visit (const MemCell *) { }
   virtual void visit (const RegisterExpr *) { }
-
-  virtual void visit (const ConjunctiveFormula *) { }
-  virtual void visit (const DisjunctiveFormula *) { }
-  virtual void visit (const NegationFormula *) { }
-  virtual void visit (const QuantifiedFormula *) { }
+  virtual void visit (const QuantifiedExpr *) { }
 };  
 
 #endif /* KERNEL_EXPRESSIONS_FORMULAVISITOR_HH */

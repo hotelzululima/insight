@@ -33,9 +33,9 @@
 #include <kernel/expressions/FormulaUtils.hh>
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 
-BottomUpRewritePatternRule::BottomUpRewritePatternRule (const Formula *p, 
+BottomUpRewritePatternRule::BottomUpRewritePatternRule (const Expr *p, 
 							const VarList &fv, 
-							const Formula *v)
+							const Expr *v)
   : pattern (p), free_variables (fv), value (v)
 {  
 }
@@ -44,20 +44,18 @@ BottomUpRewritePatternRule::~BottomUpRewritePatternRule ()
 {
 }
 
-Formula *
-BottomUpRewritePatternRule::rewrite (const Formula *phi)
+Expr *
+BottomUpRewritePatternRule::rewrite (const Expr *phi)
 {
-  Formula *result;
+  Expr *result;
 
   try
     {
       PatternMatching *vm = 
 	PatternMatching::match (phi, pattern, free_variables);
-      
-      
-      Formula *value_cpy = (Formula *) value->ref ();
-      for (PatternMatching::const_iterator p = vm->begin(); p != vm->end(); 
-	   p++)
+            
+      Expr *value_cpy = value->ref ();
+      for (PatternMatching::const_iterator p = vm->begin(); p != vm->end(); p++)
 	FormulaUtils::replace_variable_and_assign (&value_cpy, p->first, 
 						   p->second);
       delete vm;

@@ -37,17 +37,17 @@
 class BottomUpRewritePatternRule : public FormulaRewritingRule
 {
 private:
-  const Formula *pattern;
+  const Expr *pattern;
   const std::list<const Variable *> &free_variables;
-  const Formula *value;
+  const Expr *value;
 
 public :
   typedef std::list<const Variable *> VarList;
-  BottomUpRewritePatternRule (const Formula *p,  const VarList &fv, 
-			      const Formula *value);
+  BottomUpRewritePatternRule (const Expr *p,  const VarList &fv, 
+			      const Expr *value);
   virtual ~BottomUpRewritePatternRule ();
 
-  virtual Formula *rewrite (const Formula *phi);
+  virtual Expr *rewrite (const Expr *phi);
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_BOTTOMUPREWRITEPATTERNRULE_HH */

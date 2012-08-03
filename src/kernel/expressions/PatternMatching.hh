@@ -32,12 +32,12 @@
 #define PATTERNMATCHING_HH
 
 #include <iostream>
-#include <kernel/expressions/Formula.hh>
+#include <kernel/Expressions.hh>
 
 class PatternMatching :  public Object
 {
 public:
-  typedef std::tr1::unordered_map<const Variable *, Formula *,
+  typedef std::tr1::unordered_map<const Variable *, Expr *,
 			     Formula::Hash, Formula::Equal> Matching;
   typedef std::list<const Variable *> VarList;
   typedef Matching::const_iterator const_iterator;
@@ -48,9 +48,9 @@ public:
   virtual ~PatternMatching ();
 
   virtual void merge (const PatternMatching *other);
-  virtual const Formula *get (const Variable *v) const;
+  virtual const Expr *get (const Variable *v) const;
   virtual bool has (const Variable *v) const;
-  virtual void set (const Variable *v, Formula *F);
+  virtual void set (const Variable *v, Expr *F);
   virtual void output_text (std::ostream &out) const;
 
   virtual const_iterator begin() const;
@@ -58,8 +58,8 @@ public:
 
   virtual bool equal (const PatternMatching *other) const;
 
-  static PatternMatching *match (const Formula *F,
-				 const Formula *pattern, 
+  static PatternMatching *match (const Expr *F,
+				 const Expr *pattern, 
 				 const VarList &free_variables)
     throw (Failure);
 				 
