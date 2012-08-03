@@ -33,8 +33,8 @@
 #include <string>
 
 #include <domains/concrete/ConcreteValue.hh>
-#include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
+#include <kernel/Insight.hh>
 
 ATF_TEST_CASE(concretevalue);
 ATF_TEST_CASE_HEAD(concretevalue)

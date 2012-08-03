@@ -31,8 +31,8 @@
 #include <atf-c++.hpp>
 
 #include <domains/concrete/ConcreteMemory.hh>
-#include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
+#include <kernel/Insight.hh>
 
 ATF_TEST_CASE(concretememory_registers);
 ATF_TEST_CASE_HEAD(concretememory_registers)

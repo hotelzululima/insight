@@ -40,9 +40,9 @@
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/concrete_context.hh>
 #include <domains/ExprSemantics.hh>
+#include <kernel/Insight.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/expressions/Formula.hh>
-#include <kernel/insight.hh>
 #include <loaders/LoaderFactory.hh>
 
 

@@ -33,9 +33,9 @@
 #include <sstream>
 #include <list>
 
-#include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
+#include <kernel/Insight.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/FormulaUtils.hh>
 

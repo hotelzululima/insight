@@ -50,8 +50,8 @@ kernel_source = \
 	kernel/Architecture_X86_32.hh 	\
 	kernel/Expressions.cc	 	\
 	kernel/Expressions.hh	 	\
-	kernel/insight.cc	 	\
-	kernel/insight.hh	 	\
+	kernel/Insight.cc	 	\
+	kernel/Insight.hh	 	\
 	kernel/Memory.hh 		\
 	kernel/Memory.ii 		\
 	kernel/RegisterMap.hh 		\

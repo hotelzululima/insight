@@ -35,7 +35,7 @@
 #include <analyses/microcode_exec.hh>
 #include <decoders/DecoderFactory.hh>
 #include <domains/concrete/concrete_context.hh>
-#include <kernel/insight.hh>
+#include <kernel/Insight.hh>
 #include <kernel/Microcode.hh>
 #include <loaders/LoaderFactory.hh>
 #include <utils/Log.hh>

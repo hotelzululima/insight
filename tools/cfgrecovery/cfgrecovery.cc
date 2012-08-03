@@ -38,9 +38,8 @@
 #include <libgen.h>
 #include <stdlib.h>
 
-#include <kernel/insight.hh>
-
 #include <decoders/binutils/BinutilsDecoder.hh>
+#include <kernel/Insight.hh>
 #include <loaders/LoaderFactory.hh>
 #include <loaders/microcode/xml_microcode_generator.hh>
 

@@ -32,8 +32,8 @@
 
 #include <config.h>
 
-#include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
+#include <kernel/Insight.hh>
 #include <loaders/LoaderFactory.hh>
 
 #ifndef TEST_SAMPLES_DIR

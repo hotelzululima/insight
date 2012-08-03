@@ -30,8 +30,8 @@
 
 #include <atf-c++.hpp>
 
-#include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
+#include <kernel/Insight.hh>
 
 ATF_TEST_CASE(architecture_x86_32);
 ATF_TEST_CASE_HEAD(architecture_x86_32)

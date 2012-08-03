@@ -32,9 +32,9 @@
 #include <string>
 #include <sstream>
 
-#include <kernel/insight.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
+#include <kernel/Insight.hh>
 
 using namespace std;
 

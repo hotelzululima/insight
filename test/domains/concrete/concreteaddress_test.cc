@@ -30,10 +30,10 @@
 
 #include <atf-c++.hpp>
 
-#include <kernel/insight.hh>
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Architecture.hh>
+#include <kernel/Insight.hh>
 
 ATF_TEST_CASE(concreteaddress);
 ATF_TEST_CASE_HEAD(concreteaddress)

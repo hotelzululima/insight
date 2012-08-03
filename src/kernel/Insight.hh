@@ -28,14 +28,14 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INSIGHT_HH
-#define INSIGHT_HH
+#ifndef KERNEL_INSIGHT_HH
+#define KERNEL_INSIGHT_HH
 
 namespace Insight 
 {
-  void init ();
+  void init();
 
-  void terminate ();
+  void terminate();
 };
 
-#endif /* ! INSIGHT_HH */
+#endif /* KERNEL_INSIGHT_HH */

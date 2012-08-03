@@ -28,31 +28,30 @@
  * SUCH DAMAGE.
  */
 
-#include "kernel/expressions/Formula.hh"
+#include "kernel/Insight.hh"
+
 #include "kernel/Architecture.hh"
-#include "insight.hh"
+#include "kernel/expressions/Formula.hh"
 
 
 static int init_count = 0;
 
 void 
-Insight::init ()
+Insight::init()
 {
-  if (init_count == 0)
-    {
-      Architecture::init ();
-      Formula::init ();
-    }
+  if (init_count == 0) {
+      Architecture::init();
+      Formula::init();
+  }
   init_count++;
 }
 
 void 
-Insight::terminate ()
+Insight::terminate()
 {
   init_count--;
-  if (init_count == 0)
-    {
-      Formula::terminate ();
-      Architecture::terminate ();
-    }
+  if (init_count == 0) {
+      Formula::terminate();
+      Architecture::terminate();
+  }
 }

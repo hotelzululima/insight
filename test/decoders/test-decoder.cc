@@ -30,9 +30,10 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <kernel/insight.hh>
-#include <loaders/LoaderFactory.hh>
+
 #include <decoders/binutils/BinutilsDecoder.hh>
+#include <kernel/Insight.hh>
+#include <loaders/LoaderFactory.hh>
 
 using namespace std;
 using namespace binutils;
