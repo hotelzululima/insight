@@ -192,7 +192,8 @@ crm_apply_bin_op(BinaryOp op, const Formula *arg1, const Formula *arg2)
   return result;
 }
 
-bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Formula **phi)
+bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, 
+				    Formula **phi)
 {
   if ((*phi)->is_Expr())
     {
@@ -290,53 +291,31 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Formula *value, Form
 
   if ((*phi)->is_ConjunctiveFormula())
     {
-      bool modified = false;
-      vector<Formula *> clauses = 
-	((ConjunctiveFormula *) * phi)->get_clauses_copy();
-      for (vector<Formula *>::iterator c = clauses.begin(); c != clauses.end(); 
-	   c++)
-        {
-          if (conditional_rewrite_memref_aux(addr, value, &(*c)))
-            modified = true;
-        }
+      Formula *arg1 = ((ConjunctiveFormula *) * phi)->get_arg1 ()->ref ();
+      Formula *arg2 = ((ConjunctiveFormula *) * phi)->get_arg2 ()->ref ();
 
-      if (modified)
-        {
-	  (*phi)->deref ();
-          *phi = ConjunctiveFormula::create (clauses);
-        }
-      else
-	{
-	  for (vector<Formula *>::iterator c = clauses.begin(); 
-	       c != clauses.end(); c++)
-	    (*c)->deref ();
-	}
+      conditional_rewrite_memref_aux (addr, value, &arg1);
+      conditional_rewrite_memref_aux (addr, value, &arg2);
+      Formula *tmp = ConjunctiveFormula::create (arg1, arg2);
+      bool modified = (tmp != *phi);
+      (*phi)->deref ();
+      *phi = tmp;
+
       return modified;
     }
 
   if ((*phi)->is_DisjunctiveFormula())
     {
-      bool modified = false;
-      vector<Formula *> clauses = 
-	((DisjunctiveFormula *) * phi)->get_clauses_copy();
-      for (vector<Formula *>::iterator c = clauses.begin(); c != clauses.end(); 
-	   c++)
-        {
-          if (conditional_rewrite_memref_aux(addr, value, &(*c)))
-            modified = true;
-          //new_phi->add_clause((Formula *)(*c)->clone());
-        }
-      if (modified)
-        {
-	  (*phi)->deref ();
-          *phi = DisjunctiveFormula::create (clauses);
-        }
-      else
-	{
-	  for (vector<Formula *>::iterator c = clauses.begin(); 
-	       c != clauses.end(); c++)
-	    (*c)->deref ();
-	}
+      Formula *arg1 = ((DisjunctiveFormula *) * phi)->get_arg1 ()->ref ();
+      Formula *arg2 = ((DisjunctiveFormula *) * phi)->get_arg2 ()->ref ();
+
+      conditional_rewrite_memref_aux (addr, value, &arg1);
+      conditional_rewrite_memref_aux (addr, value, &arg2);
+      Formula *tmp = DisjunctiveFormula::create (arg1, arg2);
+      bool modified = (tmp != *phi);
+      (*phi)->deref ();
+      *phi = tmp;
+
       return modified;
     }
 

@@ -101,6 +101,7 @@ NaryBooleanFormula::NaryBooleanFormula (Formula *op1, Formula *op2)
 NaryBooleanFormula::NaryBooleanFormula (const Operands &args) 
   : Formula (), ops (args) 
 {
+  assert (args.size () <= 2);
 }
 
 ConjunctiveFormula::ConjunctiveFormula (Formula *op1, Formula *op2)
@@ -338,6 +339,7 @@ NaryBooleanFormula::Operands
 NaryBooleanFormula::get_operands_copy() const 
 {
   Operands result;
+  assert (ops.size () <= 2);
 
   for (OperandsConstIterator it = ops.begin(); it != ops.end(); it++)
     result.push_back ((Formula *) (*it)->ref ());
@@ -348,27 +350,8 @@ NaryBooleanFormula::get_operands_copy() const
 const NaryBooleanFormula::Operands &
 NaryBooleanFormula::get_operands() const
 {
+  assert (ops.size () <= 2);
   return ops;
-}
-
-const vector<Formula *> & ConjunctiveFormula::get_clauses() const
-{
-  return get_operands ();
-}
-
-vector<Formula *> ConjunctiveFormula::get_clauses_copy() const
-{
-  return get_operands_copy ();
-}
-
-const vector<Formula *> & DisjunctiveFormula::get_clauses() const
-{
-  return get_operands ();
-}
-
-vector<Formula *> DisjunctiveFormula::get_clauses_copy() const
-{
-  return get_operands_copy ();
 }
 
 const Formula *NegationFormula::get_neg() const

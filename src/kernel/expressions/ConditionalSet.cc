@@ -63,21 +63,11 @@ void ConditionalSet::cs_simplify(Formula **set)
 // ATTENTION CHANTIER CHANTIER CHANTIER
 Formula * ConditionalSet::cs_condition_for_belonging (Formula * set, Expr *) {
 
-	Formula * simple_set = set->ref ();
-	cs_simplify (&simple_set);
-
-	if (simple_set->is_DisjunctiveFormula()) {
-	  Formula * the_cond = NULL;
-	  //new DisjunctiveFormula();
-		std::vector<Formula *> clauses = ((DisjunctiveFormula *) simple_set)->get_clauses();
-		for (std::vector<Formula*>::iterator c=clauses.begin(); c!=clauses.end(); c++) {
-			/* tester si la clause contient ELT = e, si oui, supprimer l'occurence de ELT=e et l'ajouter dans the_cond */
-		}
-		return the_cond;
-	}
-	/* sinon il n'y a qu'une seule clause */
-	throw std::runtime_error ("cs_condition_for_belonging");
-	return NULL;
+  Formula * simple_set = set->ref ();
+  cs_simplify (&simple_set);
+  
+  throw std::runtime_error ("cs_condition_for_belonging");
+  return NULL;
 }
 
 

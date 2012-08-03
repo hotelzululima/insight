@@ -272,16 +272,15 @@ public:
 
   static ConjunctiveFormula *create (const Operands &args);
 
+  virtual Formula *get_arg1 () const { return get_operands ()[0]; }
+  virtual Formula *get_arg2 () const { return get_operands ()[1]; }
+
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 
   virtual std::string pp (std::string prefix = "") const;
 
   virtual bool has_type_of (const Formula *F) const;
-
-  virtual std::vector<Formula *> get_clauses_copy() const;
-
-  virtual const std::vector<Formula *> &get_clauses() const;
 
   virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
 
@@ -302,16 +301,15 @@ public:
 
   static DisjunctiveFormula *create (const Operands &args);
 
+  virtual Formula *get_arg1 () const { return get_operands ()[0]; }
+  virtual Formula *get_arg2 () const { return get_operands ()[1]; }
+
   virtual void acceptVisitor (FormulaVisitor *visitor);
   virtual void acceptVisitor (ConstFormulaVisitor *visitor) const;
 
   virtual std::string pp(std::string prefix = "") const;
 
   virtual bool has_type_of (const Formula *F) const;
-
-  virtual std::vector<Formula *> get_clauses_copy() const;
-
-  virtual const std::vector<Formula *> &get_clauses() const;
 
   virtual NaryBooleanFormula *create_from_operands (const Operands &ops) const;
 

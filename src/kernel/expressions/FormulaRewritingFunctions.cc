@@ -103,9 +103,12 @@ logical_negation_operator_on_constant (const Formula *phi)
 
   Option<bool> val = nf->get_neg ()->try_eval_level0 ();
   if (val.hasValue ())
-    result = Constant::zero (1);
-  else
-    result = Constant::one (1);
+    {
+      if (val.getValue ())
+	result = Constant::False ();
+      else
+	result = Constant::True ();
+    }
 
   return result;
 }
@@ -120,56 +123,15 @@ conjunction_simplification (const Formula *phi)
   if (conj == NULL)
     return NULL;
 
-  bool change = false;
-  vector<Formula *> new_clauses;
-  vector<Formula *>::const_iterator cl = conj->get_clauses().begin ();
-  vector<Formula *>::const_iterator end_cl = conj->get_clauses().end ();
-
-  for (; cl != end_cl && result == NULL; cl++)
-    {
-      if (find (new_clauses.begin(),
-		new_clauses.end(), *cl) != new_clauses.end())
-	{
-	  change = true;  // Cheap optimization
-	  continue;
-	}
-
-      Option<bool> val = (*cl)->try_eval_level0();
-      if (val.hasValue ())
-	{
-	  if (val.getValue ())
-	    {
-	      change = true;
-	      continue;
-	    }
-	  else
-	    {
-	      result = Constant::zero (1);
-	    }
-	}
-      else
-	{
-	  new_clauses.push_back (*cl);
-	}
-    }
-
-  if (change && result == NULL)
-    {
-      if (new_clauses.size() >= 2)
-	{
-	  for(vector<Formula *>::iterator cl = new_clauses.begin ();
-	      cl != new_clauses.end (); cl++)
-	    (*cl) = (Formula *) (*cl)->ref ();
-
-	  result = ConjunctiveFormula::create (new_clauses);
-	}
-      else if (new_clauses.size() == 1)
-	{
-	  result = (Formula *) new_clauses[0]->ref ();
-	}
-      else
-	result = Constant::one (1);
-    }
+  if (conj->get_arg1 () == conj->get_arg2 ())
+    result = conj->get_arg1 ()->ref ();
+  else if (conj->get_arg1 ()->is_TrueFormula ())
+    result = conj->get_arg2 ()->ref ();
+  else if (conj->get_arg2 ()->is_TrueFormula ())
+    result = conj->get_arg1 ()->ref ();
+  else if (conj->get_arg1 ()->is_FalseFormula () || 
+	   conj->get_arg1 ()->is_FalseFormula ())
+    result = Constant::False ();
 
   return result;
 }
@@ -184,56 +146,15 @@ disjunction_simplification (const Formula *phi)
   if (disj == NULL)
     return NULL;
 
-  bool change = false;
-  vector<Formula *> new_clauses;
-  vector<Formula *>::const_iterator cl = disj->get_clauses().begin ();
-  vector<Formula *>::const_iterator end_cl = disj->get_clauses().end ();
-
-  for (; cl != end_cl && result == NULL; cl++)
-    {
-      if (find(new_clauses.begin(), 
-	       new_clauses.end(), *cl) != new_clauses.end())
-	{
-	  change = true;  // Cheap optimization
-	  continue;
-	}
-
-      Option<bool> val = (*cl)->try_eval_level0 ();
-      if (val.hasValue ())
-	{
-	  if (val.getValue())
-	    result = Constant::one (1);
-	  else
-	    {
-	      change = true;
-	      continue;
-	    }
-	}
-      else
-	{
-	  new_clauses.push_back (*cl);
-	}
-    }
-
-  if (change && result == NULL)
-    {
-      if (new_clauses.size() >= 2)
-	{
-	  for(vector<Formula *>::iterator cl = new_clauses.begin ();
-	      cl != new_clauses.end (); cl++)
-	    (*cl) = (Formula *) (*cl)->ref ();
-
-	  result = DisjunctiveFormula::create (new_clauses);
-	}
-      else if (new_clauses.size() == 1)
-	{
-	  result = (Formula *) new_clauses[0]->ref ();
-	}
-      else
-	{
-	  result = Constant::zero (1);
-	}
-    }
+  if (disj->get_arg1 () == disj->get_arg2 ())
+    result = disj->get_arg1 ()->ref ();
+  else if (disj->get_arg1 ()->is_FalseFormula ())
+    result = disj->get_arg2 ()->ref ();
+  else if (disj->get_arg2 ()->is_FalseFormula ())
+    result = disj->get_arg1 ()->ref ();
+  else if (disj->get_arg1 ()->is_TrueFormula () || 
+	   disj->get_arg1 ()->is_TrueFormula ())
+    result = Constant::True ();
 
   return result;
 }
@@ -248,30 +169,16 @@ and_and_rule (const Formula *phi)
   if (conj == NULL)
     return NULL;
 
-  const vector<Formula *> &conj_clauses = conj->get_clauses();
-  vector<Formula *>::const_iterator psi = conj_clauses.begin();
-
-  while (psi != conj_clauses.end() && !((*psi)->is_ConjunctiveFormula())) 
-    psi++;
-
-  if (psi != conj_clauses.end() && (*psi)->is_ConjunctiveFormula())
+  ConjunctiveFormula *arg1 = 
+    dynamic_cast <ConjunctiveFormula *> (conj->get_arg1 ());
+  
+  // (arg1.1 and  arg1.2) and  arg2 --> arg1.1 and  (arg1.2 and  arg2)
+  if (arg1 != NULL) 
     {
-      vector<Formula *> new_clauses;     
-      ConjunctiveFormula *int_phi = (ConjunctiveFormula *) * psi;
-
-      for (vector<Formula *>::const_iterator c = conj_clauses.begin(); 
-	   c != conj_clauses.end(); c++) {
-	if (c != psi)
-	  new_clauses.push_back ((Formula *)(*c)->ref ());
-      }
-      // TODO ((ConjunctiveFormula*) phi)->get_clauses().erase(psi);
-
-      vector<Formula *> int_clauses = int_phi->get_clauses();
-      for (vector<Formula *>::iterator c = int_clauses.begin(); 
-	   c != int_clauses.end(); c++)
-	new_clauses.push_back ((Formula *)(*c)->ref ());
-
-      result = ConjunctiveFormula::create (new_clauses);
+      result = ConjunctiveFormula::create (arg1->get_arg2 ()->ref (), 
+					   conj->get_arg2 ()->ref ());
+      result = ConjunctiveFormula::create (arg1->get_arg1 ()->ref (), 
+					   result);
     }
 
   return result;
@@ -287,29 +194,16 @@ or_or_rule (const Formula *phi)
   if (disj == NULL)
     return NULL;
 
-  const vector<Formula *> &disj_clauses = disj->get_clauses();
-  vector<Formula *>::const_iterator psi = disj_clauses.begin();
-
-  while (psi != disj_clauses.end() && !((*psi)->is_DisjunctiveFormula())) 
-    psi++;
-  if (psi != disj_clauses.end() && (*psi)->is_DisjunctiveFormula())
+  DisjunctiveFormula *arg1 = 
+    dynamic_cast <DisjunctiveFormula *> (disj->get_arg1 ());
+  
+  // (arg1.1 or  arg1.2) or  arg2 --> arg1.1 or  (arg1.2 or  arg2)
+  if (arg1 != NULL) 
     {
-      vector<Formula *> new_clauses;     
-      DisjunctiveFormula *int_phi = (DisjunctiveFormula *) * psi;
-
-      for (vector<Formula *>::const_iterator c = disj_clauses.begin(); 
-	   c != disj_clauses.end(); c++) {
-	if (c != psi)
-	  new_clauses.push_back ((Formula *)(*c)->ref ());
-      }
-      // TODO ((DisjunctiveFormula*) phi)->get_clauses().erase(psi);
-
-      vector<Formula *> int_clauses = int_phi->get_clauses();
-      for (vector<Formula *>::iterator c = int_clauses.begin(); 
-	   c != int_clauses.end(); c++)
-	new_clauses.push_back ((Formula *)(*c)->ref ());
-
-      result = DisjunctiveFormula::create (new_clauses);
+      result = DisjunctiveFormula::create (arg1->get_arg2 ()->ref (), 
+					   disj->get_arg2 ()->ref ());
+      result = DisjunctiveFormula::create (arg1->get_arg1 ()->ref (), 
+					   result);
     }
 
   return result;
@@ -331,33 +225,19 @@ not_decrease (const Formula *phi)
     result = ((NegationFormula *) arg)->get_neg ()->ref ();
   else if (arg->is_ConjunctiveFormula ())
     {
-      vector<Formula *> new_clauses;
       ConjunctiveFormula *conj = (ConjunctiveFormula *) arg;
-      vector<Formula *>::const_iterator c = conj->get_clauses().begin ();
-      vector<Formula *>::const_iterator end = conj->get_clauses().end ();
 
-      for (; c != end; c++) 
-	{
-	  Formula *cc = (*c)->ref ();
-	  new_clauses.push_back (NegationFormula::create (cc));
-	}
-
-      result = DisjunctiveFormula::create (new_clauses);
+      Formula *arg1 = NegationFormula::create (conj->get_arg1 ()->ref ());
+      Formula *arg2 = NegationFormula::create (conj->get_arg2 ()->ref ());
+      result = DisjunctiveFormula::create (arg1, arg2);
     }
   else if (arg->is_DisjunctiveFormula ())
     {
-      vector<Formula *> new_clauses;
-      DisjunctiveFormula *disj = (DisjunctiveFormula *) arg;
-      vector<Formula *>::const_iterator c = disj->get_clauses().begin ();
-      vector<Formula *>::const_iterator end = disj->get_clauses().end ();
+      DisjunctiveFormula *conj = (DisjunctiveFormula *) arg;
 
-      for (; c != end; c++) 
-	{
-	  Formula *cc = (*c)->ref ();
-	  new_clauses.push_back (NegationFormula::create (cc));
-	}
-	  
-      result = ConjunctiveFormula::create (new_clauses);
+      Formula *arg1 = NegationFormula::create (conj->get_arg1 ()->ref ());
+      Formula *arg2 = NegationFormula::create (conj->get_arg2 ()->ref ());
+      result = ConjunctiveFormula::create (arg1, arg2);
     }    
 
   return result;
@@ -382,69 +262,44 @@ disjunctive_normal_form_rule (const Formula *phi)
   const ConjunctiveFormula *conj = 
     dynamic_cast <const ConjunctiveFormula *> (phi);
 
-  if (conj != NULL)
+  if (conj == NULL)
+    return NULL;
+
+  DisjunctiveFormula *disj = 
+    dynamic_cast<DisjunctiveFormula *> (conj->get_arg1 ());
+  Formula *other;
+  if (disj != NULL)
+    other = conj->get_arg2 ();
+  else 
     {
-      const vector<Formula *> &conj_clauses = conj->get_clauses ();
-      vector<Formula *>::const_iterator psi = conj_clauses.begin ();
+      disj = dynamic_cast<DisjunctiveFormula *> (conj->get_arg2 ());
+      if (disj != NULL)
+	other = conj->get_arg1 ();
+    }
 
-      while (psi != conj_clauses.end() && !((*psi)->is_DisjunctiveFormula())) 
-	psi++;
-
-      if (psi != conj_clauses.end() && (*psi)->is_DisjunctiveFormula())
-        {
-	  vector<Formula *> new_clauses;
-          vector<Formula *> disj_clauses = 
-	    ((DisjunctiveFormula *)(*psi))->get_clauses();
-
-          for (vector<Formula *>::iterator disj_cl = disj_clauses.begin(); 
-	       disj_cl != disj_clauses.end(); disj_cl++)
-            {
-              vector<Formula *> new_conj_clauses;
-
-              new_conj_clauses.push_back ((Formula *)(*disj_cl)->ref ());
-
-              for (vector<Formula *>::const_iterator conj_cl = 
-		     conj_clauses.begin(); conj_cl != conj_clauses.end(); 
-		   conj_cl++) {
-                if (conj_cl != psi)
-                  new_conj_clauses.push_back ((Formula *)(*conj_cl)->ref ());
-	      }
-	      Formula *new_clause = 
-		ConjunctiveFormula::create (new_conj_clauses);
-              new_clauses.push_back (new_clause);
-            }
-
-          result = DisjunctiveFormula::create (new_clauses);
-        }
+  if (disj != NULL)
+    {
+      Formula *c1 = 
+	ConjunctiveFormula::create (disj->get_arg1 ()->ref (), other->ref ());
+      Formula *c2 = 
+	ConjunctiveFormula::create (disj->get_arg2 ()->ref (), other->ref ());
+      result = DisjunctiveFormula::create (c1, c2);
     }
 
   return result;
 }
 
 static bool 
-s_phi_and_not_phi (const vector<Formula *> &l)
+s_phi_and_not_phi (const Formula *a1, const Formula *a2)
 {
-  if (l.size() <= 1) 
-    return false;
+  if (a1->is_NegationFormula () && 
+      ((NegationFormula *) a1)->get_neg () == a2)
+    return true;
 
-  vector<Formula *>::const_iterator phi = l.begin();
-  phi++;
+  if (a2->is_NegationFormula () && 
+      ((NegationFormula *) a2)->get_neg () == a1)
+    return true;
 
-  for (; phi != l.end(); phi++)
-    {
-      for (vector<Formula *>::const_iterator psi = l.begin(); psi != phi; psi++)
-        {
-          if ((*psi)->is_NegationFormula())
-            if (((NegationFormula *)(*psi))->get_neg() == *phi)
-              return true;
-
-          if ((*phi)->is_NegationFormula())
-            {
-              if (((NegationFormula *)(*phi))->get_neg() == *psi)
-                return true;
-            }
-        }
-    }
   return false;
 }
 
@@ -454,11 +309,13 @@ phi_and_not_phi_rule (const Formula *phi)
   Formula *result = NULL;
 
   if (phi->is_DisjunctiveFormula() &&
-      s_phi_and_not_phi (((DisjunctiveFormula *) phi)->get_clauses ()))
-    result = Constant::one (1);
+      s_phi_and_not_phi (((DisjunctiveFormula *) phi)->get_arg1 (),
+			 ((DisjunctiveFormula *) phi)->get_arg2 ()))
+    result = Constant::True ();
   else if (phi->is_ConjunctiveFormula() && 
-	   s_phi_and_not_phi (((ConjunctiveFormula *) phi)->get_clauses ()))
-    result = Constant::zero (1);
+	   s_phi_and_not_phi (((DisjunctiveFormula *) phi)->get_arg1 (),
+			      ((DisjunctiveFormula *) phi)->get_arg2 ()))
+    result = Constant::False ();
 
   return result;
 }
