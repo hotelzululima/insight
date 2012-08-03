@@ -120,6 +120,7 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
   // 3. construct the formula
   vector<Formula *> phi_clauses;
 
+  Formula *phi = Constant::True ();
   for (vector< pair<MemCellContainer, MemCellContainer > >::iterator
 	 subset = all_subsets.begin();
        subset != all_subsets.end();
@@ -129,18 +130,13 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
       // Hypothesis : all addresses of all memcell in *subset are equal to 
       // those of mc
       // and all the other ones are different from those of mc
-      Formula * hyp = Constant::create (1);  // true by default
+      Formula * hyp = Constant::True ();  // true by default
       for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
 	   mcel != (*subset).first.end(); mcel++) 
 	{
 	  Expr *c = BinaryApp::create (EQ, mc->get_addr()->ref (),
 				       (*mcel)->get_addr()->ref ());
-	  Formula *n_hyp = hyp->add_conjunctive_clause (c);
-	  if (n_hyp != hyp) 
-	    {
-	      hyp->deref ();
-	      hyp = n_hyp;
-	    }
+	  hyp = ConjunctiveFormula::create (c, hyp);
 	}
 
       for (MemCellContainer::iterator mcel = (*subset).second.begin(); 
@@ -150,12 +146,7 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 	    UnaryApp::create (LNOT, 
 			      BinaryApp::create (EQ, mc->get_addr()->ref (),
 						 (*mcel)->get_addr()->ref ()));
-	  Formula *n_hyp = hyp->add_conjunctive_clause (c);
-	  if (n_hyp != hyp) 
-	    {
-	      hyp->deref ();
-	      hyp = n_hyp;
-	    }
+	  hyp = ConjunctiveFormula::create (c, hyp);
 	}
 
       // Replace all the terms pointed by elements of subset by the right 
@@ -165,10 +156,9 @@ Formula * weakest_precondition(Formula * post, Statement *stmt)
 	   mcel != (*subset).first.end(); mcel++)
 	replace_subterm (psi, *mcel, (Expr *) assmt->get_rval());
 
-      phi_clauses.push_back (Formula::implies (hyp, psi));
+      phi = ConjunctiveFormula::create (Formula::implies (hyp, psi), phi);
     }
 
-  Formula *phi = ConjunctiveFormula::create (phi_clauses);
   simplify_level0 (&phi);
 
   return phi;

@@ -168,7 +168,9 @@ bool ConditionalSet::cs_conditional_add(Formula *cond, Formula **set, Expr *elt)
 {
   if (!ConditionalSet::cs_compute_contains(*set, elt))
     {
-      Formula::add_disjunctive_clause(set, Formula::implies(cond, IsIn(elt)));
+      Formula *tmp = 
+	DisjunctiveFormula::create (Formula::implies(cond, IsIn(elt)), *set);
+      *set = tmp;
       FormulaUtils::simplify_level0(set);
       return true;
     }
@@ -186,8 +188,8 @@ ConditionalSet::cs_conditional_union(Formula *cond, Formula **set1,
   if (!(included->eval_level0()))
     {
       included->deref ();
-      Formula::add_disjunctive_clause(set1, Formula::implies(cond, set2));
-      FormulaUtils::simplify_level0(set1);
+      *set1 = DisjunctiveFormula::create (Formula::implies(cond, set2), *set1);
+      FormulaUtils::simplify_level0 (set1);
 
       return true;
     }
@@ -202,7 +204,8 @@ bool
 ConditionalSet::cs_remove(Formula **set, const Expr *elt)
 {
   bool was_in = cs_compute_contains (*set, elt);
-  Formula::add_conjunctive_clause (set, NegationFormula::create (IsIn (elt)));
+  *set = ConjunctiveFormula::create (*set, 
+				     NegationFormula::create (IsIn (elt)));
   FormulaUtils::simplify_level0 (set);
 
   return was_in;
@@ -215,7 +218,7 @@ ConditionalSet::cs_add(Formula **set, const Expr *elt)
 
   if (! result)
     {
-      Formula::add_disjunctive_clause (set, IsIn (elt));
+      *set = DisjunctiveFormula::create (IsIn (elt), *set);
       FormulaUtils::simplify_level0 (set);
     }
 
@@ -234,7 +237,7 @@ ConditionalSet::cs_union(Formula **set1, const Formula *set2)
 
       if (! included->eval_level0 ())
 	{
-	  Formula::add_disjunctive_clause (set1, set2->ref ());
+	  *set1 = DisjunctiveFormula::create (set2->ref (), *set1);
 	  FormulaUtils::simplify_level0(set1);
 	  result = true;
 	}

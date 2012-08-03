@@ -118,24 +118,6 @@ public:
    *  Caution A and B are not copied */
   static Formula * implies(Formula *A, Formula *B);
 
-  /*! \brief add a new conjunctive clause to the current formula,
-   *  Caution c is not copied
-   *  Note that this is a "functional version" with initial copy of 'this' */
-  Formula * add_conjunctive_clause(Formula *c) const;
-
-  /*! \brief add a new conjunctive clause to the current formula in place.
-   *  Caution c is not copied */
-  static void add_conjunctive_clause(Formula **phi, Formula *c);
-
-  /*! \brief add a new disjunctive clause to the current formula,
-   *  Caution c is not copied
-   *  Note that this is a "functional version" with initial copy of 'this' */
-  Formula * add_disjunctive_clause(Formula *c) const;
-
-  /*! \brief add a new disjunctive clause to the current formula in place.
-   *  Caution c is not copied */
-  static void add_disjunctive_clause(Formula **phi, Formula *c);
-
   /*! \brief construct the formula (cond /\ A) \/ ((Not cont) /\ B).
    *  Caution A and B are not copied */
   static Formula * IfThenElse(Formula *cond, Formula *A, Formula *B);

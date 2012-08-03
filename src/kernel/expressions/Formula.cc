@@ -498,55 +498,6 @@ Formula *Formula::Equality(Expr *A, Expr *B)
   return BinaryApp::create (EQ, A, B);
 }
 
-Formula *Formula::add_conjunctive_clause(Formula *c) const
-{
-  if (this->is_ConjunctiveFormula())
-    {      
-      vector<Formula *> clauses = 
-	((ConjunctiveFormula *)this)->get_clauses_copy ();
-      clauses.push_back (c);
-
-      return ConjunctiveFormula::create (clauses);
-    }
-  else
-    {
-      return ConjunctiveFormula::create ((Formula *) this->ref (), c);
-    }
-}
-
-/*! \brief add a new conjunctive clause to the current formula in place, caution c is not copied */
-void Formula::add_conjunctive_clause(Formula **phi, Formula *c)
-{
-  Formula *new_phi = (*phi)->add_conjunctive_clause(c);
-  (*phi)->deref ();
-  *phi = new_phi;
-}
-
-Formula *Formula::add_disjunctive_clause(Formula *c) const
-{
-  if (this->is_DisjunctiveFormula())
-    {
-      vector<Formula *> clauses = 
-	((DisjunctiveFormula *)this)->get_clauses_copy ();
-
-      clauses.push_back (c);
-
-      return DisjunctiveFormula::create (clauses);
-    }
-  else
-    {
-      return DisjunctiveFormula::create ((Formula *) this->ref (), c);
-    }
-}
-
-/*! \brief add a new disjunctive clause to the current formula in place, caution c is not copied */
-void Formula::add_disjunctive_clause(Formula **phi, Formula *c)
-{
-  Formula *new_phi = (*phi)->add_disjunctive_clause(c);
-  (*phi)->deref ();
-  *phi = new_phi;
-}
-
 /*****************************************************************************/
 /* Pretty Printing                                                           */
 /*****************************************************************************/
