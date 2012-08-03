@@ -140,7 +140,7 @@ const RegisterDesc *
 Architecture::get_register(const string &label) const 
 {
   if (registerspecs->find(label) == registerspecs->end())
-    throw RegisterDescNotFound();
+    throw RegisterDescNotFound(label);
 
   return (*registerspecs)[label];
 }

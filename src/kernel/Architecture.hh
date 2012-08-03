@@ -209,8 +209,8 @@ public:
 class RegisterDescNotFound : public std::runtime_error
 {
 public:
-  RegisterDescNotFound() :
-    std::runtime_error(" : register not found") { }
+  RegisterDescNotFound(const std::string &regname) :
+    std::runtime_error(": " + regname + ": register not found") { }
 };
 
 /** \brief Exception thrown on a read attempt on an undefined memory
@@ -219,7 +219,7 @@ class UndefinedValue : public std::runtime_error
 {
 public:
   UndefinedValue(const std::string &where) :
-    std::runtime_error(" : Undefined value at " + where) { }
+    std::runtime_error(": Undefined value at " + where) { }
 };
 
 #endif /* KERNEL_ARCHITECTURE_HH */
