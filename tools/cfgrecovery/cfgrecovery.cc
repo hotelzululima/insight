@@ -75,7 +75,7 @@ usage (int status)
       cout << "Rebuild the CFG based on the analysis of the binary." << endl
 	<< endl
 	<< "  -d, --disas TYPE\tselect disassembler type" << endl
-	<< "  -l, --list\t\tlist all disassembly types" << endl
+	<< "  -l, --list\t\tlist all disassembler types" << endl
 	<< "  -e, --entrypoint ADDR\tforce entry point" << endl
 	<< "  -f, --format FMT\toutput format mc|dot|xml (default: mc)" << endl
 	<< "  -o, --output FILE\twrite output to FILE" << endl
