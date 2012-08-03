@@ -148,8 +148,8 @@ AC_ARG_ENABLE(werror,
 
 dnl we currently enable -Werror when in maintainer mode
 if test x$ENABLE_WERROR = xyes -o x$enable_maintainer_mode = xyes; then
-    CFLAGS="${CFLAGS} -Werror -Wno-deprecated"
-    CXXFLAGS="${CXXFLAGS} -Werror -Wno-deprecated"
+    CFLAGS="${CFLAGS} -Werror"
+    CXXFLAGS="${CXXFLAGS} -Werror"
 fi
 
 AC_ARG_ENABLE(debug,
