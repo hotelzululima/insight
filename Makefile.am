@@ -1,8 +1,8 @@
 ## Process this file with automake to produce Makefile.in
+SUBDIRS = . src doc tools
+
 if WITH_ATF
-SUBDIRS = . src doc test tools
-else
-SUBDIRS = . src doc
+SUBDIRS += test 
 endif
 
 ACLOCAL_AMFLAGS = -I autotools-files/m4
