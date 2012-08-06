@@ -317,6 +317,8 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
+  mc->sort ();
+    
   /* Displaying the microcode */
   if (output_format == "mc")
     *output << mc->pp() << endl;
@@ -345,5 +347,5 @@ main (int argc, char *argv[])
   /* Cleaning other stuff */
   delete output;
 
-  exit (EXIT_SUCCESS);
+  return (EXIT_SUCCESS);
 }
