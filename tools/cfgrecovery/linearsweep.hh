@@ -31,10 +31,10 @@
 #ifndef CFGRECOVERY_LINEARSWEEP_HH
 #define CFGRECOVERY_LINEARSWEEP_HH
 
-#include <kernel/Microcode.hh>
+#include <decoders/Decoder.hh>
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
-#include <decoders/Decoder.hh>
+#include <kernel/Microcode.hh>
 
 #include "cfgrecovery.hh"
 

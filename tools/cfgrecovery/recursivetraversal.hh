@@ -28,36 +28,19 @@
  * SUCH DAMAGE.
  */
 
-#include <stdlib.h>
+#ifndef CFGRECOVERY_RECURSIVETRAVERSAL_HH
+#define CFGRECOVERY_RECURSIVETRAVERSAL_HH
 
-#include "linearsweep.hh"
+#include <decoders/Decoder.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+#include <domains/concrete/ConcreteMemory.hh>
+#include <kernel/Microcode.hh>
 
-using namespace std;
+#include "cfgrecovery.hh"
 
-/* Linear sweep disassembly method */
-Microcode *
-linearsweep (const ConcreteAddress * entrypoint,
-	     ConcreteMemory * memory,
-	     Decoder * decoder)
-{
-  Microcode * mc = new Microcode();
-  ConcreteAddress current = *entrypoint;
+/* Recursive traversal disassembly method */
+Microcode * recursivetraversal (const ConcreteAddress * entrypoint,
+				ConcreteMemory * memory,
+				Decoder * decoder);
 
-  while (memory->is_defined(current))
-    {
-      try {
-	/* Decode current instruction and get next address */
-	current = decoder->decode(mc, current);
-      }
-      catch (exception& e)
-	{
-	  if (verbosity > 1)
-	    *output << mc->pp() << endl;
-
-	  cerr << prog_name << ": error" << e.what() << endl;
-	  exit(EXIT_FAILURE);
-	}
-    }
-
-  return mc;
-}
+#endif /* CFGRECOVERY_RECURSIVETRAVERSAL_HH */

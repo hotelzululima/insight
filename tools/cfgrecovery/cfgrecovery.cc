@@ -44,6 +44,7 @@
 #include <loaders/microcode/xml_microcode_generator.hh>
 
 #include "linearsweep.hh"
+#include "recursivetraversal.hh"
 
 #include "cfgrecovery.hh"
 
@@ -275,15 +276,16 @@ main (int argc, char *argv[])
   if (disassembler == "linear")
     {
       if (verbosity > 0)
-	cout << "Starting linear sweep disassembler" << endl;
+	cout << "Starting linear sweep disassembly" << endl;
 
       mc = linearsweep(entrypoint, memory, decoder);
     }
   else if (disassembler == "recursive")
     {
-      cerr << prog_name
-	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
-      usage(EXIT_FAILURE);
+      if (verbosity > 0)
+	cout << "Starting recursive traversal disassembly" << endl;
+
+      mc = recursivetraversal(entrypoint, memory, decoder);
     }
   else if (disassembler == "predicate")
     {
