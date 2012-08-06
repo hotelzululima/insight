@@ -57,8 +57,8 @@ inner_recursivetraversal (const ConcreteAddress * entrypoint,
 
 	  if (mc_node->is_annotated())
 	    {
-	      CallRetAnnotation * callret =
-		(CallRetAnnotation *) mc_node->get_annotation("callret");
+	      CallRetAnnotation * callret = (CallRetAnnotation *) 
+		mc_node->get_annotation (CallRetAnnotation::ID);
 
 	      if (callret != NULL)
 		{
