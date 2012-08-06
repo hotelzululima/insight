@@ -1,50 +1,50 @@
+[(0x0,0)] @{asm:=mul    %bh}@ ; %tmpr0_16{0;16} := (MUL_U %eax{0;8} %ebx{8;8}){0;16}
+[(0x0,1)] ; %eax{0;8} := %tmpr0_16{0;8}
+[(0x0,2)] ; %eax{8;8} := %tmpr0_16{8;8}
+[(0x0,3)] ; StaticArrow (0x0,3) Skip << (EQ %eax{8;8} 0x0{0;8}){0;1} >> --> (0x0,4); StaticArrow (0x0,3) Skip << (NOT (EQ %eax{8;8} 0x0{0;8}){0;1}){0;1} >> --> (0x0,6)
+[(0x0,4)] ; %eflags{0;1} := 0x0{0;1}
+[(0x0,5)] ; StaticArrow (0x0,5) %eflags{11;1} := 0x0{0;1}  --> (0x2,0)
+[(0x0,6)] ; %eflags{0;1} := 0x1{0;1}
+[(0x0,7)] ; StaticArrow (0x0,7) %eflags{11;1} := 0x1{0;1}  --> (0x2,0)
+[(0x2,0)] @{asm:=mulb   0x1234}@ ; %tmpr0_16{0;16} := (MUL_U %eax{0;8} [0x1234]{0;8}){0;16}
+[(0x2,1)] ; %eax{0;8} := %tmpr0_16{0;8}
+[(0x2,2)] ; %eax{8;8} := %tmpr0_16{8;8}
+[(0x2,3)] ; StaticArrow (0x2,3) Skip << (EQ %eax{8;8} 0x0{0;8}){0;1} >> --> (0x2,4); StaticArrow (0x2,3) Skip << (NOT (EQ %eax{8;8} 0x0{0;8}){0;1}){0;1} >> --> (0x2,6)
+[(0x2,4)] ; %eflags{0;1} := 0x0{0;1}
+[(0x2,5)] ; StaticArrow (0x2,5) %eflags{11;1} := 0x0{0;1}  --> (0x8,0)
+[(0x2,6)] ; %eflags{0;1} := 0x1{0;1}
+[(0x2,7)] ; StaticArrow (0x2,7) %eflags{11;1} := 0x1{0;1}  --> (0x8,0)
+[(0x8,0)] @{asm:=mul    %bx}@ ; %tmpr0_32 := (MUL_U %eax{0;16} %ebx{0;16})
+[(0x8,1)] ; %eax{0;16} := %tmpr0_32{0;16}
+[(0x8,2)] ; %edx{0;16} := %tmpr0_32{16;16}
+[(0x8,3)] ; StaticArrow (0x8,3) Skip << (EQ %edx{0;16} 0x0{0;16}){0;1} >> --> (0x8,4); StaticArrow (0x8,3) Skip << (NOT (EQ %edx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x8,6)
+[(0x8,4)] ; %eflags{0;1} := 0x0{0;1}
+[(0x8,5)] ; StaticArrow (0x8,5) %eflags{11;1} := 0x0{0;1}  --> (0xB,0)
+[(0x8,6)] ; %eflags{0;1} := 0x1{0;1}
+[(0x8,7)] ; StaticArrow (0x8,7) %eflags{11;1} := 0x1{0;1}  --> (0xB,0)
+[(0xB,0)] @{asm:=mulw   0x1234}@ ; %tmpr0_32 := (MUL_U %eax{0;16} [0x1234]{0;16})
+[(0xB,1)] ; %eax{0;16} := %tmpr0_32{0;16}
+[(0xB,2)] ; %edx{0;16} := %tmpr0_32{16;16}
+[(0xB,3)] ; StaticArrow (0xB,3) Skip << (EQ %edx{0;16} 0x0{0;16}){0;1} >> --> (0xB,4); StaticArrow (0xB,3) Skip << (NOT (EQ %edx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0xB,6)
+[(0xB,4)] ; %eflags{0;1} := 0x0{0;1}
+[(0xB,5)] ; StaticArrow (0xB,5) %eflags{11;1} := 0x0{0;1}  --> (0x12,0)
+[(0xB,6)] ; %eflags{0;1} := 0x1{0;1}
+[(0xB,7)] ; StaticArrow (0xB,7) %eflags{11;1} := 0x1{0;1}  --> (0x12,0)
+[(0x12,0)] @{asm:=mul    %ebx}@ ; %tmpr0_64{0;64} := (MUL_U %eax %ebx){0;64}
+[(0x12,1)] ; %eax := %tmpr0_64
+[(0x12,2)] ; %edx := %tmpr0_64{32;32}
+[(0x12,3)] ; StaticArrow (0x12,3) Skip << (EQ %edx 0x0){0;1} >> --> (0x12,4); StaticArrow (0x12,3) Skip << (NOT (EQ %edx 0x0){0;1}){0;1} >> --> (0x12,6)
+[(0x12,4)] ; %eflags{0;1} := 0x0{0;1}
+[(0x12,5)] ; StaticArrow (0x12,5) %eflags{11;1} := 0x0{0;1}  --> (0x14,0)
+[(0x12,6)] ; %eflags{0;1} := 0x1{0;1}
+[(0x12,7)] ; StaticArrow (0x12,7) %eflags{11;1} := 0x1{0;1}  --> (0x14,0)
+[(0x14,0)] @{asm:=mull   0x1234}@ ; %tmpr0_64{0;64} := (MUL_U %eax [0x1234]){0;64}
+[(0x14,1)] ; %eax := %tmpr0_64
+[(0x14,2)] ; %edx := %tmpr0_64{32;32}
+[(0x14,3)] ; StaticArrow (0x14,3) Skip << (EQ %edx 0x0){0;1} >> --> (0x14,4); StaticArrow (0x14,3) Skip << (NOT (EQ %edx 0x0){0;1}){0;1} >> --> (0x14,6)
+[(0x14,4)] ; %eflags{0;1} := 0x0{0;1}
+[(0x14,5)] ; StaticArrow (0x14,5) %eflags{11;1} := 0x0{0;1}  --> (0x1A,0)
+[(0x14,6)] ; %eflags{0;1} := 0x1{0;1}
+[(0x14,7)] ; StaticArrow (0x14,7) %eflags{11;1} := 0x1{0;1}  --> (0x1A,0)
+[(0x1A,0)] 
 
-[(0x000,0)] @{asm:=mul    %bh}@ ; %tmpr0_16{0;16} := (MUL_U %eax{0;8} %ebx{8;8}){0;16}
-[(0x000,1)] ; %eax{0;8} := %tmpr0_16{0;8}
-[(0x000,2)] ; %eax{8;8} := %tmpr0_16{8;8}
-[(0x000,3)] ; StaticArrow (0x000,3) Skip << (EQ %eax{8;8} 0x0{0;8}){0;1} >> --> (0x000,4); StaticArrow (0x000,3) Skip << (NOT (EQ %eax{8;8} 0x0{0;8}){0;1}){0;1} >> --> (0x000,6)
-[(0x000,4)] ; %eflags{0;1} := 0x0{0;1}
-[(0x000,5)] ; StaticArrow (0x000,5) %eflags{11;1} := 0x0{0;1}  --> (0x002,0)
-[(0x000,6)] ; %eflags{0;1} := 0x1{0;1}
-[(0x000,7)] ; StaticArrow (0x000,7) %eflags{11;1} := 0x1{0;1}  --> (0x002,0)
-[(0x002,0)] @{asm:=mulb   0x1234}@ ; %tmpr0_16{0;16} := (MUL_U %eax{0;8} [0x1234]{0;8}){0;16}
-[(0x002,1)] ; %eax{0;8} := %tmpr0_16{0;8}
-[(0x002,2)] ; %eax{8;8} := %tmpr0_16{8;8}
-[(0x002,3)] ; StaticArrow (0x002,3) Skip << (EQ %eax{8;8} 0x0{0;8}){0;1} >> --> (0x002,4); StaticArrow (0x002,3) Skip << (NOT (EQ %eax{8;8} 0x0{0;8}){0;1}){0;1} >> --> (0x002,6)
-[(0x002,4)] ; %eflags{0;1} := 0x0{0;1}
-[(0x002,5)] ; StaticArrow (0x002,5) %eflags{11;1} := 0x0{0;1}  --> (0x008,0)
-[(0x002,6)] ; %eflags{0;1} := 0x1{0;1}
-[(0x002,7)] ; StaticArrow (0x002,7) %eflags{11;1} := 0x1{0;1}  --> (0x008,0)
-[(0x008,0)] @{asm:=mul    %bx}@ ; %tmpr0_32 := (MUL_U %eax{0;16} %ebx{0;16})
-[(0x008,1)] ; %eax{0;16} := %tmpr0_32{0;16}
-[(0x008,2)] ; %edx{0;16} := %tmpr0_32{16;16}
-[(0x008,3)] ; StaticArrow (0x008,3) Skip << (EQ %edx{0;16} 0x0{0;16}){0;1} >> --> (0x008,4); StaticArrow (0x008,3) Skip << (NOT (EQ %edx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x008,6)
-[(0x008,4)] ; %eflags{0;1} := 0x0{0;1}
-[(0x008,5)] ; StaticArrow (0x008,5) %eflags{11;1} := 0x0{0;1}  --> (0x00B,0)
-[(0x008,6)] ; %eflags{0;1} := 0x1{0;1}
-[(0x008,7)] ; StaticArrow (0x008,7) %eflags{11;1} := 0x1{0;1}  --> (0x00B,0)
-[(0x00B,0)] @{asm:=mulw   0x1234}@ ; %tmpr0_32 := (MUL_U %eax{0;16} [0x1234]{0;16})
-[(0x00B,1)] ; %eax{0;16} := %tmpr0_32{0;16}
-[(0x00B,2)] ; %edx{0;16} := %tmpr0_32{16;16}
-[(0x00B,3)] ; StaticArrow (0x00B,3) Skip << (EQ %edx{0;16} 0x0{0;16}){0;1} >> --> (0x00B,4); StaticArrow (0x00B,3) Skip << (NOT (EQ %edx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x00B,6)
-[(0x00B,4)] ; %eflags{0;1} := 0x0{0;1}
-[(0x00B,5)] ; StaticArrow (0x00B,5) %eflags{11;1} := 0x0{0;1}  --> (0x012,0)
-[(0x00B,6)] ; %eflags{0;1} := 0x1{0;1}
-[(0x00B,7)] ; StaticArrow (0x00B,7) %eflags{11;1} := 0x1{0;1}  --> (0x012,0)
-[(0x012,0)] @{asm:=mul    %ebx}@ ; %tmpr0_64{0;64} := (MUL_U %eax %ebx){0;64}
-[(0x012,1)] ; %eax := %tmpr0_64
-[(0x012,2)] ; %edx := %tmpr0_64{32;32}
-[(0x012,3)] ; StaticArrow (0x012,3) Skip << (EQ %edx 0x0){0;1} >> --> (0x012,4); StaticArrow (0x012,3) Skip << (NOT (EQ %edx 0x0){0;1}){0;1} >> --> (0x012,6)
-[(0x012,4)] ; %eflags{0;1} := 0x0{0;1}
-[(0x012,5)] ; StaticArrow (0x012,5) %eflags{11;1} := 0x0{0;1}  --> (0x014,0)
-[(0x012,6)] ; %eflags{0;1} := 0x1{0;1}
-[(0x012,7)] ; StaticArrow (0x012,7) %eflags{11;1} := 0x1{0;1}  --> (0x014,0)
-[(0x014,0)] @{asm:=mull   0x1234}@ ; %tmpr0_64{0;64} := (MUL_U %eax [0x1234]){0;64}
-[(0x014,1)] ; %eax := %tmpr0_64
-[(0x014,2)] ; %edx := %tmpr0_64{32;32}
-[(0x014,3)] ; StaticArrow (0x014,3) Skip << (EQ %edx 0x0){0;1} >> --> (0x014,4); StaticArrow (0x014,3) Skip << (NOT (EQ %edx 0x0){0;1}){0;1} >> --> (0x014,6)
-[(0x014,4)] ; %eflags{0;1} := 0x0{0;1}
-[(0x014,5)] ; StaticArrow (0x014,5) %eflags{11;1} := 0x0{0;1}  --> (0x01A,0)
-[(0x014,6)] ; %eflags{0;1} := 0x1{0;1}
-[(0x014,7)] ; StaticArrow (0x014,7) %eflags{11;1} := 0x1{0;1}  --> (0x01A,0)
-[(0x01A,0)] 

@@ -1,4 +1,4 @@
+[(0x0,0)] @{asm:=bound  %bx,0x1234}@ ; StaticArrow (0x0,0) Skip << (AND (LEQ_S [0x1234]{0;16} %ebx{0;16}){0;1} (LEQ_S %ebx{0;16} [(ADD 0x1234 0x2)]{0;16}){0;1}){0;1} >> --> (0x7,0)
+[(0x7,0)] @{asm:=bound  %ebx,0x1234}@ ; StaticArrow (0x7,0) Skip << (AND (LEQ_S [0x1234] %ebx){0;1} (LEQ_S %ebx [(ADD 0x1234 0x4)]){0;1}){0;1} >> --> (0xD,0)
+[(0xD,0)] 
 
-[(0x000,0)] @{asm:=bound  %bx,0x1234}@ ; StaticArrow (0x000,0) Skip << (AND (LEQ_S [0x1234]{0;16} %ebx{0;16}){0;1} (LEQ_S %ebx{0;16} [(ADD 0x1234 0x2)]{0;16}){0;1}){0;1} >> --> (0x007,0)
-[(0x007,0)] @{asm:=bound  %ebx,0x1234}@ ; StaticArrow (0x007,0) Skip << (AND (LEQ_S [0x1234] %ebx){0;1} (LEQ_S %ebx [(ADD 0x1234 0x4)]){0;1}){0;1} >> --> (0x00D,0)
-[(0x00D,0)] 

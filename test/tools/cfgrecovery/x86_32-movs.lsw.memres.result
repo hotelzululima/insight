@@ -1,51 +1,66 @@
-
-[(0x000,0)] @{asm:=movsb  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;8} := [%esi]{0;8}
-[(0x000,1)] ; StaticArrow (0x000,1) Skip << %eflags{10;1} >> --> (0x000,4); StaticArrow (0x000,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x000,2)
-[(0x000,2)] ; %esi := (ADD %esi 0x1)
-[(0x000,3)] ; StaticArrow (0x000,3) %edi := (ADD %edi 0x1)  --> (0x001,0)
-[(0x000,4)] ; %esi := (SUB %esi 0x1)
-[(0x000,5)] ; StaticArrow (0x000,5) %edi := (SUB %edi 0x1)  --> (0x001,0)
-[(0x001,0)] @{asm:=movsw  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;16} := [%esi]{0;16}
-[(0x001,1)] ; StaticArrow (0x001,1) Skip << %eflags{10;1} >> --> (0x001,4); StaticArrow (0x001,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x001,2)
-[(0x001,2)] ; %esi := (ADD %esi 0x2)
-[(0x001,3)] ; StaticArrow (0x001,3) %edi := (ADD %edi 0x2)  --> (0x003,0)
-[(0x001,4)] ; %esi := (SUB %esi 0x2)
-[(0x001,5)] ; StaticArrow (0x001,5) %edi := (SUB %edi 0x2)  --> (0x003,0)
-[(0x003,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
-[(0x003,1)] ; StaticArrow (0x003,1) Skip << %eflags{10;1} >> --> (0x003,4); StaticArrow (0x003,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x003,2)
-[(0x003,2)] ; %esi := (ADD %esi 0x4)
-[(0x003,3)] ; StaticArrow (0x003,3) %edi := (ADD %edi 0x4)  --> (0x004,0)
-[(0x003,4)] ; %esi := (SUB %esi 0x4)
-[(0x003,5)] ; StaticArrow (0x003,5) %edi := (SUB %edi 0x4)  --> (0x004,0)
-[(0x004,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
-[(0x004,1)] ; StaticArrow (0x004,1) Skip << %eflags{10;1} >> --> (0x004,4); StaticArrow (0x004,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x004,2)
-[(0x004,2)] ; %esi := (ADD %esi 0x4)
-[(0x004,3)] ; StaticArrow (0x004,3) %edi := (ADD %edi 0x4)  --> (0x005,0)
-[(0x004,4)] ; %esi := (SUB %esi 0x4)
-[(0x004,5)] ; StaticArrow (0x004,5) %edi := (SUB %edi 0x4)  --> (0x005,0)
-[(0x005,0)] @{asm:=movsb  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;8} := [%esi]{0;8}
-[(0x005,1)] ; StaticArrow (0x005,1) Skip << %eflags{10;1} >> --> (0x005,4); StaticArrow (0x005,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x005,2)
-[(0x005,2)] ; %esi := (ADD %esi 0x1)
-[(0x005,3)] ; StaticArrow (0x005,3) %edi := (ADD %edi 0x1)  --> (0x006,0)
-[(0x005,4)] ; %esi := (SUB %esi 0x1)
-[(0x005,5)] ; StaticArrow (0x005,5) %edi := (SUB %edi 0x1)  --> (0x006,0)
-[(0x006,0)] @{asm:=movsw  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;16} := [%esi]{0;16}
-[(0x006,1)] ; StaticArrow (0x006,1) Skip << %eflags{10;1} >> --> (0x006,4); StaticArrow (0x006,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x006,2)
-[(0x006,2)] ; %esi := (ADD %esi 0x2)
-[(0x006,3)] ; StaticArrow (0x006,3) %edi := (ADD %edi 0x2)  --> (0x008,0)
-[(0x006,4)] ; %esi := (SUB %esi 0x2)
-[(0x006,5)] ; StaticArrow (0x006,5) %edi := (SUB %edi 0x2)  --> (0x008,0)
-[(0x008,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
-[(0x008,1)] ; StaticArrow (0x008,1) Skip << %eflags{10;1} >> --> (0x008,4); StaticArrow (0x008,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x008,2)
-[(0x008,2)] ; %esi := (ADD %esi 0x4)
-[(0x008,3)] ; StaticArrow (0x008,3) %edi := (ADD %edi 0x4)  --> (0x009,0)
-[(0x008,4)] ; %esi := (SUB %esi 0x4)
-[(0x008,5)] ; StaticArrow (0x008,5) %edi := (SUB %edi 0x4)  --> (0x009,0)
-[(0x009,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
-[(0x009,1)] ; StaticArrow (0x009,1) Skip << %eflags{10;1} >> --> (0x009,4); StaticArrow (0x009,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x009,2)
-[(0x009,2)] ; %esi := (ADD %esi 0x4)
-[(0x009,3)] ; StaticArrow (0x009,3) %edi := (ADD %edi 0x4)  --> (0x00A,0)
-[(0x009,4)] ; %esi := (SUB %esi 0x4)
-[(0x009,5)] ; StaticArrow (0x009,5) %edi := (SUB %edi 0x4)  --> (0x00A,0)
-[(0x00A,0)] 
 section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+section registers are not yet supported
+[(0x0,0)] @{asm:=movsb  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;8} := [%esi]{0;8}
+[(0x0,1)] ; StaticArrow (0x0,1) Skip << %eflags{10;1} >> --> (0x0,4); StaticArrow (0x0,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x0,2)
+[(0x0,2)] ; %esi := (ADD %esi 0x1)
+[(0x0,3)] ; StaticArrow (0x0,3) %edi := (ADD %edi 0x1)  --> (0x1,0)
+[(0x0,4)] ; %esi := (SUB %esi 0x1)
+[(0x0,5)] ; StaticArrow (0x0,5) %edi := (SUB %edi 0x1)  --> (0x1,0)
+[(0x1,0)] @{asm:=movsw  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;16} := [%esi]{0;16}
+[(0x1,1)] ; StaticArrow (0x1,1) Skip << %eflags{10;1} >> --> (0x1,4); StaticArrow (0x1,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x1,2)
+[(0x1,2)] ; %esi := (ADD %esi 0x2)
+[(0x1,3)] ; StaticArrow (0x1,3) %edi := (ADD %edi 0x2)  --> (0x3,0)
+[(0x1,4)] ; %esi := (SUB %esi 0x2)
+[(0x1,5)] ; StaticArrow (0x1,5) %edi := (SUB %edi 0x2)  --> (0x3,0)
+[(0x3,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
+[(0x3,1)] ; StaticArrow (0x3,1) Skip << %eflags{10;1} >> --> (0x3,4); StaticArrow (0x3,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x3,2)
+[(0x3,2)] ; %esi := (ADD %esi 0x4)
+[(0x3,3)] ; StaticArrow (0x3,3) %edi := (ADD %edi 0x4)  --> (0x4,0)
+[(0x3,4)] ; %esi := (SUB %esi 0x4)
+[(0x3,5)] ; StaticArrow (0x3,5) %edi := (SUB %edi 0x4)  --> (0x4,0)
+[(0x4,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
+[(0x4,1)] ; StaticArrow (0x4,1) Skip << %eflags{10;1} >> --> (0x4,4); StaticArrow (0x4,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x4,2)
+[(0x4,2)] ; %esi := (ADD %esi 0x4)
+[(0x4,3)] ; StaticArrow (0x4,3) %edi := (ADD %edi 0x4)  --> (0x5,0)
+[(0x4,4)] ; %esi := (SUB %esi 0x4)
+[(0x4,5)] ; StaticArrow (0x4,5) %edi := (SUB %edi 0x4)  --> (0x5,0)
+[(0x5,0)] @{asm:=movsb  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;8} := [%esi]{0;8}
+[(0x5,1)] ; StaticArrow (0x5,1) Skip << %eflags{10;1} >> --> (0x5,4); StaticArrow (0x5,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x5,2)
+[(0x5,2)] ; %esi := (ADD %esi 0x1)
+[(0x5,3)] ; StaticArrow (0x5,3) %edi := (ADD %edi 0x1)  --> (0x6,0)
+[(0x5,4)] ; %esi := (SUB %esi 0x1)
+[(0x5,5)] ; StaticArrow (0x5,5) %edi := (SUB %edi 0x1)  --> (0x6,0)
+[(0x6,0)] @{asm:=movsw  %ds:(%esi),%es:(%edi)}@ ; [%edi]{0;16} := [%esi]{0;16}
+[(0x6,1)] ; StaticArrow (0x6,1) Skip << %eflags{10;1} >> --> (0x6,4); StaticArrow (0x6,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x6,2)
+[(0x6,2)] ; %esi := (ADD %esi 0x2)
+[(0x6,3)] ; StaticArrow (0x6,3) %edi := (ADD %edi 0x2)  --> (0x8,0)
+[(0x6,4)] ; %esi := (SUB %esi 0x2)
+[(0x6,5)] ; StaticArrow (0x6,5) %edi := (SUB %edi 0x2)  --> (0x8,0)
+[(0x8,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
+[(0x8,1)] ; StaticArrow (0x8,1) Skip << %eflags{10;1} >> --> (0x8,4); StaticArrow (0x8,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x8,2)
+[(0x8,2)] ; %esi := (ADD %esi 0x4)
+[(0x8,3)] ; StaticArrow (0x8,3) %edi := (ADD %edi 0x4)  --> (0x9,0)
+[(0x8,4)] ; %esi := (SUB %esi 0x4)
+[(0x8,5)] ; StaticArrow (0x8,5) %edi := (SUB %edi 0x4)  --> (0x9,0)
+[(0x9,0)] @{asm:=movsl  %ds:(%esi),%es:(%edi)}@ ; [%edi] := [%esi]
+[(0x9,1)] ; StaticArrow (0x9,1) Skip << %eflags{10;1} >> --> (0x9,4); StaticArrow (0x9,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x9,2)
+[(0x9,2)] ; %esi := (ADD %esi 0x4)
+[(0x9,3)] ; StaticArrow (0x9,3) %edi := (ADD %edi 0x4)  --> (0xA,0)
+[(0x9,4)] ; %esi := (SUB %esi 0x4)
+[(0x9,5)] ; StaticArrow (0x9,5) %edi := (SUB %edi 0x4)  --> (0xA,0)
+[(0xA,0)] 
+
