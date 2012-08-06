@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TOOLS_CFGRECOVERY_LINEARSWEEP_HH
-#define TOOLS_CFGRECOVERY_LINEARSWEEP_HH
+#ifndef CFGRECOVERY_LINEARSWEEP_HH
+#define CFGRECOVERY_LINEARSWEEP_HH
 
 #include <kernel/Microcode.hh>
 #include <domains/concrete/ConcreteAddress.hh>
@@ -43,4 +43,4 @@ Microcode * linearsweep (const ConcreteAddress * entrypoint,
 			 ConcreteMemory * memory,
 			 Decoder * decoder);
 
-#endif /* TOOLS_CFGRECOVERY_LINEARSWEEP_HH */
+#endif /* CFGRECOVERY_LINEARSWEEP_HH */

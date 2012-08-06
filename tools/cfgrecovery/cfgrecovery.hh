@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TOOLS_CFGRECOVERY_HH
-#define TOOLS_CFGRECOVERY_HH
+#ifndef CFGRECOVERY_HH
+#define CFGRECOVERY_HH
 
 #include <fstream>
 #include <string>
@@ -44,4 +44,4 @@ extern int verbosity;	                       /* verbosity level */
 extern std::ostream * output;                  /* output stream */
 extern std::ofstream output_file;              /* output file */
 
-#endif /* TOOLS_CFGRECOVERY_HH */
+#endif /* CFGRECOVERY_HH */
