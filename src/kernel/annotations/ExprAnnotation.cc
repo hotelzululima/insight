@@ -56,7 +56,7 @@ ExprAnnotation::~ExprAnnotation()
 void 
 ExprAnnotation::output_text (std::ostream &out) const
 {
-  out << expr->pp();
+  expr->output_text (out);
 }
 
 void *

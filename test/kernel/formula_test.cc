@@ -74,7 +74,7 @@ s_check_tautology (Expr *F, const char *file, int line)
     {
       ostringstream oss;
       oss << file << ":" << line << ": "
-	  << "fail to check tautology " << F->pp ();
+	  << "fail to check tautology " << F->to_string ();
       ATF_FAIL (oss.str ());
     }  
 }
@@ -91,8 +91,8 @@ s_check_equivalence (Expr *F1, Expr *F2, const char *file, int line)
     {
       ostringstream oss;
       oss << file << ":" << line << ": "
-	  << "fail to check equivalence between " << F1->pp ()
-	  << " and " << F2->pp ();
+	  << "fail to check equivalence between " << F1->to_string ()
+	  << " and " << F2->to_string ();
       ATF_FAIL (oss.str ());
     }
   F->deref ();

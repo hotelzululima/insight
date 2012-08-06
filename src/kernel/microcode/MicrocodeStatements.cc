@@ -35,7 +35,7 @@ using namespace std;
 string Assignment::pp()
 {
   ostringstream oss;
-  oss << lval->pp() << " := " << rval->pp();
+  oss << lval->to_string () << " := " << rval->to_string();
 
   return oss.str();
 }
@@ -43,7 +43,7 @@ string Assignment::pp()
 string Jump::pp()
 {
   ostringstream oss;
-  oss << "Jmp " << target->pp();
+  oss << "Jmp " << target->to_string ();
 
   return oss.str();
 }

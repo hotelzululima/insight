@@ -77,7 +77,7 @@ class QuantifiedExpr;   // --> LValue
  *  The Expr class is abstract, and LValue also, they are used for type
  *  organisation.
  *****************************************************************************/
-class Expr  {
+class Expr : public Object {
 private:
 
   /*! \brief The value of each expression is restricted to a
@@ -211,14 +211,9 @@ public:
   // Pretty printing
   /*****************************************************************************/
 
-  /*! \brief Pretty printing. */
-  virtual std::string pp(std::string prefix = "") const = 0;
+  virtual void output_text (std::ostream &out) const = 0;
 
-  /*! \brief Print the bit vector if it is not default */
-  std::string bv_pp() const;
-
-  static Expr *parse (MicrocodeArchitecture *arch, 
-		      const std::string &input);
+  static Expr *parse (MicrocodeArchitecture *arch, const std::string &input);
 
   struct Hash { 
     size_t operator()(const Expr *const &F) const; 
@@ -234,6 +229,8 @@ public:
 
 
 protected:
+  void output_bv_window (std::ostream &out) const;
+
   static Expr *find_or_add_expr (Expr *F);
 
   template<typename C>
@@ -287,7 +284,7 @@ public:
   virtual unsigned int get_depth() const;
   bool contains(Expr *o) const;
 
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -345,7 +342,7 @@ public:
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
 
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -382,7 +379,7 @@ public:
   Expr *get_arg1() const;
 
   /* See Expr class for documentation */
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Expr *F) const;
@@ -443,7 +440,7 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -480,7 +477,7 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -516,7 +513,7 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -578,7 +575,7 @@ public:
   Expr *get_addr() const ;
 
   /* See Expr class for documentation */
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Expr *F) const;
@@ -629,12 +626,10 @@ public:
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
 
-  std::string pp(std::string prefix = "") const;
+  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
-
-std::ostream &operator<< (std::ostream &o, Expr &e);
 
 #endif /* KERNEL_EXPRESSIONS_HH */

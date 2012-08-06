@@ -574,7 +574,7 @@ bool DataDependency::OnlySimpleSets() { return only_simple_sets_flag; };
 void print_expressions(std::vector<Expr*> * expr_lst, int verb) {
   Log::emph ("{ ", verb);
   for (int i=0; i<(int) expr_lst->size(); i++) {
-    Log::emph ((*expr_lst)[i]->pp() + " ", verb);
+    Log::emph ((*expr_lst)[i]->to_string () + " ", verb);
     (*expr_lst)[i]->deref ();
   }
   Log::emph (" }", verb);
@@ -584,7 +584,7 @@ void print_expressions(std::vector<Expr*> * expr_lst, int verb) {
 void print_expressions(list<Expr*> * expr_lst, int verb) {
   Log::emph ("{ ", verb);
   for (list<Expr*>::iterator i=expr_lst->begin(); i != expr_lst->end(); i++) {
-    Log::emph ((*i)->pp(), verb);
+    Log::emph ((*i)->to_string (), verb);
     (*i)->deref ();
   }
   Log::emph (" }", verb);
@@ -616,7 +616,7 @@ bool DataDependency::InverseStep()
   Log::print ("Running backward arrow ", 2);
   Log::emphln ("< " + the_arrow->pp() + " >", 2);
   Log::println ("New context at pp " + the_arrow->get_origin().pp() + " :", 2);
-  Log::println ((*(new_context->get_watched_lvalues()))->pp("\t"), 2);
+  Log::println (string ("\t") + (*(new_context->get_watched_lvalues()))->to_string (), 2);
   Log::print ("Maximum dependencies at pp " + the_arrow->get_origin().pp() 
 	      + " : ", 2);
 

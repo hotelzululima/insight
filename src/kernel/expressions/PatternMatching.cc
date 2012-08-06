@@ -262,7 +262,7 @@ PatternMatching::output_text (std::ostream &out) const
   else
     {
       for (const_iterator i = matching.begin(); i != matching.end(); i++)
-	out << i->first->pp () << "-->" << i->second->pp () << endl;
+	out << *(i->first) << "-->" << *(i->second) << endl;
     }
 }
 

@@ -172,7 +172,7 @@ Expr * weakest_precondition(Expr * post, StmtArrow *arrow)
 			 weakest_precondition(post, arrow->get_stmt()));
   simplify_level0 (&phi);
   Log::separator(2);
-  Log::print("Backward step on :\n" + phi->pp() + "\n", 2);
+  Log::print("Backward step on :\n" + phi->to_string () + "\n", 2);
   return phi;
 }
 

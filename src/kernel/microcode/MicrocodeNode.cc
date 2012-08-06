@@ -324,23 +324,22 @@ s_arrow_to_string(string kind,
   ostringstream oss;
   string cond;
 
+  oss << kind <<  " " << origin.pp() << " " << stmt->pp() << " ";
   if (condition)
     {
       if (condition->is_Constant())
 	{
 	  Constant *c = (Constant *) condition;
-	  if (c->get_val() == 1)
-	    cond = "";
-	  else
-	    cond = "<< False >>";
+	  if (c->get_val() != 1)
+	    oss << "<< False >>";
 	}
       else
 	{
-	  cond = "<< " + condition->pp() + " >>";
+	  oss << "<< "<<  *condition << " >>";
 	}
     }
-  oss << kind <<  " " << origin.pp() << " " << stmt->pp() << " "
-      << cond << " --> ";
+
+  oss << " --> ";
 
   return oss.str();
 }
@@ -348,7 +347,7 @@ s_arrow_to_string(string kind,
 string DynamicArrow::pp() const
 {
   return s_arrow_to_string("DynamicArrow", origin, stmt, condition) +
-         "<< " + target->pp() + " >>";
+         "<< " + target->to_string () + " >>";
 }
 
 StaticArrow::StaticArrow(MicrocodeNode * src, MicrocodeNode * tgt,

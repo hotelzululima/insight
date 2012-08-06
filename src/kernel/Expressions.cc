@@ -977,99 +977,79 @@ QuantifiedExpr::hash () const
 
 /*****************************************************************************/
 
-string Expr::bv_pp() const
+void 
+Expr::output_bv_window (std::ostream &out) const
 {
   ostringstream oss;
 
   if ((bv_offset != 0 || bv_size != BV_DEFAULT_SIZE))
-    oss << "{" << bv_offset << ";" << bv_size << "}";
-  return oss.str();
+    out << dec << "{" << bv_offset << ";" << bv_size << "}";
 }
 
-string Variable::pp(std::string prefix) const
+void 
+Variable::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix << "{" << id << "}" << bv_pp();
-  return oss.str();
+  out << "{" << id << "}";
+  output_bv_window (out);
 }
 
-string Constant::pp(std::string prefix) const
+void 
+Constant::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix << "0x" << hex << uppercase << val << bv_pp();
-
-  return oss.str();
+  out << "0x" << hex << uppercase << val;
+  output_bv_window (out);
 }
 
-string UnaryApp::pp(std::string prefix) const
+void 
+UnaryApp::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix << "(" << unary_op_to_string(op) << " " << arg1->pp() << ")"
-      << bv_pp();
-  return oss.str();
+  out << "(" << unary_op_to_string(op) << " " << *arg1 << ")";
+  output_bv_window (out);
 }
 
-string BinaryApp::pp(std::string prefix) const
+void 
+BinaryApp::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix
-      << "(" << binary_op_to_string(op) << " "
-      << arg1->pp() << " " << arg2->pp() << ')'
-      << bv_pp();
+  out << "(" << binary_op_to_string(op) << " "
+      << *arg1 << " " << *arg2 << ')';
 
-  return oss.str();
+  output_bv_window (out);
 }
 
-string TernaryApp::pp(std::string prefix) const
+void 
+TernaryApp::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix
-      << "(" << ternary_op_to_string(op) << " "
-      << arg1->pp() << " " << arg2->pp() << " " << arg3->pp() << ')'
-      << bv_pp();
-
-  return oss.str();
+  out << "(" << ternary_op_to_string(op) << " "
+      << *arg1 << " " << *arg2 << " " << *arg3 << ')';
+  output_bv_window (out);
 }
 
-string MemCell::pp(std::string prefix) const
+void 
+MemCell::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix << "[";
+  out << "[";
   if (tag != DEFAULT_TAG)
-    {
-      oss << tag << ":";
-    }
-  oss << addr->pp() << "]" << bv_pp();
-
-  return oss.str();
+    out << tag << ":";
+  out << *addr << "]";
+  output_bv_window (out);
 }
 
-string RegisterExpr::pp(std::string prefix) const
+void 
+RegisterExpr::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix << "%" << get_name () << bv_pp();
-  return oss.str();
+  out << "%" << get_name ();
+  output_bv_window (out);
 }
 
-string QuantifiedExpr::pp(std::string prefix) const
+void 
+QuantifiedExpr::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-  oss << prefix 
-      << (exist ? "<" : "[") << var->pp () << (exist ? ">" : "]") 
-      << "(" << body->pp () << ")";
-
-  return oss.str();
+  out << (exist ? "<" : "[") << var << (exist ? ">" : "]") 
+      << "(" << *body << ")";
 }
 
 /*****************************************************************************/
 
-
-ostream &operator<< (ostream &o, Expr &e)
-{
-  o << e.pp();
-  return o;
-}
-			/* --------------- */
 
 void 
 Expr::acceptVisitor (ExprVisitor &visitor)
@@ -1204,7 +1184,7 @@ Expr::terminate ()
 	{
 	  assert (nb > 0);
 	  cerr << "**** refcount = " << (*i)->refcount 
-	       << " expr = " << (*i)->pp () << endl;
+	       << " expr = " << *(*i) << endl;
 	}
 	  
     }
@@ -1221,7 +1201,7 @@ Expr::dumpStore ()
   for (; i != end; i++, nb--)
     {
       assert (nb > 0);
-      cerr << (*i)->pp () << endl;
+      cerr << *(*i) << endl;
     }
 }
 

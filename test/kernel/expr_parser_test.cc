@@ -124,7 +124,7 @@ s_check_expr_parser (const string &, const string &expr, \
   MicrocodeArchitecture ma (x86_32);
 
   Expr *e = Expr::parse (&ma, expr);
-  ATF_REQUIRE_EQ (e->pp (), expectedout);
+  ATF_REQUIRE_EQ (e->to_string (), expectedout);
   Insight::terminate ();
 }
 
