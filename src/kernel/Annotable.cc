@@ -68,13 +68,13 @@ Annotable::copy_from_map(const AnnotationMap &o) {
     }
 }
 
-void Annotable::del_annotation(const char id[])
+void Annotable::del_annotation(const char *id)
 {
   AnnotationId tmp(id);
   return this->del_annotation(tmp);
 }
 
-void Annotable::del_annotation(AnnotationId &id)
+void Annotable::del_annotation(const AnnotationId &id)
 {
   assert(this->has_annotation(id));
   delete amap[id];
@@ -88,12 +88,15 @@ Annotable::get_annotations()
   return &amap;
 }
 
-Annotation *Annotable::get_annotation(AnnotationId &id)
+Annotation *Annotable::get_annotation (const AnnotationId &id) const
 {
-  return amap[id];
+  if (!has_annotation (id))
+    return NULL;
+
+  return amap.find (id)->second;
 }
 
-Annotation *Annotable::get_annotation(const char id[])
+Annotation *Annotable::get_annotation(const char *id) const
 {
   AnnotationId tmp(id);
   return this->get_annotation(tmp);
@@ -104,21 +107,21 @@ void Annotable::add_annotation(AnnotationId &id, Annotation *a)
   amap[id] = a;
 }
 
-void Annotable::add_annotation(const char id[], Annotation *a)
+void Annotable::add_annotation(const char *id, Annotation *a)
 {
   AnnotationId tmp(id);
   this->add_annotation(tmp, a);
 }
 
 
-bool Annotable::has_annotation(AnnotationId &id) const
+bool Annotable::has_annotation(const AnnotationId &id) const
 {
 
   return amap.find(id) != amap.end();
 }
 
 
-bool Annotable::has_annotation(const char id[]) const
+bool Annotable::has_annotation(const char *id) const
 {
   AnnotationId tmp(id);
   return this->has_annotation(tmp);

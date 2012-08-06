@@ -59,9 +59,9 @@ public:
    * That's why the inheritance on std::tr1::unordered_map is private */
   AnnotationMap *get_annotations();
   /*! \brief get a specific annotation. */
-  Annotation *get_annotation(AnnotationId &id);
+  Annotation *get_annotation(const AnnotationId &id) const;
   /*! \brief get a specific annotation. */
-  Annotation *get_annotation(const char id[]);
+  Annotation *get_annotation(const char *id) const;
 
   /*! \brief add an annotation. Cf. previous remark */
   void add_annotation(AnnotationId &id, Annotation *a);
@@ -70,15 +70,15 @@ public:
   /*! \brief returns true if contains at least one annotation */
   bool is_annotated() const;
   /*! \brief returns true if contains an annotation of id <id> */
-  bool has_annotation(AnnotationId &id) const;
+  bool has_annotation(const AnnotationId &id) const;
 
   /*! \brief returns true if contains an annotation of id <id> */
-  bool has_annotation(const char id[]) const;
+  bool has_annotation(const char *id) const;
 
   /*! \brief delete an annotation of id <id> */
-  void del_annotation(const char id[]);
+  void del_annotation(const char *id);
   /*! \brief delete an annotation of id <id> */
-  void del_annotation(AnnotationId &id);
+  void del_annotation(const AnnotationId &id);
 
   void output_annotations (std::ostream &) const;
 
