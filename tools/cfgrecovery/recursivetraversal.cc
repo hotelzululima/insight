@@ -83,14 +83,14 @@ inner_recursivetraversal (const ConcreteAddress * entrypoint,
 						       decoder);
 			      break;
 			    }
-		      
+
 			  current_mloc = next_mloc;
-			  
+
 			  next_edge =
 			    mc->get_first_successor(current_mloc).first;
 			  next_mloc =
 			    mc->get_first_successor(current_mloc).second;
-			}		      
+			}
 		    }
 		  else
 		    return; /* ret has been reached, poping the stack */
