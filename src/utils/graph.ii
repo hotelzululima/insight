@@ -35,7 +35,6 @@
 
 #include <config.h>
 
-#include <kernel/Annotation.hh>
 #include <utils/path.hh>
 #include <utils/tools.hh>
 
