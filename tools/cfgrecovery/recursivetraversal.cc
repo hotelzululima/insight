@@ -42,50 +42,66 @@ inner_recursivetraversal (const ConcreteAddress * entrypoint,
 			  ConcreteMemory * memory,
 			  Decoder * decoder)
 {
-  ConcreteAddress next, current = *entrypoint;
+  ConcreteAddress next_addr, current_addr = *entrypoint;
 
-  while (memory->is_defined(current))
+  while (memory->is_defined(current_addr))
     {
       try
 	{
 	  /* Decode current instruction and get next address */
-	  next = decoder->decode(mc, current);
+	  next_addr = decoder->decode(mc, current_addr);
 
 	  /* Get current MicrocodeNode */
-	  MicrocodeNode * mc_node =
-	    mc->get_node(MicrocodeAddress(current.get_address()));
+	  MicrocodeNode * current_node =
+	    mc->get_node(MicrocodeAddress(current_addr.get_address()));
 
-	  if (mc_node->is_annotated())
+
+	  if (verbosity > 1)
+	    cout << "Node inspected : "<< current_node->pp() << endl;
+	  
+	  if (current_node->is_annotated())
 	    {
-	      CallRetAnnotation * callret = (CallRetAnnotation *) 
-		mc_node->get_annotation (CallRetAnnotation::ID);
+	      CallRetAnnotation * callret = (CallRetAnnotation *)
+		current_node->get_annotation (CallRetAnnotation::ID);
 
+	      /* Current instruction is a call/ret */
 	      if (callret != NULL)
 		{
+		  /* Instruction is a call */
 		  if (callret->is_call())
 		    {
-		      MicrocodeNode * current_mloc = mc_node;
+		      if (verbosity > 1)
+			cout << "Call detected!" << endl;
+		      
+		      MicrocodeNode * current_mloc = current_node;
 		      StmtArrow * next_edge =
 			mc->get_first_successor(current_mloc).first;
 		      MicrocodeNode * next_mloc =
 			mc->get_first_successor(current_mloc).second;
-
+		      
 		      while ((next_edge != NULL) && (next_mloc != NULL))
 			{
-			  if (mc_node->get_loc().getGlobal() !=
+			  if (verbosity > 1)
+			    cout << "Next node inspected: "
+				 << next_mloc->pp() << endl;
+		      
+			  if (current_node->get_loc().getGlobal() !=
 			      next_mloc->get_loc().getGlobal())
 			    {
 			      const ConcreteAddress addr =
 				ConcreteAddress(next_mloc->get_loc().getGlobal());
-			      inner_recursivetraversal(&addr,
-						       mc,
-						       memory,
-						       decoder);
+
+			      if (verbosity > 1)
+				cout << "Entering recursion at "
+				     << hex << addr << dec << endl;
+			      
+			      inner_recursivetraversal(&addr, mc,
+						       memory, decoder);
 			      break;
 			    }
-
+			  
 			  current_mloc = next_mloc;
-
+			  
 			  next_edge =
 			    mc->get_first_successor(current_mloc).first;
 			  next_mloc =
@@ -93,11 +109,16 @@ inner_recursivetraversal (const ConcreteAddress * entrypoint,
 			}
 		    }
 		  else
-		    return; /* ret has been reached, poping the stack */
+		    {
+		      if (verbosity > 1)
+			cout << "Ret detected at "
+			     << hex << current_node->get_loc().getGlobal() << dec
+			     << endl;
+		      return; /* ret has been reached, poping the stack */
+		    }
 		}
 	    }
-
-	  current = next;
+	  current_addr = next_addr;
 	}
       catch (exception& e)
 	{
