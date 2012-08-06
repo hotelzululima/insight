@@ -1,0 +1,34 @@
+
+[(0x000,0)] @{asm:=bsf    %bx,%ax}@ ; StaticArrow (0x000,0) Skip << (NOT (EQ %ebx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x000,2); StaticArrow (0x000,0) Skip << (EQ %ebx{0;16} 0x0{0;16}){0;1} >> --> (0x000,1)
+[(0x000,1)] ; StaticArrow (0x000,1) %eflags{6;1} := 0x1{0;1}  --> (0x004,0)
+[(0x000,2)] ; %eflags{6;1} := 0x0{0;1}
+[(0x000,3)] ; %tmpr0_16{0;16} := 0x0{0;16}
+[(0x000,4)] ; StaticArrow (0x000,4) Skip << (EQ (EXTRACT %ebx{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x000,5); StaticArrow (0x000,4) Skip << (LNOT (EQ (EXTRACT %ebx{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x000,7)
+[(0x000,5)] ; %tmpr0_16{0;16} := (ADD %tmpr0_16{0;16} 0x1{0;16}){0;16}
+[(0x000,6)] ; StaticArrow (0x000,6) Skip  --> (0x000,4)
+[(0x000,7)] ; StaticArrow (0x000,7) %eax{0;16} := %tmpr0_16{0;16}  --> (0x004,0)
+[(0x004,0)] @{asm:=bsf    0x1234,%ax}@ ; StaticArrow (0x004,0) Skip << (NOT (EQ [0x1234]{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x004,2); StaticArrow (0x004,0) Skip << (EQ [0x1234]{0;16} 0x0{0;16}){0;1} >> --> (0x004,1)
+[(0x004,1)] ; StaticArrow (0x004,1) %eflags{6;1} := 0x1{0;1}  --> (0x00C,0)
+[(0x004,2)] ; %eflags{6;1} := 0x0{0;1}
+[(0x004,3)] ; %tmpr0_16{0;16} := 0x0{0;16}
+[(0x004,4)] ; StaticArrow (0x004,4) Skip << (EQ (EXTRACT [0x1234]{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x004,5); StaticArrow (0x004,4) Skip << (LNOT (EQ (EXTRACT [0x1234]{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x004,7)
+[(0x004,5)] ; %tmpr0_16{0;16} := (ADD %tmpr0_16{0;16} 0x1{0;16}){0;16}
+[(0x004,6)] ; StaticArrow (0x004,6) Skip  --> (0x004,4)
+[(0x004,7)] ; StaticArrow (0x004,7) %eax{0;16} := %tmpr0_16{0;16}  --> (0x00C,0)
+[(0x00C,0)] @{asm:=bsf    %ebx,%eax}@ ; StaticArrow (0x00C,0) Skip << (NOT (EQ %ebx 0x0){0;1}){0;1} >> --> (0x00C,2); StaticArrow (0x00C,0) Skip << (EQ %ebx 0x0){0;1} >> --> (0x00C,1)
+[(0x00C,1)] ; StaticArrow (0x00C,1) %eflags{6;1} := 0x1{0;1}  --> (0x00F,0)
+[(0x00C,2)] ; %eflags{6;1} := 0x0{0;1}
+[(0x00C,3)] ; %tmpr0_32 := 0x0
+[(0x00C,4)] ; StaticArrow (0x00C,4) Skip << (EQ (EXTRACT %ebx %tmpr0_32 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x00C,5); StaticArrow (0x00C,4) Skip << (LNOT (EQ (EXTRACT %ebx %tmpr0_32 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x00C,7)
+[(0x00C,5)] ; %tmpr0_32 := (ADD %tmpr0_32 0x1)
+[(0x00C,6)] ; StaticArrow (0x00C,6) Skip  --> (0x00C,4)
+[(0x00C,7)] ; StaticArrow (0x00C,7) %eax := %tmpr0_32  --> (0x00F,0)
+[(0x00F,0)] @{asm:=bsf    0x12345678,%ebx}@ ; StaticArrow (0x00F,0) Skip << (NOT (EQ [0x12345678] 0x0){0;1}){0;1} >> --> (0x00F,2); StaticArrow (0x00F,0) Skip << (EQ [0x12345678] 0x0){0;1} >> --> (0x00F,1)
+[(0x00F,1)] ; StaticArrow (0x00F,1) %eflags{6;1} := 0x1{0;1}  --> (0x016,0)
+[(0x00F,2)] ; %eflags{6;1} := 0x0{0;1}
+[(0x00F,3)] ; %tmpr0_32 := 0x0
+[(0x00F,4)] ; StaticArrow (0x00F,4) Skip << (EQ (EXTRACT [0x12345678] %tmpr0_32 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x00F,5); StaticArrow (0x00F,4) Skip << (LNOT (EQ (EXTRACT [0x12345678] %tmpr0_32 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x00F,7)
+[(0x00F,5)] ; %tmpr0_32 := (ADD %tmpr0_32 0x1)
+[(0x00F,6)] ; StaticArrow (0x00F,6) Skip  --> (0x00F,4)
+[(0x00F,7)] ; StaticArrow (0x00F,7) %ebx := %tmpr0_32  --> (0x016,0)
+[(0x016,0)] 

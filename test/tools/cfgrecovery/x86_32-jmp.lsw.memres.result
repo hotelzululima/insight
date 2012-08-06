@@ -1,0 +1,11 @@
+
+[(0x000,0)] @{asm:=jmp    0x13}@ ; StaticArrow (0x000,0) Skip  --> (0x013,0)
+[(0x005,0)] @{asm:=jmp    0x123a}@ ; StaticArrow (0x005,0) Skip  --> (0x123A,0)
+[(0x00A,0)] @{asm:=jmp    0xedcba993}@ ; StaticArrow (0x00A,0) Skip  --> (0xEDCBA993,0)
+[(0x00F,0)] @{asm:=jmpw   *%ax}@ ; DynamicArrow (0x00F,0) Jmp %eax{0;16}  --> << %eax{0;16} >>
+[(0x012,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x012,0) Jmp [0x12345678]  --> << [0x12345678] >>
+[(0x013,0)] 
+[(0x018,0)] @{asm:=jmp    *%eax}@ ; DynamicArrow (0x018,0) Jmp %eax  --> << %eax >>
+[(0x01A,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x01A,0) Jmp [0x12345678]  --> << [0x12345678] >>
+[(0x123A,0)] 
+[(0xEDCBA993,0)] 

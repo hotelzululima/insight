@@ -1,0 +1,8 @@
+
+[(0x000,0)] @{asm:=not    %ah}@ ; StaticArrow (0x000,0) %eax{8;8} := (NOT %eax{8;8}){0;8}  --> (0x002,0)
+[(0x002,0)] @{asm:=notb   0x1234(%eax)}@ ; StaticArrow (0x002,0) [(ADD %eax 0x1234)]{0;8} := (NOT [(ADD %eax 0x1234)]{0;8}){0;8}  --> (0x008,0)
+[(0x008,0)] @{asm:=not    %ax}@ ; StaticArrow (0x008,0) %eax{0;16} := (NOT %eax{0;16}){0;16}  --> (0x00B,0)
+[(0x00B,0)] @{asm:=notw   0x1234(%eax)}@ ; StaticArrow (0x00B,0) [(ADD %eax 0x1234)]{0;16} := (NOT [(ADD %eax 0x1234)]{0;16}){0;16}  --> (0x012,0)
+[(0x012,0)] @{asm:=not    %eax}@ ; StaticArrow (0x012,0) %eax := (NOT %eax)  --> (0x014,0)
+[(0x014,0)] @{asm:=notl   0x1234(%eax)}@ ; StaticArrow (0x014,0) [(ADD %eax 0x1234)] := (NOT [(ADD %eax 0x1234)])  --> (0x01A,0)
+[(0x01A,0)] 

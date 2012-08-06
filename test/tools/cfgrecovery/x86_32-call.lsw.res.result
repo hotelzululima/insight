@@ -1,0 +1,17 @@
+
+[(0x000,0)] @{callret:=CALL, asm:=call   0x1235}@ ; %esp := (SUB %esp 0x4)
+[(0x000,1)] ; [%esp] := 0x5
+[(0x000,2)] ; StaticArrow (0x000,2) Skip  --> (0x1235,0)
+[(0x005,0)] @{callret:=CALL, asm:=call   *0x1234}@ ; %esp := (SUB %esp 0x4)
+[(0x005,1)] ; [%esp] := 0xB
+[(0x005,2)] ; DynamicArrow (0x005,2) Jmp [0x1234]  --> << [0x1234] >>
+[(0x00B,0)] @{callret:=CALL, asm:=call   *-0x4d2(%ebx)}@ ; %esp := (SUB %esp 0x4)
+[(0x00B,1)] ; [%esp] := 0x11
+[(0x00B,2)] ; DynamicArrow (0x00B,2) Jmp [(ADD %ebx 0xFFFFFFFFFFFFFB2E)]  --> << [(ADD %ebx 0xFFFFFFFFFFFFFB2E)] >>
+[(0x011,0)] @{callret:=CALL, asm:=call   *0xf012002}@ ; %esp := (SUB %esp 0x4)
+[(0x011,1)] ; [%esp] := 0x17
+[(0x011,2)] ; DynamicArrow (0x011,2) Jmp [0xF012002]  --> << [0xF012002] >>
+[(0x017,0)] @{callret:=CALL, asm:=call   *%eax}@ ; %esp := (SUB %esp 0x4)
+[(0x017,1)] ; [%esp] := 0x19
+[(0x017,2)] ; DynamicArrow (0x017,2) Jmp %eax  --> << %eax >>
+[(0x1235,0)] 

@@ -1,0 +1,34 @@
+
+[(0x000,0)] @{asm:=btc    %ax,%bx}@ ; %eflags{0;1} := (RSH_U %ebx{0;16} %eax{0;4}){0;1}
+[(0x000,1)] ; StaticArrow (0x000,1) Skip << %eflags{0;1} >> --> (0x000,3); StaticArrow (0x000,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x000,2)
+[(0x000,2)] ; StaticArrow (0x000,2) %ebx{0;16} := (OR %ebx{0;16} (LSH 0x1{0;16} %eax{0;4}){0;16})  --> (0x004,0)
+[(0x000,3)] ; StaticArrow (0x000,3) %ebx{0;16} := (AND %ebx{0;16} (NOT (LSH 0x1{0;16} %eax{0;4}){0;16}){0;16})  --> (0x004,0)
+[(0x004,0)] @{asm:=btc    %eax,%ebx}@ ; %eflags{0;1} := (RSH_U %ebx %eax{0;6}){0;1}
+[(0x004,1)] ; StaticArrow (0x004,1) Skip << %eflags{0;1} >> --> (0x004,3); StaticArrow (0x004,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x004,2)
+[(0x004,2)] ; StaticArrow (0x004,2) %ebx := (OR %ebx (LSH 0x1 %eax{0;6}))  --> (0x007,0)
+[(0x004,3)] ; StaticArrow (0x004,3) %ebx := (AND %ebx (NOT (LSH 0x1 %eax{0;6})))  --> (0x007,0)
+[(0x007,0)] @{asm:=btc    %ax,0x12345678}@ ; %eflags{0;1} := (RSH_U [0x12345678] %eax{0;6}){0;1}
+[(0x007,1)] ; StaticArrow (0x007,1) Skip << %eflags{0;1} >> --> (0x007,3); StaticArrow (0x007,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x007,2)
+[(0x007,2)] ; StaticArrow (0x007,2) [0x12345678] := (OR [0x12345678] (LSH 0x1 %eax{0;6}))  --> (0x00F,0)
+[(0x007,3)] ; StaticArrow (0x007,3) [0x12345678] := (AND [0x12345678] (NOT (LSH 0x1 %eax{0;6})))  --> (0x00F,0)
+[(0x00F,0)] @{asm:=btc    %eax,0x12345678}@ ; %eflags{0;1} := (RSH_U [0x12345678] %eax{0;6}){0;1}
+[(0x00F,1)] ; StaticArrow (0x00F,1) Skip << %eflags{0;1} >> --> (0x00F,3); StaticArrow (0x00F,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x00F,2)
+[(0x00F,2)] ; StaticArrow (0x00F,2) [0x12345678] := (OR [0x12345678] (LSH 0x1 %eax{0;6}))  --> (0x016,0)
+[(0x00F,3)] ; StaticArrow (0x00F,3) [0x12345678] := (AND [0x12345678] (NOT (LSH 0x1 %eax{0;6})))  --> (0x016,0)
+[(0x016,0)] @{asm:=btc    $0x013,%ax}@ ; %eflags{0;1} := (RSH_U %eax{0;16} 0x13{0;4}){0;1}
+[(0x016,1)] ; StaticArrow (0x016,1) Skip << %eflags{0;1} >> --> (0x016,3); StaticArrow (0x016,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x016,2)
+[(0x016,2)] ; StaticArrow (0x016,2) %eax{0;16} := (OR %eax{0;16} (LSH 0x1{0;16} 0x13{0;4}){0;16})  --> (0x01B,0)
+[(0x016,3)] ; StaticArrow (0x016,3) %eax{0;16} := (AND %eax{0;16} (NOT (LSH 0x1{0;16} 0x13{0;4}){0;16}){0;16})  --> (0x01B,0)
+[(0x01B,0)] @{asm:=btc    $0x013,%eax}@ ; %eflags{0;1} := (RSH_U %eax 0x13{0;6}){0;1}
+[(0x01B,1)] ; StaticArrow (0x01B,1) Skip << %eflags{0;1} >> --> (0x01B,3); StaticArrow (0x01B,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x01B,2)
+[(0x01B,2)] ; StaticArrow (0x01B,2) %eax := (OR %eax (LSH 0x1 0x13{0;6}))  --> (0x01F,0)
+[(0x01B,3)] ; StaticArrow (0x01B,3) %eax := (AND %eax (NOT (LSH 0x1 0x13{0;6})))  --> (0x01F,0)
+[(0x01F,0)] @{asm:=btcw   $0x013,0x12345678}@ ; %eflags{0;1} := (RSH_U [0x12345678] 0x13{0;6}){0;1}
+[(0x01F,1)] ; StaticArrow (0x01F,1) Skip << %eflags{0;1} >> --> (0x01F,3); StaticArrow (0x01F,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x01F,2)
+[(0x01F,2)] ; StaticArrow (0x01F,2) [0x12345678] := (OR [0x12345678] (LSH 0x1 0x13{0;6}))  --> (0x028,0)
+[(0x01F,3)] ; StaticArrow (0x01F,3) [0x12345678] := (AND [0x12345678] (NOT (LSH 0x1 0x13{0;6})))  --> (0x028,0)
+[(0x028,0)] @{asm:=btcl   $0x013,0x12345678}@ ; %eflags{0;1} := (RSH_U [0x12345678] 0x13{0;6}){0;1}
+[(0x028,1)] ; StaticArrow (0x028,1) Skip << %eflags{0;1} >> --> (0x028,3); StaticArrow (0x028,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x028,2)
+[(0x028,2)] ; StaticArrow (0x028,2) [0x12345678] := (OR [0x12345678] (LSH 0x1 0x13{0;6}))  --> (0x030,0)
+[(0x028,3)] ; StaticArrow (0x028,3) [0x12345678] := (AND [0x12345678] (NOT (LSH 0x1 0x13{0;6})))  --> (0x030,0)
+[(0x030,0)] 

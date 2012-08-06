@@ -4,7 +4,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src \
 
 LDADD = $(top_builddir)/src/libinsight.la
 
-SUBDIRS=decoders slicing
+SUBDIRS=decoders slicing tools
 
 AUTOMAKE_OPTIONS=subdir-objects
 

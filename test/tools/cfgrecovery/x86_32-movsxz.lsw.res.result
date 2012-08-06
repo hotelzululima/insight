@@ -1,0 +1,14 @@
+
+[(0x000,0)] @{asm:=movsbw 0x011,%cx}@ ; StaticArrow (0x000,0) %ecx{0;16} := (EXTEND_S [0x11]{0;8} 0x10){0;16}  --> (0x008,0)
+[(0x008,0)] @{asm:=movsbw %bh,%cx}@ ; StaticArrow (0x008,0) %ecx{0;16} := (EXTEND_S %ebx{8;8} 0x10){0;16}  --> (0x00C,0)
+[(0x00C,0)] @{asm:=movsbl 0x011,%ecx}@ ; StaticArrow (0x00C,0) %ecx := (EXTEND_S [0x11]{0;8} 0x20)  --> (0x013,0)
+[(0x013,0)] @{asm:=movsbl %bh,%ecx}@ ; StaticArrow (0x013,0) %ecx := (EXTEND_S %ebx{8;8} 0x20)  --> (0x016,0)
+[(0x016,0)] @{asm:=movswl 0x011,%ecx}@ ; StaticArrow (0x016,0) %ecx := (EXTEND_S [0x11]{0;16} 0x20)  --> (0x01D,0)
+[(0x01D,0)] @{asm:=movswl %bx,%ecx}@ ; StaticArrow (0x01D,0) %ecx := (EXTEND_S %ebx{0;16} 0x20)  --> (0x020,0)
+[(0x020,0)] @{asm:=movzbw 0x011,%cx}@ ; StaticArrow (0x020,0) %ecx{0;16} := (EXTEND_U [0x11]{0;8} 0x10){0;16}  --> (0x028,0)
+[(0x028,0)] @{asm:=movzbw %bh,%cx}@ ; StaticArrow (0x028,0) %ecx{0;16} := (EXTEND_U %ebx{8;8} 0x10){0;16}  --> (0x02C,0)
+[(0x02C,0)] @{asm:=movzbl 0x011,%ecx}@ ; StaticArrow (0x02C,0) %ecx := (EXTEND_U [0x11]{0;8} 0x20)  --> (0x033,0)
+[(0x033,0)] @{asm:=movzbl %bh,%ecx}@ ; StaticArrow (0x033,0) %ecx := (EXTEND_U %ebx{8;8} 0x20)  --> (0x036,0)
+[(0x036,0)] @{asm:=movzwl 0x011,%ecx}@ ; StaticArrow (0x036,0) %ecx := (EXTEND_U [0x11]{0;16} 0x20)  --> (0x03D,0)
+[(0x03D,0)] @{asm:=movzwl %bx,%ecx}@ ; StaticArrow (0x03D,0) %ecx := (EXTEND_U %ebx{0;16} 0x20)  --> (0x040,0)
+[(0x040,0)] 

@@ -1,0 +1,5 @@
+
+[(0x000,0)] @{asm:=int3   }@ ; StaticArrow (0x000,0) Skip << False >> --> (0x001,0)
+[(0x001,0)] @{asm:=int    $0x10}@ ; StaticArrow (0x001,0) Skip << False >> --> (0x003,0)
+[(0x003,0)] @{asm:=into   }@ ; StaticArrow (0x003,0) Skip << (NOT %eflags{11;1}){0;1} >> --> (0x004,0)
+[(0x004,0)] 

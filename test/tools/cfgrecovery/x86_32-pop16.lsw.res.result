@@ -1,0 +1,20 @@
+
+[(0x000,0)] @{asm:=pop    %ax}@ ; %eax{0;16} := [%esp]{0;16}
+[(0x000,1)] ; StaticArrow (0x000,1) %esp := (ADD %esp 0x2)  --> (0x002,0)
+[(0x002,0)] @{asm:=pop    %ax}@ ; %eax{0;16} := [%esp]{0;16}
+[(0x002,1)] ; StaticArrow (0x002,1) %esp := (ADD %esp 0x2)  --> (0x004,0)
+[(0x004,0)] @{asm:=popw   %ds}@ ; %ds{0;16} := [%esp]{0;16}
+[(0x004,1)] ; StaticArrow (0x004,1) %esp := (ADD %esp 0x2)  --> (0x006,0)
+[(0x006,0)] @{asm:=popw   %es}@ ; %es{0;16} := [%esp]{0;16}
+[(0x006,1)] ; StaticArrow (0x006,1) %esp := (ADD %esp 0x2)  --> (0x008,0)
+[(0x008,0)] @{asm:=popw   %fs}@ ; %fs{0;16} := [%esp]{0;16}
+[(0x008,1)] ; StaticArrow (0x008,1) %esp := (ADD %esp 0x2)  --> (0x00B,0)
+[(0x00B,0)] @{asm:=popw   %gs}@ ; %gs{0;16} := [%esp]{0;16}
+[(0x00B,1)] ; StaticArrow (0x00B,1) %esp := (ADD %esp 0x2)  --> (0x00E,0)
+[(0x00E,0)] @{asm:=popw   %ss}@ ; %ss{0;16} := [%esp]{0;16}
+[(0x00E,1)] ; StaticArrow (0x00E,1) %esp := (ADD %esp 0x2)  --> (0x010,0)
+[(0x010,0)] @{asm:=popw   0x1111972}@ ; [0x1111972]{0;16} := [%esp]{0;16}
+[(0x010,1)] ; StaticArrow (0x010,1) %esp := (ADD %esp 0x2)  --> (0x017,0)
+[(0x017,0)] @{asm:=data32 data32 pop %ax}@ ; %eax{0;16} := [%esp]{0;16}
+[(0x017,1)] ; StaticArrow (0x017,1) %esp := (ADD %esp 0x2)  --> (0x01B,0)
+[(0x01B,0)] 

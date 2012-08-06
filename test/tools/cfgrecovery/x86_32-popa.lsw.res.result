@@ -1,0 +1,47 @@
+
+[(0x000,0)] @{asm:=popa   }@ ; %edi := [%esp]
+[(0x000,1)] ; %esp := (ADD %esp 0x4)
+[(0x000,10)] ; %esp := (ADD %esp 0x4)
+[(0x000,11)] ; %ecx := [%esp]
+[(0x000,12)] ; %esp := (ADD %esp 0x4)
+[(0x000,13)] ; %eax := [%esp]
+[(0x000,14)] ; StaticArrow (0x000,14) %esp := (ADD %esp 0x4)  --> (0x001,0)
+[(0x000,2)] ; %esi := [%esp]
+[(0x000,3)] ; %esp := (ADD %esp 0x4)
+[(0x000,4)] ; %ebp := [%esp]
+[(0x000,5)] ; %esp := (ADD %esp 0x4)
+[(0x000,6)] ; %esp := (ADD %esp 0x4)
+[(0x000,7)] ; %ebx := [%esp]
+[(0x000,8)] ; %esp := (ADD %esp 0x4)
+[(0x000,9)] ; %edx := [%esp]
+[(0x001,0)] @{asm:=popaw  }@ ; %edi{0;16} := [%esp]{0;16}
+[(0x001,1)] ; %esp := (ADD %esp 0x2)
+[(0x001,10)] ; %esp := (ADD %esp 0x2)
+[(0x001,11)] ; %ecx{0;16} := [%esp]{0;16}
+[(0x001,12)] ; %esp := (ADD %esp 0x2)
+[(0x001,13)] ; %eax{0;16} := [%esp]{0;16}
+[(0x001,14)] ; StaticArrow (0x001,14) %esp := (ADD %esp 0x2)  --> (0x003,0)
+[(0x001,2)] ; %esi{0;16} := [%esp]{0;16}
+[(0x001,3)] ; %esp := (ADD %esp 0x2)
+[(0x001,4)] ; %ebp{0;16} := [%esp]{0;16}
+[(0x001,5)] ; %esp := (ADD %esp 0x2)
+[(0x001,6)] ; %esp{0;16} := (ADD %esp{0;16} 0x2{0;16})
+[(0x001,7)] ; %ebx{0;16} := [%esp]{0;16}
+[(0x001,8)] ; %esp := (ADD %esp 0x2)
+[(0x001,9)] ; %edx{0;16} := [%esp]{0;16}
+[(0x003,0)] @{asm:=popa   }@ ; %edi := [%esp]
+[(0x003,1)] ; %esp := (ADD %esp 0x4)
+[(0x003,10)] ; %esp := (ADD %esp 0x4)
+[(0x003,11)] ; %ecx := [%esp]
+[(0x003,12)] ; %esp := (ADD %esp 0x4)
+[(0x003,13)] ; %eax := [%esp]
+[(0x003,14)] ; StaticArrow (0x003,14) %esp := (ADD %esp 0x4)  --> (0x004,0)
+[(0x003,2)] ; %esi := [%esp]
+[(0x003,3)] ; %esp := (ADD %esp 0x4)
+[(0x003,4)] ; %ebp := [%esp]
+[(0x003,5)] ; %esp := (ADD %esp 0x4)
+[(0x003,6)] ; %esp := (ADD %esp 0x4)
+[(0x003,7)] ; %ebx := [%esp]
+[(0x003,8)] ; %esp := (ADD %esp 0x4)
+[(0x003,9)] ; %edx := [%esp]
+[(0x004,0)] 

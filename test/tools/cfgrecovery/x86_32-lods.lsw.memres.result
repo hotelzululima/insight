@@ -1,0 +1,99 @@
+
+[(0x000,0)] @{asm:=lods   %ds:(%esi),%al}@ ; %eax{0;8} := [%esi]{0;8}
+[(0x000,1)] ; StaticArrow (0x000,1) Skip << %eflags{10;1} >> --> (0x000,2); StaticArrow (0x000,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x000,3)
+[(0x000,2)] ; StaticArrow (0x000,2) %esi := (SUB %esi 0x1)  --> (0x001,0)
+[(0x000,3)] ; StaticArrow (0x000,3) %esi := (ADD %esi 0x1)  --> (0x001,0)
+[(0x001,0)] @{asm:=lods   %ds:(%esi),%ax}@ ; %eax{0;16} := [%esi]{0;16}
+[(0x001,1)] ; StaticArrow (0x001,1) Skip << %eflags{10;1} >> --> (0x001,2); StaticArrow (0x001,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x001,3)
+[(0x001,2)] ; StaticArrow (0x001,2) %esi := (SUB %esi 0x2)  --> (0x003,0)
+[(0x001,3)] ; StaticArrow (0x001,3) %esi := (ADD %esi 0x2)  --> (0x003,0)
+[(0x003,0)] @{asm:=lods   %ds:(%esi),%eax}@ ; %eax := [%esi]
+[(0x003,1)] ; StaticArrow (0x003,1) Skip << %eflags{10;1} >> --> (0x003,2); StaticArrow (0x003,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x003,3)
+[(0x003,2)] ; StaticArrow (0x003,2) %esi := (SUB %esi 0x4)  --> (0x004,0)
+[(0x003,3)] ; StaticArrow (0x003,3) %esi := (ADD %esi 0x4)  --> (0x004,0)
+[(0x004,0)] @{asm:=lods   %ds:(%esi),%al}@ ; %eax{0;8} := [%esi]{0;8}
+[(0x004,1)] ; StaticArrow (0x004,1) Skip << %eflags{10;1} >> --> (0x004,2); StaticArrow (0x004,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x004,3)
+[(0x004,2)] ; StaticArrow (0x004,2) %esi := (SUB %esi 0x1)  --> (0x005,0)
+[(0x004,3)] ; StaticArrow (0x004,3) %esi := (ADD %esi 0x1)  --> (0x005,0)
+[(0x005,0)] @{asm:=lods   %ds:(%esi),%ax}@ ; %eax{0;16} := [%esi]{0;16}
+[(0x005,1)] ; StaticArrow (0x005,1) Skip << %eflags{10;1} >> --> (0x005,2); StaticArrow (0x005,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x005,3)
+[(0x005,2)] ; StaticArrow (0x005,2) %esi := (SUB %esi 0x2)  --> (0x007,0)
+[(0x005,3)] ; StaticArrow (0x005,3) %esi := (ADD %esi 0x2)  --> (0x007,0)
+[(0x007,0)] @{asm:=lods   %ds:(%esi),%eax}@ ; %eax := [%esi]
+[(0x007,1)] ; StaticArrow (0x007,1) Skip << %eflags{10;1} >> --> (0x007,2); StaticArrow (0x007,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x007,3)
+[(0x007,2)] ; StaticArrow (0x007,2) %esi := (SUB %esi 0x4)  --> (0x008,0)
+[(0x007,3)] ; StaticArrow (0x007,3) %esi := (ADD %esi 0x4)  --> (0x008,0)
+[(0x008,0)] @{asm:=lods   %ds:(%si),%al}@ ; %eax{0;8} := [%esi]{0;8}
+[(0x008,1)] ; StaticArrow (0x008,1) Skip << %eflags{10;1} >> --> (0x008,2); StaticArrow (0x008,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x008,3)
+[(0x008,2)] ; StaticArrow (0x008,2) %esi := (SUB %esi 0x1)  --> (0x00A,0)
+[(0x008,3)] ; StaticArrow (0x008,3) %esi := (ADD %esi 0x1)  --> (0x00A,0)
+[(0x00A,0)] @{asm:=lods   %ds:(%si),%ax}@ ; %eax{0;16} := [%esi]{0;16}
+[(0x00A,1)] ; StaticArrow (0x00A,1) Skip << %eflags{10;1} >> --> (0x00A,2); StaticArrow (0x00A,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x00A,3)
+[(0x00A,2)] ; StaticArrow (0x00A,2) %esi := (SUB %esi 0x2)  --> (0x00D,0)
+[(0x00A,3)] ; StaticArrow (0x00A,3) %esi := (ADD %esi 0x2)  --> (0x00D,0)
+[(0x00D,0)] @{asm:=lods   %ds:(%si),%eax}@ ; %eax := [%esi]
+[(0x00D,1)] ; StaticArrow (0x00D,1) Skip << %eflags{10;1} >> --> (0x00D,2); StaticArrow (0x00D,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x00D,3)
+[(0x00D,2)] ; StaticArrow (0x00D,2) %esi := (SUB %esi 0x4)  --> (0x00F,0)
+[(0x00D,3)] ; StaticArrow (0x00D,3) %esi := (ADD %esi 0x4)  --> (0x00F,0)
+[(0x00F,0)] @{asm:=lods   %ds:(%si),%al}@ ; %eax{0;8} := [%esi]{0;8}
+[(0x00F,1)] ; StaticArrow (0x00F,1) Skip << %eflags{10;1} >> --> (0x00F,2); StaticArrow (0x00F,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x00F,3)
+[(0x00F,2)] ; StaticArrow (0x00F,2) %esi := (SUB %esi 0x1)  --> (0x011,0)
+[(0x00F,3)] ; StaticArrow (0x00F,3) %esi := (ADD %esi 0x1)  --> (0x011,0)
+[(0x011,0)] @{asm:=lods   %ds:(%si),%ax}@ ; %eax{0;16} := [%esi]{0;16}
+[(0x011,1)] ; StaticArrow (0x011,1) Skip << %eflags{10;1} >> --> (0x011,2); StaticArrow (0x011,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x011,3)
+[(0x011,2)] ; StaticArrow (0x011,2) %esi := (SUB %esi 0x2)  --> (0x014,0)
+[(0x011,3)] ; StaticArrow (0x011,3) %esi := (ADD %esi 0x2)  --> (0x014,0)
+[(0x014,0)] @{asm:=lods   %ds:(%si),%eax}@ ; %eax := [%esi]
+[(0x014,1)] ; StaticArrow (0x014,1) Skip << %eflags{10;1} >> --> (0x014,2); StaticArrow (0x014,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x014,3)
+[(0x014,2)] ; StaticArrow (0x014,2) %esi := (SUB %esi 0x4)  --> (0x016,0)
+[(0x014,3)] ; StaticArrow (0x014,3) %esi := (ADD %esi 0x4)  --> (0x016,0)
+[(0x016,0)] @{asm:=stos   %al,%es:(%edi)}@ ; [%edi]{0;8} := %eax{0;8}
+[(0x016,1)] ; StaticArrow (0x016,1) Skip << %eflags{10;1} >> --> (0x016,2); StaticArrow (0x016,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x016,3)
+[(0x016,2)] ; StaticArrow (0x016,2) %edi := (SUB %edi 0x1{0;8})  --> (0x017,0)
+[(0x016,3)] ; StaticArrow (0x016,3) %edi := (ADD %edi 0x1{0;8})  --> (0x017,0)
+[(0x017,0)] @{asm:=stos   %ax,%es:(%edi)}@ ; [%edi]{0;16} := %eax{0;16}
+[(0x017,1)] ; StaticArrow (0x017,1) Skip << %eflags{10;1} >> --> (0x017,2); StaticArrow (0x017,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x017,3)
+[(0x017,2)] ; StaticArrow (0x017,2) %edi := (SUB %edi 0x2{0;16})  --> (0x019,0)
+[(0x017,3)] ; StaticArrow (0x017,3) %edi := (ADD %edi 0x2{0;16})  --> (0x019,0)
+[(0x019,0)] @{asm:=stos   %eax,%es:(%edi)}@ ; [%edi] := %eax
+[(0x019,1)] ; StaticArrow (0x019,1) Skip << %eflags{10;1} >> --> (0x019,2); StaticArrow (0x019,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x019,3)
+[(0x019,2)] ; StaticArrow (0x019,2) %edi := (SUB %edi 0x4)  --> (0x01A,0)
+[(0x019,3)] ; StaticArrow (0x019,3) %edi := (ADD %edi 0x4)  --> (0x01A,0)
+[(0x01A,0)] @{asm:=stos   %al,%es:(%edi)}@ ; [%edi]{0;8} := %eax{0;8}
+[(0x01A,1)] ; StaticArrow (0x01A,1) Skip << %eflags{10;1} >> --> (0x01A,2); StaticArrow (0x01A,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x01A,3)
+[(0x01A,2)] ; StaticArrow (0x01A,2) %edi := (SUB %edi 0x1{0;8})  --> (0x01B,0)
+[(0x01A,3)] ; StaticArrow (0x01A,3) %edi := (ADD %edi 0x1{0;8})  --> (0x01B,0)
+[(0x01B,0)] @{asm:=stos   %ax,%es:(%edi)}@ ; [%edi]{0;16} := %eax{0;16}
+[(0x01B,1)] ; StaticArrow (0x01B,1) Skip << %eflags{10;1} >> --> (0x01B,2); StaticArrow (0x01B,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x01B,3)
+[(0x01B,2)] ; StaticArrow (0x01B,2) %edi := (SUB %edi 0x2{0;16})  --> (0x01D,0)
+[(0x01B,3)] ; StaticArrow (0x01B,3) %edi := (ADD %edi 0x2{0;16})  --> (0x01D,0)
+[(0x01D,0)] @{asm:=stos   %eax,%es:(%edi)}@ ; [%edi] := %eax
+[(0x01D,1)] ; StaticArrow (0x01D,1) Skip << %eflags{10;1} >> --> (0x01D,2); StaticArrow (0x01D,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x01D,3)
+[(0x01D,2)] ; StaticArrow (0x01D,2) %edi := (SUB %edi 0x4)  --> (0x01E,0)
+[(0x01D,3)] ; StaticArrow (0x01D,3) %edi := (ADD %edi 0x4)  --> (0x01E,0)
+[(0x01E,0)] @{asm:=stos   %al,%es:(%di)}@ ; [%edi]{0;8} := %eax{0;8}
+[(0x01E,1)] ; StaticArrow (0x01E,1) Skip << %eflags{10;1} >> --> (0x01E,2); StaticArrow (0x01E,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x01E,3)
+[(0x01E,2)] ; StaticArrow (0x01E,2) %edi := (SUB %edi 0x1{0;8})  --> (0x020,0)
+[(0x01E,3)] ; StaticArrow (0x01E,3) %edi := (ADD %edi 0x1{0;8})  --> (0x020,0)
+[(0x020,0)] @{asm:=stos   %ax,%es:(%di)}@ ; [%edi]{0;16} := %eax{0;16}
+[(0x020,1)] ; StaticArrow (0x020,1) Skip << %eflags{10;1} >> --> (0x020,2); StaticArrow (0x020,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x020,3)
+[(0x020,2)] ; StaticArrow (0x020,2) %edi := (SUB %edi 0x2{0;16})  --> (0x023,0)
+[(0x020,3)] ; StaticArrow (0x020,3) %edi := (ADD %edi 0x2{0;16})  --> (0x023,0)
+[(0x023,0)] @{asm:=stos   %eax,%es:(%di)}@ ; [%edi] := %eax
+[(0x023,1)] ; StaticArrow (0x023,1) Skip << %eflags{10;1} >> --> (0x023,2); StaticArrow (0x023,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x023,3)
+[(0x023,2)] ; StaticArrow (0x023,2) %edi := (SUB %edi 0x4)  --> (0x025,0)
+[(0x023,3)] ; StaticArrow (0x023,3) %edi := (ADD %edi 0x4)  --> (0x025,0)
+[(0x025,0)] @{asm:=stos   %al,%es:(%di)}@ ; [%edi]{0;8} := %eax{0;8}
+[(0x025,1)] ; StaticArrow (0x025,1) Skip << %eflags{10;1} >> --> (0x025,2); StaticArrow (0x025,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x025,3)
+[(0x025,2)] ; StaticArrow (0x025,2) %edi := (SUB %edi 0x1{0;8})  --> (0x027,0)
+[(0x025,3)] ; StaticArrow (0x025,3) %edi := (ADD %edi 0x1{0;8})  --> (0x027,0)
+[(0x027,0)] @{asm:=stos   %ax,%es:(%di)}@ ; [%edi]{0;16} := %eax{0;16}
+[(0x027,1)] ; StaticArrow (0x027,1) Skip << %eflags{10;1} >> --> (0x027,2); StaticArrow (0x027,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x027,3)
+[(0x027,2)] ; StaticArrow (0x027,2) %edi := (SUB %edi 0x2{0;16})  --> (0x02A,0)
+[(0x027,3)] ; StaticArrow (0x027,3) %edi := (ADD %edi 0x2{0;16})  --> (0x02A,0)
+[(0x02A,0)] @{asm:=stos   %eax,%es:(%di)}@ ; [%edi] := %eax
+[(0x02A,1)] ; StaticArrow (0x02A,1) Skip << %eflags{10;1} >> --> (0x02A,2); StaticArrow (0x02A,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x02A,3)
+[(0x02A,2)] ; StaticArrow (0x02A,2) %edi := (SUB %edi 0x4)  --> (0x02C,0)
+[(0x02A,3)] ; StaticArrow (0x02A,3) %edi := (ADD %edi 0x4)  --> (0x02C,0)
+[(0x02C,0)] 
+section registers are not yet supported

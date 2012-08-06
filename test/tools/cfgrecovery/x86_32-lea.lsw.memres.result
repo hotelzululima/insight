@@ -1,0 +1,7 @@
+
+[(0x000,0)] @{asm:=lea    -0x64(%eax,%esi,2),%bx}@ ; StaticArrow (0x000,0) %ebx{0;16} := [(ADD (ADD %eax (MUL_U %esi 0x2)) 0xFFFFFFFFFFFFFF9C)]{0;16}  --> (0x005,0)
+[(0x005,0)] @{asm:=lea    0x1234,%bx}@ ; StaticArrow (0x005,0) %ebx{0;16} := [0x1234]{0;16}  --> (0x00C,0)
+[(0x00C,0)] @{asm:=lea    0x12345678,%bx}@ ; StaticArrow (0x00C,0) %ebx{0;16} := [0x12345678]{0;16}  --> (0x013,0)
+[(0x013,0)] @{asm:=lea    0x12345678,%ebx}@ ; StaticArrow (0x013,0) %ebx := [0x12345678]  --> (0x019,0)
+[(0x019,0)] @{asm:=lea    -0x64(%eax,%esi,2),%ebx}@ ; StaticArrow (0x019,0) %ebx := [(ADD (ADD %eax (MUL_U %esi 0x2)) 0xFFFFFFFFFFFFFF9C)]  --> (0x01D,0)
+[(0x01D,0)] 
