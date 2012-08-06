@@ -25,7 +25,7 @@ BASE_TESTS = \
 	${dummy}
 
 if WITH_VALGRIND
-BASE_TESTS += \
+MEMORY_TESTS = \
 	x86_32-slicing-01.memres \
 	x86_32-slicing-02.memres \
         \
@@ -34,10 +34,15 @@ endif
 
 TESTS = \
  ${BASE_TESTS} \
+ ${MEMORY_TESTS} \
  \
  check-diff
 
-EXTRA_DIST=${TESTS:%=%.result} ${TESTS:%.res=%.spec.sh} ${CHECKRESULTS} Kyuafile
+EXTRA_DIST=${TESTS:%=%.result} ${BASE_TESTS:%.res=%.spec.sh} \
+           ${CHECKRESULTS} Kyuafile 
+
+all:
+	@echo ${EXTRA_DIST}
 
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
