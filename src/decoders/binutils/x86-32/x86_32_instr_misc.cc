@@ -42,19 +42,19 @@ X86_32_TRANSLATE_2_OP(BOUND)
   assert (min != NULL);
 
   Expr *max_addr = 
-    BinaryApp::create (ADD, min->get_addr ()->ref (),
+    BinaryApp::create (BV_OP_ADD, min->get_addr ()->ref (),
 		       op1->get_bv_size () / 8,
 		       0, min->get_addr ()->get_bv_size ());
 
   Expr *max = MemCell::create (max_addr, 0, index->get_bv_size ());
 
   data.mc->add_skip (data.start_ma, data.next_ma,
-		     BinaryApp::create (AND_OP,
-					BinaryApp::create (LEQ_S,
+		     BinaryApp::create (BV_OP_AND,
+					BinaryApp::create (BV_OP_LEQ_S,
 							   min,
 							   index->ref (), 
 							   0, 1),
-					BinaryApp::create (LEQ_S,
+					BinaryApp::create (BV_OP_LEQ_S,
 							   index->ref (), 
 							   max,
 							   0, 1),
@@ -96,7 +96,7 @@ X86_32_TRANSLATE_0_OP(CBW)
 {
   data.mc->add_assignment (data.start_ma,
 			   data.get_register ("ax"),
-			   BinaryApp::create (EXTEND_S, 
+			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("al"),
 					      Constant::create (16)),
 			   data.next_ma);
@@ -152,7 +152,7 @@ x86_32_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data,
   LValue *tmpr0 = data.get_tmp_register (TMPREG(0), dst->get_bv_size () + 1);
 
   data.mc->add_assignment (from, (LValue *) tmpr0->ref (), 
-			   BinaryApp::create (SUB, dst->ref (), src, 0, 
+			   BinaryApp::create (BV_OP_SUB, dst->ref (), src, 0, 
 					      tmpr0->get_bv_size ()));
   x86_32_assign_CF (from, data, 
 		    tmpr0->extract_bit_vector (dst->get_bv_size (), 1), 
@@ -164,10 +164,10 @@ x86_32_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data,
   tmp[1] = src->extract_bit_vector (src->get_bv_size () - 1, 1);
   tmp[2] = tmpr0->extract_bit_vector (dst->get_bv_size () - 1, 1);
 
-  tmp[1] = BinaryApp::create (XOR, tmp[0], tmp[1], 0, 1); 
-  tmp[0] = BinaryApp::create (XOR, tmp[0]->ref (), tmp[2], 0, 1); 
+  tmp[1] = BinaryApp::create (BV_OP_XOR, tmp[0], tmp[1], 0, 1); 
+  tmp[0] = BinaryApp::create (BV_OP_XOR, tmp[0]->ref (), tmp[2], 0, 1); 
   
-  tmp[2] = BinaryApp::create (AND_OP, tmp[0], tmp[1], 0, 1);
+  tmp[2] = BinaryApp::create (BV_OP_AND, tmp[0], tmp[1], 0, 1);
 
   x86_32_assign_OF (from, data, tmp[2]);
 
@@ -232,9 +232,9 @@ X86_32_TRANSLATE_2_OP(CMPXCHG)
   data.mc->add_assignment (from, (LValue *) eax->ref (), dst->ref (), 
 			   data.next_ma);
   
-  Expr *cond = BinaryApp::create (EQ, eax->ref (), dst->ref (), 0, 1);
+  Expr *cond = BinaryApp::create (BV_OP_EQ, eax->ref (), dst->ref (), 0, 1);
   data.mc->add_skip (data.start_ma, elseaddr,
-		     UnaryApp::create (NOT, cond->ref (), 0, 1));
+		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
   data.mc->add_skip (data.start_ma, ifaddr, cond->ref ());
 
   cond->deref ();
@@ -248,7 +248,7 @@ X86_32_TRANSLATE_0_OP(CMC)
   MicrocodeAddress from = data.start_ma;
 
   x86_32_assign_CF (from, data, 
-		    UnaryApp::create (NOT, data.get_flag ("cf"), 0, 1), 
+		    UnaryApp::create (BV_OP_NOT, data.get_flag ("cf"), 0, 1), 
 		    &data.next_ma);
 }
 
@@ -256,7 +256,7 @@ X86_32_TRANSLATE_0_OP(CWDE)
 {
   data.mc->add_assignment (data.start_ma,
 			   data.get_register ("eax"),
-			   BinaryApp::create (EXTEND_S, 
+			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("ax"),
 					      Constant::create (32)),
 			   data.next_ma);
@@ -278,7 +278,7 @@ X86_32_TRANSLATE_0_OP(CWD)
 {
   data.mc->add_assignment (data.start_ma,
 			   data.get_register ("dx"),
-			   BinaryApp::create (EXTEND_S, 
+			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("ax"),
 					      Constant::create (32), 16, 16),
 			   data.next_ma);  
@@ -288,7 +288,7 @@ X86_32_TRANSLATE_0_OP(CDQ)
 {
   data.mc->add_assignment (data.start_ma,
 			   data.get_register ("edx"),
-			   BinaryApp::create (EXTEND_S, 
+			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("eax"),
 					      Constant::create (64), 32, 32),
 			   data.next_ma);
@@ -395,7 +395,7 @@ X86_32_TRANSLATE_2_OP(POPCNT)
     Expr::extract_bit_vector (src, 0, dst->get_bv_size ());
 
   Expr *c = 
-    BinaryApp::create (EXTEND_U, 
+    BinaryApp::create (BV_OP_EXTEND_U, 
 		       src->extract_bit_vector (0, 1),
 		       Constant::create (dst->get_bv_size (), 
 					 0, BV_DEFAULT_SIZE),
@@ -405,21 +405,21 @@ X86_32_TRANSLATE_2_OP(POPCNT)
   for (int i = 1; i < dst->get_bv_size (); i++)
     {
       Expr *aux = 
-	BinaryApp::create (EXTEND_U, 
+	BinaryApp::create (BV_OP_EXTEND_U, 
 			   src->extract_bit_vector (i, 1),
 			   Constant::create (dst->get_bv_size (), 
 					     0, BV_DEFAULT_SIZE),
 			   0, dst->get_bv_size ());
       data.mc->add_assignment (from, (LValue *) dst->ref (), 
-			       BinaryApp::create (ADD, dst->ref (), aux, 0,
-						  dst->get_bv_size ()));
+			       BinaryApp::create (BV_OP_ADD, dst->ref (), 
+						  aux, 0, dst->get_bv_size ()));
     }
 
 
   
   x86_32_reset_flags (from, data, reset);
   x86_32_assign_ZF (from, data, 
-		    BinaryApp::create (EQ, src->ref (), 
+		    BinaryApp::create (BV_OP_EQ, src->ref (), 
 				       Constant::zero (src->get_bv_size ()), 
 				       0, 1), 
 		    &data.next_ma);

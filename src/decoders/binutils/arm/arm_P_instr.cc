@@ -41,7 +41,7 @@ template<> void arm_translate<ARM_TOKEN(PUSH)> (arm::parser_data &data,
   for (iter = reg_list->begin(); iter != reg_list->end(); iter++) {
 
     data.mc->add_assignment(data.start_ma, (LValue *) sp->ref(),
-        BinaryApp::create(SUB, sp->ref(), 4));
+        BinaryApp::create (BV_OP_SUB, sp->ref(), 4));
 
     if (iter2 == reg_list->end()) {
       data.mc->add_assignment(data.start_ma, MemCell::create(sp->ref(),
@@ -75,10 +75,10 @@ template<> void arm_translate<ARM_TOKEN(POP)> (arm::parser_data &data,
 
     if (iter2 == reg_list->end()) {
       data.mc->add_assignment(data.start_ma, (LValue *) sp->ref(),
-          BinaryApp::create(ADD, sp->ref(), 4), data.next_ma);
+          BinaryApp::create (BV_OP_ADD, sp->ref(), 4), data.next_ma);
     } else {
       data.mc->add_assignment(data.start_ma, (LValue *) sp->ref(),
-          BinaryApp::create(ADD, sp->ref(), 4));
+          BinaryApp::create (BV_OP_ADD, sp->ref(), 4));
     }
 
     iter2++;

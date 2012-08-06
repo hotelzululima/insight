@@ -229,13 +229,10 @@ BinaryApp *binary_app_of_xml(xmlNodePtr node);
 UnaryOp unary_op_of_xml(xmlNodePtr node, char *ident)
 {
   if (strcmp(ident, "not") == 0)
-    return NOT;
+    return BV_OP_NOT;
 
   if (strcmp(ident, "minus") == 0)
-    return NEG;
-
-  if (strcmp(ident, "lnot") == 0)
-    return LNOT;
+    return BV_OP_NEG;
 
   XML_PARSE_ERROR(node, "unary operator %s unknown", ident);
 }
@@ -256,28 +253,26 @@ UnaryApp *unary_app_of_xml(xmlNodePtr node)
 
 BinaryOp binary_op_of_xml(xmlNodePtr node, char *ident)
 {
-  if (strcmp(ident, "plus") == 0) return ADD;
-  if (strcmp(ident, "minus") == 0) return SUB;
-  if (strcmp(ident, "times_s") == 0) return MUL_S;
-  if (strcmp(ident, "times_u") == 0) return MUL_U;
-  if (strcmp(ident, "divs") == 0) return DIV_S;
-  if (strcmp(ident, "divu") == 0) return DIV_U;
-  if (strcmp(ident, "mods") == 0) return MODULO;
-  if (strcmp(ident, "or") == 0) return OR;
-  if (strcmp(ident, "and") == 0) return AND_OP;
-  if (strcmp(ident, "lor") == 0) return LOR;
-  if (strcmp(ident, "land") == 0) return LAND;
-  if (strcmp(ident, "xor") == 0) return XOR;
-  if (strcmp(ident, "concat") == 0) return CONCAT;
-  if (strcmp(ident, "lshift") == 0) return LSH;
-  if (strcmp(ident, "rshiftu") == 0) return RSH_U;
-  if (strcmp(ident, "rshifts") == 0) return RSH_S;
+  if (strcmp(ident, "plus") == 0) return BV_OP_ADD;
+  if (strcmp(ident, "minus") == 0) return BV_OP_SUB;
+  if (strcmp(ident, "times_s") == 0) return BV_OP_MUL_S;
+  if (strcmp(ident, "times_u") == 0) return BV_OP_MUL_U;
+  if (strcmp(ident, "divs") == 0) return BV_OP_DIV_S;
+  if (strcmp(ident, "divu") == 0) return BV_OP_DIV_U;
+  if (strcmp(ident, "mods") == 0) return BV_OP_MODULO;
+  if (strcmp(ident, "or") == 0) return BV_OP_OR;
+  if (strcmp(ident, "and") == 0) return BV_OP_AND;
+  if (strcmp(ident, "xor") == 0) return BV_OP_XOR;
+  if (strcmp(ident, "concat") == 0) return BV_OP_CONCAT;
+  if (strcmp(ident, "lshift") == 0) return BV_OP_LSH;
+  if (strcmp(ident, "rshiftu") == 0) return BV_OP_RSH_U;
+  if (strcmp(ident, "rshifts") == 0) return BV_OP_RSH_S;
 
-  if (strcmp(ident, "eq") == 0) return EQ;
-  if (strcmp(ident, "leqs") == 0) return LEQ_S;
-  if (strcmp(ident, "lts") == 0) return LT_S;
-  if (strcmp(ident, "lequ") == 0) return LEQ_U;
-  if (strcmp(ident, "ltu") == 0) return LT_U;
+  if (strcmp(ident, "eq") == 0) return BV_OP_EQ;
+  if (strcmp(ident, "leqs") == 0) return BV_OP_LEQ_S;
+  if (strcmp(ident, "lts") == 0) return BV_OP_LT_S;
+  if (strcmp(ident, "lequ") == 0) return BV_OP_LEQ_U;
+  if (strcmp(ident, "ltu") == 0) return BV_OP_LT_U;
 
   /* Not supported:
   if (strcmp(ident, "modu") == 0) return MODULO;

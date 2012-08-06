@@ -975,13 +975,14 @@ section :
 
 base_index_scale :
   TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR 
-{ $$ = BinaryApp::create (ADD, $2, BinaryApp::create (MUL_U, $4, $6)); }
+{ $$ = BinaryApp::create (BV_OP_ADD, $2, 
+			  BinaryApp::create (BV_OP_MUL_U, $4, $6)); }
 | TOK_LPAR register TOK_COMMA register TOK_RPAR 
-{ $$ = BinaryApp::create (ADD, $2, $4); }
+{ $$ = BinaryApp::create (BV_OP_ADD, $2, $4); }
 | TOK_LPAR register TOK_RPAR 
 { $$ = $2; }
 | TOK_LPAR TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR 
-{ $$ = BinaryApp::create (MUL_U, $3, $5); }
+{ $$ = BinaryApp::create (BV_OP_MUL_U, $3, $5); }
 
 | TOK_LPAR TOK_COMMA TOK_INTEGER TOK_RPAR  
 { $$ = NULL; }

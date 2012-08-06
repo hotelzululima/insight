@@ -39,7 +39,7 @@ template<> void arm_translate<ARM_TOKEN(ADD)> (arm::parser_data &data,
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
-  BinaryApp* src = BinaryApp::create(ADD, op2, op3);
+  BinaryApp* src = BinaryApp::create (BV_OP_ADD, op2, op3);
 
   if (is_S_suffix && ADD_INS)
   {
@@ -56,7 +56,7 @@ template<> void arm_translate<ARM_TOKEN(AND)> (arm::parser_data &data,
 
   LValue *dst = (LValue *) op1;
 
-  BinaryApp* src = BinaryApp::create(AND_OP, op2, op3);
+  BinaryApp* src = BinaryApp::create (BV_OP_AND, op2, op3);
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
@@ -78,39 +78,39 @@ arm_translate<ARM_TOKEN(ADD8)> (arm::parser_data &data,
 
   Expr* first_operand = op2;
   Expr* second_operand = op3;
-  Expr* first_operand_1 = TernaryApp::create(EXTRACT, first_operand,
+  Expr* first_operand_1 = TernaryApp::create (BV_OP_EXTRACT, first_operand,
       Constant::create(0), Constant::create(8));
-  Expr* first_operand_2 = TernaryApp::create(EXTRACT, first_operand->ref(),
+  Expr* first_operand_2 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
       Constant::create(8), Constant::create(8));
-  Expr* first_operand_3 = TernaryApp::create(EXTRACT, first_operand->ref(),
+  Expr* first_operand_3 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
       Constant::create(16), Constant::create(8));
-  Expr* first_operand_4 = TernaryApp::create(EXTRACT, first_operand->ref(),
+  Expr* first_operand_4 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
       Constant::create(24), Constant::create(8));
 
-  Expr* second_operand_1 = TernaryApp::create(EXTRACT, second_operand,
+  Expr* second_operand_1 = TernaryApp::create (BV_OP_EXTRACT, second_operand,
       Constant::create(0), Constant::create(8));
-  Expr* second_operand_2 = TernaryApp::create(EXTRACT, second_operand->ref(),
+  Expr* second_operand_2 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
       Constant::create(8), Constant::create(8));
-  Expr* second_operand_3 = TernaryApp::create(EXTRACT, second_operand->ref(),
+  Expr* second_operand_3 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
       Constant::create(16), Constant::create(8));
-  Expr* second_operand_4 = TernaryApp::create(EXTRACT, second_operand->ref(),
+  Expr* second_operand_4 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
       Constant::create(24), Constant::create(8));
 
   Expr* add_result_1 =
-      BinaryApp::create(ADD, first_operand_1, second_operand_1);
+      BinaryApp::create (BV_OP_ADD, first_operand_1, second_operand_1);
   Expr* add_result_2 =
-      BinaryApp::create(ADD, first_operand_2, second_operand_2);
+      BinaryApp::create (BV_OP_ADD, first_operand_2, second_operand_2);
   Expr* add_result_3 =
-      BinaryApp::create(ADD, first_operand_3, second_operand_3);
+      BinaryApp::create (BV_OP_ADD, first_operand_3, second_operand_3);
   Expr* add_result_4 =
-      BinaryApp::create(ADD, first_operand_4, second_operand_4);
+      BinaryApp::create (BV_OP_ADD, first_operand_4, second_operand_4);
 
   Expr* add_result_part1 =
-      BinaryApp::create(CONCAT, add_result_2, add_result_1);
+      BinaryApp::create (BV_OP_CONCAT, add_result_2, add_result_1);
   Expr* add_result_part2 =
-      BinaryApp::create(CONCAT, add_result_4, add_result_3);
+      BinaryApp::create (BV_OP_CONCAT, add_result_4, add_result_3);
 
-  Expr* add_result_whole = BinaryApp::create(CONCAT, add_result_part2,
+  Expr* add_result_whole = BinaryApp::create (BV_OP_CONCAT, add_result_part2,
       add_result_part1);
 
   Expr* src = add_result_whole;
@@ -133,22 +133,22 @@ arm_translate<ARM_TOKEN(ADD16)> (arm::parser_data &data,
 
   Expr* first_operand = op2;
   Expr* second_operand = op3;
-  Expr* first_operand_1 = TernaryApp::create(EXTRACT, first_operand,
+  Expr* first_operand_1 = TernaryApp::create (BV_OP_EXTRACT, first_operand,
       Constant::create(0), Constant::create(16));
-  Expr* first_operand_2 = TernaryApp::create(EXTRACT, first_operand->ref(),
+  Expr* first_operand_2 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
       Constant::create(16), Constant::create(16));
 
-  Expr* second_operand_1 = TernaryApp::create(EXTRACT, second_operand,
+  Expr* second_operand_1 = TernaryApp::create (BV_OP_EXTRACT, second_operand,
       Constant::create(0), Constant::create(16));
-  Expr* second_operand_2 = TernaryApp::create(EXTRACT, second_operand->ref(),
+  Expr* second_operand_2 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
       Constant::create(16), Constant::create(16));
 
   Expr* add_result_1 =
-      BinaryApp::create(ADD, first_operand_1, second_operand_1);
+      BinaryApp::create (BV_OP_ADD, first_operand_1, second_operand_1);
   Expr* add_result_2 =
-      BinaryApp::create(ADD, first_operand_2, second_operand_2);
+      BinaryApp::create (BV_OP_ADD, first_operand_2, second_operand_2);
   Expr* add_result_whole =
-      BinaryApp::create(CONCAT, add_result_1, add_result_2);
+      BinaryApp::create (BV_OP_CONCAT, add_result_1, add_result_2);
 
   Expr* src = add_result_whole;
 

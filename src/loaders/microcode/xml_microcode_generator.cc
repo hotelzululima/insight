@@ -164,47 +164,43 @@ xml_of_binary_op(BinaryOp op)
 {
   switch (op)
     {
-    case ADD:
+    case BV_OP_ADD:
       return xml_atom("plus");
-    case SUB:
+    case BV_OP_SUB:
       return xml_atom("minus");
-    case MUL_U:
+    case BV_OP_MUL_U:
       return xml_atom("times_u");
-    case MUL_S:
+    case BV_OP_MUL_S:
       return xml_atom("times_s");
-    case DIV_S:
+    case BV_OP_DIV_S:
       return xml_atom("divs");
-    case DIV_U:
+    case BV_OP_DIV_U:
       return xml_atom("divu");
-    case MODULO:
+    case BV_OP_MODULO:
       return xml_atom("mods");
-    case OR:
+    case BV_OP_OR:
       return xml_atom("or");
-    case AND_OP:
+    case BV_OP_AND:
       return xml_atom("and");
-    case LOR:
-      return xml_atom("lor");
-    case LAND:
-      return xml_atom("land");
-    case XOR:
+    case BV_OP_XOR:
       return xml_atom("xor");
-    case CONCAT:
+    case BV_OP_CONCAT:
       return xml_atom("concat");
-    case LSH:
+    case BV_OP_LSH:
       return xml_atom("lshift");
-    case RSH_S:
+    case BV_OP_RSH_S:
       return xml_atom("rshifts");
-    case RSH_U:
+    case BV_OP_RSH_U:
       return xml_atom("rshiftu");
-    case EQ:
+    case BV_OP_EQ:
       return xml_atom("eq");
-    case LEQ_U:
+    case BV_OP_LEQ_U:
       return xml_atom("lequ");
-    case LT_U:
+    case BV_OP_LT_U:
       return xml_atom("ltu");
-    case LEQ_S:
+    case BV_OP_LEQ_S:
       return xml_atom("leqs");
-    case LT_S:
+    case BV_OP_LT_S:
       return xml_atom("lts");
     default:
       Log::fatal_error("xml_of_binary_op:: operator not supported");
@@ -225,9 +221,9 @@ xml_of_unary_op(UnaryOp op)
 {
   switch (op)
     {
-    case NOT:
+    case BV_OP_NOT:
       return xml_atom("not");
-    case NEG:
+    case BV_OP_NEG:
       return xml_atom("minus");
     default:
       Log::fatal_error("xml_of_unary_op:: operator not supported");

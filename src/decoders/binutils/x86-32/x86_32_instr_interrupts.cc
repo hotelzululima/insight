@@ -40,7 +40,7 @@ X86_32_TRANSLATE_1_OP(INT)
 X86_32_TRANSLATE_0_OP(INTO)
 {
   data.mc->add_skip (data.start_ma, data.next_ma, 
-		     UnaryApp::create (NOT, data.get_flag ("of"), 0, 1));
+		     UnaryApp::create (BV_OP_NOT, data.get_flag ("of"), 0, 1));
 }
 
 X86_32_TRANSLATE_0_OP(INT3)

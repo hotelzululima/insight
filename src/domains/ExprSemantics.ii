@@ -46,13 +46,14 @@ expr_semantics_embed_eval(Value v1, Value v2, int off) {
       int v1_size = v1.get_size();
       Value vmask(v1_size, mask << off);
 
-      res = ExprSem::OR_eval(ExprSem::AND_OP_eval(v1,
-						  ExprSem::NOT_eval(vmask, 
-								    0, v1_size),
-					      0, v1_size),
-			 ExprSem::LSH_eval(v2, Value(v1_size, off),
-					   0, v1_size),
-			 0, v1_size);
+      res = ExprSem::BV_OP_OR_eval(ExprSem::BV_OP_AND_eval(v1,
+							   ExprSem::BV_OP_NOT_eval(vmask, 
+										   0, v1_size),
+							   0, v1_size),
+				   ExprSem::BV_OP_LSH_eval(v2, Value(v1_size, 
+								     off),
+							   0, v1_size),
+				   0, v1_size);
     }
   return res;
 }
@@ -62,5 +63,5 @@ Value
 expr_semantics_extract_eval (Value v, int off, int size)
 {
   assert (v.get_size () >= size);
-  return ExprSem::RSH_U_eval (v, Value (BV_DEFAULT_SIZE, off), 0, size);
+  return ExprSem::BV_OP_RSH_U_eval (v, Value (BV_DEFAULT_SIZE, off), 0, size);
 }

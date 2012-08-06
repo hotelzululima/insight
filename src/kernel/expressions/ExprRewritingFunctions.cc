@@ -58,7 +58,8 @@ not_operator_on_constant (const Expr *phi)
   const UnaryApp *ua = dynamic_cast<const UnaryApp *> (phi);
   Expr *result = NULL;
 
-  if (ua != NULL && ua->get_op () == NOT && ua->get_arg1()->is_Constant ())
+  if (ua != NULL && ua->get_op () == BV_OP_NOT && 
+      ua->get_arg1()->is_Constant ())
     {
       if (((Constant *) ua->get_arg1())->get_val() == 0)
 	result = Constant::one (1);
@@ -75,7 +76,8 @@ syntaxic_equality_rule (const Expr *phi)
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
   Expr *result = NULL;
 
-  if (ba != NULL && ba->get_op () == EQ && ba->get_arg1 () == ba->get_arg2 ())
+  if (ba != NULL && ba->get_op () == BV_OP_EQ && 
+      ba->get_arg1 () == ba->get_arg2 ())
     result = Constant::one (1);
 
   return result;
@@ -84,8 +86,8 @@ syntaxic_equality_rule (const Expr *phi)
 Expr * 
 cancel_lnot_not (const Expr *phi) 
 {
-  Expr *pattern = Expr::createNot (UnaryApp::create (NOT, 
-						     Variable::create ("X")));
+  Expr *pattern = 
+    Expr::createNot (UnaryApp::create (BV_OP_NOT, Variable::create ("X")));
   Expr *result = ExprUtils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
@@ -229,7 +231,7 @@ not_decrease (const Expr *phi)
       Expr *arg1 = UnaryApp::createNot (ba->get_arg1 ()->ref ());
       Expr *arg2 = UnaryApp::createNot (ba->get_arg2 ()->ref ());
 
-      if (ba->get_op() == OR)
+      if (ba->get_op() == BV_OP_OR)
 	result = BinaryApp::createOr (arg1, arg2);
       else
 	result = BinaryApp::createAnd (arg1, arg2);
@@ -378,7 +380,8 @@ void_operations (const Expr *e)
 
   BinaryOp op = ba->get_op();
 
-  if ((op == SUB || op == XOR) && ba->get_arg1 () == ba->get_arg2 ()) 
+  if ((op == BV_OP_SUB || op == BV_OP_XOR) && 
+      ba->get_arg1 () == ba->get_arg2 ()) 
     {
       result = Constant::create (0, ba->get_bv_offset(),  ba->get_bv_size());
     }
@@ -433,8 +436,8 @@ binary_operations_simplification (const Expr *e)
     return NULL;
 
   //Nul element
-  if (((o->get_op () == ADD && op == SUB) || 
-       (o->get_op () == SUB && op == ADD)) &&
+  if (((o->get_op () == BV_OP_ADD && op == BV_OP_SUB) || 
+       (o->get_op () == BV_OP_SUB && op == BV_OP_ADD)) &&
       o->get_arg2 () == arg2)
     {
       result = (Expr *) o->get_arg1()->extract_with_bit_vector_of (ba);
@@ -444,16 +447,16 @@ binary_operations_simplification (const Expr *e)
       //Distributivity
       constant_t c1 = ((Constant *)arg2)->get_val();
       constant_t c2 = ((Constant *)o->get_arg2())->get_val();
-      if ((op == ADD && o->get_op() == ADD) || 
-	  (op == SUB && o->get_op() == SUB))
+      if ((op == BV_OP_ADD && o->get_op() == BV_OP_ADD) || 
+	  (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  arg2 = Constant::create (c1 + c2);
 	  result = BinaryApp::create (op, arg1, arg2, ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
-      else if ((op == DIV_U && o->get_op() == DIV_U) || 
-	       (op == MUL_U && o->get_op() == MUL_U))
+      else if ((op == BV_OP_DIV_U && o->get_op() == BV_OP_DIV_U) || 
+	       (op == BV_OP_MUL_U && o->get_op() == BV_OP_MUL_U))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  arg2 = Constant::create (c1 * c2);
@@ -461,14 +464,14 @@ binary_operations_simplification (const Expr *e)
 				      ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
-      else if ((op == ADD && o->get_op() == SUB) || 
-	       (op == SUB && o->get_op() == SUB))
+      else if ((op == BV_OP_ADD && o->get_op() == BV_OP_SUB) || 
+	       (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  if (c1 - c2 < 0)
 	    {
 	      arg2 = Constant::create (c2 - c1);
-	      op = SUB;
+	      op = BV_OP_SUB;
 	    }
 	  else
 	    arg2 = Constant::create (c1 - c2);
@@ -476,14 +479,14 @@ binary_operations_simplification (const Expr *e)
 				      ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
-      else if ((op == SUB && o->get_op() == ADD) || 
-	       (op == SUB && o->get_op() == SUB))
+      else if ((op == BV_OP_SUB && o->get_op() == BV_OP_ADD) || 
+	       (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  if (c1 - c2 < 0)
 	    {
 	      arg2 = Constant::create (c2 - c1);
-	      op = ADD;
+	      op = BV_OP_ADD;
 	    }
 	  else
 	    arg2 = Constant::create (c1 - c2);

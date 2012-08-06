@@ -59,7 +59,7 @@ X86_32_TRANSLATE_2_OP(ENTER)
       while (--nl)
 	{
 	  data.mc->add_assignment (from, (LValue *) ebp->ref (), 
-				   BinaryApp::create (SUB, 
+				   BinaryApp::create (BV_OP_SUB, 
 						      ebp->ref (),
 						      dec->ref (),
 						      0, ebp->get_bv_size ()));
@@ -72,7 +72,7 @@ X86_32_TRANSLATE_2_OP(ENTER)
 
   data.mc->add_assignment (from, (LValue *) ebp->ref (), frame_temp->ref ());
   data.mc->add_assignment (from, (LValue *) esp->ref (),
-			   BinaryApp::create (SUB, 
+			   BinaryApp::create (BV_OP_SUB, 
 					      esp->ref (),
 					      frame_size->ref (), 
 					      0, esp->get_bv_size ()),
@@ -188,7 +188,8 @@ x86_32_pop (MicrocodeAddress &start, x86_32::parser_data &data, LValue *op,
 					    op->get_bv_size ()));
 
   data.mc->add_assignment (start, (LValue *) esp->ref(), 
-			   BinaryApp::create (ADD, esp->ref (), inc->ref (), 0,
+			   BinaryApp::create (BV_OP_ADD, esp->ref (), 
+					      inc->ref (), 0,
 					      esp->get_bv_size ()),
 			   end);
   esp->deref ();
@@ -210,7 +211,8 @@ s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
     }
 
   reg = data.get_register (regs[i]); // should be (E)SP
-  Expr *nval = BinaryApp::create (ADD, reg->ref (), reg->get_bv_size () >> 3);
+  Expr *nval = BinaryApp::create (BV_OP_ADD, reg->ref (), 
+				  reg->get_bv_size () >> 3);
   data.mc->add_assignment (start, reg, nval);
 
   for (i++; i < 7; i++)
@@ -235,7 +237,7 @@ x86_32_push (MicrocodeAddress &start, x86_32::parser_data &data, Expr *op,
       if (operand_size == 16)
 	temp = op->ref ();
       else
-	temp = BinaryApp::create (EXTEND_U, op->ref (), operand_size, 0, 
+	temp = BinaryApp::create (BV_OP_EXTEND_U, op->ref (), operand_size, 0, 
 				  operand_size);
     }
   else if (op->is_Constant ())
@@ -249,7 +251,7 @@ x86_32_push (MicrocodeAddress &start, x86_32::parser_data &data, Expr *op,
 
   Expr *esp = data.get_register (stack_size == 16 ? "sp" : "esp");
   data.mc->add_assignment (start, (LValue *) esp->ref(), 
-			   BinaryApp::create (SUB, esp->ref (), 
+			   BinaryApp::create (BV_OP_SUB, esp->ref (), 
 					      temp->get_bv_size () >> 3, 0,
 					      esp->get_bv_size ()));
   data.mc->add_assignment (start, 
@@ -306,7 +308,7 @@ X86_32_TRANSLATE_0_OP(PUSHF)
     Expr::extract_bit_vector (eflags, 0, 16);
   else
     {
-      Expr *tmp = BinaryApp::create (AND_OP, eflags,
+      Expr *tmp = BinaryApp::create (BV_OP_AND, eflags,
 				     Constant::create (0x00FCFFFF, 0,
 						       eflags->get_bv_size ()),
 				     0, eflags->get_bv_size ());

@@ -37,7 +37,7 @@ template<> void arm_translate<ARM_TOKEN(ORR)> (arm::parser_data &data,
 {
   LValue *dst = (LValue *) op1;
 
-  BinaryApp* src = BinaryApp::create(OR, op2, op3);
+  BinaryApp* src = BinaryApp::create (BV_OP_OR, op2, op3);
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 

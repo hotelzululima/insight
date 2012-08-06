@@ -115,12 +115,16 @@ ND_eval_unary_expr(SpecializedContext *s_ctxt, UnaryApp *ua)
 
   switch (ua->get_op())
     {
-    case NEG:
-      return ND_eval_unary_expr_generic(SetsExprSemantics::NEG_eval, s_ctxt, ua->get_arg1(), ua->get_bv_offset (), ua->get_bv_size ());
-    case NOT:
-      return ND_eval_unary_expr_generic(SetsExprSemantics::NOT_eval, s_ctxt, ua->get_arg1(), ua->get_bv_offset (), ua->get_bv_size ());
-    case LNOT:
-      return ND_eval_unary_expr_generic(SetsExprSemantics::LNOT_eval, s_ctxt, ua->get_arg1(), ua->get_bv_offset (), ua->get_bv_size ());
+    case BV_OP_NEG:
+      return ND_eval_unary_expr_generic(SetsExprSemantics::BV_OP_NEG_eval, 
+					s_ctxt, 
+					ua->get_arg1(), ua->get_bv_offset (), 
+					ua->get_bv_size ());
+    case BV_OP_NOT:
+      return ND_eval_unary_expr_generic(SetsExprSemantics::BV_OP_NOT_eval, 
+					s_ctxt, ua->get_arg1(), 
+					ua->get_bv_offset (), 
+					ua->get_bv_size ());
     default:
       Log::fatal_error("Context::eval Unknown unary operator");
     }
@@ -163,70 +167,68 @@ ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
 
   switch (e->get_op())
     {
-    case ADD:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::ADD_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case SUB:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::SUB_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case MUL_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::MUL_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case MUL_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::MUL_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case DIV_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::DIV_U_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case DIV_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::DIV_S_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_ADD:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_ADD_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_SUB:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_SUB_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_MUL_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_MUL_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_MUL_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_MUL_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_DIV_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_DIV_U_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_DIV_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_DIV_S_eval, s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
 
-    case AND_OP:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::AND_OP_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case OR:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::OR_eval,   s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case XOR:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::XOR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case LSH:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case RSH_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::RSH_U_eval,  
+    case BV_OP_AND:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_AND_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_OR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_OR_eval,   s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_XOR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_XOR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_LSH:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_RSH_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_RSH_U_eval,  
 					 s_ctxt, e->get_arg1(), e->get_arg2(), 
 					 offset, size);
-    case RSH_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::RSH_S_eval,  
+    case BV_OP_RSH_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_RSH_S_eval,  
 					 s_ctxt, e->get_arg1(), e->get_arg2(), 
 					 offset, size);
-    case ROR:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::ROR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case ROL:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::ROL_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_ROR:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_ROR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_ROL:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_ROL_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
 
-    case LAND:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LAND_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case LOR:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LOR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_EQ:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_EQ_eval, 
+					 s_ctxt, e->get_arg1(), e->get_arg2(), 
+					 offset, size);
 
-    case EQ:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::EQ_eval,   s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_LEQ_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_S_eval, 
+					 s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_GEQ_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_S_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+    case BV_OP_LT_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_GT_S:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LT_S_eval,   s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
 
-    case LEQ_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case GEQ_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_S_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
-    case LT_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_S_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case GT_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LT_S_eval,   s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+    case BV_OP_LEQ_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_GEQ_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_U_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
+    case BV_OP_LT_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_GT_U:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LT_U_eval,   s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
 
-    case LEQ_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case GEQ_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_U_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
-    case LT_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LEQ_U_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case GT_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::LT_U_eval,   s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
-
-    case POW:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::POW_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
-    case CONCAT:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::CONCAT_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_POW:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_POW_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
+    case BV_OP_CONCAT:
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_CONCAT_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
 
     default:
       Log::fatal_error("Context::eval Unknown binary operator");

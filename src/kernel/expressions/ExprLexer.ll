@@ -102,8 +102,6 @@ optype    [bswlqt]
 "MUL_U"   { return token::TOK_MUL_U; }
 "AND"     { return token::TOK_AND; }
 "OR"      { return token::TOK_OR; }
-"LAND"    { return token::TOK_LAND; }
-"LOR"     { return token::TOK_LOR; }
 "XOR"     { return token::TOK_XOR; }
 "LSH"     { return token::TOK_LSH; }
 "RSH_U"   { return token::TOK_RSH_U; }
@@ -126,9 +124,7 @@ optype    [bswlqt]
 "DIV_U"    { return token::TOK_DIV_U;} 
 "FORALL"  { return token::TOK_FORALL; }
 "EXISTS"  { return token::TOK_EXISTS; }
-"/\\"     { return token::TOK_L_AND; }
-"\\/"     { return token::TOK_L_OR; }
-"LNOT"    { return token::TOK_L_NOT; }
+
 
 "," { return token::TOK_COMMA;     }
 ":" { return token::TOK_COLON; }

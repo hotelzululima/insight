@@ -35,7 +35,7 @@ using namespace std;
 template<> void arm_translate<ARM_TOKEN(CMP)> (arm::parser_data &data,
     std::string* cond, Expr *reg, Expr *operand2)
 {
-  BinaryApp* src = BinaryApp::create(SUB, reg, operand2);
+  BinaryApp* src = BinaryApp::create (BV_OP_SUB, reg, operand2);
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
@@ -49,7 +49,7 @@ template<> void arm_translate<ARM_TOKEN(CMP)> (arm::parser_data &data,
 template<> void arm_translate<ARM_TOKEN(CMN)> (arm::parser_data &data,
     std::string* cond, Expr *reg, Expr *operand2)
 {
-  BinaryApp* src = BinaryApp::create(ADD, reg, operand2);
+  BinaryApp* src = BinaryApp::create (BV_OP_ADD, reg, operand2);
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 

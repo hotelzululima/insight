@@ -56,7 +56,9 @@ domains_concrete_simulator_test_SOURCES = \
 	domains/concrete/simulator_test_cases.hh \
 	domains/concrete/simulator_test.cc
 
-check: all 
+check: all kuya-tests
+
+kuya-tests: ${check_PROGRAMS}
 	@ kyua test \
              --kyuafile=$(top_srcdir)/test/Kyuafile \
              --build-root=$(top_builddir)/test/ 

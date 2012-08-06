@@ -37,8 +37,8 @@ template<> void arm_translate<ARM_TOKEN(BIC)> (arm::parser_data &data,
 {
   LValue *dst = (LValue *) op1;
 
-  Expr* not_oprnd2 = UnaryApp::create(NOT, op3);
-  BinaryApp* src = BinaryApp::create(AND_OP, op2, not_oprnd2);
+  Expr* not_oprnd2 = UnaryApp::create (BV_OP_NOT, op3);
+  BinaryApp* src = BinaryApp::create (BV_OP_AND, op2, not_oprnd2);
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
@@ -68,7 +68,8 @@ template<> void arm_translate<ARM_TOKEN(BL)> (arm::parser_data &data,
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
-  data.mc->add_assignment(data.start_ma, r14, BinaryApp::create(SUB, r15, 4));
+  data.mc->add_assignment(data.start_ma, r14, BinaryApp::create (BV_OP_SUB, 
+								 r15, 4));
   data.mc->add_assignment(data.start_ma, (RegisterExpr*) r15->ref(),
       Constant::create(label), data.next_ma, guard);
 }

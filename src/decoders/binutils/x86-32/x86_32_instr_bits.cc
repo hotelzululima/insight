@@ -59,12 +59,13 @@ s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
 			       
   MicrocodeAddress start_while (from); 
   from++;
-  Expr *stopcond = TernaryApp::create (EXTRACT, src->ref (), temp->ref (), 
+  Expr *stopcond = TernaryApp::create (BV_OP_EXTRACT, src->ref (), 
+				       temp->ref (), 
 				       Constant::one (1), 0, 1);
-  stopcond = BinaryApp::create (EQ, stopcond, Constant::zero (1), 0, 1);
+  stopcond = BinaryApp::create (BV_OP_EQ, stopcond, Constant::zero (1), 0, 1);
 
   data.mc->add_skip (start_while, start_while + 1, stopcond->ref ());
-  BinaryOp op = forward ? ADD : SUB;
+  BinaryOp op = forward ? BV_OP_ADD : BV_OP_SUB;
   data.mc->add_assignment (from, (LValue *) temp->ref (), 
 			   BinaryApp::create (op,
 					      temp->ref (),
@@ -72,17 +73,16 @@ s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
 					      dst_size));
   data.mc->add_skip (from, start_while);
   from++;
-  data.mc->add_skip (start_while, from, UnaryApp::create (LNOT, stopcond));
+  data.mc->add_skip (start_while, from, Expr::createNot (stopcond));
   data.mc->add_assignment (from, (LValue *) dst->ref (), temp->ref (), 
 			   data.next_ma);
 
   /*
    * create branches
    */
-  Expr *cond = BinaryApp::create(EQ, src->ref (), 
+  Expr *cond = BinaryApp::create(BV_OP_EQ, src->ref (), 
 				 Constant::zero (src->get_bv_size ()), 0, 1);
-  data.mc->add_skip (data.start_ma, else_part, 
-		     UnaryApp::create (NOT, cond, 0, 1));
+  data.mc->add_skip (data.start_ma, else_part, Expr::createNot (cond));
   data.mc->add_skip (data.start_ma, if_part, cond->ref ());
 
   temp->deref ();
@@ -119,7 +119,8 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
   op1->deref ();
 
   x86_32_assign_CF (from, data, 
-		    BinaryApp::create (RSH_U, bitbase, bitoffset, 0, 1), to);
+		    BinaryApp::create (BV_OP_RSH_U, bitbase, bitoffset, 0, 1), 
+		    to);
   if (chg == BT_NO_CHG)
     return;
 
@@ -134,8 +135,9 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
     {
       /* set the selected bit to 1 */
       Expr *newval = 
-	BinaryApp::create (OR, bitbase->ref (), 
-			   BinaryApp::create (LSH, Constant::one (bbsize), 
+	BinaryApp::create (BV_OP_OR, bitbase->ref (), 
+			   BinaryApp::create (BV_OP_LSH, 
+					      Constant::one (bbsize), 
 					      bitoffset->ref (), 0, bbsize));
       
       data.mc->add_assignment (from, (LValue *) bitbase->ref (), newval, 
@@ -149,12 +151,12 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
     {
       /* set the selected bit to 0 */
       Expr *newval = 
-	UnaryApp::create (NOT, 
-			  BinaryApp::create (LSH, 
+	UnaryApp::create (BV_OP_NOT, 
+			  BinaryApp::create (BV_OP_LSH, 
 					     Constant::one (bbsize), 
 					     bitoffset->ref (), 0, bbsize),
 			  0, bbsize);
-      newval = BinaryApp::create (AND_OP, bitbase->ref (), newval);
+      newval = BinaryApp::create (BV_OP_AND, bitbase->ref (), newval);
       
       data.mc->add_assignment (from, (LValue *) bitbase->ref (), newval, 
 			       data.next_ma);
@@ -165,7 +167,7 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
       LValue *cf = data.get_flag ("cf");
       data.mc->add_skip (ifloc, ifloc + 2, cf);      
       data.mc->add_skip (ifloc, ifloc + 1, 
-			 UnaryApp::create (NOT, cf->ref (), 0, 1));
+			 UnaryApp::create (BV_OP_NOT, cf->ref (), 0, 1));
     }
 
 }

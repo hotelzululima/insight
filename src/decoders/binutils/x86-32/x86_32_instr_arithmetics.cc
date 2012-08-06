@@ -54,13 +54,13 @@ s_additive_op (MicrocodeAddress &from, x86_32::parser_data &data,
   tmp[1] = src->extract_bit_vector (src->get_bv_size () - 1, 1);
   tmp[2] = tmpr0->extract_bit_vector (dst->get_bv_size () - 1, 1);
 
-  tmp[1] = BinaryApp::create (XOR, tmp[0], tmp[1], 0, 1); 
-  if (op == ADD)
-    tmp[1] = UnaryApp::create (NOT, tmp[1], 0, 1);
+  tmp[1] = BinaryApp::create (BV_OP_XOR, tmp[0], tmp[1], 0, 1); 
+  if (op == BV_OP_ADD)
+    tmp[1] = UnaryApp::create (BV_OP_NOT, tmp[1], 0, 1);
   
-  tmp[0] = BinaryApp::create (XOR, tmp[0]->ref (), tmp[2], 0, 1); 
+  tmp[0] = BinaryApp::create (BV_OP_XOR, tmp[0]->ref (), tmp[2], 0, 1); 
   
-  tmp[2] = BinaryApp::create (AND_OP, tmp[0], tmp[1], 0, 1);
+  tmp[2] = BinaryApp::create (BV_OP_AND, tmp[0], tmp[1], 0, 1);
   x86_32_assign_OF (from, data, tmp[2]);
   data.mc->add_assignment (from, (LValue *) dst->ref (), 
 			   tmpr0->extract_bit_vector (0, dst->get_bv_size ()));
@@ -77,7 +77,7 @@ X86_32_TRANSLATE_2_OP(SUB)
 {
   MicrocodeAddress start (data.start_ma);
 
-  s_additive_op (start, data, SUB, op2, op1, &data.next_ma);
+  s_additive_op (start, data, BV_OP_SUB, op2, op1, &data.next_ma);
 }
 
 X86_32_TRANSLATE_2_OP(SUBB)
@@ -101,7 +101,7 @@ X86_32_TRANSLATE_2_OP(SUBL)
 X86_32_TRANSLATE_2_OP(ADD)
 {
   MicrocodeAddress start (data.start_ma);
-  s_additive_op (start, data, ADD, op2, op1, &data.next_ma);
+  s_additive_op (start, data, BV_OP_ADD, op2, op1, &data.next_ma);
 }
 
 X86_32_TRANSLATE_2_OP(ADDB)
@@ -139,10 +139,10 @@ s_adc_sbb (x86_32::parser_data &data, Expr *dst, Expr *src, BinaryOp op)
   MicrocodeAddress start (data.start_ma);
  
   Expr *cf =
-    BinaryApp::create (EXTEND_U, data.get_register ("cf"),
+    BinaryApp::create (BV_OP_EXTEND_U, data.get_register ("cf"),
 		       Constant::create (src->get_bv_size (), 0, 
 					 BV_DEFAULT_SIZE));
-  src = BinaryApp::create (ADD, src, cf, 0, src->get_bv_size ());
+  src = BinaryApp::create (BV_OP_ADD, src, cf, 0, src->get_bv_size ());
 
   s_additive_op (start, data, op, dst, src, &data.next_ma);
 }
@@ -151,7 +151,7 @@ X86_32_TRANSLATE_2_OP(ADC)
 {  
   if (op2->is_MemCell () && ! op1->is_Constant ())
     Expr::extract_bit_vector (op2, 0, op1->get_bv_size ());
-  s_adc_sbb (data, op2, op1, ADD);
+  s_adc_sbb (data, op2, op1, BV_OP_ADD);
 }
 
 X86_32_TRANSLATE_2_OP(ADCB)
@@ -175,7 +175,8 @@ X86_32_TRANSLATE_2_OP(ADCL)
 X86_32_TRANSLATE_1_OP(INC)
 {
   MicrocodeAddress start (data.start_ma);
-  s_additive_op (start, data, ADD, op1, Constant::one (op1->get_bv_size ()), 
+  s_additive_op (start, data, BV_OP_ADD, op1, 
+		 Constant::one (op1->get_bv_size ()), 
 		 &data.next_ma);
 }
 
@@ -197,7 +198,8 @@ X86_32_TRANSLATE_1_OP(INCL)
 X86_32_TRANSLATE_1_OP(DEC)
 {
   MicrocodeAddress start (data.start_ma);
-  s_additive_op (start, data, SUB, op1, Constant::one (op1->get_bv_size ()), 
+  s_additive_op (start, data, BV_OP_SUB, op1, 
+		 Constant::one (op1->get_bv_size ()), 
 		 &data.next_ma);
 }
 
@@ -243,7 +245,7 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
   x86_32_set_flag (from, data, "af");
   x86_32_set_flag (from, data, "cf");
   data.mc->add_assignment (from, data.get_register ("al"),
-			   BinaryApp::create (AND_OP, 
+			   BinaryApp::create (BV_OP_AND, 
 					      data.get_register ("al"),
 					      0x0F, 0, 8),
 			   data.next_ma);
@@ -254,18 +256,18 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
   x86_32_reset_flag (from, data, "af");
   x86_32_reset_flag (from, data, "cf");
   data.mc->add_assignment (from, data.get_register ("al"),
-			   BinaryApp::create (AND_OP, 
+			   BinaryApp::create (BV_OP_AND, 
 					      data.get_register ("al"),
 					      0x0F, 0, 8),
 			   data.next_ma);  
   data.mc->add_skip (data.start_ma, else_part, 
-		     UnaryApp::create (NOT, cond, 0, 1));
+		     UnaryApp::create (BV_OP_NOT, cond, 0, 1));
   data.mc->add_skip (data.start_ma, if_part, cond->ref ());
 }
 
 X86_32_TRANSLATE_0_OP(AAA)
 {
-  s_aa (data, ADD);
+  s_aa (data, BV_OP_ADD);
 }
 
 X86_32_TRANSLATE_0_OP(AAD)
@@ -278,9 +280,9 @@ X86_32_TRANSLATE_1_OP(AAD)
   MicrocodeAddress from (data.start_ma);
   LValue *al = data.get_register ("al");
   LValue *ah = data.get_register ("ah");
-  Expr *alvalue = BinaryApp::create (MUL_U, ah->ref (), op1, 0, 8);
+  Expr *alvalue = BinaryApp::create (BV_OP_MUL_U, ah->ref (), op1, 0, 8);
 
-  alvalue = BinaryApp::create (ADD, al->ref (), alvalue, 0, 8);
+  alvalue = BinaryApp::create (BV_OP_ADD, al->ref (), alvalue, 0, 8);
 
   data.mc->add_assignment (from, al, alvalue);
   data.mc->add_assignment (from, ah, Constant::zero (8));
@@ -302,14 +304,16 @@ X86_32_TRANSLATE_1_OP(AAM)
   LValue *ah = data.get_register ("ah");
 
   data.mc->add_skip (from, from + 1,
-		     BinaryApp::create (NEQ, op1->ref(), Constant::zero (8),
+		     BinaryApp::create (BV_OP_NEQ, op1->ref(), 
+					Constant::zero (8),
 					0, 1));
   from++;
   data.mc->add_assignment (from, ah, 
-			   BinaryApp::create (DIV_U, al->ref (), op1, 0, 8));
+			   BinaryApp::create (BV_OP_DIV_U, al->ref (), op1, 
+					      0, 8));
 
   data.mc->add_assignment (from, al, 
-			   BinaryApp::create (MODULO, al->ref (), 
+			   BinaryApp::create (BV_OP_MODULO, al->ref (), 
 					      op1->ref (), 0, 8));
 
   x86_32_compute_SF (from, data, al);
@@ -319,7 +323,7 @@ X86_32_TRANSLATE_1_OP(AAM)
 
 X86_32_TRANSLATE_0_OP(AAS)
 {
-  s_aa (data, SUB);
+  s_aa (data, BV_OP_SUB);
 }
 
 			/* --------------- */
@@ -342,23 +346,23 @@ s_daadas (x86_32::parser_data &data, bool add)
 			     "(EQ %af 1){0;1}"
 			     "){0;1}");
   assert (cond1 != NULL);
-  Expr *cond2 = BinaryApp::create (OR,
-				   BinaryApp::create (GT_U,
+  Expr *cond2 = BinaryApp::create (BV_OP_OR,
+				   BinaryApp::create (BV_OP_GT_U,
 						      old_AL->ref(),
 						      Constant::create (0x99, 
 									0, 8),
 						      0, 1),
-				   BinaryApp::create (EQ, 
+				   BinaryApp::create (BV_OP_EQ, 
 						      old_CF->ref (),
 						      Constant::one (1),
 						      0, 1));
 
   LValue *tmpr2 = data.get_tmp_register (TMPREG(2), 9);
-  BinaryOp op = add ? ADD : SUB;
+  BinaryOp op = add ? BV_OP_ADD : BV_OP_SUB;
 
   data.mc->add_skip (from, from + 1, cond1->ref ());
   data.mc->add_skip (from, from + 5, 
-		     UnaryApp::create (NOT, cond1->ref (), 0, 1));
+		     UnaryApp::create (BV_OP_NOT, cond1->ref (), 0, 1));
 
   data.mc->add_assignment (from + 1, 
 			   (LValue *) tmpr2->ref (),
@@ -372,7 +376,7 @@ s_daadas (x86_32::parser_data &data, bool add)
 			   from + 3);
   data.mc->add_assignment (from + 3, 
 			   data.get_flag ("cf"),
-			   BinaryApp::create (OR,
+			   BinaryApp::create (BV_OP_OR,
 					      old_CF->ref (),
 					      tmpr2->extract_bit_vector (8, 1),
 					      0, 1),
@@ -391,7 +395,7 @@ s_daadas (x86_32::parser_data &data, bool add)
   data.mc->add_skip (from, from + 1, cond2->ref ());
 
   data.mc->add_skip (from, from + (add ? 4 : 3),
-		       UnaryApp::create (NOT, cond2->ref (), 0, 1));
+		       UnaryApp::create (BV_OP_NOT, cond2->ref (), 0, 1));
     
   data.mc->add_assignment (from + 1 , 
 			   data.get_register ("al"),
@@ -467,7 +471,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
     }
   else if (srcsize == 16)
     {
-      op = BinaryApp::create (CONCAT, 
+      op = BinaryApp::create (BV_OP_CONCAT, 
 			      data.get_register ("dx"),
 			      data.get_register ("ax"),
 			      0, 32);
@@ -486,7 +490,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
     }
   else
     {
-      op = BinaryApp::create (CONCAT, 
+      op = BinaryApp::create (BV_OP_CONCAT, 
 			      data.get_register ("edx"),
 			      data.get_register ("eax"),
 			      0, 64);
@@ -505,39 +509,40 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
     }
 
   data.mc->add_skip (from, from + 1, 
-		     BinaryApp::create (NEQ, src->ref (), 
+		     BinaryApp::create (BV_OP_NEQ, src->ref (), 
 					Constant::zero (srcsize), 0, 1));
   from++;
   data.mc->add_assignment (from, (LValue *) temp->ref (),
-			   BinaryApp::create (udiv ? DIV_U : DIV_S, 
+			   BinaryApp::create (udiv ? BV_OP_DIV_U : BV_OP_DIV_S, 
 					      op->ref (), src->ref ()));
 
-  Expr *aux = BinaryApp::create (udiv ? EXTEND_U : EXTEND_S,
+  Expr *aux = BinaryApp::create (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S,
 				 Constant::create (max, 0, srcsize), 
 				 Constant::create (2 * srcsize, 0, 
 						   BV_DEFAULT_SIZE),
 				 0, 2 * srcsize);
     
   Expr *cond = 
-    BinaryApp::create (udiv ? GT_U : GT_S, temp->ref (), aux, 0, 1);
+    BinaryApp::create (udiv ? BV_OP_GT_U : BV_OP_GT_S, temp->ref (), aux, 0, 1);
   if (! udiv)
     {
-      aux = BinaryApp::create (udiv ? EXTEND_U : EXTEND_S,
+      aux = BinaryApp::create (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S,
 			       Constant::create (min, 0, srcsize), 
 			       Constant::create (2 * srcsize, 0, 
 						 BV_DEFAULT_SIZE),
 			       0, 2 * srcsize);
     
       cond = 
-	BinaryApp::create (OR, cond, 
-			   BinaryApp::create (udiv ? LT_U : LT_S, 
+	BinaryApp::create (BV_OP_OR, cond, 
+			   BinaryApp::create (udiv ? BV_OP_LT_U : BV_OP_LT_S, 
 					      temp->ref (), aux, 0, 1), 
 			   0, 1);
     }
   x86_32_if_then_else (from, data, cond, data.next_ma, from + 1);
   from++;
   data.mc->add_assignment (from, (LValue *) temp2->ref (),
-			   BinaryApp::create (MODULO, op->ref (), src->ref (), 
+			   BinaryApp::create (BV_OP_MODULO, op->ref (), 
+					      src->ref (), 
 					      0, srcsize));
 
   data.mc->add_assignment (from, data.get_register (Qname), 
@@ -609,11 +614,11 @@ X86_32_TRANSLATE_1_OP(IMUL)
   if (srcsz == 8)
     {
       data.mc->add_assignment (from, data.get_register ("ax"),
-			       BinaryApp::create (MUL_S, 
+			       BinaryApp::create (BV_OP_MUL_S, 
 						  data.get_register ("al"),
 						  src, 0, 16));
 
-      cond = BinaryApp::create (EQ, data.get_register ("ah"), 
+      cond = BinaryApp::create (BV_OP_EQ, data.get_register ("ah"), 
 				Constant::zero (8), 0, 1);
     }
   else if (srcsz == 16)
@@ -621,7 +626,7 @@ X86_32_TRANSLATE_1_OP(IMUL)
       LValue *tmpr = data.get_tmp_register (TMPREG (0), 32);
 
       data.mc->add_assignment (from, tmpr,
-			       BinaryApp::create (MUL_S, 
+			       BinaryApp::create (BV_OP_MUL_S, 
 						  data.get_register ("ax"),
 						  src, 0, 32));
 
@@ -632,19 +637,19 @@ X86_32_TRANSLATE_1_OP(IMUL)
 			       data.get_register ("ax"),
 			       tmpr->extract_bit_vector (0, 16));
       Expr *tmp = 
-	BinaryApp::create (EXTEND_S,
+	BinaryApp::create (BV_OP_EXTEND_S,
 			   data.get_register ("ax"),
 			   Constant::create (32, 0, BV_DEFAULT_SIZE),
 			   16, 16);
 
-      cond = BinaryApp::create (EQ, tmp, data.get_register ("dx"), 0, 1);
+      cond = BinaryApp::create (BV_OP_EQ, tmp, data.get_register ("dx"), 0, 1);
     }
   else
     {
       LValue *tmpr = data.get_tmp_register (TMPREG (0), 64);
 
       data.mc->add_assignment (from, tmpr,
-			       BinaryApp::create (MUL_S, 
+			       BinaryApp::create (BV_OP_MUL_S, 
 						  data.get_register ("eax"),
 						  src, 0, 64));
 
@@ -653,7 +658,7 @@ X86_32_TRANSLATE_1_OP(IMUL)
       data.mc->add_assignment (from, data.get_register ("eax"), 
 			       tmpr->extract_bit_vector (0, 32));
 
-      cond = BinaryApp::create (EQ, data.get_register ("edx"), 
+      cond = BinaryApp::create (BV_OP_EQ, data.get_register ("edx"), 
 				Constant::zero (32), 0, 1);
     }
 
@@ -680,7 +685,7 @@ X86_32_TRANSLATE_2_OP(IMUL)
   LValue *temp = data.get_tmp_register (TMPREG (0), 2 * dstsz);
   data.mc->add_assignment (from, 
 			   (LValue *) temp->ref (), 
-			   BinaryApp::create (MUL_S, dst->ref (), 
+			   BinaryApp::create (BV_OP_MUL_S, dst->ref (), 
 					      src->ref (), 
 					      0, temp->get_bv_size ()));
   data.mc->add_assignment (from, 
@@ -688,7 +693,7 @@ X86_32_TRANSLATE_2_OP(IMUL)
 			   temp->extract_bit_vector (0, dstsz));
 
   x86_32_if_then_else (from, data,
-		       BinaryApp::create (NEQ, Constant::zero (dstsz),
+		       BinaryApp::create (BV_OP_NEQ, Constant::zero (dstsz),
 					  temp->extract_bit_vector (dstsz, 
 								    dstsz)),
 		       from + 1, from + 3);
@@ -732,7 +737,7 @@ X86_32_TRANSLATE_3_OP(IMUL)
   LValue *temp = data.get_tmp_register (TMPREG (0), 2 * dstsz);
   data.mc->add_assignment (from, 
 			   (LValue *) temp->ref (), 
-			   BinaryApp::create (MUL_S, src1->ref (), 
+			   BinaryApp::create (BV_OP_MUL_S, src1->ref (), 
 					      src2->ref (), 
 					      0, temp->get_bv_size ()));
   data.mc->add_assignment (from, 
@@ -740,7 +745,7 @@ X86_32_TRANSLATE_3_OP(IMUL)
 			   temp->extract_bit_vector (0, dstsz));
 
   x86_32_if_then_else (from, data,
-		       BinaryApp::create (NEQ, Constant::zero (dstsz),
+		       BinaryApp::create (BV_OP_NEQ, Constant::zero (dstsz),
 					  temp->extract_bit_vector (dstsz, 
 								    dstsz)),
 		       from + 1, from + 3);
@@ -845,14 +850,15 @@ X86_32_TRANSLATE_1_OP(MUL)
     }
 
   data.mc->add_assignment (from, (LValue *) temp->ref (), 
-			   BinaryApp::create (MUL_U, lower->ref (), op1->ref (),
+			   BinaryApp::create (BV_OP_MUL_U, lower->ref (), 
+					      op1->ref (),
 					      0, temp->get_bv_size ()));
   data.mc->add_assignment (from, (LValue *) lower->ref (), 
 			   temp->extract_bit_vector (0, lower->get_bv_size ()));
   data.mc->add_assignment (from, (LValue *) upper->ref (), 
 			   temp->extract_bit_vector (lower->get_bv_size (),
 						     upper->get_bv_size ()));
-  Expr *cond = BinaryApp::create (EQ, upper->ref (),
+  Expr *cond = BinaryApp::create (BV_OP_EQ, upper->ref (),
 				  Constant::zero (upper->get_bv_size ()), 0, 1);
   x86_32_if_then_else (from, data, cond, from + 1, from + 3);
   from++;
@@ -893,10 +899,11 @@ X86_32_TRANSLATE_1_OP(NEG)
   MicrocodeAddress from (data.start_ma);
   int op1size = op1->get_bv_size ();
   data.mc->add_assignment (from, data.get_flag ("cf"),
-			   BinaryApp::create (NEQ, op1->ref (), 
+			   BinaryApp::create (BV_OP_NEQ, op1->ref (), 
 					      Constant::zero (op1size), 0, 1));
   data.mc->add_assignment (from, (LValue *) op1,			   
-			   UnaryApp::create (NEG, op1->ref (), 0, op1size),
+			   UnaryApp::create (BV_OP_NEG, op1->ref (), 0, 
+					     op1size),
 			   data.next_ma);
 }
 
@@ -922,7 +929,7 @@ X86_32_TRANSLATE_2_OP(SBB)
 {
   if (op2->is_MemCell () && ! op1->is_Constant ())
     Expr::extract_bit_vector (op2, 0, op1->get_bv_size ());
-  s_adc_sbb (data, op2, op1, SUB);
+  s_adc_sbb (data, op2, op1, BV_OP_SUB);
 }
 
 X86_32_TRANSLATE_2_OP(SBBB)
@@ -953,7 +960,7 @@ X86_32_TRANSLATE_2_OP(XADD)
   LValue *temp = data.get_tmp_register (TMPREG (0), dst->get_bv_size () + 1);
   
   data.mc->add_assignment (from, (LValue *) temp->ref (),
-			   BinaryApp::create (ADD, 
+			   BinaryApp::create (BV_OP_ADD, 
 					      dst->ref (), src->ref (), 0, 
 					      temp->get_bv_size ()));
 
@@ -966,12 +973,12 @@ X86_32_TRANSLATE_2_OP(XADD)
   tmp[1] = src->extract_bit_vector (src->get_bv_size () - 1, 1);
   tmp[2] = temp->extract_bit_vector (dst->get_bv_size () - 1, 1);
 
-  tmp[1] = BinaryApp::create (XOR, tmp[0], tmp[1], 0, 1); 
-  tmp[1] = UnaryApp::create (NOT, tmp[1], 0, 1);
+  tmp[1] = BinaryApp::create (BV_OP_XOR, tmp[0], tmp[1], 0, 1); 
+  tmp[1] = UnaryApp::create (BV_OP_NOT, tmp[1], 0, 1);
   
-  tmp[0] = BinaryApp::create (XOR, tmp[0]->ref (), tmp[2], 0, 1); 
+  tmp[0] = BinaryApp::create (BV_OP_XOR, tmp[0]->ref (), tmp[2], 0, 1); 
   
-  tmp[2] = BinaryApp::create (AND_OP, tmp[0], tmp[1], 0, 1);
+  tmp[2] = BinaryApp::create (BV_OP_AND, tmp[0], tmp[1], 0, 1);
   x86_32_assign_OF (from, data, tmp[2]);
 
   data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());

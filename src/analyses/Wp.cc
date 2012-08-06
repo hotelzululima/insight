@@ -133,7 +133,7 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
       for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
 	   mcel != (*subset).first.end(); mcel++) 
 	{
-	  Expr *c = BinaryApp::create (EQ, mc->get_addr()->ref (),
+	  Expr *c = BinaryApp::create (BV_OP_EQ, mc->get_addr()->ref (),
 				       (*mcel)->get_addr()->ref ());
 	  hyp = BinaryApp::createAnd (c, hyp);
 	}
@@ -142,10 +142,10 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
 	   mcel != (*subset).second.end(); mcel++) 
 	{
 	  Expr *c = 
-	    UnaryApp::create (LNOT, 
-			      BinaryApp::create (EQ, mc->get_addr()->ref (),
-						 (*mcel)->get_addr()->ref ()));
-	  hyp = BinaryApp::createAnd (c, hyp);
+	    Expr::createNot (BinaryApp::create(BV_OP_EQ,
+					       mc->get_addr()->ref (),
+					       (*mcel)->get_addr()->ref ()));
+	  hyp = Expr::createAnd (c, hyp);
 	}
 
       // Replace all the terms pointed by elements of subset by the right 

@@ -108,25 +108,25 @@ ATF_TEST_CASE_HEAD (check_tautologies)
 ATF_TEST_CASE_BODY (check_tautologies) 
 { 
   Insight::init ();
-  Expr *F = s_parse_expr ("(LNOT (X /\\ (LNOT X)))");
+  Expr *F = s_parse_expr ("(NOT (AND X (NOT X){0;1}){0;1}){0;1}");
 
   ATF_REQUIRE (F != NULL);
   CHK_TAUTOLOGY (F);
   F->deref ();
 
-  F = s_parse_expr ("(X \\/ LNOT X)");
+  F = s_parse_expr ("(OR X (NOT X){0;1}){0;1}");
   ATF_REQUIRE (F != NULL);
   CHK_TAUTOLOGY (F);
   F->deref ();
 
-  F = s_parse_expr ("(X /\\ X)");
+  F = s_parse_expr ("(AND X X){0;1}");
   ATF_REQUIRE (F != NULL);
   Expr *G = s_parse_expr ("X");
   ATF_REQUIRE (G != NULL);
   CHK_EQUIV (F, G);
   F->deref ();
 
-  F = s_parse_expr ("(X \\/ X)");
+  F = s_parse_expr ("(OR X X){0;1}");
   ATF_REQUIRE (F != NULL);
   CHK_EQUIV (F, G);
   G->deref ();
@@ -197,7 +197,7 @@ ATF_TEST_CASE_BODY(check_replacement)
    * replace $F (MUL 2 X) Z)
    * and (EQ Z (ADD X X));
    */
-  F = s_replace (s_parse_expr ("(EQ (2 MUL_U X)  (X + X))"),
+  F = s_replace (s_parse_expr ("(EQ (2 MUL_U X)  (X + X)){0;1}"),
 		 s_parse_expr ("2 MUL_U X"), 
 		 s_parse_expr ("Z"));
   aux = s_parse_expr ("(EQ Z  (X + X))");
@@ -229,8 +229,8 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
    * PM[Z] <=> X
    */
 
-  Expr *F = s_parse_expr ("(EQ (2 MUL_U X)  (X + X))");
-  Expr *pattern = s_parse_expr ("(EQ Y (ADD T Z))");
+  Expr *F = s_parse_expr ("(EQ (2 MUL_U X)  (X + X)){0;1}");
+  Expr *pattern = s_parse_expr ("(EQ Y (ADD T Z)){0;1}");
   list<const Variable *> free_variables;
   Variable *Y = dynamic_cast<Variable *> (s_parse_expr ("Y"));
   ATF_REQUIRE (Y != NULL);
@@ -253,21 +253,21 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       ATF_REQUIRE (PM->has (Y));
       
       F = 
-	BinaryApp::create (EQ, 
+	BinaryApp::create (BV_OP_EQ, 
 			   dynamic_cast<const Expr *>(PM->get (Y))->ref (), 
 			   dynamic_cast<Expr *>(s_parse_expr ("2 MUL_U X")));
       CHK_TAUTOLOGY (F);
       F->deref ();
 
       ATF_REQUIRE (PM->has (T));
-      F = BinaryApp::create (EQ, 
+      F = BinaryApp::create (BV_OP_EQ, 
 			     dynamic_cast<const Expr *>(PM->get (T))->ref (), 
 			     dynamic_cast<Expr *>(s_parse_expr ("X")));
       CHK_TAUTOLOGY (F);
       F->deref ();
 
       ATF_REQUIRE (PM->has (Z));
-      F = BinaryApp::create (EQ, 
+      F = BinaryApp::create (BV_OP_EQ, 
 			     dynamic_cast<const Expr *>(PM->get (Z))->ref (), 
 			     dynamic_cast<Expr *>(s_parse_expr ("X")));
       CHK_TAUTOLOGY (F);

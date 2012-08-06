@@ -133,11 +133,11 @@ x86_32::parser_data::get_memory_reference (Expr *section, int disp,
 
     
   if (bis)
-    bis = BinaryApp::create (ADD, bis, Constant::create (disp));
+    bis = BinaryApp::create (BV_OP_ADD, bis, Constant::create (disp));
   else
     bis = Constant::create (disp);
   
-  //  return MemCell::create (BinaryApp::create (ADD, MemCell::create(section,
+  //  return MemCell::create (BinaryApp::create (BV_OP_ADD, MemCell::create(section,
   // std::string ("segment")), bis));
   return MemCell::create (bis);
 }
@@ -282,7 +282,8 @@ x86_32_compute_PF (MicrocodeAddress &from, x86_32::parser_data &data,
   Expr *cond = Constant::one (1);
 
   for (i = 0; i < 8; i++)
-    cond = BinaryApp::create (XOR, cond, value->extract_bit_vector (i, 1), 
+    cond = BinaryApp::create (BV_OP_XOR, cond, 
+			      value->extract_bit_vector (i, 1), 
 			      0, 1);
   data.mc->add_assignment (from, data.get_flag ("pf"), cond, to);  
 }
@@ -334,7 +335,7 @@ x86_32_compute_ZF (MicrocodeAddress &from, x86_32::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to)
 {
   Expr *v = 
-    BinaryApp::create (EQ, value->ref (), 
+    BinaryApp::create (BV_OP_EQ, value->ref (), 
 		       Constant::zero (value->get_bv_size ()), 0, 1);
   x86_32_assign_ZF (from, data, v, to);
 }
@@ -376,5 +377,5 @@ x86_32_if_then_else (MicrocodeAddress start, x86_32::parser_data &data,
 {
   data.mc->add_skip (start, ifaddr, cond);
   data.mc->add_skip (start, elseaddr, 
-		     UnaryApp::create (NOT, cond->ref (), 0, 1));
+		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
 }

@@ -90,7 +90,7 @@ X86_32_TRANSLATE_2_OP(MOVBE)
 	  else
 	    {
 	      Expr *na = 
-		BinaryApp::create (ADD, addr->ref (),
+		BinaryApp::create (BV_OP_ADD, addr->ref (),
 				   Constant::create (i, 0, 
 						     addr->get_bv_size ()), 
 				   0, addr->get_bv_size ());
@@ -136,7 +136,8 @@ s_mov_on_cc (MicrocodeAddress from, x86_32::parser_data &data,
     Expr::extract_with_bit_vector_size_of ((Expr *&) dst, src);
 
   data.mc->add_skip (from, to, 
-		     UnaryApp::create (NOT, cond, 0, cond->get_bv_size ()));
+		     UnaryApp::create (BV_OP_NOT, cond, 0, 
+				       cond->get_bv_size ()));
   data.mc->add_skip (from, from + 1, cond->ref());
   from++;
   data.mc->add_assignment (from, dst, src, to);
@@ -180,13 +181,13 @@ s_movx (x86_32::parser_data &data, Expr *op1, Expr *op2, BinaryOp op, int size)
 static void 
 s_movs (x86_32::parser_data &data, Expr *op1, Expr *op2, int size)
 {
-  s_movx (data, op1, op2, EXTEND_S, size);
+  s_movx (data, op1, op2, BV_OP_EXTEND_S, size);
 }
 
 static void 
 s_movz (x86_32::parser_data &data, Expr *op1, Expr *op2, int size)
 {
-  s_movx (data, op1, op2, EXTEND_U, size);
+  s_movx (data, op1, op2, BV_OP_EXTEND_U, size);
 }
 
 X86_32_TRANSLATE_2_OP(MOVSBW)

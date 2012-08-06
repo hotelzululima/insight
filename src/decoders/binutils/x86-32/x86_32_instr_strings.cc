@@ -51,21 +51,25 @@ s_cmps (x86_32::parser_data &data, int size)
   from++;
   /* pc = from + 1 */
   data.mc->add_assignment (from, (LValue *) si->ref (), 
-			   BinaryApp::create (ADD, si->ref (), inc->ref (),
+			   BinaryApp::create (BV_OP_ADD, si->ref (), 
+					      inc->ref (),
 					      0, si->get_bv_size ()));
   /* pc = from + 2 */
   data.mc->add_assignment (from, (LValue *) di->ref (), 
-			   BinaryApp::create (ADD, di->ref (), inc->ref (),
+			   BinaryApp::create (BV_OP_ADD, di->ref (), 
+					      inc->ref (),
 					      0, di->get_bv_size ()), 
 			   next);
   from++;
   /* pc = from + 3 */
   data.mc->add_assignment (from, (LValue *) si->ref (), 
-			   BinaryApp::create (SUB, si->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_SUB, si->ref (), 
+					      inc->ref (), 
 					      0, si->get_bv_size ()));
   /* pc = from + 4 */
   data.mc->add_assignment (from, (LValue *) di->ref (), 
-			   BinaryApp::create (SUB, di->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_SUB, di->ref (), 
+					      inc->ref (), 
 					      0, di->get_bv_size ()),
 			   next);
 
@@ -134,13 +138,15 @@ X86_32_TRANSLATE_2_OP(LODS)
   from++;
   /* pc = start + 2*/
   data.mc->add_assignment (from, (LValue *) esi->ref (),
-			   BinaryApp::create (SUB, esi->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_SUB, esi->ref (), 
+					      inc->ref (), 
 					      0, esi->get_bv_size ()),
 			   data.next_ma);
   from++;
   /* pc = start + 3*/
   data.mc->add_assignment (from, (LValue *) esi->ref (),
-			   BinaryApp::create (ADD, esi->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_ADD, esi->ref (), 
+					      inc->ref (), 
 					      0, esi->get_bv_size ()),
 			   data.next_ma);
 
@@ -173,13 +179,15 @@ X86_32_TRANSLATE_2_OP(STOS)
   from++;
   /* pc = start + 2 */
   data.mc->add_assignment (from, (LValue *) edi->ref (),
-			   BinaryApp::create (SUB, edi->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_SUB, edi->ref (), 
+					      inc->ref (), 
 					      0, edi->get_bv_size ()),
 			   next);
   from++;
   /* pc = start + 3 */
   data.mc->add_assignment (from, (LValue *) edi->ref (),
-			   BinaryApp::create (ADD, edi->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_ADD, edi->ref (), 
+					      inc->ref (), 
 					      0, edi->get_bv_size ()),
 			   next);
 
@@ -214,22 +222,26 @@ s_mov (x86_32::parser_data &data, int nb_bytes)
 		       start + 4, start + 2);
 
   data.mc->add_assignment (start + 2, (LValue *) si->ref (), 
-			   BinaryApp::create (ADD, si->ref (), inc->ref (),
+			   BinaryApp::create (BV_OP_ADD, si->ref (), 
+					      inc->ref (),
 					      0, csize),
 			   start + 3);
 
   data.mc->add_assignment (start + 3, (LValue *) di->ref (), 
-			   BinaryApp::create (ADD, di->ref (), inc->ref (), 
+			   BinaryApp::create (BV_OP_ADD, di->ref (), 
+					      inc->ref (), 
 					      0, csize), 
 			   next);
   
   data.mc->add_assignment (start + 4, (LValue *) si->ref (), 
-			   BinaryApp::create (SUB, si->ref (), inc->ref (),
+			   BinaryApp::create (BV_OP_SUB, si->ref (), 
+					      inc->ref (),
 					      0, csize),
 			   start + 5);
 
   data.mc->add_assignment (start + 5, (LValue *) di->ref (), 
-			   BinaryApp::create (SUB, di->ref (), inc->ref (),
+			   BinaryApp::create (BV_OP_SUB, di->ref (), 
+					      inc->ref (),
 					      0, csize), 
 			   next);  
   if (data.has_prefix)
@@ -288,13 +300,14 @@ X86_32_TRANSLATE_2_OP(SCAS)
   LValue *di = data.get_register (data.addr16 ? "di" : "edi");
   Expr *inc = Constant::create (op1->get_bv_size () / 8, 0, di->get_bv_size ());
   data.mc->add_assignment (from, (LValue *) di->ref (),
-			   BinaryApp::create (SUB, di->ref (),
+			   BinaryApp::create (BV_OP_SUB, di->ref (),
 					      inc->ref (), 0, 
 					      di->get_bv_size ()), 
 			   next);
   from++;
   data.mc->add_assignment (from, (LValue *) di->ref (),
-			   BinaryApp::create (ADD, di->ref (), inc->ref (), 0, 
+			   BinaryApp::create (BV_OP_ADD, di->ref (), 
+					      inc->ref (), 0, 
 					      di->get_bv_size ()), 
 			   next);
   if (data.has_prefix)

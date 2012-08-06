@@ -44,7 +44,7 @@ template<> void arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
   if (is_D_suffix) {
     MemCell *src1 = (MemCell *) mem;
     Expr* address = src1->get_addr();
-    MemCell* src2 = MemCell::create(BinaryApp::create(ADD, address->ref(), 4));
+    MemCell* src2 = MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4));
 
     LValue* reg2 = data.get_adjacent_register (reg);
 
@@ -53,19 +53,19 @@ template<> void arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
 			    guard);
 
   } else if (is_H_suffix) {
-    Expr* half_mem = TernaryApp::create(EXTRACT, mem, Constant::create(0),
+    Expr* half_mem = TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0),
         Constant::create(16));
-    Expr *half_mem_zero_extend = BinaryApp::create(EXTEND_U, half_mem,
+    Expr *half_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, half_mem,
         Constant::create(32));
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, half_mem_zero_extend,
         data.next_ma, guard);
   } else if (is_B_suffix) {
 
-    Expr* byte_mem = TernaryApp::create(EXTRACT, mem, Constant::create(0),
+    Expr* byte_mem = TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0),
         Constant::create(8));
 
-    Expr *byte_mem_zero_extend = BinaryApp::create(EXTEND_U, byte_mem,
+    Expr *byte_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, byte_mem,
         Constant::create(32));
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, byte_mem_zero_extend,
@@ -90,7 +90,8 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
   if (is_D_suffix) {
     MemCell *src1 = (MemCell *) mem;
     Expr* address = src1->get_addr();
-    MemCell* src2 = MemCell::create(BinaryApp::create(ADD, address->ref(), 4));
+    MemCell* src2 = 
+      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4));
 
     LValue* reg2 = data.get_adjacent_register (reg);
 
@@ -107,9 +108,10 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
       data.mc->add_assignment(data.start_ma, reg2, src2, data.next_ma, guard);
 
   } else if (is_H_suffix) {
-    Expr* half_mem = TernaryApp::create(EXTRACT, mem, Constant::create(0),
+    Expr* half_mem = 
+      TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0),
         Constant::create(16));
-    Expr *half_mem_zero_extend = BinaryApp::create(EXTEND_U, half_mem,
+    Expr *half_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, half_mem,
         Constant::create(32));
 
     if (is_NOT_suffix) {
@@ -125,10 +127,11 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
           half_mem_zero_extend, data.next_ma, guard);
 
   } else if (is_B_suffix) {
-    Expr* byte_mem = TernaryApp::create(EXTRACT, mem, Constant::create(0),
-        Constant::create(8));
-    Expr *byte_mem_zero_extend = BinaryApp::create(EXTEND_U, byte_mem,
-        Constant::create(32));
+    Expr* byte_mem = 
+      TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0),
+			  Constant::create(8));
+    Expr *byte_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, byte_mem,
+						    Constant::create(32));
 
     if (is_NOT_suffix) {
       data.mc->add_assignment(data.start_ma, (LValue*) reg,
@@ -171,7 +174,8 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
   if (is_D_suffix) {
     MemCell *src1 = (MemCell *) mem;
     Expr* address = src1->get_addr();
-    MemCell* src2 = MemCell::create(BinaryApp::create(ADD, address->ref(), 4));
+    MemCell* src2 = 
+      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4));
 
     LValue* reg2 = data.get_adjacent_register (reg);
 
@@ -180,37 +184,44 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-        BinaryApp::create(ADD, mem_reg->ref(), offset), data.next_ma, guard);
+        BinaryApp::create (BV_OP_ADD, mem_reg->ref(), offset), data.next_ma, guard);
 
   } else if (is_H_suffix) {
 
-    Expr* half_mem = TernaryApp::create(EXTRACT, mem, Constant::create(0),
+    Expr* half_mem = TernaryApp::create (BV_OP_EXTRACT, mem, 
+					 Constant::create(0),
         Constant::create(16));
-    Expr *half_mem_zero_extend = BinaryApp::create(EXTEND_U, half_mem,
+    Expr *half_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, half_mem,
         Constant::create(32));
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, half_mem_zero_extend);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-        BinaryApp::create(ADD, mem_reg->ref(), offset), data.next_ma, guard);
+        BinaryApp::create (BV_OP_ADD, mem_reg->ref(), offset), data.next_ma, 
+			    guard);
 
   } else if (is_B_suffix) {
-    Expr* byte_mem = TernaryApp::create(EXTRACT, mem, Constant::create(0),
-        Constant::create(8));
-    Expr *byte_mem_zero_extend = BinaryApp::create(EXTEND_U, byte_mem,
+    Expr* byte_mem = TernaryApp::create (BV_OP_EXTRACT, mem, 
+					 Constant::create(0),
+					 Constant::create(8));
+    Expr *byte_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, byte_mem,
         Constant::create(32));
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, byte_mem_zero_extend);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-        BinaryApp::create(ADD, mem_reg->ref(), offset), data.next_ma, guard);
+			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(), 
+					       offset), data.next_ma, 
+			    guard);
   } else {
     data.mc->add_assignment(data.start_ma, (LValue*) reg, mem);
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-        BinaryApp::create(ADD, mem_reg->ref(), offset), data.next_ma, guard);
+			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(), 
+					       offset), data.next_ma, 
+			    guard);
   }
 }
 

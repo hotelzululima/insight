@@ -424,14 +424,14 @@ zero_offset:
 
 preIndexed_offset:
   TOK_LVUONG register TOK_COMMA flexOffset TOK_RVUONG{
-		$$ = MemCell::create( BinaryApp::create (ADD, $2, $4));
+		$$ = MemCell::create( BinaryApp::create (BV_OP_ADD, $2, $4));
 	} 
 ;  
 
 /*
 postIndexed_offset:
   TOK_LVUONG register TOK_RVUONG TOK_COMMA flexOffset {
-		$$ = MemCell::create( BinaryApp::create (ADD, $2, $5));
+		$$ = MemCell::create( BinaryApp::create (BV_OP_ADD, $2, $5));
 	} 
 ;  
 */
@@ -443,42 +443,42 @@ shifted_register:
 |
 	register TOK_COMMA TOK_ASR immediate{
 		//XXX: need to distinguish between ASR and LSR
-		$$ = BinaryApp::create(RSH_S, $1, $4);
+		$$ = BinaryApp::create (BV_OP_RSH_S, $1, $4);
 	}
 |
 	register TOK_COMMA TOK_LSL immediate{
-		$$ = BinaryApp::create(LSH, $1, $4);
+		$$ = BinaryApp::create (BV_OP_LSH, $1, $4);
 	}
 |
 	register TOK_COMMA TOK_LSR immediate{
-		$$ = BinaryApp::create(RSH_S, $1, $4);
+		$$ = BinaryApp::create (BV_OP_RSH_S, $1, $4);
 	}	
 |
 	register TOK_COMMA TOK_ROR immediate{
-		$$ = BinaryApp::create(ROR, $1, $4);
+		$$ = BinaryApp::create (BV_OP_ROR, $1, $4);
 	}	
 |
 	register TOK_COMMA TOK_RRX{
 		//XXX: change this -> RRX
-		$$ = BinaryApp::create(ROR, $1, Constant::create(1));
+		$$ = BinaryApp::create (BV_OP_ROR, $1, Constant::create(1));
 	}	
   
 |
 	register TOK_COMMA TOK_ASR register{
 		//XXX: need to distinguish between ASR and LSR
-		$$ = BinaryApp::create(RSH_S, $1, $4);
+		$$ = BinaryApp::create (BV_OP_RSH_S, $1, $4);
 	}
 |
 	register TOK_COMMA TOK_LSL register{
-		$$ = BinaryApp::create(LSH, $1, $4);
+		$$ = BinaryApp::create (BV_OP_LSH, $1, $4);
 	}
 |
 	register TOK_COMMA TOK_LSR register{
-		$$ = BinaryApp::create(RSH_S, $1, $4);
+		$$ = BinaryApp::create (BV_OP_RSH_S, $1, $4);
 	}	
 |
 	register TOK_COMMA TOK_ROR register{
-		$$ = BinaryApp::create(ROR, $1, $4);
+		$$ = BinaryApp::create (BV_OP_ROR, $1, $4);
 	}	  
 ;	
 	
@@ -493,7 +493,7 @@ flexOffset:
 	}
 |	
 	TOK_MINUS shifted_register{
-		$$ = UnaryApp::create(NEG, $2);
+		$$ = UnaryApp::create (BV_OP_NEG, $2);
 	}
 ;	
 

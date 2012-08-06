@@ -58,7 +58,7 @@ s_binary_op (x86_32::parser_data &data, BinaryOp op, Expr *op1, Expr *op2)
 
 X86_32_TRANSLATE_2_OP(AND)
 {
-  s_binary_op (data, AND_OP, op1, op2);
+  s_binary_op (data, BV_OP_AND, op1, op2);
 }
 
 X86_32_TRANSLATE_2_OP(ANDB)
@@ -81,7 +81,7 @@ X86_32_TRANSLATE_2_OP(ANDL)
 
 X86_32_TRANSLATE_2_OP(OR)
 {
-  s_binary_op (data, OR, op1, op2);
+  s_binary_op (data, BV_OP_OR, op1, op2);
 }
 
 X86_32_TRANSLATE_2_OP(ORB)
@@ -108,7 +108,7 @@ X86_32_TRANSLATE_1_OP(NOT)
   Expr *src = op1->ref ();
   MicrocodeAddress start = data.start_ma;
 
-  data.mc->add_assignment (start, dst, UnaryApp::create (NOT, src, 0,
+  data.mc->add_assignment (start, dst, UnaryApp::create (BV_OP_NOT, src, 0,
 							 src->get_bv_size ()), 
 			   data.next_ma);
 }
@@ -137,7 +137,7 @@ X86_32_TRANSLATE_2_OP(TEST)
   LValue *r0 = data.get_tmp_register (TMPREG(0), op1->get_bv_size ());
 
   data.mc->add_assignment (start, r0, 
-			   BinaryApp::create (AND_OP, op1, op2, 0,
+			   BinaryApp::create (BV_OP_AND, op1, op2, 0,
 					      op1->get_bv_size ()));
 
   x86_32_compute_SF (start, data, r0);
@@ -167,7 +167,7 @@ X86_32_TRANSLATE_2_OP(TESTL)
 
 X86_32_TRANSLATE_2_OP(XOR)
 {
-  s_binary_op (data, XOR, op1, op2);
+  s_binary_op (data, BV_OP_XOR, op1, op2);
 }
 
 X86_32_TRANSLATE_2_OP(XORB)

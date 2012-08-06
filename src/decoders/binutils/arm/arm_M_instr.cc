@@ -59,7 +59,7 @@ template<> void arm_translate<ARM_TOKEN(MVN)> (arm::parser_data &data,
 {
 
   LValue *dst = (LValue *) op1;
-  Expr *src = UnaryApp::create(NOT, op2);
+  Expr *src = UnaryApp::create (BV_OP_NOT, op2);
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
   if (src->get_bv_size() > dst->get_bv_size())
@@ -84,7 +84,7 @@ template<> void arm_translate<ARM_TOKEN(MUL)> (arm::parser_data &data,
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
-  BinaryApp* src = BinaryApp::create(MUL_S, op2, op3);
+  BinaryApp* src = BinaryApp::create (BV_OP_MUL_S, op2, op3);
 
   if (is_S_suffix && MUL_INS)
   {
@@ -105,8 +105,8 @@ template<> void arm_translate<ARM_TOKEN(MLA)> (arm::parser_data &data,
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
-  BinaryApp* mul_result = BinaryApp::create(MUL_S, op2, op3);
-  BinaryApp* src = BinaryApp::create(ADD, mul_result, op4);
+  BinaryApp* mul_result = BinaryApp::create (BV_OP_MUL_S, op2, op3);
+  BinaryApp* src = BinaryApp::create (BV_OP_ADD, mul_result, op4);
 
   if (is_S_suffix && MLA_INS)
   {

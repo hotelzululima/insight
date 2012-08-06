@@ -34,21 +34,24 @@
 using namespace std;
 
 template<> IntervalValue
-IntervalExprSemantics::ADD_eval(IntervalValue v1, IntervalValue v2, int, int)
+IntervalExprSemantics::BV_OP_ADD_eval(IntervalValue v1, IntervalValue v2, 
+				      int, int)
 {
   return IntervalValue(v1.get_size(),
                        v1.getMin() + v2.getMin(), v1.getMax() + v2.getMax());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::SUB_eval(IntervalValue v1, IntervalValue v2, int, int)
+IntervalExprSemantics::BV_OP_SUB_eval(IntervalValue v1, IntervalValue v2, 
+				      int, int)
 {
   return IntervalValue(v1.get_size(),
                        v1.getMin() - v2.getMax(), v1.getMax() - v2.getMin());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::MUL_U_eval(IntervalValue v1, IntervalValue v2, int, int)
+IntervalExprSemantics::BV_OP_MUL_U_eval(IntervalValue v1, IntervalValue v2, 
+					int, int)
 {
   word_t x1 = v1.getMin() * v2.getMin();
   word_t x2 = v1.getMin() * v2.getMax();
@@ -60,7 +63,8 @@ IntervalExprSemantics::MUL_U_eval(IntervalValue v1, IntervalValue v2, int, int)
 }
 
 template<> IntervalValue
-IntervalExprSemantics::MUL_S_eval(IntervalValue v1, IntervalValue v2, int, int)
+IntervalExprSemantics::BV_OP_MUL_S_eval(IntervalValue v1, IntervalValue v2, 
+					int, int)
 {
   word_t x1 = v1.getMin() * v2.getMin();
   word_t x2 = v1.getMin() * v2.getMax();
@@ -73,178 +77,180 @@ IntervalExprSemantics::MUL_S_eval(IntervalValue v1, IntervalValue v2, int, int)
 
 
 template<> IntervalValue
-IntervalExprSemantics::DIV_U_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_DIV_U_eval(IntervalValue v1, IntervalValue, 
+					int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::DIV_S_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_DIV_S_eval(IntervalValue v1, IntervalValue, 
+					int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::POW_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_POW_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::AND_OP_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_AND_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::OR_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_OR_eval(IntervalValue v1, IntervalValue, 
+				     int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LAND_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_XOR_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LOR_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_LSH_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::XOR_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_RSH_U_eval(IntervalValue v1, IntervalValue, 
+					int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LSH_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_RSH_S_eval(IntervalValue v1, IntervalValue, 
+					int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::RSH_U_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_ROR_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::RSH_S_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_ROL_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::ROR_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_EQ_eval(IntervalValue v1, IntervalValue, 
+				     int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::ROL_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_NEQ_eval(IntervalValue v1, IntervalValue, 
+				      int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::EQ_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_LEQ_S_eval(IntervalValue v1, IntervalValue, 
+					int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::NEQ_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_LT_S_eval(IntervalValue v1, IntervalValue, 
+				       int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LEQ_S_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_LEQ_U_eval(IntervalValue v1, IntervalValue, 
+					int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LT_S_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_LT_U_eval(IntervalValue v1, IntervalValue, 
+				       int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LEQ_U_eval(IntervalValue v1, IntervalValue, int, int)
-{
-  return IntervalValue(v1.get_size());
-}
-
-template<> IntervalValue
-IntervalExprSemantics::LT_U_eval(IntervalValue v1, IntervalValue, int, int)
-{
-  return IntervalValue(v1.get_size());
-}
-
-template<> IntervalValue
-IntervalExprSemantics::NEG_eval(IntervalValue v, int, int)
+IntervalExprSemantics::BV_OP_NEG_eval(IntervalValue v, int, int)
 {
   return IntervalValue(v.get_size(), -v.getMax(), -v.getMin());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::NOT_eval(IntervalValue v, int, int)
+IntervalExprSemantics::BV_OP_NOT_eval(IntervalValue v, int, int)
 {
   /* Uses the property of 2's complement representation: -x = (~x + 1) */
   return IntervalValue(v.get_size(), -v.getMax() - 1, -v.getMin() - 1);
 }
 
 template<> IntervalValue
-IntervalExprSemantics::LNOT_eval(IntervalValue v, int, int)
-{
-  /* Uses the property of 2's complement representation: -x = (~x + 1) */
-  return IntervalValue(v.get_size());
-}
-
-template<> IntervalValue
-IntervalExprSemantics::MODULO_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_MODULO_eval(IntervalValue v1, IntervalValue, 
+					 int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::CONCAT_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_CONCAT_eval(IntervalValue v1, IntervalValue, 
+					 int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::EXTEND_U_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_EXTEND_U_eval(IntervalValue v1, IntervalValue, 
+					   int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::EXTEND_S_eval(IntervalValue v1, IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_EXTEND_S_eval(IntervalValue v1, IntervalValue, 
+					   int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
-IntervalExprSemantics::EXTRACT_eval(IntervalValue v1, IntervalValue, 
-				    IntervalValue, int, int)
+IntervalExprSemantics::BV_OP_EXTRACT_eval(IntervalValue v1, IntervalValue, 
+					  IntervalValue, int, int)
 {
   return IntervalValue(v1.get_size());
 }
 
 template<> IntervalValue
 IntervalExprSemantics::embed_eval(IntervalValue v1, IntervalValue v2, int off) {
-  return expr_semantics_embed_eval<IntervalValue, IntervalExprSemantics>(v1,
-									 v2,
-									 off);
+  return expr_semantics_embed_eval<IntervalValue, 
+				   IntervalExprSemantics>(v1, v2, off);
 }
 
 template<> IntervalValue
 IntervalExprSemantics::extract_eval(IntervalValue v,  int off, int size) {
-  return expr_semantics_extract_eval<IntervalValue, IntervalExprSemantics>(v, off, size);
+  return expr_semantics_extract_eval<IntervalValue, 
+				     IntervalExprSemantics>(v, off, size);
 }

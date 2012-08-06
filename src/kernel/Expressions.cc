@@ -60,7 +60,7 @@ Expr::~Expr()
 Expr *
 Expr::createNot (Expr *arg1)
 {
-  return UnaryApp::create (NOT, (Expr *) arg1, 0, 1);
+  return UnaryApp::create (BV_OP_NOT, (Expr *) arg1, 0, 1);
 }
 
 
@@ -80,19 +80,19 @@ Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 Expr * 
 Expr::createEquality (Expr *A, Expr *B)
 {
-  return BinaryApp::create (EQ, A, B);
+  return BinaryApp::create (BV_OP_EQ, A, B);
 }
 
 Expr *
 Expr::createAnd (Expr *arg1, Expr *arg2)
 {
-  return BinaryApp::create (AND_OP, arg1, arg2, 0, 1);
+  return BinaryApp::create (BV_OP_AND, arg1, arg2, 0, 1);
 }
 
 Expr *
 Expr::createOr (Expr *arg1, Expr*arg2)
 {
-  return BinaryApp::create (OR,  arg1, arg2, 0, 1);
+  return BinaryApp::create (BV_OP_OR,  arg1, arg2, 0, 1);
 }
 
 Option<bool> 
@@ -596,7 +596,7 @@ unsigned int UnaryApp::get_depth() const
 unsigned int BinaryApp::get_depth() const
 {
   int decal = 1;
-  if (op == CONCAT)
+  if (op == BV_OP_CONCAT)
     decal = 0;
   int a = arg1->get_depth() + decal;
   int b = arg2->get_depth() + decal;
@@ -722,7 +722,7 @@ Expr::is_DisjunctiveFormula () const
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *>(this);
 
-  return ba != NULL && ba->get_op () == OR && ba->get_bv_size () == 1;  
+  return ba != NULL && ba->get_op () == BV_OP_OR && ba->get_bv_size () == 1;  
 }
 
 bool 
@@ -730,7 +730,7 @@ Expr::is_ConjunctiveFormula () const
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *>(this);
 
-  return ba != NULL && ba->get_op () == AND_OP && ba->get_bv_size () == 1;  
+  return ba != NULL && ba->get_op () == BV_OP_AND && ba->get_bv_size () == 1;  
 }
 
 bool 
@@ -738,7 +738,7 @@ Expr::is_NegationFormula () const
 {
   const UnaryApp *ua = dynamic_cast<const UnaryApp *>(this);
 
-  return ua != NULL && ua->get_op() == NOT && ua->get_bv_size () == 1;
+  return ua != NULL && ua->get_op() == BV_OP_NOT && ua->get_bv_size () == 1;
 }
 
 bool 

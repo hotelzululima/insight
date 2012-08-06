@@ -40,15 +40,15 @@ s_loop (x86_32::parser_data &data, Expr *op1, Expr *cond)
   Expr *counter = data.get_register (data.addr16 ? "cx" : "ecx");
   int csize = counter->get_bv_size ();
   Expr *ccond = 
-    BinaryApp::create (NEQ, counter->ref (), Constant::zero(csize), 0, 1);
+    BinaryApp::create (BV_OP_NEQ, counter->ref (), Constant::zero(csize), 0, 1);
 
   if (cond == NULL)
     cond = ccond->ref ();
   else 
-    cond = BinaryApp::create (AND_OP, ccond->ref (), cond, 0, 1);
+    cond = BinaryApp::create (BV_OP_AND, ccond->ref (), cond, 0, 1);
   
   data.mc->add_assignment (from, (LValue *) counter->ref (),
-			   BinaryApp::create (SUB, counter->ref (),
+			   BinaryApp::create (BV_OP_SUB, counter->ref (),
 					      Constant::one (csize), 0, csize));
 
   MemCell *jmpaddr = dynamic_cast<MemCell *> (op1);
@@ -77,7 +77,7 @@ X86_32_TRANSLATE_1_OP(LOOPE)
 
 X86_32_TRANSLATE_1_OP(LOOPNE)
 {
-  s_loop (data, op1, UnaryApp::create (NOT, data.get_flag ("zf"), 0, 1));
+  s_loop (data, op1, UnaryApp::create (BV_OP_NOT, data.get_flag ("zf"), 0, 1));
 }
 
 X86_32_TRANSLATE_1_OP(LOOPW)
@@ -95,6 +95,6 @@ X86_32_TRANSLATE_1_OP(LOOPEW)
 X86_32_TRANSLATE_1_OP(LOOPNEW)
 {
   data.addr16 = true;
-  s_loop (data, op1, UnaryApp::create (NOT, data.get_flag ("zf"), 0, 1));
+  s_loop (data, op1, UnaryApp::create (BV_OP_NOT, data.get_flag ("zf"), 0, 1));
 }
 
