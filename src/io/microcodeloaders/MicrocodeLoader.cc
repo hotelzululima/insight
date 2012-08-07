@@ -32,7 +32,6 @@
 
 #include "MicrocodeLoader.hh"
 #include "xml_microcode_parser.hh"
-#include "xml_microcode_generator.hh"
 
 using namespace std;
 
@@ -48,19 +47,4 @@ Microcode *
 MicrocodeLoader::read_xml_file(const string &filename) const
 {
   return xml_parse_mc_program(filename);
-}
-
-void
-MicrocodeLoader::write_xml_file(const Microcode *prg,
-				const string &filename) const
-{
-  ofstream file(filename.c_str());
-
-   if (file.is_open())
-  {
-    file << xml_of_microcode(prg);
-    file.close();
-  }
-   else
-     throw runtime_error (string("cannot open '" + filename + "'"));
 }

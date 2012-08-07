@@ -179,12 +179,14 @@ io_sources = \
 	io/binaryloaders/BinaryLoader.hh 		\
 	io/binaryloaders/BinutilsBinaryLoader.cc	\
 	io/binaryloaders/BinutilsBinaryLoader.hh 	\
-	io/microcode/MicrocodeLoader.cc 		\
-	io/microcode/MicrocodeLoader.hh 		\
-	io/microcode/xml_microcode_generator.cc		\
-	io/microcode/xml_microcode_generator.hh 	\
-	io/microcode/xml_microcode_parser.cc		\
-	io/microcode/xml_microcode_parser.hh 		\
+	io/microcodeloaders/MicrocodeLoader.cc 		\
+	io/microcodeloaders/MicrocodeLoader.hh 		\
+	io/microcodeloaders/xml_microcode_parser.cc	\
+	io/microcodeloaders/xml_microcode_parser.hh 	\
+	io/microcodewriters/MicrocodeWriter.cc 		\
+	io/microcodewriters/MicrocodeWriter.hh 		\
+	io/microcodewriters/xml_microcode_generator.cc	\
+	io/microcodewriters/xml_microcode_generator.hh 	\
 	io/processloaders/ProcessLoader.cc 		\
 	io/processloaders/ProcessLoader.hh
 

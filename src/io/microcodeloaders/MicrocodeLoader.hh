@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef IO_MICROCODE_MICROCODELOADER_HH
-#define IO_MICROCODE_MICROCODELOADER_HH
+#ifndef IO_MICROCODELOADER_HH
+#define IO_MICROCODELOADER_HH
 
 #include <kernel/Microcode.hh>
 #include <utils/Object.hh>
@@ -41,7 +41,6 @@ public:
   virtual ~MicrocodeLoader();
 
   virtual Microcode *read_xml_file(const std::string &) const;
-  virtual void write_xml_file(const Microcode *, const std::string &) const;
 };
 
-#endif /* IO_MICROCODE_MICROCODELOADER_HH */
+#endif /* IO_MICROCODELOADER_HH */
