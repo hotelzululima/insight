@@ -328,7 +328,7 @@ compute_constants (const Expr *e)
       Expr * arg = ua->get_arg1();
       if (arg->is_Constant()) 
 	{
-	  Constant * c;
+	  Constant * c = NULL;
 	  switch (ua->get_op())
 	    {
 #define UNARY_OP(_op,_pp)						\
@@ -351,7 +351,7 @@ compute_constants (const Expr *e)
       Expr * arg2 = ba->get_arg2();
       if (arg1->is_Constant() && arg2->is_Constant()) 
 	{
-	  Constant * c;
+	  Constant * c = NULL;
 	  switch (ba->get_op())
 	    {
 #define BINARY_OP(_op,_pp,_commut,_assoc)				\
