@@ -228,7 +228,7 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
   Expr *cond = 
     Expr::parse (data.arch, 
 		 "(OR "
-		 " (NOT (LEQ_U (AND %al 0x0F{0;8}) 0x9{0;8})) "
+		 " (NOT (LEQ_U (AND %al 0x0F{0;8}){0;8} 0x9{0;8})) "
 		 " (EQ %af 1{0;1})){0;1}");
 
   assert (cond != NULL);

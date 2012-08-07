@@ -41,6 +41,8 @@
 
 using namespace std;
 
+#define DEFBV "{0;32}"
+
 static Expr *
 s_parse_expr (const string &s)
 {
@@ -167,23 +169,23 @@ ATF_TEST_CASE_BODY(check_replacement)
    * and check equivalence with X || Y 
    */
 
-  Expr *F = s_parse_expr ("Y \\/ X");
+  Expr *F = s_parse_expr ("(OR Y X){0;1}");
   Expr *X = s_parse_expr ("X");
   Expr *Y = s_parse_expr ("Y");
   Expr *tmp = s_parse_expr ("tmp");
 
   F = s_replace (F, Y->ref (), tmp->ref ()); /* F <- replace (Y || X) Y tmp */  
-  Expr *aux = s_parse_expr ("tmp \\/ X");
+  Expr *aux = s_parse_expr ("(OR tmp X){0;1}");
   CHK_EQUIV (F, aux);
   aux->deref ();
 
   F = s_replace (F, X->ref (), Y->ref ()); /* F <- replace (tmp || X) X Y */
-  aux = s_parse_expr ("tmp \\/ Y");
+  aux = s_parse_expr ("(OR tmp Y){0;1}");
   CHK_EQUIV (F, aux);
   aux->deref ();
 
   F = s_replace (F, tmp->ref (), X->ref ()); /* F <- replace (tmp || Y) tmp X */
-  aux = s_parse_expr ("X \\/ Y");
+  aux = s_parse_expr ("(OR X Y){0;1}");
   CHK_EQUIV (F, aux);
   aux->deref ();
   F->deref ();
@@ -197,10 +199,10 @@ ATF_TEST_CASE_BODY(check_replacement)
    * replace $F (MUL 2 X) Z)
    * and (EQ Z (ADD X X));
    */
-  F = s_replace (s_parse_expr ("(EQ (2 MUL_U X)  (X + X)){0;1}"),
-		 s_parse_expr ("2 MUL_U X"), 
+  F = s_replace (s_parse_expr ("(EQ (MUL_U 2 X)" DEFBV "(ADD X X)" DEFBV ")"),
+		 s_parse_expr ("(MUL_U 2 X)" DEFBV), 
 		 s_parse_expr ("Z"));
-  aux = s_parse_expr ("(EQ Z  (X + X))");
+  aux = s_parse_expr ("(EQ Z  (ADD X X)" DEFBV ")");
   CHK_EQUIV (F, aux);
   F->deref ();
   aux->deref ();
@@ -229,8 +231,8 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
    * PM[Z] <=> X
    */
 
-  Expr *F = s_parse_expr ("(EQ (2 MUL_U X)  (X + X)){0;1}");
-  Expr *pattern = s_parse_expr ("(EQ Y (ADD T Z)){0;1}");
+  Expr *F = s_parse_expr ("(EQ (MUL_U 2 X)" DEFBV "(ADD X X)" DEFBV "){0;1}");
+  Expr *pattern = s_parse_expr ("(EQ Y (ADD T Z)" DEFBV "){0;1}");
   list<const Variable *> free_variables;
   Variable *Y = dynamic_cast<Variable *> (s_parse_expr ("Y"));
   ATF_REQUIRE (Y != NULL);
@@ -255,7 +257,8 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
       F = 
 	BinaryApp::create (BV_OP_EQ, 
 			   dynamic_cast<const Expr *>(PM->get (Y))->ref (), 
-			   dynamic_cast<Expr *>(s_parse_expr ("2 MUL_U X")));
+			   dynamic_cast<Expr *>(s_parse_expr ("(MUL_U 2 X)" 
+							      DEFBV)));
       CHK_TAUTOLOGY (F);
       F->deref ();
 

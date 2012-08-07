@@ -96,50 +96,53 @@ optype    [bswlqt]
   (void) data;
 %}
 
-"ADD"     { return token::TOK_ADD; }
-"SUB"     { return token::TOK_SUB; }
-"MUL_S"   { return token::TOK_MUL_S; }
-"MUL_U"   { return token::TOK_MUL_U; }
-"AND"     { return token::TOK_AND; }
-"OR"      { return token::TOK_OR; }
-"XOR"     { return token::TOK_XOR; }
-"LSH"     { return token::TOK_LSH; }
-"RSH_U"   { return token::TOK_RSH_U; }
-"RSH_S"   { return token::TOK_RSH_S; }
-"ROR"     { return token::TOK_ROR; }
-"ROL"     { return token::TOK_ROL; }
-"NEG"     { return token::TOK_NEG; }
-"NOT"     { return token::TOK_NOT;} 
-"EQ"      { return token::TOK_EQ;} 
-"LT_S"    { return token::TOK_LT_S;} 
-"GT_S"    { return token::TOK_GT_S;} 
-"LEQ_S"   { return token::TOK_LEQ_S;} 
-"GEQ_S"   { return token::TOK_GEQ_S;} 
-"LT_U"    { return token::TOK_LT_U;} 
-"GT_U"    { return token::TOK_GT_U;} 
-"LEQ_U"   { return token::TOK_LEQ_U;} 
-"GEQ_U"   { return token::TOK_GEQ_U;} 
-"POW"     { return token::TOK_POW;} 
-"DIV_S"    { return token::TOK_DIV_S;} 
-"DIV_U"    { return token::TOK_DIV_U;} 
+"ADD"     { yylval->bOp = BV_OP_ADD; return token::TOK_BINARY_OP; }
+"AND"     { yylval->bOp = BV_OP_AND; return token::TOK_BINARY_OP; }
+"CONCAT"     { yylval->bOp = BV_OP_CONCAT; return token::TOK_BINARY_OP; }
+"DIV_S"   { yylval->bOp = BV_OP_DIV_S; return token::TOK_BINARY_OP; }
+"DIV_U"   { yylval->bOp = BV_OP_DIV_U; return token::TOK_BINARY_OP; }
+"EXTEND_S"   { yylval->bOp = BV_OP_EXTEND_S; return token::TOK_BINARY_OP; }
+"EXTERN_U"   { yylval->bOp = BV_OP_EXTEND_U; return token::TOK_BINARY_OP; }
+"LSH"     { yylval->bOp = BV_OP_LSH; return token::TOK_BINARY_OP; }
+"MODULO"  { yylval->bOp = BV_OP_MODULO; return token::TOK_BINARY_OP; }
+"MUL_S"   { yylval->bOp = BV_OP_MUL_S; return token::TOK_BINARY_OP; }
+"MUL_U"   { yylval->bOp = BV_OP_MUL_U; return token::TOK_BINARY_OP; }
+"OR"      { yylval->bOp = BV_OP_OR; return token::TOK_BINARY_OP; }
+"POW"     { yylval->bOp = BV_OP_POW; return token::TOK_BINARY_OP; }
+"ROL"     { yylval->bOp = BV_OP_ROL; return token::TOK_BINARY_OP; }
+"ROR"     { yylval->bOp = BV_OP_ROR; return token::TOK_BINARY_OP; }
+"RSH_S"   { yylval->bOp = BV_OP_RSH_S; return token::TOK_BINARY_OP; }
+"RSH_U"   { yylval->bOp = BV_OP_RSH_U; return token::TOK_BINARY_OP; }
+"SUB"     { yylval->bOp = BV_OP_SUB; return token::TOK_BINARY_OP; }
+"XOR"     { yylval->bOp = BV_OP_XOR; return token::TOK_BINARY_OP; }
+
+"EQ"      { yylval->bOp = BV_OP_EQ; return token::TOK_COMPARE_OP; }
+"NEQ"     { yylval->bOp = BV_OP_NEQ; return token::TOK_COMPARE_OP; }
+"GEQ_S"   { yylval->bOp = BV_OP_GEQ_S; return token::TOK_COMPARE_OP; }
+"GEQ_U"   { yylval->bOp = BV_OP_GEQ_U; return token::TOK_COMPARE_OP; }
+"GT_S"    { yylval->bOp = BV_OP_GT_S; return token::TOK_COMPARE_OP; }
+"GT_U"    { yylval->bOp = BV_OP_GT_U; return token::TOK_COMPARE_OP; }
+"LEQ_S"   { yylval->bOp = BV_OP_LEQ_S; return token::TOK_COMPARE_OP; }
+"LEQ_U"   { yylval->bOp = BV_OP_LEQ_U; return token::TOK_COMPARE_OP; }
+"LT_S"    { yylval->bOp = BV_OP_LT_S; return token::TOK_COMPARE_OP; }
+"LT_U"    { yylval->bOp = BV_OP_LT_U; return token::TOK_COMPARE_OP; }
+
 "FORALL"  { return token::TOK_FORALL; }
-"EXISTS"  { return token::TOK_EXISTS; }
+"EXIST"   { return token::TOK_EXIST; }
 
+"NEG"     { yylval->uOp = BV_OP_NEG; return token::TOK_UNARY_OP; }
+"NOT"     { yylval->uOp = BV_OP_NOT; return token::TOK_UNARY_OP; }
 
-"," { return token::TOK_COMMA;     }
-":" { return token::TOK_COLON; }
+"EXTRACT" { yylval->tOp = BV_OP_EXTRACT; return token::TOK_TERNARY_OP; }
+
 ";" { return token::TOK_SEMICOLON; }
-"(" { return token::TOK_LPAR;      }
-")" { return token::TOK_RPAR;      }
-"{" { return token::TOK_LBRACE;      }
-"}" { return token::TOK_RBRACE;      }
-"[" { return token::TOK_LBRACKET;      }
-"]" { return token::TOK_RBRACKET;      }
-"+" { return token::TOK_PLUS;      }
-"-" { return token::TOK_MINUS;     }
-"*" { return token::TOK_STAR;      }
-"$" { return token::TOK_DOLLAR;    }
-"%" { return token::TOK_PERCENT;    }
+"(" { return token::TOK_LPAR; }
+")" { return token::TOK_RPAR; }
+"{" { return token::TOK_LBRACE; }
+"}" { return token::TOK_RBRACE; }
+"[" { return token::TOK_LBRACKET; }
+"]" { return token::TOK_RBRACKET; }
+"%" { return token::TOK_PERCENT; }
 
 [A-Za-z][A-Za-z0-9_,.-]* {
     yylval->stringValue = new std::string (yytext, yyleng);
