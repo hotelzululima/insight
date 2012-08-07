@@ -40,55 +40,6 @@
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 
-/******************** BinaryLoader Exceptions ***********************/
-
-/* Thrown when the executable file is not found */
-class BinaryFileNotFound : public std::runtime_error
-{
-public:
-  BinaryFileNotFound(std::string filename) :
-    std::runtime_error("'" + filename + "' : Binary file not found") { };
-};
-
-/* Thrown when user has no sufficient rights to read the file */
-class BinaryPermissionDenied : public std::runtime_error
-{
-public:
-  BinaryPermissionDenied(std::string filename) :
-    std::runtime_error("'" + filename + "' : Permission denied") { };
-};
-
-/* Thrown when the binary format (ELF, PE, Mach-O) is not recognized */
-class UnknownBinaryFormat : public std::runtime_error
-{
-public:
-  UnknownBinaryFormat(std::string filename) :
-    std::runtime_error("'" + filename +
-                       "': Binary format not recognized") { };
-};
-
-/* Thrown when the type of the binary file (executable, static
- * library, dynamic library) is not recognized
- */
-class UnknownBinaryType : public std::runtime_error
-{
-public:
-  UnknownBinaryType(std::string filename) :
-    std::runtime_error("'" + filename +
-                       "': Binary type is not recognized") { };
-};
-
-/* Thrown when the binary target architecture (IA-32, MIPS, ARM) is not
- * recognized. */
-class UnknownBinaryArch : public std::runtime_error
-{
-public:
-  UnknownBinaryArch(std::string filename) :
-    std::runtime_error("'" + filename +
-                       "': Binary architecture is not recognized") { };
-};
-
-
 /****************** BinaryLoader class definition *********************/
 
 /* Pure abstract class to group all the binary loader implementations.
@@ -102,6 +53,53 @@ public:
 class BinaryLoader : public Object
 {
 public:
+  /******************** BinaryLoader Exceptions ***********************/
+  /* Thrown when the executable file is not found */
+  class BinaryFileNotFound : public std::runtime_error
+  {
+  public:
+    BinaryFileNotFound(std::string filename) :
+      std::runtime_error("'" + filename + "' : Binary file not found") { };
+  };
+
+  /* Thrown when user has no sufficient rights to read the file */
+  class BinaryPermissionDenied : public std::runtime_error
+  {
+  public:
+    BinaryPermissionDenied(std::string filename) :
+      std::runtime_error("'" + filename + "' : Permission denied") { };
+  };
+
+  /* Thrown when the binary format (ELF, PE, Mach-O) is not recognized */
+  class UnknownBinaryFormat : public std::runtime_error
+  {
+  public:
+    UnknownBinaryFormat(std::string filename) :
+      std::runtime_error("'" + filename +
+                       "': Binary format not recognized") { };
+  };
+
+  /* Thrown when the type of the binary file (executable, static
+   * library, dynamic library) is not recognized */
+  class UnknownBinaryType : public std::runtime_error
+  {
+  public:
+    UnknownBinaryType(std::string filename) :
+    std::runtime_error("'" + filename +
+                       "': Binary type is not recognized") { };
+};
+
+  /* Thrown when the binary target architecture (IA-32, MIPS, ARM) is
+   * not recognized. */
+  class UnknownBinaryArch : public std::runtime_error
+  {
+  public:
+    UnknownBinaryArch(std::string filename) :
+      std::runtime_error("'" + filename +
+			 "': Binary architecture is not recognized") { };
+  };
+
+  /******************** BinaryLoader Fields ***********************/
   /* Binary section data */
   typedef struct section
   {
@@ -111,6 +109,7 @@ public:
     size_t size;                    /* Section size (in bytes) */
   } section_t;
 
+  /******************** BinaryLoader Methods ***********************/
   virtual ~BinaryLoader() { };
 
   void output_text(std::ostream &) const;

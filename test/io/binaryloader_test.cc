@@ -56,8 +56,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 		    try {
 		      BinutilsBinaryLoader(TEST_SAMPLES_DIR
 					   "echo-linux-amd64");
-		    } catch (UnknownBinaryFormat) { 
-		      throw UnsupportedArch(); 
+		    } catch (BinaryLoader::UnknownBinaryFormat) {
+		      throw UnsupportedArch();
 		    });
   Insight::terminate ();
 }

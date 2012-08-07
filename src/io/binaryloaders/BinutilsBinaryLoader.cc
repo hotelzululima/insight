@@ -92,15 +92,15 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
   bfd_file = bfd_openr(filename.c_str(), NULL);
 
   if (bfd_file == NULL)
-    throw BinaryFileNotFound(filename);
+    throw BinaryLoader::BinaryFileNotFound(filename);
 
   /* If the file is an archive, throw an exception and stop */
   if (bfd_check_format(bfd_file, bfd_archive))
-    throw UnknownBinaryFormat(filename);
+    throw BinaryLoader::UnknownBinaryFormat(filename);
 
   /* Fill the BFD structure with the data of the object file */
   if (! bfd_check_format(bfd_file, bfd_object))
-    throw UnknownBinaryFormat(filename);
+    throw BinaryLoader::UnknownBinaryFormat(filename);
 
   /* Initializing the 'BinaryLoader' object */
   this->filename = filename;
@@ -111,7 +111,7 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
   /* Check if the binary file is executable */
   if (!(bfd_file->flags & EXEC_P) && false)
     {
-      throw UnknownBinaryType(filename);
+      throw BinaryLoader::UnknownBinaryType(filename);
     }
 
   this->entrypoint = ConcreteAddress(bfd_file->start_address);
