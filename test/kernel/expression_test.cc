@@ -35,7 +35,7 @@
 
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/ExprUtils.hh>
 
@@ -109,7 +109,7 @@ ATF_TEST_CASE_HEAD (check_tautologies)
 
 ATF_TEST_CASE_BODY (check_tautologies) 
 { 
-  Insight::init ();
+  insight::init ();
   Expr *F = s_parse_expr ("(NOT (AND X (NOT X){0;1}){0;1}){0;1}");
 
   ATF_REQUIRE (F != NULL);
@@ -136,7 +136,7 @@ ATF_TEST_CASE_BODY (check_tautologies)
   CHK_EQUIV (F, F);
   F->deref ();
 
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 			/* --------------- */
@@ -162,7 +162,7 @@ ATF_TEST_CASE_HEAD (check_replacement)
 
 ATF_TEST_CASE_BODY(check_replacement) 
 { 
-  Insight::init ();
+  insight::init ();
 
   /* 
    * compute (replace (replace (replace (Y || X) Y tmp) X Y) tmp X) 
@@ -207,7 +207,7 @@ ATF_TEST_CASE_BODY(check_replacement)
   F->deref ();
   aux->deref ();
 
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 			/* --------------- */
@@ -221,7 +221,7 @@ ATF_TEST_CASE_HEAD (check_pattern_matching)
 
 ATF_TEST_CASE_BODY(check_pattern_matching) 
 { 
-  Insight::init ();
+  insight::init ();
 
   /* 
    * compute PM <- match (EQ Y (ADD T Z)) $F Y T Z;
@@ -289,7 +289,7 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
 
 
 
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_INIT_TEST_CASES(tcs)

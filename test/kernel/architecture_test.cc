@@ -31,7 +31,7 @@
 #include <atf-c++.hpp>
 
 #include <kernel/Architecture.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 
 ATF_TEST_CASE(architecture_x86_32);
 ATF_TEST_CASE_HEAD(architecture_x86_32)
@@ -65,7 +65,7 @@ s_check_x86_32 (const Architecture * arch_x86_32)
 
 ATF_TEST_CASE_BODY(architecture_x86_32)
 {
-  Insight::init ();
+  insight::init ();
   /* Check full initialization (x86-32) with both arguments */
   const Architecture * arch_x86_32 =
     Architecture::getArchitecture(Architecture::X86_32,
@@ -79,7 +79,7 @@ ATF_TEST_CASE_BODY(architecture_x86_32)
   ATF_REQUIRE_EQ(arch_x86_32->endianness, Architecture::LittleEndian);
 
   s_check_x86_32 (arch_x86_32);
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_TEST_CASE(architecture_arm);
@@ -91,7 +91,7 @@ ATF_TEST_CASE_HEAD(architecture_arm)
 }
 ATF_TEST_CASE_BODY(architecture_arm)
 {
-  Insight::init ();
+  insight::init ();
   /* Check full initialization (x86-32) with both arguments */
   const Architecture * arch_arm =
     Architecture::getArchitecture(Architecture::ARM,
@@ -106,7 +106,7 @@ ATF_TEST_CASE_BODY(architecture_arm)
   /* Check if an exception is thrown on inexistant register name */
   ATF_REQUIRE_THROW(Architecture::RegisterDescNotFound,
 		    arch_arm->get_register("xxx"));
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_TEST_CASE(architecture_missing);
@@ -117,7 +117,7 @@ ATF_TEST_CASE_HEAD(architecture_missing)
 }
 ATF_TEST_CASE_BODY(architecture_missing)
 {
-  Insight::init ();
+  insight::init ();
   /* Check if an exception is thrown on unknown architecture */
   ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    Architecture::getArchitecture(Architecture::Unknown));
@@ -130,7 +130,7 @@ ATF_TEST_CASE_BODY(architecture_missing)
   /* Check if an exception is thrown on unimplemented architecture */
   ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    Architecture::getArchitecture(Architecture::Alpha));
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_INIT_TEST_CASES(tcs)

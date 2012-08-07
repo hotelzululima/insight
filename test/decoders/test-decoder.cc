@@ -31,7 +31,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <io/binaryloaders/BinutilsBinaryLoader.hh>
 
@@ -43,7 +43,7 @@ main (int argc, char **argv)
 {
   int result = EXIT_SUCCESS;
 
-  Insight::init ();
+  insight::init ();
   Log::add_listener (Log::STD_STREAM_LOG);
 
   if (argc != 2)
@@ -88,7 +88,7 @@ main (int argc, char **argv)
       delete decoder;
       delete memory;
     }
-  Insight::terminate ();
+  insight::terminate ();
 
   return result;
 }

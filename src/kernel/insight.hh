@@ -28,32 +28,14 @@
  * SUCH DAMAGE.
  */
 
-#include "kernel/Insight.hh"
+#ifndef KERNEL_INSIGHT_HH
+#define KERNEL_INSIGHT_HH
 
-#include "kernel/Expressions.hh"
-#include "kernel/Architecture.hh"
-
-
-static int init_count = 0;
-
-void 
-Insight::init()
+namespace insight
 {
-  if (init_count == 0)
-    {
-      Architecture::init ();
-      Expr::init ();
-    }
-  init_count++;
-}
+  void init();
 
-void 
-Insight::terminate()
-{
-  init_count--;
-  if (init_count == 0)
-    {
-      Expr::terminate ();
-      Architecture::terminate ();
-    }
-}
+  void terminate();
+};
+
+#endif /* KERNEL_INSIGHT_HH */

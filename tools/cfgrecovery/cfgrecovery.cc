@@ -38,8 +38,9 @@
 #include <libgen.h>
 #include <stdlib.h>
 
+#include <kernel/insight.hh>
+
 #include <decoders/binutils/BinutilsDecoder.hh>
-#include <kernel/Insight.hh>
 #include <io/binaryloaders/BinutilsBinaryLoader.hh>
 #include <io/microcodewriters/xml_microcode_generator.hh>
 
@@ -236,7 +237,7 @@ main (int argc, char *argv[])
   string execfile_name = argv[optind];
 
   /* Starting insight and initializing the needed objects */
-  Insight::init();
+  insight::init();
 
   /* Getting the loader */
   BinaryLoader * loader;
@@ -344,7 +345,7 @@ main (int argc, char *argv[])
   delete entrypoint;
   delete loader;
 
-  Insight::terminate();
+  insight::terminate();
 
   /* Cleaning other stuff */
   delete output;

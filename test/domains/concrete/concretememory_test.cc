@@ -32,7 +32,7 @@
 
 #include <domains/concrete/ConcreteMemory.hh>
 #include <kernel/Architecture.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 
 ATF_TEST_CASE(concretememory_registers);
 ATF_TEST_CASE_HEAD(concretememory_registers)
@@ -42,7 +42,7 @@ ATF_TEST_CASE_HEAD(concretememory_registers)
 }
 ATF_TEST_CASE_BODY(concretememory_registers)
 {
-  Insight::init ();
+  insight::init ();
 
   const Architecture * arch_x86 =
     Architecture::getArchitecture(Architecture::X86_32);
@@ -72,7 +72,7 @@ ATF_TEST_CASE_BODY(concretememory_registers)
 
   delete memory;
 
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_TEST_CASE(concretememory_memcells);
@@ -83,7 +83,7 @@ ATF_TEST_CASE_HEAD(concretememory_memcells)
 }
 ATF_TEST_CASE_BODY(concretememory_memcells)
 {
-  Insight::init ();
+  insight::init ();
 
   ConcreteMemory * memory = new ConcreteMemory();
 
@@ -112,7 +112,7 @@ ATF_TEST_CASE_BODY(concretememory_memcells)
 
   delete memory;
 
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_INIT_TEST_CASES(tcs)

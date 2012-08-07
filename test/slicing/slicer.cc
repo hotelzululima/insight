@@ -42,8 +42,7 @@
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/concrete_context.hh>
 #include <io/binaryloaders/BinutilsBinaryLoader.hh>
-#include <kernel/Insight.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 
 
@@ -123,7 +122,7 @@ int main(int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  Insight::init ();
+  insight::init ();
   {
     DataDependency::ConsiderJumpCondMode(true);
     DataDependency::OnlySimpleSetsMode(true);
@@ -133,7 +132,7 @@ int main(int argc, char **argv)
     test_slicing(argv[1], atoi(argv[2]), strtol(argv[3],0,0), argv[4]);
     cout << endl;
   }
-  Insight::terminate ();
+  insight::terminate ();
 
   return EXIT_SUCCESS;
 }

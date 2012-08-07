@@ -33,7 +33,7 @@
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Architecture.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 
 ATF_TEST_CASE(concreteaddress);
 ATF_TEST_CASE_HEAD(concreteaddress)
@@ -43,7 +43,7 @@ ATF_TEST_CASE_HEAD(concreteaddress)
 }
 ATF_TEST_CASE_BODY(concreteaddress)
 {
-  Insight::init ();
+  insight::init ();
   /* Check default initialization */
   ConcreteAddress default_address = ConcreteAddress();
   ATF_REQUIRE_EQ(default_address.get_address(), 0);
@@ -67,7 +67,7 @@ ATF_TEST_CASE_BODY(concreteaddress)
   /* Check null_addr (null address) */
   ConcreteAddress null_address = ConcreteAddress::null_addr();
   ATF_REQUIRE_EQ(null_address.get_address(), 0);
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_INIT_TEST_CASES(tcs)

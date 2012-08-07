@@ -26,7 +26,7 @@ check_PROGRAMS = \
 	io/binaryloader_test	   		\
 	kernel/architecture_test 		\
 	kernel/expr_parser_test 		\
-	kernel/formula_test 		   
+	kernel/expression_test
 
 # Kernel module tests
 kernel_architecture_test_SOURCES = \
@@ -35,8 +35,8 @@ kernel_architecture_test_SOURCES = \
 kernel_expr_parser_test_SOURCES = \
 	kernel/expr_parser_test.cc
 
-kernel_formula_test_SOURCES = \
-	kernel/formula_test.cc
+kernel_expression_test_SOURCES = \
+	kernel/expression_test.cc
 
 # Io module tests
 io_binaryloader_test_SOURCES = \

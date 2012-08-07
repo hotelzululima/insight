@@ -33,7 +33,7 @@
 #include <config.h>
 
 #include <kernel/Architecture.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 #include <io/binaryloaders/BinutilsBinaryLoader.hh>
 
 #ifndef TEST_SAMPLES_DIR
@@ -50,7 +50,7 @@ ATF_TEST_CASE_HEAD(binutils_binaryloader_x86_64)
 }
 ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 {
-  Insight::init ();
+  insight::init ();
 
   ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    try {
@@ -59,7 +59,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 		    } catch (BinaryLoader::UnknownBinaryFormat) {
 		      throw Architecture::UnsupportedArch();
 		    });
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_TEST_CASE(binutils_binaryloader_x86_32);
@@ -71,7 +71,7 @@ ATF_TEST_CASE_HEAD(binutils_binaryloader_x86_32)
 
 ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 {
-  Insight::init ();
+  insight::init ();
   BinaryLoader * loader =
     new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-i386");
 
@@ -95,7 +95,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 
   ATF_REQUIRE(memory->is_defined(entrypoint));
   ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_TEST_CASE(binutils_binaryloader_arm);
@@ -107,7 +107,7 @@ ATF_TEST_CASE_HEAD(binutils_binaryloader_arm)
 
 ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 {
-  Insight::init ();
+  insight::init ();
   BinaryLoader * loader =
     new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel");
 
@@ -131,7 +131,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 
   ATF_REQUIRE(memory->is_defined(entrypoint));
   ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
-  Insight::terminate();
+  insight::terminate();
 }
 
 ATF_INIT_TEST_CASES(tcs)

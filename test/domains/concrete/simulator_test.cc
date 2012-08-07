@@ -35,7 +35,7 @@
 #include <analyses/microcode_exec.hh>
 #include <decoders/DecoderFactory.hh>
 #include <domains/concrete/concrete_context.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <io/binaryloaders/BinutilsBinaryLoader.hh>
 #include <utils/Log.hh>
@@ -54,7 +54,7 @@ using namespace std;
 static void 
 s_simulate (const char *filename)
 {
-  Insight::init ();
+  insight::init ();
   Log::add_listener (Log::STD_STREAM_LOG);
 
   BinaryLoader *loader = new BinutilsBinaryLoader (filename);
@@ -143,7 +143,7 @@ s_simulate (const char *filename)
   delete loader;
   delete decoder;
   delete memory;
-  Insight::terminate ();
+  insight::terminate ();
 
 }
 

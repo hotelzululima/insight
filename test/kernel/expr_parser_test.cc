@@ -34,7 +34,7 @@
 
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 
 using namespace std;
 
@@ -118,14 +118,14 @@ static void
 s_check_expr_parser (const string &, const string &expr, \
 		     const string &expectedout)
 {
-  Insight::init ();
+  insight::init ();
   const Architecture *x86_32 = 
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 
   Expr *e = Expr::parse (&ma, expr);
   ATF_REQUIRE_EQ (e->to_string (), expectedout);
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ALL_X86_CC

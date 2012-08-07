@@ -34,7 +34,7 @@
 
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Architecture.hh>
-#include <kernel/Insight.hh>
+#include <kernel/insight.hh>
 
 ATF_TEST_CASE(concretevalue);
 ATF_TEST_CASE_HEAD(concretevalue)
@@ -44,7 +44,7 @@ ATF_TEST_CASE_HEAD(concretevalue)
 }
 ATF_TEST_CASE_BODY(concretevalue)
 {
-  Insight::init ();
+  insight::init ();
   /* Checking default initialization */
   ConcreteValue default_value = ConcreteValue();
   ATF_REQUIRE_EQ(default_value.get(), 0);
@@ -76,7 +76,7 @@ ATF_TEST_CASE_BODY(concretevalue)
   ATF_REQUIRE_EQ(unknown_value.get(), 0);
   ATF_REQUIRE_EQ(unknown_value.get_size(), BV_DEFAULT_SIZE);
 
-  Insight::terminate ();
+  insight::terminate ();
 }
 
 ATF_INIT_TEST_CASES(tcs)
