@@ -53,8 +53,9 @@
 class BinaryLoader : public Object
 {
 public:
+
   /******************** BinaryLoader Exceptions ***********************/
-  /* Thrown when the executable file is not found */
+  /** \brief Exception thrown when the executable file is not found */
   class BinaryFileNotFound : public std::runtime_error
   {
   public:
@@ -62,7 +63,8 @@ public:
       std::runtime_error("'" + filename + "' : Binary file not found") { };
   };
 
-  /* Thrown when user has no sufficient rights to read the file */
+  /** \brief Exception thrown when user has no sufficient rights to
+   *  read the file */
   class BinaryPermissionDenied : public std::runtime_error
   {
   public:
@@ -70,7 +72,8 @@ public:
       std::runtime_error("'" + filename + "' : Permission denied") { };
   };
 
-  /* Thrown when the binary format (ELF, PE, Mach-O) is not recognized */
+  /** \brief Exception thrown when the binary format (ELF, PE, Mach-O)
+   *  is not recognized */
   class UnknownBinaryFormat : public std::runtime_error
   {
   public:
@@ -79,8 +82,9 @@ public:
                        "': Binary format not recognized") { };
   };
 
-  /* Thrown when the type of the binary file (executable, static
-   * library, dynamic library) is not recognized */
+  /** \brief Exception thrown when the type of the binary file
+   *  (executable, static library, dynamic library) is not
+   *  recognized */
   class UnknownBinaryType : public std::runtime_error
   {
   public:
@@ -89,8 +93,8 @@ public:
                        "': Binary type is not recognized") { };
 };
 
-  /* Thrown when the binary target architecture (IA-32, MIPS, ARM) is
-   * not recognized. */
+  /** \brief Exception thrown when the binary target architecture
+   *  (IA-32, MIPS, ARM) is not recognized. */
   class UnknownBinaryArch : public std::runtime_error
   {
   public:
@@ -100,7 +104,7 @@ public:
   };
 
   /******************** BinaryLoader Fields ***********************/
-  /* Binary section data */
+  /** \brief Data about binary sections within the binary */
   typedef struct section
   {
     std::string label;              /* Section name */

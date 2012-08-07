@@ -59,7 +59,7 @@ public:
 
   /** \brief Retrieve the content of a register */
   virtual Value get(const RegisterDesc *) const 
-    throw (UndefinedValue);
+  throw (Architecture::UndefinedValue);
 
   /** \brief Put the value v into the register */
   virtual void put(const RegisterDesc *, Value);

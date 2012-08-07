@@ -131,6 +131,36 @@ public:
   } processor_t;
 
 public:
+
+  /******************** Architecture Exceptions ***********************/
+  /** \brief Exception thrown when a given architecture is not yet
+   *  supported by the framework. */
+  class UnsupportedArch : public std::runtime_error
+  {
+  public:
+    UnsupportedArch() :
+      std::runtime_error(" : Unsupported architecture") { }
+  };
+
+  /** \brief Exception thrown when a register is not found in the
+   *   Architecture. */
+  class RegisterDescNotFound : public std::runtime_error
+  {
+  public:
+    RegisterDescNotFound(const std::string &regname) :
+      std::runtime_error(": " + regname + ": register not found") { }
+  };
+
+  /** \brief Exception thrown on a read attempt on an undefined memory
+   *  cell or register. */
+  class UndefinedValue : public std::runtime_error
+  {
+  public:
+    UndefinedValue(const std::string &where) :
+      std::runtime_error(": Undefined value at " + where) { }
+  };
+
+  /******************** Architecture Methods ***********************/
   virtual ~Architecture();
 
   static void init ();
@@ -148,8 +178,8 @@ public:
    *  processor name. This method can only be used for processors that
    *  can handle one unique endianness (eg. x86). */
   static const Architecture *getArchitecture (const Architecture::processor_t);
-
   
+  /******************** Architecture Fields ***********************/
   /** \brief Processor type */
   processor_t processor;
 
@@ -193,33 +223,6 @@ protected:
    *  array, a size and an offset.
    */
   RegisterSpecs * registerspecs;
-};
-
-/** \brief Exception thrown when a given architecture is not yet
- *  supported by the framework. */
-class UnsupportedArch : public std::runtime_error
-{
-public:
-  UnsupportedArch() :
-    std::runtime_error(" : Unsupported architecture") { }
-};
-
-/** \brief Exception thrown when a register is not found in the
- *   Architecture. */
-class RegisterDescNotFound : public std::runtime_error
-{
-public:
-  RegisterDescNotFound(const std::string &regname) :
-    std::runtime_error(": " + regname + ": register not found") { }
-};
-
-/** \brief Exception thrown on a read attempt on an undefined memory
- *  cell or register. */
-class UndefinedValue : public std::runtime_error
-{
-public:
-  UndefinedValue(const std::string &where) :
-    std::runtime_error(": Undefined value at " + where) { }
 };
 
 #endif /* KERNEL_ARCHITECTURE_HH */

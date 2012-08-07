@@ -52,13 +52,14 @@ ATF_TEST_CASE_BODY(concretememory_registers)
   const RegisterDesc * eax = arch_x86->get_register("eax");
 
   /* Check if an exception is thrown on inexistant register name */
-  ATF_REQUIRE_THROW(RegisterDescNotFound, arch_x86->get_register("xxx"));
+  ATF_REQUIRE_THROW(Architecture::RegisterDescNotFound,
+		    arch_x86->get_register("xxx"));
 
   /* Check if register are undefined */
   ATF_REQUIRE_EQ(memory->is_defined(eax), false);
 
   /* Check if an exception is thrown on accessing an undefined register */
-  ATF_REQUIRE_THROW(UndefinedValue, memory->get(eax));
+  ATF_REQUIRE_THROW(Architecture::UndefinedValue, memory->get(eax));
 
   /* Assigning '00000000000000001000000000000000' to eax */
   memory->put(eax, ConcreteValue(32, 32768));

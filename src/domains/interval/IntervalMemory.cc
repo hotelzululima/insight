@@ -43,7 +43,8 @@ IntervalMemory::IntervalMemory() :
 
 IntervalValue
 IntervalMemory::get(const IntervalAddress &ia, int size, 
-		    Architecture::endianness_t e) throw (UndefinedValue)
+		    Architecture::endianness_t e)
+                   throw (Architecture::UndefinedValue)
 {
 
   /*! \todo iterate over addresses. Q: which addresses?? */

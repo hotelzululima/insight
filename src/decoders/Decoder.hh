@@ -45,37 +45,9 @@
 
 #include <utils/Object.hh>
 
-/******************** Decoder helper functions ***********************/
-
-/*********************** Decoder Exceptions **************************/
-
-/* Thrown when the mnemonics is not recognized by the decoder */
-class UnknownMnemonic : public std::runtime_error
-{
-public:
-  UnknownMnemonic(const std::string &instr) :
-    std::runtime_error("'" + instr + "' : Unknown mnemonic") {}
-};
-
-/* Thrown when the mnemonics does not match the needed operands */
-class InconsistentInstruction : public std::runtime_error
-{
-public:
-  InconsistentInstruction(const std::string &instr) :
-    std::runtime_error("'" + instr + "' : Inconsistent instruction") {}
-};
-
-/* Thrown when the decoder encounter an unexpected problem */
-class DecoderUnexpectedError : public std::runtime_error
-{
-public:
-  DecoderUnexpectedError(const std::string error) :
-    std::runtime_error("'" + error + "' : Unexpected error") { }
-};
-
 /******************** Decoder class definition ***********************/
 
-/* Pure abstract class to provide a clean interface for all decoder's
+/** Pure abstract class to provide a clean interface for all decoder's
  * implementations. 'Decoder' class allow to translate an instruction
  * starting at a precise address into Microcode (translate(addr)).
  * Also, it allows to know where do start the next instruction to
@@ -84,6 +56,35 @@ public:
 class Decoder : public Object
 {
 public:
+
+  /*********************** Decoder Exceptions **************************/
+  /** \brief Exception thrown when the mnemonics is not recognized by
+   *  the decoder */
+  class UnknownMnemonic : public std::runtime_error
+  {
+  public:
+    UnknownMnemonic(const std::string &instr) :
+      std::runtime_error("'" + instr + "' : Unknown mnemonic") {}
+  };
+
+  /** \brief Exception thrown when the mnemonics does not match the
+   *  needed operands */
+  class InconsistentInstruction : public std::runtime_error
+  {
+  public:
+    InconsistentInstruction(const std::string &instr) :
+      std::runtime_error("'" + instr + "' : Inconsistent instruction") {}
+  };
+
+  /** \brief Exception thrown when the decoder encounter an unexpected
+   *  problem */
+  class DecoderUnexpectedError : public std::runtime_error
+  {
+  public:
+    DecoderUnexpectedError(const std::string error) :
+      std::runtime_error("'" + error + "' : Unexpected error") { }
+  };
+
   virtual ~Decoder();
 
   /* Translates the assembly instruction at 'addr' into Microcode.

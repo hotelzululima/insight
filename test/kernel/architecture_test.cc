@@ -59,7 +59,7 @@ s_check_x86_32 (const Architecture * arch_x86_32)
   ATF_REQUIRE(ah->get_window_offset () == 8);
 
   /* Check if an exception is thrown on inexistant register name */
-  ATF_REQUIRE_THROW(RegisterDescNotFound,
+  ATF_REQUIRE_THROW(Architecture::RegisterDescNotFound,
 		    arch_x86_32->get_register("xxx"));
 }
 
@@ -104,7 +104,7 @@ ATF_TEST_CASE_BODY(architecture_arm)
   ATF_REQUIRE(arch_arm->get_register("r0")->get_register_size () == 32);
 
   /* Check if an exception is thrown on inexistant register name */
-  ATF_REQUIRE_THROW(RegisterDescNotFound,
+  ATF_REQUIRE_THROW(Architecture::RegisterDescNotFound,
 		    arch_arm->get_register("xxx"));
   Insight::terminate ();
 }
@@ -119,16 +119,16 @@ ATF_TEST_CASE_BODY(architecture_missing)
 {
   Insight::init ();
   /* Check if an exception is thrown on unknown architecture */
-  ATF_REQUIRE_THROW(UnsupportedArch,
+  ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    Architecture::getArchitecture(Architecture::Unknown));
 
   /* Check if an exception is thrown on wrong endianness */
-  ATF_REQUIRE_THROW(UnsupportedArch,
+  ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    Architecture::getArchitecture(Architecture::X86_32,
 						      Architecture::BigEndian));
 
   /* Check if an exception is thrown on unimplemented architecture */
-  ATF_REQUIRE_THROW(UnsupportedArch,
+  ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    Architecture::getArchitecture(Architecture::Alpha));
   Insight::terminate ();
 }

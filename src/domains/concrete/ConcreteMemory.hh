@@ -86,7 +86,7 @@ public:
   virtual ConcreteValue get(const ConcreteAddress &,
 			    const int size,
 			    const Architecture::endianness_t) 
-    throw (UndefinedValue);
+    throw (Architecture::UndefinedValue);
 
   /** \brief Put the value into the memory cell at a given address. */
   virtual void put(const ConcreteAddress &,
@@ -97,7 +97,7 @@ public:
    *   register has not yet been set, the function will raise an
    *   exception 'UndefinedValue'. */
   virtual ConcreteValue get(const RegisterDesc *) const
-    throw (UndefinedValue);
+    throw (Architecture::UndefinedValue);
 
   /** \brief Put the value v into the register */
   virtual void put(const RegisterDesc *, ConcreteValue);

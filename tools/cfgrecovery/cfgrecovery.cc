@@ -246,7 +246,7 @@ main (int argc, char *argv[])
     cerr << prog_name
 	 << ": error: unsupported binary format" << endl;
     exit (EXIT_FAILURE);
-  } catch (UnsupportedArch) {
+  } catch (Architecture::UnsupportedArch) {
     cerr << prog_name
 	 << ": error: unsupported architecture" << endl;
     exit (EXIT_FAILURE);

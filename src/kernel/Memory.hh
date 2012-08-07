@@ -47,13 +47,14 @@ template <typename Address, typename Value>
 class Memory : public Object
 {
 public:
+
   Memory();
   Memory(const Memory<Address, Value> &);
 
   virtual ~Memory() {};
 
   virtual Value get(const Address &, int, Architecture::endianness_t) 
-    throw (UndefinedValue) = 0;
+    throw (Architecture::UndefinedValue) = 0;
 
   virtual void put(const Address &, const Value &,
 		   Architecture::endianness_t) = 0;

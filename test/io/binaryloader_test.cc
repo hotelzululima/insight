@@ -52,12 +52,12 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 {
   Insight::init ();
 
-  ATF_REQUIRE_THROW(UnsupportedArch,
+  ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    try {
 		      BinutilsBinaryLoader(TEST_SAMPLES_DIR
 					   "echo-linux-amd64");
 		    } catch (BinaryLoader::UnknownBinaryFormat) {
-		      throw UnsupportedArch();
+		      throw Architecture::UnsupportedArch();
 		    });
   Insight::terminate ();
 }

@@ -179,7 +179,7 @@ lvalue:
       if (reg->is_alias ())
 	reg = data.arch->get_register (reg->get_label ());
       $$ = RegisterExpr::create (reg, offset, size);
-    } catch(RegisterDescNotFound &) {
+    } catch(Architecture::RegisterDescNotFound &) {
       Log::errorln ("unknown register '" + *$2 + "'"); 
       YYERROR;      
     }

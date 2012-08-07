@@ -54,7 +54,7 @@ typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
 template<TokenType> void
 x86_32_translate(x86_32::parser_data &data, bool)
 {
-  throw UnknownMnemonic (data.instruction);
+  throw Decoder::UnknownMnemonic (data.instruction);
 }
 
 #define X86_32_TRANSLATE_PREFIX(_tok) \
@@ -66,7 +66,7 @@ x86_32_translate(x86_32::parser_data &data, bool)
 #if 1
 #define DEFAULT_DATA data
 #define DEFAULT_BEHAVIOR() \
-  do { throw UnknownMnemonic (data.instruction); } while(0)
+  do { throw Decoder::UnknownMnemonic (data.instruction); } while(0)
 #else
 #define DEFAULT_DATA data
 #define DEFAULT_BEHAVIOR() \

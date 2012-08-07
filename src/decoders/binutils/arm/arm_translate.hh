@@ -92,7 +92,7 @@ enum UPDATE_FLAGS_FOR_INSTRUCTIONS {
 template<TokenType> void
 arm_translate(arm::parser_data &data, arm::MicrocodeNodeVector *)
 {
-  throw new UnknownMnemonic(data.instruction);
+  throw new Decoder::UnknownMnemonic(data.instruction);
 }
 
 #define ARM_TRANSLATE_PREFIX(_tok) \
@@ -104,7 +104,7 @@ arm_translate(arm::parser_data &data, arm::MicrocodeNodeVector *)
 #if 1
 #define DEFAULT_DATA data
 #define DEFAULT_BEHAVIOR() \
-  do { throw new UnknownMnemonic(data.instruction); } while(0)
+  do { throw new Decoder::UnknownMnemonic(data.instruction); } while(0)
 #else
 #define DEFAULT_DATA
 #define DEFAULT_BEHAVIOR() \

@@ -41,17 +41,6 @@
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 
-/******************* BinutilsBinaryLoader Exceptions ******************/
-
-class BFDException: public std::runtime_error
-{
-public:
-  BFDException(std::string filename) :
-    std::runtime_error("'" + filename +
-                       "': libbfd error : " +
-                       bfd_errmsg(bfd_get_error())) { }
-};
-
 /********************* Libbfd specific flags **************************/
 
 typedef struct flag
@@ -129,6 +118,17 @@ static flag_t bfd_sec_flags[] =
 class BinutilsBinaryLoader : public BinaryLoader
 {
 public:
+
+  /******************* BinutilsBinaryLoader Exceptions ******************/
+  /** \brief Exception thrown when an error occurs at libbfd level */
+  class BFDException: public std::runtime_error
+  {
+  public:
+    BFDException(std::string filename) :
+      std::runtime_error("'" + filename + "': libbfd error : " +
+			 bfd_errmsg(bfd_get_error())) { }
+  };
+
   BinutilsBinaryLoader(const std::string filename);
   virtual ~BinutilsBinaryLoader();
 

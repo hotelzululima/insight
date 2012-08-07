@@ -52,7 +52,7 @@ public:
 
   virtual IntervalValue get(const IntervalAddress &a, int size, 
 			    Architecture::endianness_t e) 
-    throw (UndefinedValue);
+    throw (Architecture::UndefinedValue);
   virtual void put(const IntervalAddress &a, const IntervalValue &v, 
 		   Architecture::endianness_t e);
   virtual bool is_defined(const IntervalAddress &a) const;

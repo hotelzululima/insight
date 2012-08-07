@@ -50,12 +50,12 @@ RegisterMap<Value>::~RegisterMap ()
 
 template <typename Value>
 Value
-RegisterMap<Value>::get(const RegisterDesc *r) const throw (UndefinedValue)
+RegisterMap<Value>::get(const RegisterDesc *r) const throw (Architecture::UndefinedValue)
 {
   assert (!r->is_alias());
 
   if (!is_defined(r))
-    throw UndefinedValue (r->get_label ());
+    throw Architecture::UndefinedValue (r->get_label ());
 
   return registermap.find(r)->second;
 }

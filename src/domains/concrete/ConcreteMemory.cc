@@ -74,7 +74,7 @@ ConcreteValue
 ConcreteMemory::get(const ConcreteAddress &addr,
 		    const int size,
 		    const Architecture::endianness_t e) 
-  throw (UndefinedValue)
+  throw (Architecture::UndefinedValue)
 {
   word_t res = 0;
   address_t a = addr.get_address();
@@ -85,7 +85,7 @@ ConcreteMemory::get(const ConcreteAddress &addr,
 	(e == Architecture::LittleEndian ? a + size - i - 1 : a + i);
 
       if (!is_defined(ConcreteAddress(cur)))
-	throw UndefinedValue(addr.to_string ());
+	throw Architecture::UndefinedValue(addr.to_string ());
 
       res = (res << 8) | memory[cur];
     }
@@ -131,13 +131,13 @@ ConcreteMemory::is_defined(const RegisterDesc *r) const
 
 ConcreteValue
 ConcreteMemory::get(const RegisterDesc * r) const
-    throw (UndefinedValue)
+    throw (Architecture::UndefinedValue)
 {
   assert (! r->is_alias ());
   /* Checking for unspecified access */
   if (!is_defined(r))
     {
-      throw UndefinedValue (r->get_label ());
+      throw Architecture::UndefinedValue (r->get_label ());
     }
 
   int offset = r->get_window_offset ();

@@ -54,7 +54,7 @@ SetsMemory::~SetsMemory() {}
 
 SetsValue
 SetsMemory::get(const SetsAddress &a, int size, Architecture::endianness_t e) 
-  throw (UndefinedValue)
+  throw (Architecture::UndefinedValue)
 {
 
   SetsValue the_value(size * 8);

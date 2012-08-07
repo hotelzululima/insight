@@ -39,37 +39,11 @@
 
 #include <utils/tools.hh>
 
-/******************** ProcessLoader Exceptions ***********************/
-
-/* Thrown when the pid do not correspond to a valid process. */
-class ProcessNotFound : public std::runtime_error
-{
-public:
-  ProcessNotFound(pid_t pid) :
-    std::runtime_error("'" + itos(pid) + "' : Process not found") { };
-};
-
-/* Thrown when user has no sufficient rights to attach to the process. */
-class ProcessPermissionDenied : public std::runtime_error
-{
-public:
-  ProcessPermissionDenied(pid_t pid) :
-    std::runtime_error("'" + itos(pid) + "' : Permission denied") { };
-};
-
-/* Thrown when the target architecture is not recognized. */
-class UnknownArch : public std::runtime_error
-{
-public:
-  UnknownArch(pid_t pid) :
-    std::runtime_error("'" + itos(pid) +
-                       "': Architecture is not recognized") { };
-};
-
 /***************** ProcessLoader class definition ********************/
 
-/* Pure abstract class to group all the process loader implementations.
- * This class is intended to load any process into the analyzer.
+/** Pure abstract class to group all the process loader
+ * implementations. This class is intended to load any process into
+ * the analyzer.
  *
  * As defined in the Loader class, the initialization of a 'Loader' is
  * done through a call to the static method 'getLoader(pid_t)' which
@@ -78,6 +52,36 @@ public:
 class ProcessLoader
 {
 public:
+
+  /******************** ProcessLoader Exceptions ***********************/
+  /** \brief Exception thrown when the pid do not correspond to a
+   *  valid process. */
+  class ProcessNotFound : public std::runtime_error
+  {
+  public:
+    ProcessNotFound(pid_t pid) :
+    std::runtime_error("'" + itos(pid) + "' : Process not found") { };
+  };
+
+  /** \brief Exception thrown when user has no sufficient rights to
+   *  attach to the process. */
+  class ProcessPermissionDenied : public std::runtime_error
+  {
+  public:
+    ProcessPermissionDenied(pid_t pid) :
+    std::runtime_error("'" + itos(pid) + "' : Permission denied") { };
+  };
+
+  /** \brief Exception thrown when the target architecture is not
+   *  recognized. */
+  class UnknownArch : public std::runtime_error
+  {
+  public:
+    UnknownArch(pid_t pid) :
+    std::runtime_error("'" + itos(pid) +
+                       "': Architecture is not recognized") { };
+  };
+
   virtual ~ProcessLoader() { };
 
   /* Note that the interface of this abstract class also requires an

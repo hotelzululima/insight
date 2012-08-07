@@ -144,7 +144,7 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *mcarch,
     case Architecture::X86_32:
       /* Checking support and setting the disassembler for x86-32 */
       if ((abfd->arch_info = bfd_scan_arch("i386"))  == NULL)
-	throw DecoderUnexpectedError("x86-32 is not supported on your system");
+	throw Decoder::DecoderUnexpectedError("x86-32 is not supported on your system");
       /* Setting the decoder function for x86-32 */
       this->decoder = &x86_32_decoder_func;
       break;
@@ -152,13 +152,13 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *mcarch,
     case Architecture::ARM:
       /* Checking support and setting the disassembler for arm */
       if ((abfd->arch_info = bfd_scan_arch("arm"))  == NULL)
-	throw DecoderUnexpectedError("arm is not supported on your system");
+	throw Decoder::DecoderUnexpectedError("arm is not supported on your system");
       /* Setting the decoder function for arm */
       this->decoder = &arm_decoder_func;
       break;
 
     default: /* All other architectures are unsupported yet */
-      throw UnsupportedArch();
+      throw Architecture::UnsupportedArch();
     }
 
   /* Use libopcodes to find a suitable disassembler function */
@@ -166,7 +166,7 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *mcarch,
   if (!this->disassembler_fn)
   {
       /* Shouldn't occur but trying to make it safe anyway */
-        throw DecoderUnexpectedError("can't find disassembler function");
+        throw Decoder::DecoderUnexpectedError("can't find disassembler function");
   }
 
   /* Setting all parameters of the disassembler info struct */
@@ -225,7 +225,7 @@ BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
     }
   else
     {
-      throw DecoderUnexpectedError ("syntax error @" + address.to_string ());
+      throw Decoder::DecoderUnexpectedError ("syntax error @" + address.to_string ());
     }
 
   return result;
@@ -308,7 +308,7 @@ s_binutils_sprintf(stringstream *sstream, const char *format, ...)
       if (tmp == NULL)
         {
           free(xbuffer);
-          throw DecoderUnexpectedError("out of memory");
+          throw Decoder::DecoderUnexpectedError("out of memory");
         }
       else
         {
@@ -356,7 +356,7 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
   if (memaddr < info->buffer_vma
       || memaddr - info->buffer_vma > max_addr_offset
       || memaddr - info->buffer_vma + end_addr_offset > max_addr_offset)
-    throw DecoderUnexpectedError("Out of bound memory address");
+    throw Decoder::DecoderUnexpectedError("Out of bound memory address");
 
   ConcreteMemory *memory = (ConcreteMemory *) info->application_data;
 
