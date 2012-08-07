@@ -175,20 +175,18 @@ domains_source = \
 
 ## io module
 io_sources = \
-	io/LoaderFactory.cc 			\
-	io/LoaderFactory.hh 			\
-	io/binaryloader/BinaryLoader.cc 	\
-	io/binaryloader/BinaryLoader.hh 	\
-	io/binaryloader/BinutilsBinaryLoader.cc \
-	io/binaryloader/BinutilsBinaryLoader.hh \
-	io/microcode/MicrocodeLoader.cc 	\
-	io/microcode/MicrocodeLoader.hh 	\
-	io/microcode/xml_microcode_generator.cc	\
-	io/microcode/xml_microcode_generator.hh \
-	io/microcode/xml_microcode_parser.cc	\
-	io/microcode/xml_microcode_parser.hh 	\
-	io/process/ProcessLoader.cc 		\
-	io/process/ProcessLoader.hh
+	io/binaryloaders/BinaryLoader.cc 		\
+	io/binaryloaders/BinaryLoader.hh 		\
+	io/binaryloaders/BinutilsBinaryLoader.cc	\
+	io/binaryloaders/BinutilsBinaryLoader.hh 	\
+	io/microcode/MicrocodeLoader.cc 		\
+	io/microcode/MicrocodeLoader.hh 		\
+	io/microcode/xml_microcode_generator.cc		\
+	io/microcode/xml_microcode_generator.hh 	\
+	io/microcode/xml_microcode_parser.cc		\
+	io/microcode/xml_microcode_parser.hh 		\
+	io/processloaders/ProcessLoader.cc 		\
+	io/processloaders/ProcessLoader.hh
 
 
 ## decoder module

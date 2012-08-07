@@ -28,12 +28,12 @@
  * SUCH DAMAGE.
  */
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
-#include <decoders/binutils/BinutilsDecoder.hh>
 #include <kernel/Insight.hh>
-#include <io/LoaderFactory.hh>
+#include <decoders/binutils/BinutilsDecoder.hh>
+#include <io/binaryloaders/BinutilsBinaryLoader.hh>
 
 using namespace std;
 using namespace binutils;
@@ -55,7 +55,7 @@ main (int argc, char **argv)
   else
     {
       const char *filename = argv[1];
-      BinaryLoader *loader = LoaderFactory::get_BinaryLoader (filename);
+      BinaryLoader *loader = new BinutilsBinaryLoader (filename);
       ConcreteMemory *memory = loader->get_memory();
       MicrocodeArchitecture arch (loader->get_architecture ());
       BinutilsDecoder *decoder = new BinutilsDecoder (&arch, memory);

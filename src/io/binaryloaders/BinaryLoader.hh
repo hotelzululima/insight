@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef IO_BINARY_BINARYLOADER_HH
-#define IO_BINARY_BINARYLOADER_HH
+#ifndef IO_BINARYLOADER_HH
+#define IO__BINARYLOADER_HH
 
 #include <string>
 #include <stdexcept>
@@ -134,4 +134,4 @@ protected:
   std::list <section_t> sections; /* Sections embedded in the binary */
 };
 
-#endif /* IO_BINARY_BINARYLOADER_HH */
+#endif /* IO_BINARYLOADER_HH */

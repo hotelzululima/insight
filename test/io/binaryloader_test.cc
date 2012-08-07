@@ -34,7 +34,7 @@
 
 #include <kernel/Architecture.hh>
 #include <kernel/Insight.hh>
-#include <io/LoaderFactory.hh>
+#include <io/binaryloaders/BinutilsBinaryLoader.hh>
 
 #ifndef TEST_SAMPLES_DIR
 # error TEST_SAMPLES_DIR is not defined
@@ -54,8 +54,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 
   ATF_REQUIRE_THROW(UnsupportedArch,
 		    try {
-		      LoaderFactory::get_BinaryLoader(TEST_SAMPLES_DIR 
-						      "echo-linux-amd64"); 
+		      BinutilsBinaryLoader(TEST_SAMPLES_DIR
+					   "echo-linux-amd64");
 		    } catch (UnknownBinaryFormat) { 
 		      throw UnsupportedArch(); 
 		    });
@@ -73,7 +73,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 {
   Insight::init ();
   BinaryLoader * loader =
-    LoaderFactory::get_BinaryLoader(TEST_SAMPLES_DIR "echo-linux-i386");
+    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-i386");
 
   /* Checking various (non-critical) fields from the loader */
   ATF_REQUIRE_EQ(loader->get_filename(),
@@ -109,7 +109,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 {
   Insight::init ();
   BinaryLoader * loader =
-    LoaderFactory::get_BinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel");
+    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel");
 
   /* Checking various (non-critical) fields from the loader */
   ATF_REQUIRE_EQ(loader->get_filename(),

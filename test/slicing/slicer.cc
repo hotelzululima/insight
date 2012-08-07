@@ -28,22 +28,23 @@
  * SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <stdlib.h>
-#include <stdio.h>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <stdexcept>
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <analyses/microcode_exec.hh>
 #include <analyses/slicing/Slicing.hh>
+#include <domains/ExprSemantics.hh>
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/concrete_context.hh>
-#include <domains/ExprSemantics.hh>
+#include <io/binaryloaders/BinutilsBinaryLoader.hh>
+#include <kernel/Insight.hh>
 #include <kernel/Insight.hh>
 #include <kernel/Microcode.hh>
-#include <kernel/Insight.hh>
-#include <io/LoaderFactory.hh>
 
 
 using namespace std;
@@ -59,7 +60,7 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
        << "lvalue: " << target_lv << endl
        << endl;
   
-  BinaryLoader *loader = LoaderFactory::get_BinaryLoader (filename);  
+  BinaryLoader *loader = new BinutilsBinaryLoader (filename);
   MicrocodeArchitecture *mcarch = 
     new MicrocodeArchitecture (loader->get_architecture ());
   ConcreteMemory *mem = loader->get_memory ();
@@ -83,7 +84,7 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
     cout << useless_arrows[i]->pp() << endl;
   cout << endl;
 
-  /* A GARDER : Pour le calcul de dependence en haute precision
+  /* TO BE KEPT : For high-precision computation of dependency path
   DataDependency invfix(prg_cpy, seeds);
 
   invfix.ComputeFixpoint(max_step_nb);

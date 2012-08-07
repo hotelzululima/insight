@@ -28,15 +28,15 @@
  * SUCH DAMAGE.
  */
 
-#ifndef IO_BINARY_BINUTILSBINARYLOADER_HH
-#define IO_BINARY_BINUTILSBINARYLOADER_HH
+#ifndef IO_BINUTILSBINARYLOADER_HH
+#define IO_BINUTILSBINARYLOADER_HH
 
 #include <bfd.h>
 
 #include <list>
 #include <stdexcept>
 
-#include <io/binaryloader/BinaryLoader.hh>
+#include <io/binaryloaders/BinaryLoader.hh>
 
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
@@ -144,4 +144,4 @@ private:
   void add_section_of (ConcreteMemory *memory, bfd *file) const;
 };
 
-#endif /* IO_BINARY_BINUTILSBINARYLOADER_HH */
+#endif /* IO_BINUTILSBINARYLOADER_HH */

@@ -40,7 +40,7 @@
 
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <kernel/Insight.hh>
-#include <io/LoaderFactory.hh>
+#include <io/binaryloaders/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
 
 #include "linearsweep.hh"
@@ -241,7 +241,7 @@ main (int argc, char *argv[])
   /* Getting the loader */
   BinaryLoader * loader;
   try {
-    loader = LoaderFactory::get_BinaryLoader(execfile_name);
+    loader = new BinutilsBinaryLoader(execfile_name);
   } catch (UnknownBinaryFormat) {
     cerr << prog_name
 	 << ": error: unsupported binary format" << endl;

@@ -37,7 +37,7 @@
 #include <domains/concrete/concrete_context.hh>
 #include <kernel/Insight.hh>
 #include <kernel/Microcode.hh>
-#include <io/LoaderFactory.hh>
+#include <io/binaryloaders/BinutilsBinaryLoader.hh>
 #include <utils/Log.hh>
 
 
@@ -57,7 +57,7 @@ s_simulate (const char *filename)
   Insight::init ();
   Log::add_listener (Log::STD_STREAM_LOG);
 
-  BinaryLoader *loader = LoaderFactory::get_BinaryLoader (filename);
+  BinaryLoader *loader = new BinutilsBinaryLoader (filename);
   ConcreteMemory *memory = loader->get_memory();
   MicrocodeArchitecture arch (loader->get_architecture ());
   Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
