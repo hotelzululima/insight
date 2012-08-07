@@ -34,7 +34,7 @@
 
 #include <kernel/Architecture.hh>
 #include <kernel/Insight.hh>
-#include <loaders/LoaderFactory.hh>
+#include <io/LoaderFactory.hh>
 
 #ifndef TEST_SAMPLES_DIR
 # error TEST_SAMPLES_DIR is not defined

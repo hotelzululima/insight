@@ -28,25 +28,22 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LOADERS_XML_MICROCODE_PARSER_HH
-#define LOADERS_XML_MICROCODE_PARSER_HH
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdlib.h>
-#include <iostream>
+#ifndef IO_XML_MICROCODE_GENERATOR_HH
+#define IO_XML_MICROCODE_GENERATOR_HH
 
 #include <kernel/Microcode.hh>
+#include <kernel/Expressions.hh>
 
-/** \brief Main interface of the XML microcode parser */
-Microcode *xml_parse_mc_program(const std::string filename);
+std::string xml_of_constant(Constant *c);
+std::string xml_of_variable(Variable *v);
+std::string xml_of_register(RegisterExpr *reg);
+std::string xml_of_memcell(MemCell *m);
+std::string xml_of_binaryapp(BinaryApp *b);
+std::string xml_of_unaryapp(UnaryApp *u);
+std::string xml_of_lvalue(Expr *lv);
+std::string xml_of_expr(Expr *e);
 
-typedef std::tr1::unordered_map<std::string, RegisterExpr *> XmlRegisterStore;
-extern XmlRegisterStore xml_register_store;
+std::string xml_of_microcode_element(MicrocodeNode *elt);
+std::string xml_of_microcode(const Microcode *prg);
 
-void xml_delete_register_store();
-RegisterExpr * xml_get_register(std::string ident);
-void xml_reset_register_store();
-void xml_declare_register(const std::string ident, int size);
-
-#endif /* LOADERS_XML_MICROCODE_PARSER_HH */
+#endif /* IO_XML_MICROCODE_GENERATOR_HH */

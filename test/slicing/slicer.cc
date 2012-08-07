@@ -43,7 +43,7 @@
 #include <kernel/Insight.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/Insight.hh>
-#include <loaders/LoaderFactory.hh>
+#include <io/LoaderFactory.hh>
 
 
 using namespace std;

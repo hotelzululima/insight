@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <loaders/binary/BinutilsBinaryLoader.hh>
+#include <io/binary/BinutilsBinaryLoader.hh>
 
 #include <cstdlib>
 #include <sstream>

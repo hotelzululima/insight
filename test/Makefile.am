@@ -8,24 +8,25 @@ SUBDIRS=decoders slicing tools
 
 AUTOMAKE_OPTIONS=subdir-objects
 
-EXTRA_DIST = test-samples \
-             loaders/binary/Kyuafile \
-             loaders/Kyuafile \
-             domains/concrete/Kyuafile \
-             domains/Kyuafile \
-             kernel/Kyuafile \
-             slicing/Kyuafile \
-             Kyuafile
+EXTRA_DIST = \
+	test-samples 			\
+        io/binary/Kyuafile 		\
+        io/Kyuafile 			\
+        domains/concrete/Kyuafile 	\
+        domains/Kyuafile 		\
+        kernel/Kyuafile 		\
+        slicing/Kyuafile 		\
+        Kyuafile
 
 
 check_PROGRAMS = \
-	domains/concrete/concreteaddress_test \
-	domains/concrete/concretememory_test  \
-	domains/concrete/concretevalue_test   \
-	domains/concrete/simulator_test       \
-	loaders/binary/binaryloader_test	   \
-	kernel/architecture_test 		   \
-	kernel/expr_parser_test 		   \
+	domains/concrete/concreteaddress_test 	\
+	domains/concrete/concretememory_test  	\
+	domains/concrete/concretevalue_test   	\
+	domains/concrete/simulator_test       	\
+	io/binary/binaryloader_test	   	\
+	kernel/architecture_test 		\
+	kernel/expr_parser_test 		\
 	kernel/formula_test 		   
 
 # Kernel module tests
@@ -38,9 +39,9 @@ kernel_expr_parser_test_SOURCES = \
 kernel_formula_test_SOURCES = \
 	kernel/formula_test.cc
 
-# Loaders module tests
-loaders_binary_binaryloader_test_SOURCES = \
-	loaders/binary/binaryloader_test.cc
+# Io module tests
+io_binary_binaryloader_test_SOURCES = \
+	io/binary/binaryloader_test.cc
 
 # Interpreters module tests
 domains_concrete_concreteaddress_test_SOURCES = \

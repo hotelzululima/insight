@@ -40,8 +40,8 @@
 
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <kernel/Insight.hh>
-#include <loaders/LoaderFactory.hh>
-#include <loaders/microcode/xml_microcode_generator.hh>
+#include <io/LoaderFactory.hh>
+#include <io/microcode/xml_microcode_generator.hh>
 
 #include "linearsweep.hh"
 #include "recursivetraversal.hh"

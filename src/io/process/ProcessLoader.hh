@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LOADERS_PROCESSLOADER_HH
-#define LOADERS_PROCESSLOADER_HH
+#ifndef IO_PROCESSLOADER_HH
+#define IO_PROCESSLOADER_HH
 
 #include <unistd.h>
 #include <stdexcept>
@@ -97,4 +97,4 @@ protected:
   std::string architecture;
 };
 
-#endif /* LOADERS_PROCESSLOADER_HH */
+#endif /* IO_PROCESSLOADER_HH */

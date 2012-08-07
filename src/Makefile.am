@@ -58,13 +58,13 @@ kernel_source = \
 	kernel/RegisterMap.ii 		\
 	kernel/Value.cc 		\
 	kernel/Value.hh 		\
-	kernel/annotations/StringAnnotation.hh \
+	kernel/annotations/StringAnnotation.hh	\
 	kernel/annotations/BooleanAnnotation.hh \
 	kernel/annotations/CallRetAnnotation.hh \
 	kernel/annotations/CallRetAnnotation.cc \
 	kernel/annotations/GenericAnnotation.hh \
-	kernel/annotations/ExprAnnotation.cc \
-	kernel/annotations/ExprAnnotation.hh \
+	kernel/annotations/ExprAnnotation.cc 	\
+	kernel/annotations/ExprAnnotation.hh 	\
 	kernel/expressions/FunctionRewritingRule.hh \
 	kernel/expressions/FunctionRewritingRule.cc \
 	kernel/expressions/BottomUpRewritePatternRule.hh 	\
@@ -76,9 +76,9 @@ kernel_source = \
 	kernel/expressions/ExprLexer.hh 	\
 	kernel/expressions/ExprLexer.ll		\
 	kernel/expressions/ExprParser.yy 	\
-	kernel/expressions/ExprUtils.hh	\
-	kernel/expressions/ExprUtils.cc	\
-	kernel/expressions/ExprUtils.ii	\
+	kernel/expressions/ExprUtils.hh		\
+	kernel/expressions/ExprUtils.cc		\
+	kernel/expressions/ExprUtils.ii		\
 	kernel/expressions/ExprVisitor.hh	\
 	kernel/expressions/ExprRewritingFunctions.hh	\
 	kernel/expressions/ExprRewritingFunctions.cc	\
@@ -173,22 +173,22 @@ domains_source = \
 	domains/sets/SetsContext.hh                \
 	domains/sets/SetsContext.cc
 
-## loaders module
-loaders_sources = \
-	loaders/LoaderFactory.cc 			\
-	loaders/LoaderFactory.hh 			\
-	loaders/binary/BinaryLoader.cc 			\
-	loaders/binary/BinaryLoader.hh 			\
-	loaders/binary/BinutilsBinaryLoader.cc 		\
-	loaders/binary/BinutilsBinaryLoader.hh 		\
-	loaders/microcode/MicrocodeLoader.cc 		\
-	loaders/microcode/MicrocodeLoader.hh 		\
-	loaders/microcode/xml_microcode_generator.cc	\
-	loaders/microcode/xml_microcode_generator.hh 	\
-	loaders/microcode/xml_microcode_parser.cc	\
-	loaders/microcode/xml_microcode_parser.hh 	\
-	loaders/process/ProcessLoader.cc 		\
-	loaders/process/ProcessLoader.hh
+## io module
+io_sources = \
+	io/LoaderFactory.cc 			\
+	io/LoaderFactory.hh 			\
+	io/binary/BinaryLoader.cc 		\
+	io/binary/BinaryLoader.hh 		\
+	io/binary/BinutilsBinaryLoader.cc 	\
+	io/binary/BinutilsBinaryLoader.hh 	\
+	io/microcode/MicrocodeLoader.cc 	\
+	io/microcode/MicrocodeLoader.hh 	\
+	io/microcode/xml_microcode_generator.cc	\
+	io/microcode/xml_microcode_generator.hh \
+	io/microcode/xml_microcode_parser.cc	\
+	io/microcode/xml_microcode_parser.hh 	\
+	io/process/ProcessLoader.cc 		\
+	io/process/ProcessLoader.hh
 
 
 ## decoder module
@@ -313,7 +313,7 @@ libinsight_la_SOURCES =  \
 	$(analyses_sources) 	\
 	$(decoders_sources) 	\
 	$(domains_source) 	\
-	$(loaders_sources) 	\
+	$(io_sources) 	\
 	$(utils_source)
 
 libinsight_la_CPPFLAGS = @BINUTILS_CFLAGS@

@@ -28,29 +28,25 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LOADERS_LOADERFACTORY_HH
-#define LOADERS_LOADERFACTORY_HH
+#ifndef IO_XML_MICROCODE_PARSER_HH
+#define IO_XML_MICROCODE_PARSER_HH
 
-#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <iostream>
 
-#include <loaders/binary/BinaryLoader.hh>
-#include <loaders/process/ProcessLoader.hh>
-#include <loaders/microcode/MicrocodeLoader.hh>
+#include <kernel/Microcode.hh>
 
-class LoaderFactory
-{
-public:
-  /** \brief Returns a new BinaryLoader */
-  static BinaryLoader * get_BinaryLoader(const std::string filename);
+/** \brief Main interface of the XML microcode parser */
+Microcode *xml_parse_mc_program(const std::string filename);
 
-  /** \brief Returns a list of supported binary file formats */
-  static std::list<std::string> * get_BinaryLoader_supported_formats();
+typedef std::tr1::unordered_map<std::string, RegisterExpr *> XmlRegisterStore;
+extern XmlRegisterStore xml_register_store;
 
-  /** \brief Returns a new ProcessLoader */
-  static ProcessLoader * get_ProcessLoader(const pid_t);
+void xml_delete_register_store();
+RegisterExpr * xml_get_register(std::string ident);
+void xml_reset_register_store();
+void xml_declare_register(const std::string ident, int size);
 
-  /** \brief Returns a new MicrocodeLoader */
-  static MicrocodeLoader * get_MicrocodeLoader();
-};
-
-#endif /* LOADERS_LOADERFACTORY_HH */
+#endif /* IO_XML_MICROCODE_PARSER_HH */

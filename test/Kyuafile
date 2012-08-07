@@ -4,4 +4,4 @@ test_suite("Insight")
 
 include("domains/Kyuafile")
 include("kernel/Kyuafile")
-include("loaders/Kyuafile")
+include("io/Kyuafile")

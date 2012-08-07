@@ -33,7 +33,7 @@
 
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <kernel/Insight.hh>
-#include <loaders/LoaderFactory.hh>
+#include <io/LoaderFactory.hh>
 
 using namespace std;
 using namespace binutils;

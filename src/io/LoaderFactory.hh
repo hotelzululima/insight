@@ -28,20 +28,29 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LOADERS_MICROCODE_MICROCODELOADER_HH
-#define LOADERS_MICROCODE_MICROCODELOADER_HH
+#ifndef IO_LOADERFACTORY_HH
+#define IO_LOADERFACTORY_HH
 
-#include <kernel/Microcode.hh>
-#include <utils/Object.hh>
+#include <string>
 
-class MicrocodeLoader : public Object
+#include <io/binary/BinaryLoader.hh>
+#include <io/process/ProcessLoader.hh>
+#include <io/microcode/MicrocodeLoader.hh>
+
+class LoaderFactory
 {
 public:
-  MicrocodeLoader();
-  virtual ~MicrocodeLoader();
+  /** \brief Returns a new BinaryLoader */
+  static BinaryLoader * get_BinaryLoader(const std::string filename);
 
-  virtual Microcode *read_xml_file(const std::string &) const;
-  virtual void write_xml_file(const Microcode *, const std::string &) const;
+  /** \brief Returns a list of supported binary file formats */
+  static std::list<std::string> * get_BinaryLoader_supported_formats();
+
+  /** \brief Returns a new ProcessLoader */
+  static ProcessLoader * get_ProcessLoader(const pid_t);
+
+  /** \brief Returns a new MicrocodeLoader */
+  static MicrocodeLoader * get_MicrocodeLoader();
 };
 
-#endif /* LOADERS_MICROCODE_MICROCODELOADER_HH */
+#endif /* IO_LOADERFACTORY_HH */

@@ -28,22 +28,20 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LOADERS_XML_MICROCODE_GENERATOR_HH
-#define LOADERS_XML_MICROCODE_GENERATOR_HH
+#ifndef IO_MICROCODE_MICROCODELOADER_HH
+#define IO_MICROCODE_MICROCODELOADER_HH
 
 #include <kernel/Microcode.hh>
-#include <kernel/Expressions.hh>
+#include <utils/Object.hh>
 
-std::string xml_of_constant(Constant *c);
-std::string xml_of_variable(Variable *v);
-std::string xml_of_register(RegisterExpr *reg);
-std::string xml_of_memcell(MemCell *m);
-std::string xml_of_binaryapp(BinaryApp *b);
-std::string xml_of_unaryapp(UnaryApp *u);
-std::string xml_of_lvalue(Expr *lv);
-std::string xml_of_expr(Expr *e);
+class MicrocodeLoader : public Object
+{
+public:
+  MicrocodeLoader();
+  virtual ~MicrocodeLoader();
 
-std::string xml_of_microcode_element(MicrocodeNode *elt);
-std::string xml_of_microcode(const Microcode *prg);
+  virtual Microcode *read_xml_file(const std::string &) const;
+  virtual void write_xml_file(const Microcode *, const std::string &) const;
+};
 
-#endif /* LOADERS_XML_MICROCODE_GENERATOR_HH */
+#endif /* IO_MICROCODE_MICROCODELOADER_HH */
