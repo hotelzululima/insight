@@ -35,8 +35,8 @@
 
 #include <list>
 
+#include <io/binaryloader/BinutilsBinaryLoader.hh>
 #include <io/process/ProcessLoader.hh>
-#include <io/binary/BinutilsBinaryLoader.hh>
 
 using namespace std;
 

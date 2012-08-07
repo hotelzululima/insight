@@ -36,7 +36,7 @@
 #include <list>
 #include <stdexcept>
 
-#include <io/binary/BinaryLoader.hh>
+#include <io/binaryloader/BinaryLoader.hh>
 
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>

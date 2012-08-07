@@ -10,7 +10,6 @@ AUTOMAKE_OPTIONS=subdir-objects
 
 EXTRA_DIST = \
 	test-samples 			\
-        io/binary/Kyuafile 		\
         io/Kyuafile 			\
         domains/concrete/Kyuafile 	\
         domains/Kyuafile 		\
@@ -24,7 +23,7 @@ check_PROGRAMS = \
 	domains/concrete/concretememory_test  	\
 	domains/concrete/concretevalue_test   	\
 	domains/concrete/simulator_test       	\
-	io/binary/binaryloader_test	   	\
+	io/binaryloader_test	   		\
 	kernel/architecture_test 		\
 	kernel/expr_parser_test 		\
 	kernel/formula_test 		   
@@ -40,8 +39,8 @@ kernel_formula_test_SOURCES = \
 	kernel/formula_test.cc
 
 # Io module tests
-io_binary_binaryloader_test_SOURCES = \
-	io/binary/binaryloader_test.cc
+io_binaryloader_test_SOURCES = \
+	io/binaryloader_test.cc
 
 # Interpreters module tests
 domains_concrete_concreteaddress_test_SOURCES = \

@@ -2,4 +2,4 @@ syntax("kyuafile", 1)
 
 test_suite("Insight")
 
-include("binary/Kyuafile")
+atf_test_program{name="binaryloader_test"}

@@ -33,7 +33,7 @@
 
 #include <string>
 
-#include <io/binary/BinaryLoader.hh>
+#include <io/binaryloader/BinaryLoader.hh>
 #include <io/process/ProcessLoader.hh>
 #include <io/microcode/MicrocodeLoader.hh>
 

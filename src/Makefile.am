@@ -177,10 +177,10 @@ domains_source = \
 io_sources = \
 	io/LoaderFactory.cc 			\
 	io/LoaderFactory.hh 			\
-	io/binary/BinaryLoader.cc 		\
-	io/binary/BinaryLoader.hh 		\
-	io/binary/BinutilsBinaryLoader.cc 	\
-	io/binary/BinutilsBinaryLoader.hh 	\
+	io/binaryloader/BinaryLoader.cc 	\
+	io/binaryloader/BinaryLoader.hh 	\
+	io/binaryloader/BinutilsBinaryLoader.cc \
+	io/binaryloader/BinutilsBinaryLoader.hh \
 	io/microcode/MicrocodeLoader.cc 	\
 	io/microcode/MicrocodeLoader.hh 	\
 	io/microcode/xml_microcode_generator.cc	\
