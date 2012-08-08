@@ -44,3 +44,9 @@ void Decoder::set_memory(const ConcreteMemory *memory)
 {
   this->memory = (ConcreteMemory*) memory;
 }
+
+const MicrocodeArchitecture *
+Decoder::get_arch () const
+{
+  return arch;
+}

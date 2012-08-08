@@ -103,6 +103,8 @@ public:
   /* Set a new memory to decode */
   void set_memory(const ConcreteMemory *memory);
 
+  const MicrocodeArchitecture *get_arch () const;
+
 protected:
   /* Constructor is protected to enforce to use the DecoderFactory */
   Decoder(MicrocodeArchitecture *arch, const ConcreteMemory *memory);
