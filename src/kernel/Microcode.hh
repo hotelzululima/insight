@@ -50,8 +50,8 @@ class Microcode
   : public MicrocodeStore, public GraphInterface<MicrocodeNode, StmtArrow> {
 
 public:
-  struct NodeCreationCallback {
-    virtual void add_node (Microcode *mc, MicrocodeNode *node) = 0;
+  struct ArrowCreationCallback {
+    virtual void add_node (Microcode *mc, StmtArrow *e) = 0;
   };
 
 /*****************************************************************************/
@@ -69,8 +69,8 @@ private:
 			  EqualsFunctor<MicrocodeAddress> > opt_nodes;
   bool optimized;
 
-  void apply_callbacks (MicrocodeNode *node);
-  std::vector<NodeCreationCallback *> node_callbacks;
+  void apply_callbacks (StmtArrow *e);
+  std::vector<ArrowCreationCallback *> arrow_callbacks;
 
 /*****************************************************************************/
 public:
@@ -94,8 +94,8 @@ public:
   void add_node(MicrocodeNode *n);
   std::vector<MicrocodeNode *> * get_nodes() const;
 
-  void add_node_creation_callback (NodeCreationCallback *cb);
-  void remove_node_creation_callback (NodeCreationCallback *cb);
+  void add_arrow_creation_callback (ArrowCreationCallback *cb);
+  void remove_arrow_creation_callback (ArrowCreationCallback *cb);
 
 /*****************************************************************************/
 

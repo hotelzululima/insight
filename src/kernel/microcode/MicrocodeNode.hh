@@ -94,10 +94,13 @@ public:
   bool operator==(const MicrocodeNode &) const;
   bool operator<(const MicrocodeNode &e) const;
 
-  void add_successor(Expr *condition, Expr *target, Statement *stmt);
-  void add_successor(Expr *condition, MicrocodeNode *tgt, Statement *stmt);
+  StmtArrow *
+  add_successor(Expr *condition, Expr *target, Statement *stmt);
+  StmtArrow *
+  add_successor(Expr *condition, MicrocodeNode *tgt, Statement *stmt);
   /* Deprecated? */
-  void add_successor(Expr *condition, MicrocodeAddress target, Statement *stmt);
+  StmtArrow *
+  add_successor(Expr *condition, MicrocodeAddress target, Statement *stmt);
 
   /*!\brief construct the list of all the expressions present in the
    * statement, this includes expressions used in arrows.

@@ -180,28 +180,29 @@ string MicrocodeNode::pp() const
   return oss.str();
 }
 
-void MicrocodeNode::add_successor(Expr *condition,
-                                  Expr *target,
-                                  Statement *st)
+StmtArrow * 
+MicrocodeNode::add_successor(Expr *condition, Expr *target, Statement *st)
 {
   StmtArrow *arr = new DynamicArrow(this, target, st, 0, condition);
   successors->push_back(arr);
+  return arr;
 }
 
-void MicrocodeNode::add_successor(Expr *condition,
-                                  MicrocodeNode *tgt,
-                                  Statement *st)
+StmtArrow * 
+MicrocodeNode::add_successor(Expr *condition, MicrocodeNode *tgt, Statement *st)
 {
   StmtArrow *arr = new StaticArrow(this, tgt, st, 0, condition);
   successors->push_back(arr);
+  return arr;
 }
 
-void MicrocodeNode::add_successor(Expr *condition,
-                                  MicrocodeAddress target,
-                                  Statement *st)
+StmtArrow * 
+MicrocodeNode::add_successor(Expr *condition, MicrocodeAddress target,
+			     Statement *st)
 {
   StmtArrow *arr = new StaticArrow(loc, target, st, condition);
   successors->push_back(arr);
+  return arr;
 }
 
 bool MicrocodeNode::operator==(const MicrocodeNode &o) const

@@ -45,7 +45,7 @@ using namespace std;
 Microcode::Microcode() :
   start(MicrocodeAddress::null_addr()),
   optimized(false),
-  node_callbacks ()
+  arrow_callbacks ()
 {
   nodes = new vector<MicrocodeNode *>;
 }
@@ -53,17 +53,17 @@ Microcode::Microcode() :
 Microcode::Microcode(vector<MicrocodeNode *> * nodes) :
   nodes(nodes),
   optimized(false),
-  node_callbacks ()
+  arrow_callbacks ()
 {
-	if (nodes->size() > 0) start = (*nodes)[0]->get_loc();
-	else start = MicrocodeAddress::null_addr();
+  if (nodes->size() > 0) start = (*nodes)[0]->get_loc();
+  else start = MicrocodeAddress::null_addr();
 }
 
 Microcode::Microcode(vector<MicrocodeNode *> * nodes, MicrocodeAddress start) :
   nodes(nodes),
   start(start),
   optimized(false),
-  node_callbacks ()
+  arrow_callbacks ()
 {}
 
 Microcode::Microcode(const Microcode &prg) :
@@ -71,7 +71,7 @@ Microcode::Microcode(const Microcode &prg) :
   GraphInterface<MicrocodeNode, StmtArrow>(),
   start(prg.start),
   optimized(false),
-  node_callbacks (prg.node_callbacks)
+  arrow_callbacks (prg.arrow_callbacks)
 {
   nodes = new vector<MicrocodeNode *>;
   Microcode_iterate_nodes(prg, node)
@@ -146,7 +146,8 @@ Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end,
   if (guard == NULL)
     guard = Constant::create (1);
 
-  b->add_successor(guard, get_or_create_node(end), new Skip());
+  StmtArrow *a = b->add_successor(guard, get_or_create_node(end), new Skip());
+  apply_callbacks (a);
 }
 
 void
@@ -156,8 +157,9 @@ Microcode::add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
 
   if (guard == NULL)
     guard = Constant::create (1);
-  b->add_successor(guard, get_or_create_node(end),
-       new Assignment(lvalue, expr));
+  StmtArrow *a = b->add_successor(guard, get_or_create_node(end),
+				  new Assignment(lvalue, expr));
+  apply_callbacks (a);  
 }
 
 void 
@@ -176,7 +178,8 @@ Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) {
 
   if (guard == NULL)
     guard = Constant::create (1);
-  b->add_successor(guard, target->ref (), new Jump(target));
+  StmtArrow *a = b->add_successor(guard, target->ref (), new Jump(target));
+  apply_callbacks (a); 
 }
 
 /* Should the relation be a Formula instead? Probably. */
@@ -419,29 +422,28 @@ void Microcode::add_node(MicrocodeNode *n)
 {
   // TODO: optimization !
   nodes->push_back(n);
-  apply_callbacks (n);
 }
 
 void 
-Microcode::add_node_creation_callback (NodeCreationCallback *cb)
+Microcode::add_arrow_creation_callback (ArrowCreationCallback *cb)
 {
-  node_callbacks.push_back (cb);
+  arrow_callbacks.push_back (cb);
 }
 
 void 
-Microcode::remove_node_creation_callback (NodeCreationCallback *cb)
+Microcode::remove_arrow_creation_callback (ArrowCreationCallback *cb)
 {
-  node_callbacks.erase (find (node_callbacks.begin (), 
-			      node_callbacks.end (), cb));
+  arrow_callbacks.erase (find (arrow_callbacks.begin (), 
+			       arrow_callbacks.end (), cb));
 }
 
 void 
-Microcode::apply_callbacks (MicrocodeNode *node)
+Microcode::apply_callbacks (StmtArrow *a)
 {
-  std::vector<NodeCreationCallback *>::iterator i = node_callbacks.begin ();
+  std::vector<ArrowCreationCallback *>::iterator i = arrow_callbacks.begin ();
     
-  for (; i != node_callbacks.end (); i++)
-    (*i)->add_node (this, node);
+  for (; i != arrow_callbacks.end (); i++)
+    (*i)->add_node (this, a);
 }
 
 string Microcode::get_label_node(MicrocodeNode *n) const
@@ -565,12 +567,12 @@ Microcode *Microcode::get_subgraph(list<MicrocodeNode *>* subset)
   return res;
 }
 
-struct MCNodeCreate : public Microcode::NodeCreationCallback
+struct MCArrowCreate : public Microcode::ArrowCreationCallback
 {
-  list<MicrocodeNode *> nodes;
+  list<StmtArrow *> arrows;
 
-  void add_node (Microcode *, MicrocodeNode *node) {
-    nodes.push_back (node);
+  void add_node (Microcode *, StmtArrow *a) {
+    arrows.push_back (a);
   }
 };
 
@@ -591,8 +593,8 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
   set<ConcreteAddress, CmpConcreteAddress> tovisit;
   Decoder *decoder = DecoderFactory::get_Decoder(mcarch, mem);
   Microcode *mc = new Microcode ();
-  MCNodeCreate newnodes;
-  mc->add_node_creation_callback (&newnodes);
+  MCArrowCreate newarrows;
+  mc->add_arrow_creation_callback (&newarrows);
 
   mc->set_entry_point (MicrocodeAddress (start.get_address ()));
   tovisit.insert (start);
@@ -605,70 +607,52 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 	  visited.insert (addr);
 
 	  ConcreteAddress next = decoder->decode (mc, addr);
-	  while (!newnodes.nodes.empty ())
+	  while (!newarrows.arrows.empty ())
 	    {
-	      MicrocodeNode *node = newnodes.nodes.front ();
-	      if (node->get_loc ().getLocal () == 0)
+	      StmtArrow *arrow = newarrows.arrows.front ();
+	      newarrows.arrows.pop_front ();
+	      StaticArrow *sa = dynamic_cast<StaticArrow *> (arrow);
+	      MicrocodeAddress tgt;
+	      bool tgt_is_defined = false;
+	      
+	      if (sa == NULL)
 		{
-		  ConcreteAddress ctgt (node->get_loc ().getGlobal ());
-			  
-		  if (mem->is_defined(ctgt) && 
-		      visited.find(ctgt) == visited.end() && 
-		      tovisit.find(ctgt) == tovisit.end())
-		    tovisit.insert(ctgt);
-		}
-
-	      newnodes.nodes.pop_front ();
-
-	      std::vector<StmtArrow *> *successors = node->get_successors ();
-	      std::vector<StmtArrow *>::iterator s = successors->begin ();
-
-	      for (; s != successors->end (); s++)
-		{
-		  StmtArrow *arrow = *s;
-		  StaticArrow *sa = dynamic_cast<StaticArrow *> (arrow);
-		  MicrocodeAddress tgt;
-		  bool tgt_is_defined = false;
-
-		  if (sa == NULL)
+		  DynamicArrow *da = dynamic_cast<DynamicArrow *> (arrow);
+		  MemCell *mc = dynamic_cast<MemCell *> (da->get_target ());
+		  
+		  if (mc != NULL && mc->get_addr ()->is_Constant ())
 		    {
-		      DynamicArrow *da = dynamic_cast<DynamicArrow *> (*s);
-		      MemCell *mc = dynamic_cast<MemCell *> (da->get_target ());
-
-		      if (mc != NULL && mc->get_addr ()->is_Constant ())
+		      Constant *cst = 
+			dynamic_cast<Constant *> (mc->get_addr ());
+		      ConcreteAddress a (cst->get_val());
+		      
+		      if (mem->is_defined(a))
 			{
-			  Constant *cst = 
-			    dynamic_cast<Constant *> (mc->get_addr ());
-			  ConcreteAddress a (cst->get_val());
-
-			  if (mem->is_defined(a))
-			    {
-			      ConcreteValue val = 
-				mem->get (a, arch->address_range, 
-					  arch->endianness);
-			      tgt = MicrocodeAddress (val.get ());
-			      tgt_is_defined = true;
-			    }
+			  ConcreteValue val = 
+			    mem->get (a, arch->address_range, 
+				      arch->endianness);
+			  tgt = MicrocodeAddress (val.get ());
+			  tgt_is_defined = true;
 			}
 		    }
-		  else
-		    {
-		      tgt = sa->get_target();
-		      tgt_is_defined = true;
-		    }
-
-		  if (tgt_is_defined && tgt.getLocal () == 0)
-		    {
-		      ConcreteAddress ctgt (tgt.getGlobal ());
-			  
-		      if (mem->is_defined (ctgt) && 
-			  visited.find (ctgt) == visited.end () && 
-			  tovisit.find (ctgt) == tovisit.end ())
-			tovisit.insert (ctgt);
-		    }	
 		}
+	      else
+		{
+		  tgt = sa->get_target();
+		  tgt_is_defined = true;
+		}
+	      
+	      if (tgt_is_defined && tgt.getLocal () == 0)
+		{
+		  ConcreteAddress ctgt (tgt.getGlobal ());
+		  
+		  if (mem->is_defined (ctgt) && 
+		      visited.find (ctgt) == visited.end () && 
+		      tovisit.find (ctgt) == tovisit.end ())
+		    tovisit.insert (ctgt);
+		}	
 	    }
-        }
+	}
     }
   catch (std::exception &e)
     {
@@ -679,7 +663,7 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 
   delete decoder;
 
-  mc->remove_node_creation_callback (&newnodes);
+  mc->remove_arrow_creation_callback (&newarrows);
 
   return mc;
 }
