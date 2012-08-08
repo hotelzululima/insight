@@ -5,7 +5,8 @@ bin_PROGRAMS = cfgrecovery
 cfgrecovery_SOURCES = \
 	cfgrecovery.cc cfgrecovery.hh \
 	linearsweep.cc linearsweep.hh \
-	recursivetraversal.cc recursivetraversal.hh
+	recursivetraversal.cc recursivetraversal.hh \
+        ConcreteMemoryTraversal.cc ConcreteMemoryTraversal.hh
 
 cfgrecovery_CPPFLAGS = @BINUTILS_CFLAGS@ -I$(top_srcdir)/src
 cfgrecovery_CXXFLAGS = -Wno-deprecated
