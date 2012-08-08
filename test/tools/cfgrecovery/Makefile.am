@@ -10,8 +10,105 @@ CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
 CFGR_LSW_FLAGS = -d linear
+CFGR_RT_FLAGS = -d recursive
 
-X86_32_TESTS = \
+X86_32_RT_TESTS = \
+	x86_32-simulator-01.rt.res \
+	x86_32-simulator-02.rt.res \
+	x86_32-simulator-03.rt.res \
+	x86_32-simulator-04.rt.res \
+	x86_32-simulator-05.rt.res \
+	\
+	x86_32-simulator-aaa.rt.res \
+	x86_32-simulator-aad.rt.res \
+	x86_32-simulator-aam.rt.res \
+	x86_32-simulator-aas.rt.res \
+	x86_32-simulator-add.rt.res \
+	x86_32-simulator-adcsbb.rt.res \
+	\
+	x86_32-simulator-booleans.rt.res \
+	x86_32-simulator-bound.rt.res \
+	x86_32-simulator-bsf.rt.res \
+	x86_32-simulator-bsr.rt.res \
+	x86_32-simulator-bswap.rt.res \
+	x86_32-simulator-bt-01.rt.res \
+	x86_32-simulator-bt-02.rt.res \
+	x86_32-simulator-btc.rt.res \
+	x86_32-simulator-btr.rt.res \
+	x86_32-simulator-bts.rt.res \
+	\
+	x86_32-simulator-CF.rt.res \
+	x86_32-simulator-call.rt.res \
+	x86_32-simulator-cbw.rt.res \
+	x86_32-simulator-cmov.rt.res \
+	x86_32-simulator-cmps-01.rt.res \
+	x86_32-simulator-cmps-02.rt.res \
+	x86_32-simulator-cmpxchg.rt.res \
+	x86_32-simulator-cwdcdq.rt.res \
+	\
+	x86_32-simulator-daadas.rt.res \
+	x86_32-simulator-div.rt.res \
+	\
+	x86_32-simulator-enter-leave-01.rt.res \
+	x86_32-simulator-enter-leave-02.rt.res \
+	\
+	x86_32-simulator-idiv.rt.res \
+	x86_32-simulator-imul-01.rt.res \
+	x86_32-simulator-imul-02.rt.res \
+	x86_32-simulator-imul-03.rt.res \
+	x86_32-simulator-int.rt.res \
+	x86_32-simulator-int3.rt.res \
+	x86_32-simulator-into-01.rt.res \
+	x86_32-simulator-into-02.rt.res \
+	\
+	x86_32-simulator-lsahf.rt.res \
+	x86_32-simulator-lods.rt.res \
+	x86_32-simulator-loop.rt.res \
+	\
+	x86_32-simulator-movbe.rt.res \
+	x86_32-simulator-movs.rt.res \
+	x86_32-simulator-movsxz.rt.res \
+	x86_32-simulator-mul.rt.res \
+	\
+	x86_32-simulator-neg.rt.res \
+	\
+	x86_32-simulator-popcnt.rt.res \
+	x86_32-simulator-pushpop-01.rt.res \
+	x86_32-simulator-pushpop-02.rt.res \
+	x86_32-simulator-pushpop-03.rt.res \
+	x86_32-simulator-pushpop-04.rt.res \
+	x86_32-simulator-pushpop-05.rt.res \
+	x86_32-simulator-pushpop-06.rt.res \
+	x86_32-simulator-pushfpopf.rt.res \
+	x86_32-simulator-pushapopa.rt.res \
+	\
+	x86_32-simulator-rep-01.rt.res \
+	x86_32-simulator-rep-02.rt.res \
+	x86_32-simulator-rep-03.rt.res \
+	x86_32-simulator-rep-04.rt.res \
+	\
+	x86_32-simulator-rotate-01.rt.res \
+	x86_32-simulator-rotate-02.rt.res \
+	x86_32-simulator-rotate-03.rt.res \
+	x86_32-simulator-rotate-04.rt.res \
+	\
+	x86_32-simulator-shift-01.rt.res \
+	x86_32-simulator-shift-02.rt.res \
+	x86_32-simulator-shift-03.rt.res \
+	x86_32-simulator-shift-04.rt.res \
+	\
+	x86_32-simulator-scas.rt.res \
+	x86_32-simulator-sub.rt.res \
+	x86_32-simulator-setcc.rt.res \
+	\
+	x86_32-simulator-xadd.rt.res \
+	x86_32-simulator-xchg.rt.res \
+	\
+	x86_32-gcd.rt.res \
+        \
+        ${dummy}
+
+X86_32_LSW_TESTS = \
 	x86_32-aaa.lsw.res \
 	x86_32-aad.lsw.res \
 	x86_32-aam.lsw.res \
@@ -83,7 +180,103 @@ X86_32_TESTS = \
         ${dummy}
 
 if WITH_VALGRIND
-X86_32_TESTS += \
+X86_32_RT_TESTS += \
+	x86_32-simulator-01.rt.memres \
+	x86_32-simulator-02.rt.memres \
+	x86_32-simulator-03.rt.memres \
+	x86_32-simulator-04.rt.memres \
+	x86_32-simulator-05.rt.memres \
+	\
+	x86_32-simulator-aaa.rt.memres \
+	x86_32-simulator-aad.rt.memres \
+	x86_32-simulator-aam.rt.memres \
+	x86_32-simulator-aas.rt.memres \
+	x86_32-simulator-add.rt.memres \
+	x86_32-simulator-adcsbb.rt.memres \
+	\
+	x86_32-simulator-booleans.rt.memres \
+	x86_32-simulator-bound.rt.memres \
+	x86_32-simulator-bsf.rt.memres \
+	x86_32-simulator-bsr.rt.memres \
+	x86_32-simulator-bswap.rt.memres \
+	x86_32-simulator-bt-01.rt.memres \
+	x86_32-simulator-bt-02.rt.memres \
+	x86_32-simulator-btc.rt.memres \
+	x86_32-simulator-btr.rt.memres \
+	x86_32-simulator-bts.rt.memres \
+	\
+	x86_32-simulator-CF.rt.memres \
+	x86_32-simulator-call.rt.memres \
+	x86_32-simulator-cbw.rt.memres \
+	x86_32-simulator-cmov.rt.memres \
+	x86_32-simulator-cmps-01.rt.memres \
+	x86_32-simulator-cmps-02.rt.memres \
+	x86_32-simulator-cmpxchg.rt.memres \
+	x86_32-simulator-cwdcdq.rt.memres \
+	\
+	x86_32-simulator-daadas.rt.memres \
+	x86_32-simulator-div.rt.memres \
+	\
+	x86_32-simulator-enter-leave-01.rt.memres \
+	x86_32-simulator-enter-leave-02.rt.memres \
+	\
+	x86_32-simulator-idiv.rt.memres \
+	x86_32-simulator-imul-01.rt.memres \
+	x86_32-simulator-imul-02.rt.memres \
+	x86_32-simulator-imul-03.rt.memres \
+	x86_32-simulator-int.rt.memres \
+	x86_32-simulator-int3.rt.memres \
+	x86_32-simulator-into-01.rt.memres \
+	x86_32-simulator-into-02.rt.memres \
+	\
+	x86_32-simulator-lsahf.rt.memres \
+	x86_32-simulator-lods.rt.memres \
+	x86_32-simulator-loop.rt.memres \
+	\
+	x86_32-simulator-movbe.rt.memres \
+	x86_32-simulator-movs.rt.memres \
+	x86_32-simulator-movsxz.rt.memres \
+	x86_32-simulator-mul.rt.memres \
+	\
+	x86_32-simulator-neg.rt.memres \
+	\
+	x86_32-simulator-popcnt.rt.memres \
+	x86_32-simulator-pushpop-01.rt.memres \
+	x86_32-simulator-pushpop-02.rt.memres \
+	x86_32-simulator-pushpop-03.rt.memres \
+	x86_32-simulator-pushpop-04.rt.memres \
+	x86_32-simulator-pushpop-05.rt.memres \
+	x86_32-simulator-pushpop-06.rt.memres \
+	x86_32-simulator-pushfpopf.rt.memres \
+	x86_32-simulator-pushapopa.rt.memres \
+	\
+	x86_32-simulator-rep-01.rt.memres \
+	x86_32-simulator-rep-02.rt.memres \
+	x86_32-simulator-rep-03.rt.memres \
+	x86_32-simulator-rep-04.rt.memres \
+	\
+	x86_32-simulator-rotate-01.rt.memres \
+	x86_32-simulator-rotate-02.rt.memres \
+	x86_32-simulator-rotate-03.rt.memres \
+	x86_32-simulator-rotate-04.rt.memres \
+	\
+	x86_32-simulator-shift-01.rt.memres \
+	x86_32-simulator-shift-02.rt.memres \
+	x86_32-simulator-shift-03.rt.memres \
+	x86_32-simulator-shift-04.rt.memres \
+	\
+	x86_32-simulator-scas.rt.memres \
+	x86_32-simulator-sub.rt.memres \
+	x86_32-simulator-setcc.rt.memres \
+	\
+	x86_32-simulator-xadd.rt.memres \
+	x86_32-simulator-xchg.rt.memres \
+	\
+	x86_32-gcd.rt.memres \
+        \
+        ${dummy}
+
+X86_32_LSW_TESTS += \
 	x86_32-aaa.lsw.memres \
 	x86_32-aad.lsw.memres \
 	x86_32-aam.lsw.memres \
@@ -155,7 +348,7 @@ X86_32_TESTS += \
         ${dummy}
 endif
 
-BASE_TESTS = ${X86_32_TESTS}
+BASE_TESTS = ${X86_32_RT_TESTS} ${X86_32_LSW_TESTS} 
 
 
 TESTS = \
@@ -171,8 +364,14 @@ MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 %.lsw.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
 	 @${CFGRECOVERY} ${CFGR_LSW_FLAGS}  $< > $@ 2>&1
 
+%.rt.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	 @${CFGRECOVERY} ${CFGR_RT_FLAGS}  $< > $@ 2>&1
+
 %.lsw.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
 	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_LSW_FLAGS} $< > $@ 2>&1
+
+%.rt.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} $< > $@ 2>&1
 
 check-diff : ${BASE_TESTS}
 	@ > check-diff
