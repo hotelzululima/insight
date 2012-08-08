@@ -108,8 +108,9 @@ public:
   /*! \brief Retrieve all the contents of cells pointed by addresses
       in a and makes the union of all these sets. size is given in bytes */
   virtual SetsValue get(const SetsAddress &a, int size, 
-			Architecture::endianness_t e)
+			Architecture::endianness_t e) const
     throw (Architecture::UndefinedValue);
+
 
   /*! \brief For each concrete address ca contained in a, adds the
    *  elements of v into the set pointed by ca.

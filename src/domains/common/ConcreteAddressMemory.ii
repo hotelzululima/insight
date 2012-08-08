@@ -86,15 +86,15 @@ ConcreteAddressMemory<Value>::ConcreteAddressMemory(const ConcreteAddressMemory<
 
 template <class Value>
 Value ConcreteAddressMemory<Value>::get(const ConcreteAddress &a, int size,
-                                        Architecture::endianness_t e)
+                                        Architecture::endianness_t e) const
   throw (Architecture::UndefinedValue)
 {
 
-  typename memory_type::iterator it = memory.find(a.get_address());
+  typename memory_type::const_iterator it = memory.find(a.get_address());
   if (it != memory.end())
     {
-      ConcreteAddressMemoryCell &cell = it->second;
-      ConcreteAddressMemoryValue *mval = cell.mvalue;
+      const ConcreteAddressMemoryCell &cell = it->second;
+      const ConcreteAddressMemoryValue *mval = cell.mvalue;
 
       if (!mval->is_broken && mval->value.get_size() == size * 8 &&
           mval->endianness == e &&

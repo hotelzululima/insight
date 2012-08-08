@@ -82,7 +82,8 @@ public:
 
   /*! \brief get a value of size bytes at address a with endianness e */
   virtual Value get(const ConcreteAddress &a, int size, 
-		    Architecture::endianness_t e) throw (Architecture::UndefinedValue);
+		    Architecture::endianness_t e) const 
+    throw (Architecture::UndefinedValue);
 
   /*! \brief put a value v at address a with endianness e */
   virtual void put(const ConcreteAddress &a, const Value &v, 

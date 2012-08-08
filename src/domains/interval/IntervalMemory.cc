@@ -43,7 +43,7 @@ IntervalMemory::IntervalMemory() :
 
 IntervalValue
 IntervalMemory::get(const IntervalAddress &ia, int size, 
-		    Architecture::endianness_t e)
+		    Architecture::endianness_t e) const
                    throw (Architecture::UndefinedValue)
 {
 

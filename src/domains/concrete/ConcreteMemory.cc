@@ -73,7 +73,7 @@ ConcreteMemory::~ConcreteMemory()
 ConcreteValue
 ConcreteMemory::get(const ConcreteAddress &addr,
 		    const int size,
-		    const Architecture::endianness_t e) 
+		    const Architecture::endianness_t e) const
   throw (Architecture::UndefinedValue)
 {
   word_t res = 0;
@@ -87,7 +87,7 @@ ConcreteMemory::get(const ConcreteAddress &addr,
       if (!is_defined(ConcreteAddress(cur)))
 	throw Architecture::UndefinedValue(addr.to_string ());
 
-      res = (res << 8) | memory[cur];
+      res = (res << 8) | memory.find(cur)->second;
     }
 
   return ConcreteValue(8 * size, res);

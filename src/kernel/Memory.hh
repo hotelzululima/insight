@@ -53,7 +53,7 @@ public:
 
   virtual ~Memory() {};
 
-  virtual Value get(const Address &, int, Architecture::endianness_t) 
+  virtual Value get(const Address &, int, Architecture::endianness_t) const
     throw (Architecture::UndefinedValue) = 0;
 
   virtual void put(const Address &, const Value &,

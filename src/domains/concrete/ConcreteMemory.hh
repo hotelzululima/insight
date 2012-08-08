@@ -85,7 +85,7 @@ public:
    *   UndefinedValue. */
   virtual ConcreteValue get(const ConcreteAddress &,
 			    const int size,
-			    const Architecture::endianness_t) 
+			    const Architecture::endianness_t) const
     throw (Architecture::UndefinedValue);
 
   /** \brief Put the value into the memory cell at a given address. */
