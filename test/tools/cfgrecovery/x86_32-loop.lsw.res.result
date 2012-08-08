@@ -20,7 +20,8 @@
 [(0x15,1)] ; StaticArrow (0x15,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %eflags{6;1}){0;1} >> --> (0x1F,0); StaticArrow (0x15,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %eflags{6;1}){0;1}){0;1} >> --> (0x18,0)
 [(0x18,0)] @{asm:=loopnew 0x99}@ ; %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16}
 [(0x18,1)] ; StaticArrow (0x18,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %eflags{6;1}){0;1}){0;1} >> --> (0x99,0); StaticArrow (0x18,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %eflags{6;1}){0;1}){0;1}){0;1} >> --> (0x1B,0)
-[(0x19,0)] 
+[(0x19,0)] @{asm:=loopne 0x99}@ ; %ecx := (SUB %ecx 0x1)
+[(0x19,1)] ; StaticArrow (0x19,1) Skip << (AND (NEQ %ecx 0x0){0;1} (NOT %eflags{6;1}){0;1}){0;1} >> --> (0x99,0); StaticArrow (0x19,1) Skip << (NOT (AND (NEQ %ecx 0x0){0;1} (NOT %eflags{6;1}){0;1}){0;1}){0;1} >> --> (0x1B,0)
 [(0x1B,0)] 
 [(0x1F,0)] 
 [(0x83,0)] 

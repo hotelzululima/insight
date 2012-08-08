@@ -36,7 +36,22 @@
 #include <domains/concrete/ConcreteMemory.hh>
 #include <kernel/Microcode.hh>
 
+#include "ConcreteMemoryTraversal.hh"
 #include "cfgrecovery.hh"
+
+class LinearSweepTraversal : public ConcreteMemoryTraversal
+{
+public :
+  LinearSweepTraversal (bool scan_all, 
+			const ConcreteMemory *memory, Decoder *decoder);
+  ~LinearSweepTraversal ();
+
+protected:
+  void treat_new_arrow (const ConcreteAddress &loc, const StmtArrow *arrow, 
+			const ConcreteAddress &next);
+private:
+  bool scan_all;
+};
 
 /* Linear sweep disassembly method */
 Microcode * linearsweep (const ConcreteAddress * entrypoint,

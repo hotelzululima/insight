@@ -32,105 +32,47 @@
 
 #include <kernel/annotations/CallRetAnnotation.hh>
 
+#include "linearsweep.hh"
 #include "recursivetraversal.hh"
 
 using namespace std;
 
-static void
-inner_recursivetraversal (const ConcreteAddress * entrypoint,
-			  Microcode * mc,
-			  ConcreteMemory * memory,
-			  Decoder * decoder)
+class RecursiveTraversal : public LinearSweepTraversal
 {
-  ConcreteAddress next_addr, current_addr = *entrypoint;
+  list<ConcreteAddress> stack;
 
-  while (memory->is_defined(current_addr))
-    {
-      try
-	{
-	  /* Decode current instruction and get next address */
-	  next_addr = decoder->decode(mc, current_addr);
+public :
+  RecursiveTraversal (const ConcreteMemory *memory, Decoder *decoder) 
+    : LinearSweepTraversal (false, memory, decoder), stack ()
+  {
+  }
+      
+  ~RecursiveTraversal ()
+  {
+  }
 
-	  /* Get current MicrocodeNode */
-	  MicrocodeNode * current_node =
-	    mc->get_node(MicrocodeAddress(current_addr.get_address()));
+protected:
+  void treat_new_arrow (const ConcreteAddress &loc, const StmtArrow *arrow, 
+			const ConcreteAddress &next)
+  {    
+    this->LinearSweepTraversal::treat_new_arrow (loc, arrow, next);
 
-
-	  if (verbosity > 1)
-	    cout << "Node inspected : "<< current_node->pp() << endl;
-	  
-	  if (current_node->is_annotated())
-	    {
-	      CallRetAnnotation * callret = (CallRetAnnotation *)
-		current_node->get_annotation (CallRetAnnotation::ID);
-
-	      /* Current instruction is a call/ret */
-	      if (callret != NULL)
-		{
-		  /* Instruction is a call */
-		  if (callret->is_call())
-		    {
-		      if (verbosity > 1)
-			cout << "Call detected!" << endl;
-		      
-		      MicrocodeNode * current_mloc = current_node;
-		      StmtArrow * next_edge =
-			mc->get_first_successor(current_mloc).first;
-		      MicrocodeNode * next_mloc =
-			mc->get_first_successor(current_mloc).second;
-		      
-		      while ((next_edge != NULL) && (next_mloc != NULL))
-			{
-			  if (verbosity > 1)
-			    cout << "Next node inspected: "
-				 << next_mloc->pp() << endl;
-		      
-			  if (current_node->get_loc().getGlobal() !=
-			      next_mloc->get_loc().getGlobal())
-			    {
-			      const ConcreteAddress addr =
-				ConcreteAddress(next_mloc->get_loc().getGlobal());
-
-			      if (verbosity > 1)
-				cout << "Entering recursion at "
-				     << hex << addr << dec << endl;
-			      
-			      inner_recursivetraversal(&addr, mc,
-						       memory, decoder);
-			      break;
-			    }
-			  
-			  current_mloc = next_mloc;
-			  
-			  next_edge =
-			    mc->get_first_successor(current_mloc).first;
-			  next_mloc =
-			    mc->get_first_successor(current_mloc).second;
-			}
-		    }
-		  else
-		    {
-		      if (verbosity > 1)
-			cout << "Ret detected at "
-			     << hex << current_node->get_loc().getGlobal() << dec
-			     << endl;
-		      return; /* ret has been reached, poping the stack */
-		    }
-		}
-	    }
-	  current_addr = next_addr;
-	}
-      catch (exception& e)
-	{
-	  if (verbosity > 1)
-	    *output << mc->pp() << endl;
-
-	  cerr << prog_name << ": error" << e.what() << endl;
-	  exit(EXIT_FAILURE);
-	}
-    }
-}
-
+    MicrocodeNode *src = arrow->get_src ();
+    if (! src->has_annotation (CallRetAnnotation::ID))
+      return;
+    CallRetAnnotation *an = (CallRetAnnotation *) 
+      src->get_annotation (CallRetAnnotation::ID);
+    if (an->is_call ())
+      stack.push_front (next);
+    else
+      {
+	ConcreteAddress ret = stack.front ();
+	stack.pop_front ();
+	if (can_visit (ret))
+	  add_to_todo_list (ret);
+      }
+  }
+};
 
 /* Recursive traversal disassembly method */
 Microcode *
@@ -139,8 +81,9 @@ recursivetraversal (const ConcreteAddress * entrypoint,
 		    Decoder * decoder)
 {
   Microcode * mc = new Microcode();
+  RecursiveTraversal rt (memory, decoder);
 
-  inner_recursivetraversal(entrypoint, mc, memory, decoder);
+  rt.compute (mc, *entrypoint);
 
   return mc;
 }
