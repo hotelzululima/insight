@@ -52,24 +52,72 @@ public :
   }
 
 protected:
-  void treat_new_arrow (const ConcreteAddress &loc, const StmtArrow *arrow, 
+  void treat_new_arrow (const MicrocodeNode *entry, const StmtArrow *arrow, 
 			const ConcreteAddress &next)
   {    
-    this->LinearSweepTraversal::treat_new_arrow (loc, arrow, next);
+    this->LinearSweepTraversal::treat_new_arrow (entry, arrow, next);
 
     MicrocodeNode *src = arrow->get_src ();
+
     if (! src->has_annotation (CallRetAnnotation::ID))
       return;
+
     CallRetAnnotation *an = (CallRetAnnotation *) 
       src->get_annotation (CallRetAnnotation::ID);
     if (an->is_call ())
-      stack.push_front (next);
-    else
+      {
+	const Expr *tgt = an->get_target ();
+	ConcreteAddress ctgt;
+	bool ctgt_is_defined = false;
+	if (tgt->is_Constant ())
+	  {
+	    const Constant *c = dynamic_cast<const Constant *> (tgt);
+	    ctgt = ConcreteAddress (c->get_val ());
+	    ctgt_is_defined = true;
+	  }
+	else if (tgt->is_MemCell ())
+	  {
+	    const MemCell *mc = dynamic_cast<const MemCell *> (tgt);
+      
+	    if (mc != NULL && mc->get_addr ()->is_Constant ())
+	      {
+		Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());
+		ConcreteAddress a (cst->get_val());
+	  
+		if (mem->is_defined(a))
+		  {
+		    const Architecture *arch = 
+		      decoder->get_arch ()->get_reference_arch ();
+		    ConcreteValue val = 
+		      mem->get (a, arch->address_range, arch->endianness);
+		    ctgt = ConcreteAddress (val.get ());
+		    ctgt_is_defined = true;
+		  }
+	      }
+	  }
+  
+	if (ctgt_is_defined)
+	  {
+	    if (mem->is_defined (ctgt))
+	      {
+		if (already_visited (ctgt))
+		  add_to_todo_list (next);
+		else
+		  stack.push_back (next);
+	      }
+	  }
+      }
+    else if (! stack.empty ())
       {
 	ConcreteAddress ret = stack.front ();
 	stack.pop_front ();
 	if (can_visit (ret))
 	  add_to_todo_list (ret);
+      }
+    else
+      {
+	cerr << "0x" << src->get_loc ()
+	     << ": error: ret without matching call" << endl;
       }
   }
 };

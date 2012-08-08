@@ -41,10 +41,10 @@ ExprAnnotation::ExprAnnotation (const ExprAnnotation &other)
   set_expr (other.expr);
 }
 
-ExprAnnotation::ExprAnnotation (Expr *F)
-  : Annotation ()
+ExprAnnotation::ExprAnnotation (const Expr *F)
+  : Annotation (), expr (NULL)
 {
-  expr = F->ref ();
+  set_expr (F);
 }
 
 ExprAnnotation::~ExprAnnotation()
@@ -66,11 +66,14 @@ ExprAnnotation::clone() const
 }
 
 void 
-ExprAnnotation::set_expr (Expr *F)
+ExprAnnotation::set_expr (const Expr *F)
 {
   if (expr != NULL)
     expr->deref ();
-  expr = F->ref ();  
+  if (F != NULL)
+    expr = F->ref ();
+  else
+    expr = NULL;
 }
 
 			/* --------------- */

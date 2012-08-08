@@ -41,7 +41,7 @@ public:
 
   ExprAnnotation (const ExprAnnotation &other);
 
-  ExprAnnotation (Expr *F);
+  ExprAnnotation (const Expr *F);
 
   virtual ~ExprAnnotation ();
 
@@ -49,7 +49,7 @@ public:
 
   virtual void *clone () const;
 
-  virtual void set_expr (Expr *F);
+  virtual void set_expr (const Expr *F);
 
   virtual const Expr *get_expr () const;
 

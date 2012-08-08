@@ -47,9 +47,10 @@ public:
   virtual void compute (Microcode *mc, const ConcreteAddress &entrypoint);
 
   virtual bool can_visit (const ConcreteAddress &loc) const;
+  virtual bool already_visited (const ConcreteAddress &loc) const;
 
 protected:
-  virtual void treat_new_arrow (const ConcreteAddress &loc,
+  virtual void treat_new_arrow (const MicrocodeNode *entry,
 				const StmtArrow *a,
 				const ConcreteAddress &next) = 0;
 

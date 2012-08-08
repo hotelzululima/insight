@@ -30,18 +30,19 @@
 #ifndef KERNEL_ANNOTATIONS_CALLRET_ANNOTATION_HH
 #define KERNEL_ANNOTATIONS_CALLRET_ANNOTATION_HH
 
+#include <kernel/Expressions.hh>
 #include <kernel/Annotable.hh>
-#include <kernel/annotations/BooleanAnnotation.hh>
+#include <kernel/annotations/ExprAnnotation.hh>
 
-class CallRetAnnotation : public BooleanAnnotation
+class CallRetAnnotation : public ExprAnnotation
 {
 private:
-  CallRetAnnotation (bool is_call);
+  CallRetAnnotation (const Expr *target);
 
 public:
   static Annotable::AnnotationId ID;
 
-  static CallRetAnnotation *create_call ();
+  static CallRetAnnotation *create_call (const Expr *target);
   static CallRetAnnotation *create_ret ();
 
   virtual ~CallRetAnnotation();
@@ -51,6 +52,8 @@ public:
   virtual void *clone () const;
 
   virtual bool is_call () const;
+
+  virtual const Expr *get_target () const;
 };
 
 

@@ -47,7 +47,7 @@ LinearSweepTraversal::~LinearSweepTraversal ()
 }
 
 void 
-LinearSweepTraversal::treat_new_arrow (const ConcreteAddress &, 
+LinearSweepTraversal::treat_new_arrow (const MicrocodeNode *, 
 				       const StmtArrow *arrow,
 				       const ConcreteAddress &next)
 {

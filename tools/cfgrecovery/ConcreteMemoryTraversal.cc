@@ -58,8 +58,13 @@ ConcreteMemoryTraversal::can_visit (const ConcreteAddress &loc) const
 { 
   address_t addr = loc.get_address ();
 
-  return (visited.find (addr) == visited.end () &&
-	  in_todo.find (addr) == in_todo.end ());
+  return (!already_visited (loc) && in_todo.find (addr) == in_todo.end ());
+}
+
+bool 
+ConcreteMemoryTraversal::already_visited (const ConcreteAddress &loc) const
+{
+  return visited.find (loc.get_address ()) != visited.end ();
 }
 
 void 
@@ -107,11 +112,12 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
 	  cerr << addr << " : " << inst << endl;
 	}
       ConcreteAddress next = decoder->decode (mc, addr);
-
+      MicrocodeAddress ma (addr.get_address ());
+      MicrocodeNode *node = mc->get_node (ma);
       while (! cb.arrows.empty ())
 	{
 	  StmtArrow *a = cb.arrows.front ();
-	  treat_new_arrow (addr, a, next);
+	  treat_new_arrow (node, a, next);
 	  cb.arrows.pop_front ();
         }      
     }
