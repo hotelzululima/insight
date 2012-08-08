@@ -1,15 +1,3 @@
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
 [(0x0,0)] @{asm:=cmpsb  %es:(%edi),%ds:(%esi)}@ ; %tmpr0_9{0;9} := (SUB [%edi]{0;8} [%esi]{0;8}){0;9}
 [(0x0,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
 [(0x0,2)] ; %eflags{11;1} := (AND (XOR [%edi]{7;1} %tmpr0_9{7;1}){0;1} (XOR [%edi]{7;1} [%esi]{7;1}){0;1}){0;1}

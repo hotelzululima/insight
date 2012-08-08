@@ -1,5 +1,4 @@
 **** Decode instruction: scas   %es:(%edi),%al
-section registers are not yet supported
 [(0x0,0)] @{asm:=scas   %es:(%edi),%al}@ ; %tmpr0_9{0;9} := (SUB %eax{0;8} [(ADD %edi 0x0)]{0;8}){0;9}
 [(0x0,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
 [(0x0,2)] ; %eflags{11;1} := (AND (XOR %eax{7;1} %tmpr0_9{7;1}){0;1} (XOR %eax{7;1} [(ADD %edi 0x0)]{7;1}){0;1}){0;1}
@@ -13,7 +12,6 @@ section registers are not yet supported
 [(0x1,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%ax
-section registers are not yet supported
 [(0x1,0)] @{asm:=scas   %es:(%edi),%ax}@ ; %tmpr0_17{0;17} := (SUB %eax{0;16} [(ADD %edi 0x0)]{0;16}){0;17}
 [(0x1,1)] ; %eflags{0;1} := %tmpr0_17{16;1}
 [(0x1,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_17{15;1}){0;1} (XOR %eax{15;1} [(ADD %edi 0x0)]{15;1}){0;1}){0;1}
@@ -27,7 +25,6 @@ section registers are not yet supported
 [(0x3,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%eax
-section registers are not yet supported
 [(0x3,0)] @{asm:=scas   %es:(%edi),%eax}@ ; %tmpr0_33{0;33} := (SUB %eax [(ADD %edi 0x0)]){0;33}
 [(0x3,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
 [(0x3,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} [(ADD %edi 0x0)]{31;1}){0;1}){0;1}
@@ -41,7 +38,6 @@ section registers are not yet supported
 [(0x4,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%al
-section registers are not yet supported
 [(0x4,0)] @{asm:=scas   %es:(%edi),%al}@ ; %tmpr0_9{0;9} := (SUB %eax{0;8} [(ADD %edi 0x0)]{0;8}){0;9}
 [(0x4,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
 [(0x4,2)] ; %eflags{11;1} := (AND (XOR %eax{7;1} %tmpr0_9{7;1}){0;1} (XOR %eax{7;1} [(ADD %edi 0x0)]{7;1}){0;1}){0;1}
@@ -55,7 +51,6 @@ section registers are not yet supported
 [(0x5,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%ax
-section registers are not yet supported
 [(0x5,0)] @{asm:=scas   %es:(%edi),%ax}@ ; %tmpr0_17{0;17} := (SUB %eax{0;16} [(ADD %edi 0x0)]{0;16}){0;17}
 [(0x5,1)] ; %eflags{0;1} := %tmpr0_17{16;1}
 [(0x5,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_17{15;1}){0;1} (XOR %eax{15;1} [(ADD %edi 0x0)]{15;1}){0;1}){0;1}
@@ -69,7 +64,6 @@ section registers are not yet supported
 [(0x7,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%eax
-section registers are not yet supported
 [(0x7,0)] @{asm:=scas   %es:(%edi),%eax}@ ; %tmpr0_33{0;33} := (SUB %eax [(ADD %edi 0x0)]){0;33}
 [(0x7,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
 [(0x7,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} [(ADD %edi 0x0)]{31;1}){0;1}){0;1}
@@ -83,7 +77,6 @@ section registers are not yet supported
 [(0x8,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%al
-section registers are not yet supported
 [(0x8,0)] @{asm:=scas   %es:(%edi),%al}@ ; %tmpr0_9{0;9} := (SUB %eax{0;8} [(ADD %edi 0x0)]{0;8}){0;9}
 [(0x8,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
 [(0x8,2)] ; %eflags{11;1} := (AND (XOR %eax{7;1} %tmpr0_9{7;1}){0;1} (XOR %eax{7;1} [(ADD %edi 0x0)]{7;1}){0;1}){0;1}
@@ -97,7 +90,6 @@ section registers are not yet supported
 [(0x9,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%ax
-section registers are not yet supported
 [(0x9,0)] @{asm:=scas   %es:(%edi),%ax}@ ; %tmpr0_17{0;17} := (SUB %eax{0;16} [(ADD %edi 0x0)]{0;16}){0;17}
 [(0x9,1)] ; %eflags{0;1} := %tmpr0_17{16;1}
 [(0x9,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_17{15;1}){0;1} (XOR %eax{15;1} [(ADD %edi 0x0)]{15;1}){0;1}){0;1}
@@ -111,7 +103,6 @@ section registers are not yet supported
 [(0xB,0)] 
 
 **** Decode instruction: scas   %es:(%edi),%eax
-section registers are not yet supported
 [(0xB,0)] @{asm:=scas   %es:(%edi),%eax}@ ; %tmpr0_33{0;33} := (SUB %eax [(ADD %edi 0x0)]){0;33}
 [(0xB,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
 [(0xB,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} [(ADD %edi 0x0)]{31;1}){0;1}){0;1}

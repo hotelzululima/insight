@@ -1,27 +1,3 @@
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
-section registers are not yet supported
 [(0x0,0)] @{asm:=lods   %ds:(%esi),%al}@ ; %eax{0;8} := [%esi]{0;8}
 [(0x0,1)] ; StaticArrow (0x0,1) Skip << %eflags{10;1} >> --> (0x0,2); StaticArrow (0x0,1) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x0,3)
 [(0x0,2)] ; StaticArrow (0x0,2) %esi := (SUB %esi 0x1)  --> (0x1,0)

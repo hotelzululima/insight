@@ -125,7 +125,7 @@ x86_32::parser_data::get_memory_reference (Expr *section, int disp,
 {  
   if (section != NULL)
     {
-      cerr << "section registers are not yet supported" << endl;
+      //cerr << "section registers are not yet supported" << endl;
       //section = MemCell::create (get_register (data_segment));
       section->deref ();
       //abort ();
