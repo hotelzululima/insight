@@ -1,8 +1,3 @@
-X86_32_SIM_TESTS = \
- \
-  GCD x86_32_gcd.bin \
-  ${dummy}
-
 X86_32_OBJECTS= \
   x86_32-aaa.bin \
   x86_32-aad.bin \
@@ -167,7 +162,7 @@ X86_32_OBJECTS= \
   x86_32-simulator-xadd.bin  \
   x86_32-simulator-xchg.bin  \
   \
-  x86_32-cfgrecovery-rt-01.bin \
+  x86_32-cfgrecovery-01.bin \
   \
   ${dummy}
 

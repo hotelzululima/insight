@@ -43,21 +43,19 @@ X86_32_TRANSLATE_1_OP (CALL)
   x86_32_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
 
   Expr *addr = mc->get_addr ();
-  Expr *tgt;
+  MicrocodeAddress here (start);
   if (addr->is_Constant ())
     {
       MicrocodeAddress fct (dynamic_cast<Constant *>(addr)->get_val ());
       data.mc->add_skip (start, fct);
-      tgt = addr;
     }
   else
     {
       data.mc->add_jump (start, addr ->ref ());
-      tgt = mc;
     }
-  MicrocodeNode *start_node = data.mc->get_node (data.start_ma);
+  MicrocodeNode *start_node = data.mc->get_node (here);
   start_node->add_annotation (CallRetAnnotation::ID,
-			      CallRetAnnotation::create_call (tgt));
+			      CallRetAnnotation::create_call (addr));
   mc->deref ();
 }
 
@@ -69,10 +67,9 @@ X86_32_TRANSLATE_0_OP (RET)
   MicrocodeAddress start = data.start_ma;
   x86_32_pop (start, data, tmpr0);
 
-  data.mc->add_jump (start, tmpr0->ref ());
-
-  MicrocodeNode *start_node = data.mc->get_node (data.start_ma);
+  MicrocodeNode *start_node = data.mc->get_node (start);
   start_node->add_annotation (CallRetAnnotation::ID,
 			      CallRetAnnotation::create_ret ());
+  data.mc->add_jump (start, tmpr0->ref ());
 }
 

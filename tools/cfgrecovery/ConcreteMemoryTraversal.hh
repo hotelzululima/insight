@@ -50,7 +50,8 @@ public:
   virtual bool already_visited (const ConcreteAddress &loc) const;
 
 protected:
-  virtual void treat_new_arrow (const MicrocodeNode *entry,
+  virtual void treat_new_arrow (Microcode *mc, 
+				const MicrocodeNode *entry,
 				const StmtArrow *a,
 				const ConcreteAddress &next) = 0;
 

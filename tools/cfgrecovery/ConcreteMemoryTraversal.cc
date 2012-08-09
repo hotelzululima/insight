@@ -117,7 +117,7 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
       while (! cb.arrows.empty ())
 	{
 	  StmtArrow *a = cb.arrows.front ();
-	  treat_new_arrow (node, a, next);
+	  treat_new_arrow (mc, node, a, next);
 	  cb.arrows.pop_front ();
         }      
     }

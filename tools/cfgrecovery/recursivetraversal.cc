@@ -31,15 +31,33 @@
 #include <stdlib.h>
 
 #include <kernel/annotations/CallRetAnnotation.hh>
+#include <analyses/slicing/Slicing.hh>
+#include <tr1/unordered_map>
 
 #include "linearsweep.hh"
 #include "recursivetraversal.hh"
 
 using namespace std;
+using namespace std::tr1;
 
 class RecursiveTraversal : public LinearSweepTraversal
 {
+  struct CA_Hash { 
+    size_t operator()(const ConcreteAddress &F) const {
+      return F.get_address ();
+    }
+    bool operator()(const ConcreteAddress &F1, 
+		    const ConcreteAddress &F2) const {
+      return F1 == F2;
+    }
+  };
+
   list<ConcreteAddress> stack;
+
+  unordered_map<ConcreteAddress, pair<MicrocodeNode *, Expr *>,
+		CA_Hash, CA_Hash > call_ret_store;
+
+
 
 public :
   RecursiveTraversal (const ConcreteMemory *memory, Decoder *decoder) 
@@ -52,10 +70,11 @@ public :
   }
 
 protected:
-  void treat_new_arrow (const MicrocodeNode *entry, const StmtArrow *arrow, 
+  void treat_new_arrow (Microcode *mc, 
+			const MicrocodeNode *entry, const StmtArrow *arrow, 
 			const ConcreteAddress &next)
   {    
-    this->LinearSweepTraversal::treat_new_arrow (entry, arrow, next);
+    LinearSweepTraversal::treat_new_arrow (mc, entry, arrow, next);
 
     MicrocodeNode *src = arrow->get_src ();
 
@@ -96,27 +115,70 @@ protected:
 	      }
 	  }
   
-	if (ctgt_is_defined)
+	if (ctgt_is_defined && mem->is_defined (ctgt))
 	  {
-	    if (mem->is_defined (ctgt))
+	    if (already_visited (ctgt))
+	      {		    
+		address_t na = next.get_address ();
+		assert (! (call_ret_store.find (ctgt) == 
+			   call_ret_store.end ()));
+		pair<MicrocodeNode *, Expr *> retnode = call_ret_store[ctgt];
+		Expr *rettgt = retnode.second;
+		Expr *cond =
+		  Expr::createEquality (rettgt->ref (),
+					Constant::create (na, 0, 
+							  rettgt->get_bv_size ()));
+		MicrocodeAddress nma (na);
+		MicrocodeNode *tgt = mc->get_or_create_node (nma);
+		StmtArrow *a =
+		  retnode.first->add_successor (cond, tgt, new Skip ());
+		LinearSweepTraversal::treat_new_arrow (mc, entry, a, next);
+	      }
+	    else
 	      {
-		if (already_visited (ctgt))
-		  add_to_todo_list (next);
-		else
-		  stack.push_back (next);
+		ConcreteAddress call (entry->get_loc ().getGlobal ());
+		assert (call_ret_store.find (next) == call_ret_store.end ());
+		stack.push_front (ctgt);
+		stack.push_front (next);
 	      }
 	  }
       }
     else if (! stack.empty ())
       {
-	ConcreteAddress ret = stack.front ();
+	ConcreteAddress ret(stack.front ());
+	stack.pop_front ();
+	ConcreteAddress call(stack.front ());
 	stack.pop_front ();
 	if (can_visit (ret))
-	  add_to_todo_list (ret);
+	  {
+	    const DynamicArrow *da = dynamic_cast<const DynamicArrow *> (arrow);
+
+	    if (da != NULL)
+	      {
+		Expr *target = da->get_target ();
+		call_ret_store[call].first = arrow->get_src ();
+		call_ret_store[call].second = target;
+		address_t na = ret.get_address ();
+		Expr *cond =
+		  Expr::createEquality (target->ref (),
+					Constant::create (na, 
+							  0, 
+							  target->get_bv_size ()));
+		MicrocodeAddress nma (na);
+		MicrocodeNode *tgt = mc->get_or_create_node (nma);
+		StmtArrow *a =
+		  arrow->get_src ()->add_successor (cond, tgt, new Skip ());
+		LinearSweepTraversal::treat_new_arrow (mc, entry, a, next);
+	      }
+	    else
+	      {
+		add_to_todo_list (ret);
+	      }
+	  }
       }
     else
       {
-	cerr << "0x" << src->get_loc ()
+	cerr << src->get_loc ()
 	     << ": error: ret without matching call" << endl;
       }
   }

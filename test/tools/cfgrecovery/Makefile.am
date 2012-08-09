@@ -13,6 +13,8 @@ CFGR_LSW_FLAGS = -d linear
 CFGR_RT_FLAGS = -d recursive
 
 X86_32_RT_TESTS = \
+	x86_32-cfgrecovery-01.rt.res \
+        \
 	x86_32-simulator-01.rt.res \
 	x86_32-simulator-02.rt.res \
 	x86_32-simulator-03.rt.res \
@@ -177,10 +179,14 @@ X86_32_LSW_TESTS = \
 	x86_32-xchg.lsw.res \
 	x86_32-xor.lsw.res \
         \
+	x86_32-cfgrecovery-01.lsw.res \
+        \
         ${dummy}
 
 if WITH_VALGRIND
 X86_32_RT_TESTS += \
+	x86_32-cfgrecovery-01.rt.memres \
+        \
 	x86_32-simulator-01.rt.memres \
 	x86_32-simulator-02.rt.memres \
 	x86_32-simulator-03.rt.memres \
@@ -344,6 +350,8 @@ X86_32_LSW_TESTS += \
 	x86_32-xadd.lsw.memres \
 	x86_32-xchg.lsw.memres \
 	x86_32-xor.lsw.memres \
+        \
+	x86_32-cfgrecovery-01.lsw.res \
         \
         ${dummy}
 endif

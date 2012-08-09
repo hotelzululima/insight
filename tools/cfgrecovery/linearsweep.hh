@@ -47,7 +47,8 @@ public :
   ~LinearSweepTraversal ();
 
 protected:
-  void treat_new_arrow (const MicrocodeNode *, const StmtArrow *arrow, 
+  void treat_new_arrow (Microcode *,
+			const MicrocodeNode *, const StmtArrow *arrow, 
 			const ConcreteAddress &next);
 private:
   bool scan_all;
