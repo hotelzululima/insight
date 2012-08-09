@@ -74,7 +74,7 @@ public:
   address_t get_address() const;
 
   /** \brief Equality */
-  bool operator==(const ConcreteAddress &a)
+  bool operator==(const ConcreteAddress &a) const
   {
     return address == a.address;
   };
