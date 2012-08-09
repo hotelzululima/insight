@@ -167,6 +167,8 @@ X86_32_OBJECTS= \
   x86_32-simulator-xadd.bin  \
   x86_32-simulator-xchg.bin  \
   \
+  x86_32-cfgrecovery-rt-01.bin \
+  \
   ${dummy}
 
 OBJECTS=${X86_32_OBJECTS}
