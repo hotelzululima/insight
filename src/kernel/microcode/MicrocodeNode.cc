@@ -196,15 +196,6 @@ MicrocodeNode::add_successor(Expr *condition, MicrocodeNode *tgt, Statement *st)
   return arr;
 }
 
-StmtArrow * 
-MicrocodeNode::add_successor(Expr *condition, MicrocodeAddress target,
-			     Statement *st)
-{
-  StmtArrow *arr = new StaticArrow(loc, target, st, condition);
-  successors->push_back(arr);
-  return arr;
-}
-
 bool MicrocodeNode::operator==(const MicrocodeNode &o) const
 {
   return loc.equals(o.loc);

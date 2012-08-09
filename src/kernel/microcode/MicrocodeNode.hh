@@ -98,9 +98,6 @@ public:
   add_successor(Expr *condition, Expr *target, Statement *stmt);
   StmtArrow *
   add_successor(Expr *condition, MicrocodeNode *tgt, Statement *stmt);
-  /* Deprecated? */
-  StmtArrow *
-  add_successor(Expr *condition, MicrocodeAddress target, Statement *stmt);
 
   /*!\brief construct the list of all the expressions present in the
    * statement, this includes expressions used in arrows.
@@ -214,6 +211,7 @@ public:
    * MicrocodeAddress -> MicrocodeNode * is not possible w/o a Microcode.
    * This will remove the "optimize" trick.
    */
+  
   StaticArrow(MicrocodeAddress origin,
               MicrocodeAddress target,
               Statement *stmt,
@@ -224,7 +222,7 @@ public:
               MicrocodeAddress target,
               Statement *stmt,
               Expr *condition);
-
+  
 
   StaticArrow(const StaticArrow &other);
   StmtArrow * clone();
