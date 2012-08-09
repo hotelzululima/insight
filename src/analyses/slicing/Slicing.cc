@@ -507,16 +507,20 @@ void
 DataDependency::update_from_program_point (ConcreteProgramPoint pp)
 {
   MicrocodeNode *target_node = the_program->get_node (pp.to_address ());
+  std::vector<StmtArrow *> *preds = target_node->get_predecessors();
 
-  for (pair<StmtArrow *, MicrocodeNode *> pred = 
-	 the_program->get_first_predecessor(target_node);
-       pred.first != 0 && pred.second != 0;
-       pred = the_program->get_next_predecessor (target_node, pred.first))
+  if (preds == NULL)
+    return;
+
+  for (size_t i = 0; i < preds->size (); i++) 
     {
-      if (pred.first->is_dynamic())
+      StaticArrow *sa = dynamic_cast<StaticArrow *> (preds->at (i));
+
+      if (sa == NULL)
         Log::warningln ("Caution: I ignore all the dynamic arrows "
 			"for analysis");
-      pending_arrows.push_back((StaticArrow *) pred.first);
+      else
+	pending_arrows.push_back(sa);
     }
 }
 
