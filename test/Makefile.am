@@ -24,6 +24,7 @@ check_PROGRAMS = \
 	domains/concrete/concretevalue_test   	\
 	domains/concrete/simulator_test       	\
 	io/binaryloader_test	   		\
+	io/expr_to_smtlib_test	   		\
 	kernel/architecture_test 		\
 	kernel/expr_parser_test 		\
 	kernel/expression_test
@@ -41,6 +42,10 @@ kernel_expression_test_SOURCES = \
 # Io module tests
 io_binaryloader_test_SOURCES = \
 	io/binaryloader_test.cc
+
+# Io module tests
+io_expr_to_smtlib_test_SOURCES = \
+	io/expr_to_smtlib_test.cc
 
 # Interpreters module tests
 domains_concrete_concreteaddress_test_SOURCES = \

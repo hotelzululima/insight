@@ -73,9 +73,6 @@ kernel_source = \
 	kernel/expressions/BottomUpApplyVisitor.cc \
 	kernel/expressions/ConditionalSet.cc 	\
 	kernel/expressions/ConditionalSet.hh	\
-	kernel/expressions/ExprLexer.hh 	\
-	kernel/expressions/ExprLexer.ll		\
-	kernel/expressions/ExprParser.yy 	\
 	kernel/expressions/ExprUtils.hh		\
 	kernel/expressions/ExprUtils.cc		\
 	kernel/expressions/ExprUtils.ii		\
@@ -102,30 +99,6 @@ kernel_source = \
 	kernel/microcode/MicrocodeStatements.cc	\
 	kernel/microcode/MicrocodeStatements.hh	\
 	kernel/microcode/MicrocodeStore.hh	
-
-kernel_built_sources = \
-	kernel/expressions/stack.hh 	      	\
-	kernel/expressions/location.hh		\
-	kernel/expressions/position.hh		\
-	kernel/expressions/ExprLexer.cc 	\
-	kernel/expressions/ExprParser.hh  	\
-	kernel/expressions/ExprParser.cc 
-
-kernel/expressions/stack.hh		\
-kernel/expressions/location.hh		\
-kernel/expressions/position.hh		\
-kernel/expressions/ExprParser.hh 	\
-kernel/expressions/ExprParser.cc:	\
-kernel/expressions/ExprParser.yy
-	$(YACC) --output=kernel/expressions/ExprParser.cc \
-		${srcdir}/kernel/expressions/ExprParser.yy
-
-kernel/expressions/ExprLexer.hh \
-kernel/expressions/ExprLexer.cc : \
-       kernel/expressions/ExprLexer.ll \
-       kernel/expressions/ExprParser.hh
-	$(LEX) --outfile=kernel/expressions/ExprLexer.cc \
-		${srcdir}/kernel/expressions/ExprLexer.ll
 
 BUILT_SOURCES+= \
 	${kernel_built_sources}
@@ -179,6 +152,14 @@ io_sources = \
 	io/binaryloaders/BinaryLoader.hh 		\
 	io/binaryloaders/BinutilsBinaryLoader.cc	\
 	io/binaryloaders/BinutilsBinaryLoader.hh 	\
+        io/expressions/expr-writer.hh			\
+        io/expressions/expr-writer.cc			\
+        io/expressions/smtlib-writer.hh			\
+        io/expressions/smtlib-writer.cc			\
+	io/expressions/expr-parser.hh 			\
+	io/expressions/ExprLexer.hh 			\
+	io/expressions/ExprLexer.ll			\
+	io/expressions/ExprParser.yy 			\
 	io/microcodeloaders/MicrocodeLoader.cc 		\
 	io/microcodeloaders/MicrocodeLoader.hh 		\
 	io/microcodeloaders/xml_microcode_parser.cc	\
@@ -190,6 +171,35 @@ io_sources = \
 	io/processloaders/ProcessLoader.cc 		\
 	io/processloaders/ProcessLoader.hh
 
+io_built_sources = \
+	io/expressions/stack.hh 	      	\
+	io/expressions/location.hh		\
+	io/expressions/position.hh		\
+	io/expressions/ExprLexer.cc 	\
+	io/expressions/ExprParser.hh  	\
+	io/expressions/ExprParser.cc 
+
+io/expressions/stack.hh		\
+io/expressions/location.hh		\
+io/expressions/position.hh		\
+io/expressions/ExprParser.hh 	\
+io/expressions/ExprParser.cc:	\
+io/expressions/ExprParser.yy
+	$(YACC) --output=io/expressions/ExprParser.cc \
+		${srcdir}/io/expressions/ExprParser.yy
+
+io/expressions/ExprLexer.hh \
+io/expressions/ExprLexer.cc : \
+       io/expressions/ExprLexer.ll \
+       io/expressions/ExprParser.hh
+	$(LEX) --outfile=io/expressions/ExprLexer.cc \
+		${srcdir}/io/expressions/ExprLexer.ll
+
+BUILT_SOURCES+= \
+	${io_built_sources}
+
+io_cleanfiles = \
+	${io_built_sources}
 
 ## decoder module
 x86_32_decoder= \

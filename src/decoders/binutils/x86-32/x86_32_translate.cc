@@ -31,6 +31,7 @@
 #include <cassert>
 #include <string>
 #include <sstream>
+#include <io/expressions/expr-parser.hh>
 #include "x86_32_translate.hh"
 
 #define TMPREG(_i) ("tmpr" #_i)
@@ -93,7 +94,7 @@ x86_32::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
   stack_segment = "ss";
 
 #define X86_32_CC(id,f) \
-  condition_codes[X86_32_CC_ ## id] = Expr::parse (a, f);
+  condition_codes[X86_32_CC_ ## id] = expr_parser (f, a);
 #include "x86_32_cc.def"
 #undef X86_32_CC
   segment_registers.insert (a->get_register ("cs"));

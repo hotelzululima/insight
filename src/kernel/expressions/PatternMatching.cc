@@ -193,7 +193,7 @@ public:
   virtual void visit (const QuantifiedExpr *E) {
     const QuantifiedExpr *qf = dynamic_cast<const QuantifiedExpr *> (F);
 
-    if (qf == NULL || qf->is_exist () != E->is_exist ())
+    if (qf == NULL || qf->is_exists () != E->is_exists ())
       throw PatternMatching::Failure ();
 
     if (E->get_variable () != qf->get_variable ())

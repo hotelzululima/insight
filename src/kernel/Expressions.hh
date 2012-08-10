@@ -211,9 +211,7 @@ public:
   // Pretty printing
   /*****************************************************************************/
 
-  virtual void output_text (std::ostream &out) const = 0;
-
-  static Expr *parse (MicrocodeArchitecture *arch, const std::string &input);
+  virtual void output_text (std::ostream &out) const;
 
   struct Hash { 
     size_t operator()(const Expr *const &F) const; 
@@ -229,7 +227,6 @@ public:
 
 
 protected:
-  void output_bv_window (std::ostream &out) const;
 
   static Expr *find_or_add_expr (Expr *F);
 
@@ -284,8 +281,6 @@ public:
   virtual unsigned int get_depth() const;
   bool contains(Expr *o) const;
 
-  virtual void output_text (std::ostream &out) const;
-
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
@@ -333,6 +328,7 @@ public:
 			   int bv_size = BV_DEFAULT_SIZE);
 
   constant_t get_val() const;
+  constant_t get_not_truncated_value() const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Expr *F) const;
@@ -341,8 +337,6 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-
-  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -377,9 +371,6 @@ public:
 
   UnaryOp get_op() const;
   Expr *get_arg1() const;
-
-  /* See Expr class for documentation */
-  virtual void output_text (std::ostream &out) const;
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Expr *F) const;
@@ -440,7 +431,6 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -477,7 +467,6 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -485,7 +474,7 @@ public:
 
 class QuantifiedExpr : public Expr {
 private:
-  bool exist;
+  bool exists;
   Variable *var;
   Expr *body;
 
@@ -498,10 +487,10 @@ protected:
 
 public:
   static QuantifiedExpr *create (bool exist, Variable *var, Expr *body);
-  static QuantifiedExpr *createExist (Variable *var, Expr *body);
+  static QuantifiedExpr *createExists (Variable *var, Expr *body);
   static QuantifiedExpr *createForall (Variable *var, Expr *body);
 
-  virtual bool is_exist () const;
+  virtual bool is_exists () const;
   virtual Variable *get_variable () const;
   virtual Expr *get_body () const;
 
@@ -513,7 +502,6 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -574,9 +562,6 @@ public:
       tag. */
   Expr *get_addr() const ;
 
-  /* See Expr class for documentation */
-  virtual void output_text (std::ostream &out) const;
-
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
@@ -625,8 +610,6 @@ public:
 
   bool contains(Expr *o) const;
   virtual unsigned int get_depth() const;
-
-  virtual void output_text (std::ostream &out) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;

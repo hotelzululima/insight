@@ -29,6 +29,7 @@
  */
 
 #include <utils/bv-manip.hh>
+#include <io/expressions/expr-parser.hh>
 #include "x86_32_translation_functions.hh"
 
 using namespace std;
@@ -226,10 +227,9 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
   MicrocodeAddress if_part (data.start_ma + 1);
 
   Expr *cond = 
-    Expr::parse (data.arch, 
-		 "(OR "
+    expr_parser ("(OR "
 		 " (NOT (LEQ_U (AND %al 0x0F{0;8}){0;8} 0x9{0;8})) "
-		 " (EQ %af 1{0;1})){0;1}");
+		 " (EQ %af 1{0;1})){0;1}", data.arch);
 
   assert (cond != NULL);
 
@@ -341,10 +341,10 @@ s_daadas (x86_32::parser_data &data, bool add)
 			   data.get_flag ("cf"));
   x86_32_reset_CF (from, data);
 
-  Expr *cond1 = Expr::parse (data.arch, "(OR "
+  Expr *cond1 = expr_parser ("(OR "
 			     "(GT_U (AND %al 0xF{0;8}){0;8} 0x9{0;8}){0;1} "
 			     "(EQ %af 1){0;1}"
-			     "){0;1}");
+			     "){0;1}", data.arch);
   assert (cond1 != NULL);
   Expr *cond2 = BinaryApp::create (BV_OP_OR,
 				   BinaryApp::create (BV_OP_GT_U,

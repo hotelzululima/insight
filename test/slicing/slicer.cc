@@ -42,6 +42,7 @@
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/concrete_context.hh>
 #include <io/binaryloaders/BinutilsBinaryLoader.hh>
+#include <io/expressions/expr-parser.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 
@@ -65,7 +66,7 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
   ConcreteMemory *mem = loader->get_memory ();
   Microcode *prg = Build_Microcode (mcarch, mem, ConcreteAddress (0));
   
-  Expr *lvalue = Expr::parse (mcarch, target_lv);
+  Expr *lvalue = expr_parser (target_lv, mcarch);
   vector<StmtArrow*> stmt_deps =
     DataDependency::slice_it (prg, MicrocodeAddress (target_addr), lvalue);
   

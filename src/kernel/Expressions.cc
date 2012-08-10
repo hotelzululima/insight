@@ -37,6 +37,7 @@
 #include <tr1/unordered_map>
 #include <tr1/unordered_map>
 #include <kernel/expressions/ExprVisitor.hh>
+#include <io/expressions/expr-writer.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
 #include <utils/infrastructure.hh>
@@ -55,7 +56,7 @@ Expr::Expr(int bv_offset, int bv_size)
 
 Expr::~Expr()
 {
-};
+}
 
 Expr *
 Expr::createNot (Expr *arg1)
@@ -132,7 +133,7 @@ int Expr::get_bv_size() const
 int Expr::get_bv_offset() const
 {
   return bv_offset;
-};
+}
 
 Expr *
 Expr::extract_bit_vector (int new_bv_offset, int new_bv_size) const
@@ -146,7 +147,8 @@ Expr::extract_bit_vector (int new_bv_offset, int new_bv_size) const
   assert (0 <= new_bv_offset + new_bv_size - 1 && 
 	  new_bv_offset + new_bv_size - 1 < get_bv_size ());
   
-  Expr *result = change_bit_vector (get_bv_offset () + new_bv_offset, new_bv_size);
+  Expr *result = change_bit_vector (get_bv_offset () + new_bv_offset, 
+				    new_bv_size);
 
   return result;
 }
@@ -241,6 +243,12 @@ Constant::get_val() const
   return BitVectorManip::extract_from_word (val, get_bv_offset (), 
 					    get_bv_size ()); 
 };
+
+constant_t 
+Constant::get_not_truncated_value() const
+{
+  return val;
+}
 
 Expr * 
 Constant::change_bit_vector (int new_bv_offset, int new_bv_size) const 
@@ -363,8 +371,8 @@ BinaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const
 }
 
 /*****************************************************************************/
-TernaryApp::TernaryApp(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3, int bv_offset,
-		     int bv_size)
+TernaryApp::TernaryApp(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3, 
+		       int bv_offset, int bv_size)
   : Expr (bv_offset, bv_size),  op(op), arg1(arg1), arg2(arg2), arg3(arg3)
 {
 }
@@ -378,11 +386,12 @@ TernaryApp::create (TernaryOp op, Expr *arg1, Expr *arg2, Expr* arg3)
 
 
 TernaryApp *
-TernaryApp::create (TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3, int bv_offset,
-		   int bv_size)
+TernaryApp::create (TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3, 
+		    int bv_offset, int bv_size)
 {
   //XXX: need to check bitvectors size here
-  return find_or_add (new TernaryApp (op, arg1, arg2, arg3, bv_offset, bv_size));
+  return find_or_add (new TernaryApp (op, arg1, arg2, arg3, bv_offset, 
+				      bv_size));
 }
 
 TernaryOp
@@ -414,8 +423,8 @@ Expr *
 TernaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   //XXX: need to check bitvectors size here
-  return TernaryApp::create (op, arg1->ref (), arg2->ref (), arg3->ref(), new_bv_offset,
-			    new_bv_size);
+  return TernaryApp::create (op, arg1->ref (), arg2->ref (), arg3->ref(), 
+			     new_bv_offset, new_bv_size);
 }
 
 TernaryApp::~TernaryApp()
@@ -428,8 +437,8 @@ TernaryApp::~TernaryApp()
 //
 // QUANTIFIED EXPR METHODS
 //
-QuantifiedExpr::QuantifiedExpr (bool exist_, Variable *var_, Expr *body_)
-  : Expr (0, 1), exist (exist_), var (var_), body (body_)
+QuantifiedExpr::QuantifiedExpr (bool exists_, Variable *var_, Expr *body_)
+  : Expr (0, 1), exists (exists_), var (var_), body (body_)
 {
 }
 
@@ -440,9 +449,9 @@ QuantifiedExpr::~QuantifiedExpr()
 }
 
 bool 
-QuantifiedExpr::is_exist () const
+QuantifiedExpr::is_exists () const
 {
-  return exist;
+  return exists;
 }
 
 Variable *
@@ -462,17 +471,18 @@ QuantifiedExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   assert (new_bv_size == 1 && new_bv_offset == 0);
 
-  return QuantifiedExpr::create (exist, (Variable *) var->ref (), body->ref ());
+  return QuantifiedExpr::create (exists, (Variable *) var->ref (), 
+				 body->ref ());
 }
 
 QuantifiedExpr *
-QuantifiedExpr::create (bool exist, Variable *var, Expr *body)
+QuantifiedExpr::create (bool exists, Variable *var, Expr *body)
 {
-  return find_or_add (new QuantifiedExpr (exist, var, body));
+  return find_or_add (new QuantifiedExpr (exists, var, body));
 }
 
 QuantifiedExpr *
-QuantifiedExpr::createExist (Variable *var, Expr *body)
+QuantifiedExpr::createExists (Variable *var, Expr *body)
 {
   return create (true, var, body);
 }
@@ -754,7 +764,7 @@ Expr::is_ExistentialFormula () const
 {
   const QuantifiedExpr *qe = dynamic_cast<const QuantifiedExpr *>(this);
 
-  return qe != NULL && qe->is_exist ();
+  return qe != NULL && qe->is_exists ();
 }
 
 bool 
@@ -762,7 +772,7 @@ Expr::is_UniversalFormula () const
 {
   const QuantifiedExpr *qe = dynamic_cast<const QuantifiedExpr *>(this);
   
-  return qe != NULL && ! qe->is_exist ();
+  return qe != NULL && ! qe->is_exists ();
 }
 
 bool 
@@ -912,7 +922,7 @@ bool QuantifiedExpr::equal (const Expr *F) const
 {
   const QuantifiedExpr *e = s_check_bv<QuantifiedExpr> (this, F);
 
-  return (e != NULL && e->exist == exist && e->var == var && e->body == body);
+  return (e != NULL && e->exists == exists && e->var == var && e->body == body);
 }
 
 /*****************************************************************************/
@@ -971,81 +981,16 @@ RegisterExpr::hash () const
 size_t 
 QuantifiedExpr::hash () const 
 {   
-  return (exist ? 111 :149) * var->hash () + body->hash ();
+  return (exists ? 111 :149) * var->hash () + body->hash ();
 }
 
 
 /*****************************************************************************/
 
 void 
-Expr::output_bv_window (std::ostream &out) const
+Expr::output_text (std::ostream &out) const
 {
-  ostringstream oss;
-
-  if ((bv_offset != 0 || bv_size != BV_DEFAULT_SIZE))
-    out << dec << "{" << bv_offset << ";" << bv_size << "}";
-}
-
-void 
-Variable::output_text (std::ostream &out) const
-{
-  out << "{" << id << "}";
-  output_bv_window (out);
-}
-
-void 
-Constant::output_text (std::ostream &out) const
-{
-  out << "0x" << hex << uppercase << val;
-  output_bv_window (out);
-}
-
-void 
-UnaryApp::output_text (std::ostream &out) const
-{
-  out << "(" << unary_op_to_string(op) << " " << *arg1 << ")";
-  output_bv_window (out);
-}
-
-void 
-BinaryApp::output_text (std::ostream &out) const
-{
-  out << "(" << binary_op_to_string(op) << " "
-      << *arg1 << " " << *arg2 << ')';
-
-  output_bv_window (out);
-}
-
-void 
-TernaryApp::output_text (std::ostream &out) const
-{
-  out << "(" << ternary_op_to_string(op) << " "
-      << *arg1 << " " << *arg2 << " " << *arg3 << ')';
-  output_bv_window (out);
-}
-
-void 
-MemCell::output_text (std::ostream &out) const
-{
-  out << "[";
-  if (tag != DEFAULT_TAG)
-    out << tag << ":";
-  out << *addr << "]";
-  output_bv_window (out);
-}
-
-void 
-RegisterExpr::output_text (std::ostream &out) const
-{
-  out << "%" << get_name ();
-  output_bv_window (out);
-}
-
-void 
-QuantifiedExpr::output_text (std::ostream &out) const
-{
-  out << (exist ? "<" : "[") << var << (exist ? ">" : "]") 
-      << "(" << *body << ")";
+  expr_writer (out, this);
 }
 
 /*****************************************************************************/

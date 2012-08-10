@@ -35,6 +35,7 @@
 
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
+#include <io/expressions/expr-parser.hh>
 #include <kernel/insight.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/ExprUtils.hh>
@@ -46,7 +47,7 @@ using namespace std;
 static Expr *
 s_parse_expr (const string &s)
 {
-  Expr *F = Expr::parse (NULL, s);
+  Expr *F = expr_parser (s);
 
   ATF_REQUIRE (F != NULL);
 

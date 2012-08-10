@@ -252,7 +252,7 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
         {
 	  Variable *nv = (Variable *) ephi->get_variable ()->ref ();
 
-	  *phi = QuantifiedExpr::create (ephi->is_exist (), nv, body);
+	  *phi = QuantifiedExpr::create (ephi->is_exists (), nv, body);
 
 	  ephi->deref ();
           return true;

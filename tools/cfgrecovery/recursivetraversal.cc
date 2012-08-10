@@ -156,14 +156,13 @@ protected:
 	    if (da != NULL)
 	      {
 		Expr *target = da->get_target ();
+		int targetsz = target->get_bv_size ();
 		call_ret_store[call].first = arrow->get_src ();
 		call_ret_store[call].second = target;
 		address_t na = ret.get_address ();
 		Expr *cond =
 		  Expr::createEquality (target->ref (),
-					Constant::create (na, 
-							  0, 
-							  target->get_bv_size ()));
+					Constant::create (na, 0, targetsz));
 		MicrocodeAddress nma (na);
 		MicrocodeNode *tgt = mc->get_or_create_node (nma);
 		StmtArrow *a =

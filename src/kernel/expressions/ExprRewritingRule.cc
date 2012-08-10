@@ -137,7 +137,7 @@ ExprRewritingRule::visit (const QuantifiedExpr *F)
   F->get_body ()->acceptVisitor (this);
   Expr *body = result;
 
-  Expr *tmp = QuantifiedExpr::create (F->is_exist (), var, body);
+  Expr *tmp = QuantifiedExpr::create (F->is_exists (), var, body);
   result = rewrite (tmp);
   tmp->deref ();
 }

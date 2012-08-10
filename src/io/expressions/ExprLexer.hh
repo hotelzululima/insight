@@ -27,16 +27,16 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef KERNEL_EXPRESSIONS_EXPR_LEXER_HH
-#define KERNEL_EXPRESSIONS_EXPR_LEXER_HH
+#ifndef IO_EXPRESSIONS_EXPR_LEXER_HH
+#define IO_EXPRESSIONS_EXPR_LEXER_HH
 
-#include <kernel/expressions/ExprParser.hh>
+#include <io/expressions/ExprParser.hh>
 
 namespace ExprParser {
   struct ClientData
   {
     Expr *result;
-    MicrocodeArchitecture *arch;
+    const MicrocodeArchitecture *arch;
     std::string input;
   };
 
@@ -54,4 +54,4 @@ namespace ExprParser {
 
 extern YY_DECL;
 
-#endif /* KERNEL_EXPRESSIONS_EXPR_LEXER_HH */
+#endif /* IO_EXPRESSIONS_EXPR_LEXER_HH */

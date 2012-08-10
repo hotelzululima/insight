@@ -41,9 +41,6 @@ TESTS = \
 EXTRA_DIST=${TESTS:%=%.result} ${BASE_TESTS:%.res=%.spec.sh} \
            ${CHECKRESULTS} Kyuafile 
 
-all:
-	@echo ${EXTRA_DIST}
-
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 

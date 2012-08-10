@@ -37,8 +37,8 @@
 #include <string>
 #include <unistd.h>
 
-#include <kernel/expressions/ExprParser.hh>
-#include <kernel/expressions/ExprLexer.hh>
+#include <io/expressions/ExprParser.hh>
+#include <io/expressions/ExprLexer.hh>
 
 /* Work around an incompatibility in flex (at least versions 2.5.31
  * through 2.5.33): it generates code that does not conform to C89. */

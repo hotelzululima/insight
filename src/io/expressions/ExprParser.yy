@@ -83,7 +83,7 @@ namespace ExprParser {
 
 %code {
 #include "ExprParser.hh"
-#include <kernel/expressions/ExprLexer.hh>
+#include <io/expressions/ExprLexer.hh>
 
 using namespace std;
 using namespace ExprParser;
@@ -137,7 +137,7 @@ expr :
 | TOK_LPAR TOK_TERNARY_OP expr expr expr TOK_RPAR bitvector_spec
   { $$ = TernaryApp::create ($2, $3, $4, $5, $7.offset, $7.size); }
 | TOK_LPAR TOK_EXIST variable expr TOK_RPAR
-  { $$ = QuantifiedExpr::createExist ($3, $4); }
+  { $$ = QuantifiedExpr::createExists ($3, $4); }
 | TOK_LPAR TOK_FORALL variable expr TOK_RPAR
   { $$ = QuantifiedExpr::createForall ($3, $4); }
 | TOK_LPAR expr TOK_RPAR bitvector_spec
@@ -201,20 +201,19 @@ Parser::error(const Parser::location_type &loc, const string &msg)
 }
 
 Expr *
-Expr::parse (MicrocodeArchitecture *arch, const std::string &input)
+expr_parser (const std::string &in, const MicrocodeArchitecture *arch)
 {
   ExprParser::ClientData data;
 
-  ExprParser::init_lexer (input);
+  ExprParser::init_lexer (in);
   data.result = NULL;
   data.arch = arch;
-  data.input = input;
+  data.input = in;  
 
-  Parser parser (data);
+  ExprParser::Parser parser (data);
   if (parser.parse () == 0)
     assert (data.result != NULL);
   ExprParser::terminate_lexer ();
 
   return data.result;
 }
-

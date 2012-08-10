@@ -35,6 +35,7 @@
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/insight.hh>
+#include <io/expressions/smtlib-writer.hh>
 #include <io/expressions/expr-parser.hh>
 
 using namespace std;
@@ -102,22 +103,22 @@ using namespace std;
 	     "%eflags{6;1}")
 
 #define X86_32_CC(id, e, expout) \
-ATF_TEST_CASE(expr_parser_for_cc_ ## id); \
+ATF_TEST_CASE(smtlib_ ## id); \
 \
-ATF_TEST_CASE_HEAD(expr_parser_for_cc_ ## id)	\
+ATF_TEST_CASE_HEAD(smtlib_ ## id)	\
 { \
   set_md_var ("descr", \
 	      "Check expression parser against x86_32 condition code " # id); \
 } \
 \
-ATF_TEST_CASE_BODY(expr_parser_for_cc_ ## id) \
+ATF_TEST_CASE_BODY(smtlib_ ## id) \
 { \
-  s_check_expr_parser (# id, e, expout); \
+  s_check_expr_to_smtlib (# id, e, expout); \
 }
 
 static void
-s_check_expr_parser (const string &, const string &expr, \
-		     const string &expectedout)
+s_check_expr_to_smtlib (const string &, const string &expr, 
+			const string &expectedout)
 {
   insight::init ();
   const Architecture *x86_32 = 
@@ -125,7 +126,12 @@ s_check_expr_parser (const string &, const string &expr, \
   MicrocodeArchitecture ma (x86_32);
 
   Expr *e = expr_parser (expr, &ma);
-  ATF_REQUIRE_EQ (e->to_string (), expectedout);
+  ostringstream oss;
+
+  smtlib_writer (oss, e);
+  
+  ATF_REQUIRE_EQ (oss.str (), expectedout);
+
   insight::terminate ();
 }
 
@@ -133,7 +139,7 @@ ALL_X86_CC
 #undef X86_32_CC
 
 #define X86_32_CC(id, e, expout) \
-  ATF_ADD_TEST_CASE(tcs, expr_parser_for_cc_ ## id);
+  ATF_ADD_TEST_CASE(tcs, smtlib_ ## id);
 
 ATF_INIT_TEST_CASES(tcs)
 {
