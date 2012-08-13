@@ -33,6 +33,7 @@
 #include <string>
 #include <stack>
 
+#include <kernel/Architecture.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 
@@ -111,7 +112,7 @@ namespace x86_32 {
  /* Symbols */
 %union
 {
-  long         intValue;
+  constant_t   intValue;
   std::string *stringValue;
   class Expr  *expr;
 };

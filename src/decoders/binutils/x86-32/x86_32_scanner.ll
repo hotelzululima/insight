@@ -915,7 +915,7 @@ optype    [bswlqt]
  /* Integer values */
 "0x"?{hexvalue} {
                    if (yytext[1] != 'x')
-		     yylval->intValue = strtol (yytext, NULL, 10);
+		     yylval->intValue = (constant_t) strtoll (yytext, NULL, 10);
 		   else
 		     {
 		       char *s = yytext+2;
