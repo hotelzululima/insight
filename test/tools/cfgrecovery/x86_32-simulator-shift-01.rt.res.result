@@ -204,9 +204,9 @@
 [(0xBF,10)] ; %eflags{6;1} := (EQ %eax 0x0){0;1}
 [(0xBF,11)] ; StaticArrow (0xBF,11) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %eax{0;1}){0;1} %eax{1;1}){0;1} %eax{2;1}){0;1} %eax{3;1}){0;1} %eax{4;1}){0;1} %eax{5;1}){0;1} %eax{6;1}){0;1} %eax{7;1}){0;1}  --> (0xC2,0)
 [(0xC2,0)] @{asm:=jb     0x6666}@ ; StaticArrow (0xC2,0) Skip << %eflags{0;1} >> --> (0x6666,0); StaticArrow (0xC2,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0xC8,0)
-[(0xC8,0)] @{asm:=cmp    $0xde3ad7b0,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax 0xFFFFFFFFDE3AD7B0){0;33}
+[(0xC8,0)] @{asm:=cmp    $0xde3ad7b0,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax 0xDE3AD7B0){0;33}
 [(0xC8,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0xC8,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0xFFFFFFFFDE3AD7B0{31;1}){0;1}){0;1}
+[(0xC8,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0xDE3AD7B0{31;1}){0;1}){0;1}
 [(0xC8,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0xC8,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
 [(0xC8,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
@@ -225,9 +225,9 @@
 [(0xD3,10)] ; %eflags{6;1} := (EQ %eax 0x0){0;1}
 [(0xD3,11)] ; StaticArrow (0xD3,11) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %eax{0;1}){0;1} %eax{1;1}){0;1} %eax{2;1}){0;1} %eax{3;1}){0;1} %eax{4;1}){0;1} %eax{5;1}){0;1} %eax{6;1}){0;1} %eax{7;1}){0;1}  --> (0xD6,0)
 [(0xD6,0)] @{asm:=jb     0x6666}@ ; StaticArrow (0xD6,0) Skip << %eflags{0;1} >> --> (0x6666,0); StaticArrow (0xD6,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0xDC,0)
-[(0xDC,0)] @{asm:=cmp    $0xde3ad7b0,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax 0xFFFFFFFFDE3AD7B0){0;33}
+[(0xDC,0)] @{asm:=cmp    $0xde3ad7b0,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax 0xDE3AD7B0){0;33}
 [(0xDC,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0xDC,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0xFFFFFFFFDE3AD7B0{31;1}){0;1}){0;1}
+[(0xDC,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0xDE3AD7B0{31;1}){0;1}){0;1}
 [(0xDC,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0xDC,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
 [(0xDC,5)] ; %eflags{4;1} := %tmpr0_33{4;1}

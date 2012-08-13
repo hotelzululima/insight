@@ -320,9 +320,9 @@
 [(0x1F6,0)] @{asm:=mov    $0x27182818,%ebx}@ ; StaticArrow (0x1F6,0) %ebx := 0x27182818  --> (0x1FB,0)
 [(0x1FB,0)] @{asm:=mov    %ebx,0x4321}@ ; StaticArrow (0x1FB,0) [0x4321] := %ebx  --> (0x201,0)
 [(0x201,0)] @{asm:=not    %ebx}@ ; StaticArrow (0x201,0) %ebx := (NOT %ebx)  --> (0x203,0)
-[(0x203,0)] @{asm:=cmp    $0xd8e7d7e7,%ebx}@ ; %tmpr0_33{0;33} := (SUB %ebx 0xFFFFFFFFD8E7D7E7){0;33}
+[(0x203,0)] @{asm:=cmp    $0xd8e7d7e7,%ebx}@ ; %tmpr0_33{0;33} := (SUB %ebx 0xD8E7D7E7){0;33}
 [(0x203,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x203,2)] ; %eflags{11;1} := (AND (XOR %ebx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ebx{31;1} 0xFFFFFFFFD8E7D7E7{31;1}){0;1}){0;1}
+[(0x203,2)] ; %eflags{11;1} := (AND (XOR %ebx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ebx{31;1} 0xD8E7D7E7{31;1}){0;1}){0;1}
 [(0x203,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0x203,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
 [(0x203,5)] ; %eflags{4;1} := %tmpr0_33{4;1}

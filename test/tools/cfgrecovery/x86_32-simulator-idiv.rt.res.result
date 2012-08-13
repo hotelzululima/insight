@@ -82,7 +82,7 @@
 [(0x68,6)] ; StaticArrow (0x68,6) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %tmpr0_17{0;1}){0;1} %tmpr0_17{1;1}){0;1} %tmpr0_17{2;1}){0;1} %tmpr0_17{3;1}){0;1} %tmpr0_17{4;1}){0;1} %tmpr0_17{5;1}){0;1} %tmpr0_17{6;1}){0;1} %tmpr0_17{7;1}){0;1}  --> (0x6D,0)
 [(0x6D,0)] @{asm:=jne    0x6666}@ ; StaticArrow (0x6D,0) Skip << (NOT %eflags{6;1}){0;1} >> --> (0x6666,0); StaticArrow (0x6D,0) Skip << %eflags{6;1} >> --> (0x73,0)
 [(0x73,0)] @{asm:=mov    $0x0,%edx}@ ; StaticArrow (0x73,0) %edx := 0x0  --> (0x78,0)
-[(0x78,0)] @{asm:=mov    $0xbb775261,%eax}@ ; StaticArrow (0x78,0) %eax := 0xFFFFFFFFBB775261  --> (0x7D,0)
+[(0x78,0)] @{asm:=mov    $0xbb775261,%eax}@ ; StaticArrow (0x78,0) %eax := 0xBB775261  --> (0x7D,0)
 [(0x7D,0)] @{asm:=mov    $0x6a2e,%ebx}@ ; StaticArrow (0x7D,0) %ebx := 0x6A2E  --> (0x82,0)
 [(0x82,0)] @{asm:=idiv   %ebx}@ ; StaticArrow (0x82,0) Skip << (NEQ %ebx 0x0){0;1} >> --> (0x82,1)
 [(0x82,1)] ; %tmpr0_64{0;64} := (DIV_S (CC %edx %eax){0;64} %ebx)

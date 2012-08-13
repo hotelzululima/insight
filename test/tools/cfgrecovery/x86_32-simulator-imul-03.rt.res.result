@@ -88,9 +88,9 @@
 [(0x7E,0)] @{asm:=call   0x6668}@ ; %esp := (SUB %esp 0x4)
 [(0x7E,1)] ; [%esp] := 0x83
 [(0x7E,2)] @{callret:=CALL}@ ; StaticArrow (0x7E,2) Skip  --> (0x6668,0)
-[(0x83,0)] @{asm:=cmp    $0x87654321,%ecx}@ ; %tmpr0_33{0;33} := (SUB %ecx 0xFFFFFFFF87654321){0;33}
+[(0x83,0)] @{asm:=cmp    $0x87654321,%ecx}@ ; %tmpr0_33{0;33} := (SUB %ecx 0x87654321){0;33}
 [(0x83,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x83,2)] ; %eflags{11;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0xFFFFFFFF87654321{31;1}){0;1}){0;1}
+[(0x83,2)] ; %eflags{11;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x87654321{31;1}){0;1}){0;1}
 [(0x83,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0x83,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
 [(0x83,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
@@ -134,7 +134,7 @@
 [(0xB2,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
 [(0xB2,6)] ; StaticArrow (0xB2,6) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %tmpr0_33{0;1}){0;1} %tmpr0_33{1;1}){0;1} %tmpr0_33{2;1}){0;1} %tmpr0_33{3;1}){0;1} %tmpr0_33{4;1}){0;1} %tmpr0_33{5;1}){0;1} %tmpr0_33{6;1}){0;1} %tmpr0_33{7;1}){0;1}  --> (0xB8,0)
 [(0xB8,0)] @{asm:=jne    0x6666}@ ; StaticArrow (0xB8,0) Skip << (NOT %eflags{6;1}){0;1} >> --> (0x6666,0); StaticArrow (0xB8,0) Skip << %eflags{6;1} >> --> (0xBE,0)
-[(0xBE,0)] @{asm:=mov    $0xfffffffd,%ebx}@ ; StaticArrow (0xBE,0) %ebx := 0xFFFFFFFFFFFFFFFD  --> (0xC3,0)
+[(0xBE,0)] @{asm:=mov    $0xfffffffd,%ebx}@ ; StaticArrow (0xBE,0) %ebx := 0xFFFFFFFD  --> (0xC3,0)
 [(0xC3,0)] @{asm:=imul   $0xf2345678,%ebx,%ecx}@ ; %tmpr0_64{0;64} := (MUL_S %ebx 0xFFFFFFFFF2345678){0;64}
 [(0xC3,1)] ; %ecx := %tmpr0_64
 [(0xC3,2)] ; StaticArrow (0xC3,2) Skip << (NEQ 0x0 %tmpr0_64{32;32}) >> --> (0xC3,3); StaticArrow (0xC3,2) Skip << (NOT (NEQ 0x0 %tmpr0_64{32;32})){0;1} >> --> (0xC3,5)

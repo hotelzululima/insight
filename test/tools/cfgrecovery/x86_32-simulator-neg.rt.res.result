@@ -71,9 +71,9 @@
 [(0x8C,0)] @{asm:=neg    %ebx}@ ; %eflags{0;1} := (NEQ %ebx 0x0){0;1}
 [(0x8C,1)] ; StaticArrow (0x8C,1) %ebx := (NEG %ebx)  --> (0x8E,0)
 [(0x8E,0)] @{asm:=jae    0x6666}@ ; StaticArrow (0x8E,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x6666,0); StaticArrow (0x8E,0) Skip << %eflags{0;1} >> --> (0x94,0)
-[(0x94,0)] @{asm:=cmp    $0xedcba988,%ebx}@ ; %tmpr0_33{0;33} := (SUB %ebx 0xFFFFFFFFEDCBA988){0;33}
+[(0x94,0)] @{asm:=cmp    $0xedcba988,%ebx}@ ; %tmpr0_33{0;33} := (SUB %ebx 0xEDCBA988){0;33}
 [(0x94,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x94,2)] ; %eflags{11;1} := (AND (XOR %ebx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ebx{31;1} 0xFFFFFFFFEDCBA988{31;1}){0;1}){0;1}
+[(0x94,2)] ; %eflags{11;1} := (AND (XOR %ebx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ebx{31;1} 0xEDCBA988{31;1}){0;1}){0;1}
 [(0x94,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0x94,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
 [(0x94,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
