@@ -68,7 +68,7 @@ Expr::createNot (Expr *arg1)
 Expr * 
 Expr::createImplies (Expr *A, Expr *B)
 {
-  return createAnd (createNot (A), B);
+  return createOr (createNot (A), B);
 }
 
 Expr * 
