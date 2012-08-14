@@ -496,7 +496,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
 			      0, 64);
       if (udiv)
 	{
-	  max = 0x00000000;
+	  min = 0x00000000;
 	  max = 0xFFFFFFFF;
 	}
       else
