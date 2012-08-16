@@ -46,12 +46,23 @@ typedef unordered_set<const Expr *> ExprSet;
 class SMTLibVisitor : public ConstExprVisitor 
 {
   ostream &out;
+  const MicrocodeArchitecture *mca;
+
 public:
 
 
-  SMTLibVisitor (ostream &o) : ConstExprVisitor(), out (o) {}
+  SMTLibVisitor (ostream &o,const MicrocodeArchitecture *mca) 
+    : ConstExprVisitor(), out (o), mca (mca) {}
 
   ~SMTLibVisitor () { }
+
+  virtual void output_sign (const Expr *e) {
+    int szindex = e->get_bv_size () - 1;
+    
+    out << "((extract " << dec << szindex << " " << szindex << ") ";
+    e->acceptVisitor (this);
+    out << ")";
+  }
 
   virtual void visit (const Constant *c) {
     word_t val = c->get_val ();
@@ -155,29 +166,26 @@ public:
     out << ")";
   }
 
-  void lt_s (const BinaryApp *) {
-    
-  }
+  bool need_extract (const BinaryApp *e) {
+    bool result;
 
-  void lt_u (const BinaryApp *e) {
-    out << "(bvult ";
-    e->get_arg1 ()->acceptVisitor (this);
-    out << " ";
-    e->get_arg2 ()->acceptVisitor (this);
-    out << ")";
-  }
-
-  void eq (const BinaryApp *e) {
-    out << "(= ";
-    e->get_arg1 ()->acceptVisitor (this);
-    out << " ";
-    e->get_arg2 ()->acceptVisitor (this);
-    out << ")";
+    if (e->get_op () == BV_OP_CONCAT)
+      {
+	result = (e->get_bv_offset () != 0 ||
+		  (e->get_bv_size () < e->get_arg1 ()->get_bv_size () + 
+		   e->get_arg2 ()->get_bv_size ()));
+      }
+    else 
+      result = (e->get_bv_offset () != 0 ||
+		e->get_bv_size () != e->get_arg1 ()->get_bv_size ());
+    return result;
   }
 
   virtual void visit (const BinaryApp *e) {
     bool is_bool = is_boolean (e);
     BinaryOp op = e->get_op ();
+    const char *op_str = NULL;
+    bool extract = need_extract (e); 	  	
 
     switch (op)
       {
@@ -192,121 +200,83 @@ public:
 	  }
 	else
 	  {
+	    if (extract)
+	      {
+		out << "(";
+		extract_bv_window (e);
+	      }
+	      
 	    out << (op == BV_OP_AND ? "bvand " : "bvor ");
 	    e->get_arg1 ()->acceptVisitor (this);
 	    out << " ";
 	    e->get_arg2 ()->acceptVisitor (this);
+	    if (extract)
+	      {
+		out << ")";
+	      }
 	  }
 	out << ")";
 	break;
 
-      case BV_OP_NEQ:
-	out << "(not ";
 
-      case BV_OP_EQ: 
-	eq (e);
-	if (op == BV_OP_NEQ)
-	  out << ")";
-	break;
+      case BV_OP_LSH: op_str = "bvshl"; goto output_binary_1;
+      case BV_OP_RSH_U: op_str = "bvlshr"; goto output_binary_1;
+      case BV_OP_RSH_S: op_str = "bvashr"; goto output_binary_1;
+      case BV_OP_MODULO:
+	op_str = "bvurem"; goto output_binary_1; // to be fix with signed mod.
+      case BV_OP_MUL_S: 
+      case BV_OP_MUL_U: op_str = "bvmul"; goto output_binary_1;
+      case BV_OP_DIV_S: op_str = "bvsdiv"; goto output_binary_1;
+      case BV_OP_DIV_U: op_str = "bvudiv"; goto output_binary_1;
+      case BV_OP_CONCAT: op_str = "concat"; goto output_binary_1;
+      case BV_OP_ADD: op_str = "bvadd"; goto output_binary_1;
+      case BV_OP_SUB: op_str = "bvsub"; goto output_binary_1;
+      case BV_OP_XOR: op_str = "bvxor"; goto output_binary_1;
+      case BV_OP_NEQ: op_str = "distinct"; extract = false; 
+	goto output_binary_1;
+      case BV_OP_EQ: op_str = "="; extract = false; goto output_binary_1;
+      case BV_OP_GEQ_U: op_str = "bvuge"; extract = false; goto output_binary_1;
+      case BV_OP_GEQ_S: op_str = "bvsge"; extract = false; goto output_binary_1;
+      case BV_OP_LT_U: op_str = "bvult"; extract = false; goto output_binary_1;
+      case BV_OP_LT_S: op_str = "bvslt"; extract = false; goto output_binary_1;
+      case BV_OP_GT_U: op_str = "bvugt"; extract = false; goto output_binary_1;
+      case BV_OP_GT_S: op_str = "bvsgt"; extract = false; goto output_binary_1;
+      case BV_OP_LEQ_U: op_str = "bvule"; extract = false; goto output_binary_1;
+      case BV_OP_LEQ_S: op_str = "bvsle"; extract = false; goto output_binary_1;
+      output_binary_1:
+	if (extract)
+	  {
+	    out << "(";
+	    extract_bv_window (e);
+	  }
 
-      case BV_OP_GEQ_U: case BV_OP_GEQ_S:
-	out << "(not ";
-
-      case BV_OP_LT_U: case BV_OP_LT_S:
-	if (op == BV_OP_LT_U || op == BV_OP_GEQ_U)
-	  lt_u (e);
-	else 
-	  lt_s (e);
-	if (op == BV_OP_GEQ_U || op == BV_OP_GEQ_S)
-	  out << ")";
-	break;
-
-      case BV_OP_GT_U: case BV_OP_GT_S:
-	out << "(not ";
-
-      case BV_OP_LEQ_U: case BV_OP_LEQ_S:
-	out << "(or ";
-	if (op == BV_OP_LEQ_U || BV_OP_GT_U)
-	  lt_u (e);
-	else
-	  lt_s (e);
+	out << "(" << op_str << " ";
+	e->get_arg1 ()->acceptVisitor (this);
 	out << " ";
-	eq (e);
+	e->get_arg2 ()->acceptVisitor (this);
 	out << ")";
-	if (op == BV_OP_GT_U || op == BV_OP_GT_S)
+	if (extract)
 	  out << ")";
 	break;
 
-      case BV_OP_XOR:
-	out << "(bvor (bvand ";
-	e->get_arg1 ()->acceptVisitor (this);
-	out << " (bvnot ";
-	e->get_arg2 ()->acceptVisitor (this);
-	out << ")) (bvand (bvnot ";
-	e->get_arg1 ()->acceptVisitor (this);
-	out << ") ";
-	e->get_arg2 ()->acceptVisitor (this);
-	out << "))";
-	break;
-
-      case BV_OP_ADD: case BV_OP_SUB:
+      case BV_OP_ROR: op_str = "rotate_right"; goto output_binary_2;
+      case BV_OP_ROL: op_str = "rotate_left"; goto output_binary_2;
+      case BV_OP_EXTEND_U: op_str = "signed_extend"; goto output_binary_2;
+      case BV_OP_EXTEND_S: op_str = "zero_extend"; goto output_binary_2;
+      output_binary_2:
 	{
-	  bool extract = 	  
-	    (e->get_bv_offset () != 0 ||
-	     e->get_bv_size () != e->get_arg1 ()->get_bv_size ());
-	
-	  if (extract)
-	    {
-	      out << "(";
-	      extract_bv_window (e);
-	    }
-	  out << "(" << (op == BV_OP_ADD ? "bvadd " : "bvsub ");
+	  Constant *c = dynamic_cast <Constant *> (e->get_arg2 ());
+	  if (c == NULL)
+	  throw SMTLibUnsupportedExpression (e->to_string ());
+	  word_t val = c->get_val ();
+	  if (op == BV_OP_EXTEND_U || op == BV_OP_EXTEND_S)
+	    val = c->get_val () - e->get_arg1 ()->get_bv_size ();
+	  out << "((_ " << op_str << " " << val << ") ";
 	  e->get_arg1 ()->acceptVisitor (this);
-	  out << " ";
-	  e->get_arg2 ()->acceptVisitor (this);
-	  out << ")";
-	  if (extract)
-	    out << ")";
+	  out << ") ";
 	}
 	break;
 
-      case BV_OP_MUL_S:
-	break;
-
-      case BV_OP_MUL_U:
-	break;
-
-      case BV_OP_DIV_S:
-	break;
-
-      case BV_OP_DIV_U:
-	break;
-
-      case BV_OP_MODULO:
-	break;
-
-      case BV_OP_CONCAT:
-	break;
-
-
-      case BV_OP_LSH:
-	break;
-
-      case BV_OP_RSH_U:
-	break;
-
-      case BV_OP_RSH_S:
-	break;
-
-
-      case BV_OP_EXTEND_S:
-	break;
-
-      case BV_OP_EXTEND_U:
-	break;
-
-      case BV_OP_ROR:
-      case BV_OP_ROL:
       case BV_OP_POW:
       default:
 	throw SMTLibUnsupportedExpression (e->to_string ());
@@ -315,12 +285,28 @@ public:
 
   virtual void visit (const TernaryApp *e) {
     assert (e->get_op () == BV_OP_EXTRACT);
+    Constant *offset = dynamic_cast <Constant *> (e->get_arg2 ());
+    Constant *size = dynamic_cast <Constant *> (e->get_arg3 ());
+
+    if (offset == NULL || size == NULL)
+      throw SMTLibUnsupportedExpression (e->to_string ());
+
+    out << "((_ extract " << (offset->get_val () + size->get_val () - 1) << " " 
+	<< offset->get_val () << ") ";
+    e->get_arg1 ()->acceptVisitor (this);
+    out << ") ";    	
   }
 
   virtual void visit (const MemCell *e) {
     // to be fixed !!!
+    int addrsize = 8 * mca->get_reference_arch ()->address_range;
+    int extend = addrsize - e->get_addr ()->get_bv_size ();
     out << "(select memory ";
+    if (extend > 0)
+      out << "((_ zero_extend " << extend << ") ";
     e->get_addr ()->acceptVisitor (this);
+    if (extend > 0)
+      out << ")";
     out << ")";
   }
 
@@ -395,10 +381,12 @@ smtlib_writer (std::ostream &out, const Expr *e,
 	       const MicrocodeArchitecture *mca) 
   throw (SMTLibUnsupportedExpression)
 {
-  SMTLibVisitor writer (out);
+  SMTLibVisitor writer (out, mca);
 
   out << "(set-option :print-success false) " << endl
-      << "(set-logic QF_AUFBV) " << endl;
+      << "(set-logic QF_AUFBV) " << endl
+      << endl;
+
   s_create_variables (out, e, mca);
   out << "(assert ";
   writer.output_boolean (e); 
