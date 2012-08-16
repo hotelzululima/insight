@@ -34,7 +34,7 @@
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Expressions.hh>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 
 using namespace std;
 

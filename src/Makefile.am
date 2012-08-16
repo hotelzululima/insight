@@ -73,9 +73,9 @@ kernel_source = \
 	kernel/expressions/BottomUpApplyVisitor.cc \
 	kernel/expressions/ConditionalSet.cc 	\
 	kernel/expressions/ConditionalSet.hh	\
-	kernel/expressions/ExprUtils.hh		\
-	kernel/expressions/ExprUtils.cc		\
-	kernel/expressions/ExprUtils.ii		\
+	kernel/expressions/exprutils.hh		\
+	kernel/expressions/exprutils.cc		\
+	kernel/expressions/exprutils.ii		\
 	kernel/expressions/ExprVisitor.hh	\
 	kernel/expressions/ExprRewritingFunctions.hh	\
 	kernel/expressions/ExprRewritingFunctions.cc	\

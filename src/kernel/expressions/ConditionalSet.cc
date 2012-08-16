@@ -39,7 +39,7 @@
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/BottomUpApplyVisitor.hh>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 
 using namespace std;
 

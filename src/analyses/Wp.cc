@@ -31,7 +31,7 @@
 
 #include <list>
 #include <set>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/Microcode.hh>
 #include <utils/graph.hh>

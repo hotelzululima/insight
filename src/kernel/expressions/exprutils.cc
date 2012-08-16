@@ -28,7 +28,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/ExprRewritingFunctions.hh>

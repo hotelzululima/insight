@@ -30,7 +30,7 @@
  */
 
 #include <kernel/expressions/PatternMatching.hh>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 
 BottomUpRewritePatternRule::BottomUpRewritePatternRule (const Expr *p, 

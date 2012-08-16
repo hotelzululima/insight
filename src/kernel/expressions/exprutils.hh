@@ -93,6 +93,6 @@ namespace exprutils
 		     const Expr *pattern);
 };
 
-# include <kernel/expressions/ExprUtils.ii>
+# include <kernel/expressions/exprutils.ii>
 
 #endif /* ! KERNEL_EXPRESSIONS_EXPRUTILS_HH */

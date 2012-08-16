@@ -33,7 +33,7 @@
 #include <utils/tools.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/expressions/ConditionalSet.hh>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 #include "Slicing.hh"
 
 using namespace std;

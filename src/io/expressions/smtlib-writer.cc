@@ -33,7 +33,7 @@
 #include <iomanip>
 #include <cassert>
 #include <kernel/expressions/ExprVisitor.hh>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 #include <tr1/unordered_set>
 
 using namespace std;
