@@ -38,7 +38,7 @@
 # include <kernel/Expressions.hh>
 # include <kernel/expressions/ExprRewritingRule.hh>
 
-namespace ExprUtils
+namespace exprutils
 {
   typedef std::list<const Variable *> VarList;
 

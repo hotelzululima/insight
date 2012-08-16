@@ -37,7 +37,7 @@
 #include "Slicing.hh"
 
 using namespace std;
-using namespace ExprUtils;
+using namespace exprutils;
 
 /*****************************************************************************/
 // Computation of the dependencies of an expression
@@ -466,7 +466,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       new_context->the_lvalues = new_lvalues;
     }
 
-  ExprUtils::simplify_level0(&(new_context->the_lvalues));
+  exprutils::simplify_level0(&(new_context->the_lvalues));
   rewrite_in_DNF (&(new_context->the_lvalues));
 
   if (DataDependency::OnlySimpleSets()) {

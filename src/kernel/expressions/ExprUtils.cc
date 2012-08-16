@@ -37,11 +37,10 @@
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 #include <kernel/Expressions.hh>
 
-
-using namespace ExprUtils;
+using namespace exprutils;
 
 Expr *
-ExprUtils::replace_subterm (const Expr *F, const Expr *pattern, 
+exprutils::replace_subterm (const Expr *F, const Expr *pattern, 
 			       const Expr *value)
 {
   ExprReplaceSubtermRule r (pattern, value);
@@ -51,14 +50,14 @@ ExprUtils::replace_subterm (const Expr *F, const Expr *pattern,
 }
 
 Expr * 
-ExprUtils::replace_variable (const Expr *F, 
+exprutils::replace_variable (const Expr *F, 
 				const Variable *v, const Expr *value)
 {
   return replace_subterm (F, v, value);
 }
 
 bool 
-ExprUtils::replace_variable_and_assign (Expr **phi, 
+exprutils::replace_variable_and_assign (Expr **phi, 
 					   const Variable *v, 
 					   const Expr *value)
 {
@@ -71,7 +70,7 @@ ExprUtils::replace_variable_and_assign (Expr **phi,
 }
 
 Expr *
-ExprUtils::bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r)
+exprutils::bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r)
 {
   phi->acceptVisitor (r);
 
@@ -79,7 +78,7 @@ ExprUtils::bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r)
 }
 
 bool 
-ExprUtils::bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r)
+exprutils::bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r)
 {
   Expr *new_phi = bottom_up_rewrite (*phi, r);
   bool result = (*phi != new_phi);
@@ -91,61 +90,61 @@ ExprUtils::bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r)
 }
 
 Expr *
-ExprUtils::bottom_up_rewrite_pattern (const Expr *phi,
+exprutils::bottom_up_rewrite_pattern (const Expr *phi,
 					 const Expr *pattern,
 					 const VarList &fv,
 					 const Expr *value)
 {
   BottomUpRewritePatternRule r (pattern, fv, value);
 
-  return ExprUtils::bottom_up_rewrite (phi, r);
+  return exprutils::bottom_up_rewrite (phi, r);
 }
   
 bool 
-ExprUtils::bottom_up_rewrite_pattern_and_assign (Expr **phi,
+exprutils::bottom_up_rewrite_pattern_and_assign (Expr **phi,
 						    const Expr *pattern,
 						    const VarList &fv,
 						    const Expr *value)
 {
   BottomUpRewritePatternRule r (pattern, fv, value);
 
-  return ExprUtils::bottom_up_rewrite_and_assign (phi, r);
+  return exprutils::bottom_up_rewrite_and_assign (phi, r);
 }
 
 bool
-ExprUtils::rewrite_in_DNF (Expr **phi)
+exprutils::rewrite_in_DNF (Expr **phi)
 {
   FunctionRewritingRule r (disjunctive_normal_form_rule);
 
-  ExprUtils::simplify_level0 (phi);
-  bool result = ExprUtils::bottom_up_rewrite_and_assign (phi, r);
-  ExprUtils::simplify_level0 (phi);
+  exprutils::simplify_level0 (phi);
+  bool result = exprutils::bottom_up_rewrite_and_assign (phi, r);
+  exprutils::simplify_level0 (phi);
 
   return result;
 }
 
 bool
-ExprUtils::simplify_level0 (Expr **F)
+exprutils::simplify_level0 (Expr **F)
 {
   FunctionRewritingRule r (simplify_formula);
 
-  bool result = ExprUtils::bottom_up_rewrite_and_assign (F, r);
+  bool result = exprutils::bottom_up_rewrite_and_assign (F, r);
 
   return result;
 }
 
 
 bool
-ExprUtils::simplify (Expr **E)
+exprutils::simplify (Expr **E)
 {
   Expr **F = (Expr **) E;
   FunctionRewritingRule r (simplify_expr);
 
-  bool result = ExprUtils::bottom_up_rewrite_and_assign (F, r);
+  bool result = exprutils::bottom_up_rewrite_and_assign (F, r);
   if (result)
     {
       while (result)
-	result = ExprUtils::bottom_up_rewrite_and_assign (F, r);
+	result = exprutils::bottom_up_rewrite_and_assign (F, r);
       result = true;
     }
 
@@ -153,7 +152,7 @@ ExprUtils::simplify (Expr **E)
 }
 
 Expr * 
-ExprUtils::extract_v_pattern (std::string var_id, const Expr *phi, 
+exprutils::extract_v_pattern (std::string var_id, const Expr *phi, 
 			      const Expr *pattern)
 {
   Expr *result = NULL;

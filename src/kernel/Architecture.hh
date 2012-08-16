@@ -81,7 +81,7 @@ public:
   virtual int get_window_offset () const;
   virtual const std::string &get_label () const;
   virtual int hashcode () const;
-  virtual int is_alias () const;
+  virtual bool is_alias () const;
 
   struct Hash {
     size_t operator()(const RegisterDesc * const &r) const {

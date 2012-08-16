@@ -101,7 +101,7 @@ RegisterDesc::hashcode () const
 	  19 * std::tr1::hash<std::string>() (label));
 }
 
-int 
+bool
 RegisterDesc::is_alias () const
 {
   return window_offset > 0 || window_size != register_size;

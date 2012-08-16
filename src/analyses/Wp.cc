@@ -37,7 +37,7 @@
 #include <utils/graph.hh>
 
 using namespace std;
-using namespace ExprUtils;
+using namespace exprutils;
 
 typedef std::list<const MemCell *> MemCellContainer;
 

@@ -88,7 +88,7 @@ cancel_lnot_not (const Expr *phi)
 {
   Expr *pattern = 
     Expr::createNot (UnaryApp::create (BV_OP_NOT, Variable::create ("X")));
-  Expr *result = ExprUtils::extract_v_pattern ("X", phi, pattern);
+  Expr *result = exprutils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
   return result;

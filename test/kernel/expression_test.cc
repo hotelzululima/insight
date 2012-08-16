@@ -58,7 +58,7 @@ static bool
 s_check_is_true (Expr *F)
 {  
   Expr *tmp = F->ref ();
-  ExprUtils::simplify_level0 (&tmp);
+  exprutils::simplify_level0 (&tmp);
   Option<bool> value = tmp->try_eval_level0 ();
   bool result = value.hasValue ();
 
@@ -145,7 +145,7 @@ ATF_TEST_CASE_BODY (check_tautologies)
 static Expr *
 s_replace (Expr *F, Expr *P, Expr *V)
 {
-  Expr *result = ExprUtils::replace_subterm (F, P, V);
+  Expr *result = exprutils::replace_subterm (F, P, V);
 
   F->deref ();
   P->deref ();

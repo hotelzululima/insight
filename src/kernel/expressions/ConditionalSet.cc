@@ -57,7 +57,7 @@ inline Expr *IsIn (const Expr *elt)
 
 void ConditionalSet::cs_simplify(Expr **set)
 {
-  ExprUtils::simplify_level0 (set);
+  exprutils::simplify_level0 (set);
 }
 
 // ATTENTION CHANTIER CHANTIER CHANTIER
@@ -136,8 +136,8 @@ Expr *
 ConditionalSet::cs_contains (const Expr *set, const Expr *elt)
 {
   Variable *eltsym = ConditionalSet::EltSymbol ();
-  Expr *new_set = ExprUtils::replace_variable (set, eltsym, elt);  
-  ExprUtils::simplify_level0 (&new_set);
+  Expr *new_set = exprutils::replace_variable (set, eltsym, elt);  
+  exprutils::simplify_level0 (&new_set);
   eltsym->deref ();
 
   return new_set;
@@ -159,7 +159,7 @@ bool ConditionalSet::cs_conditional_add(Expr *cond, Expr **set, Expr *elt)
     {
       Expr *tmp = Expr::createOr (Expr::createImplies (cond, IsIn(elt)), *set);
       *set = tmp;
-      ExprUtils::simplify_level0(set);
+      exprutils::simplify_level0(set);
       return true;
     }
   else return false;
@@ -171,13 +171,13 @@ ConditionalSet::cs_conditional_union(Expr *cond, Expr **set1,
 {
   Expr *included = Expr::createImplies (set2->ref (), (*set1)->ref ());
 
-  ExprUtils::simplify_level0 (&included);
+  exprutils::simplify_level0 (&included);
 
   if (!(included->eval_level0()))
     {
       included->deref ();
       *set1 = Expr::createOr (Expr::createImplies (cond, set2), *set1);
-      ExprUtils::simplify_level0 (set1);
+      exprutils::simplify_level0 (set1);
 
       return true;
     }
@@ -193,7 +193,7 @@ ConditionalSet::cs_remove(Expr **set, const Expr *elt)
 {
   bool was_in = cs_compute_contains (*set, elt);
   *set = Expr::createAnd (*set, Expr::createNot (IsIn (elt)));
-  ExprUtils::simplify_level0 (set);
+  exprutils::simplify_level0 (set);
 
   return was_in;
 }
@@ -206,7 +206,7 @@ ConditionalSet::cs_add(Expr **set, const Expr *elt)
   if (! result)
     {
       *set = Expr::createOr (IsIn (elt), *set);
-      ExprUtils::simplify_level0 (set);
+      exprutils::simplify_level0 (set);
     }
 
   return result;
@@ -220,12 +220,12 @@ ConditionalSet::cs_union(Expr **set1, const Expr *set2)
   if (! result)
     {
       Expr *included = Expr::createImplies (set2->ref (), (*set1)->ref ());
-      ExprUtils::simplify_level0 (&included);
+      exprutils::simplify_level0 (&included);
 
       if (! included->eval_level0 ())
 	{
 	  *set1 = Expr::createOr (set2->ref (), *set1);
-	  ExprUtils::simplify_level0(set1);
+	  exprutils::simplify_level0(set1);
 	  result = true;
 	}
       included->deref ();

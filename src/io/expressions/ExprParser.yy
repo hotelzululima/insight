@@ -131,7 +131,13 @@ expr :
 | TOK_LPAR TOK_BINARY_OP expr expr TOK_RPAR bitvector_spec
   { $$ = BinaryApp::create ($2, $3, $4, $6.offset, $6.size); }
 | TOK_LPAR TOK_COMPARE_OP expr expr TOK_RPAR 
-  { $$ = BinaryApp::create ($2, $3, $4, 0, 1); }
+  { 
+    if ($3->get_bv_size () != $4->get_bv_size ()) {
+      Parser::error (yyloc, "comparison of BV with different sizes.");
+      YYERROR;
+    }
+    $$ = BinaryApp::create ($2, $3, $4, 0, 1); 
+  }
 | TOK_LPAR TOK_COMPARE_OP expr expr TOK_RPAR bitvector_spec
   { $$ = BinaryApp::create ($2, $3, $4, $6.offset, $6.size); }
 | TOK_LPAR TOK_TERNARY_OP expr expr expr TOK_RPAR bitvector_spec
@@ -194,10 +200,7 @@ lvalue:
 void 
 Parser::error(const Parser::location_type &loc, const string &msg)
 {
-  ostringstream oss;
-
-  oss << loc << ":" << msg;
-  Log::errorln (oss.str ());
+  cerr << loc << ":" << msg <<  endl;
 }
 
 Expr *

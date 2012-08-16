@@ -128,7 +128,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   Expr *e = expr_parser (expr, &ma);
   ostringstream oss;
 
-  smtlib_writer (oss, e);
+  smtlib_writer (oss, e, &ma);
   
   ATF_REQUIRE_EQ (oss.str (), expectedout);
 
@@ -141,7 +141,33 @@ ALL_X86_CC
 #define X86_32_CC(id, e, expout) \
   ATF_ADD_TEST_CASE(tcs, smtlib_ ## id);
 
+#if 0
 ATF_INIT_TEST_CASES(tcs)
 {
   ALL_X86_CC
 }
+#else
+
+int 
+main (int , char **argv)
+{
+  insight::init ();
+  const Architecture *x86_32 = 
+    Architecture::getArchitecture (Architecture::X86_32);
+  MicrocodeArchitecture ma (x86_32);
+
+  Expr *e = expr_parser (string (argv[1]), &ma);
+
+  if (e == NULL)
+    cerr << "syntax error" << endl;
+  else
+    {
+      smtlib_writer (cout, e, &ma);
+      e->deref ();
+    }
+  
+  insight::terminate ();  
+
+  return 0;
+}
+#endif

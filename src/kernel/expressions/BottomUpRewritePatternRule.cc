@@ -56,7 +56,7 @@ BottomUpRewritePatternRule::rewrite (const Expr *phi)
             
       Expr *value_cpy = value->ref ();
       for (PatternMatching::const_iterator p = vm->begin(); p != vm->end(); p++)
-	ExprUtils::replace_variable_and_assign (&value_cpy, p->first, 
+	exprutils::replace_variable_and_assign (&value_cpy, p->first, 
 						p->second);
       delete vm;
       
