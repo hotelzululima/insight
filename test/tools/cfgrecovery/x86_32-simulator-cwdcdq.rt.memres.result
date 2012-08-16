@@ -3,7 +3,7 @@
 [(0xB,0)] @{asm:=cwtd   }@ ; StaticArrow (0xB,0) %edx{0;16} := (EXTEND_S %eax{0;16} 0x20{0;32}){16;16}  --> (0xD,0)
 [(0xD,0)] @{asm:=cmp    $0x0,%dx}@ ; %tmpr0_17{0;17} := (SUB %edx{0;16} 0x0{0;16}){0;17}
 [(0xD,1)] ; %eflags{0;1} := %tmpr0_17{16;1}
-[(0xD,2)] ; %eflags{11;1} := (AND (XOR %edx{15;1} %tmpr0_17{15;1}){0;1} (XOR %edx{15;1} 0x0{15;1}){0;1}){0;1}
+[(0xD,2)] ; %eflags{11;1} := (AND (XOR %edx{15;1} %tmpr0_17{15;1}){0;1} (XOR %edx{15;1} 0x0{0;1}){0;1}){0;1}
 [(0xD,3)] ; %eflags{7;1} := %tmpr0_17{15;1}
 [(0xD,4)] ; %eflags{6;1} := (EQ %tmpr0_17{0;16} 0x0{0;16}){0;1}
 [(0xD,5)] ; %eflags{4;1} := %tmpr0_17{4;1}
@@ -13,7 +13,7 @@
 [(0x1B,0)] @{asm:=cwtd   }@ ; StaticArrow (0x1B,0) %edx{0;16} := (EXTEND_S %eax{0;16} 0x20{0;32}){16;16}  --> (0x1D,0)
 [(0x1D,0)] @{asm:=cmp    $0xffff,%dx}@ ; %tmpr0_17{0;17} := (SUB %edx{0;16} 0xFFFF{0;16}){0;17}
 [(0x1D,1)] ; %eflags{0;1} := %tmpr0_17{16;1}
-[(0x1D,2)] ; %eflags{11;1} := (AND (XOR %edx{15;1} %tmpr0_17{15;1}){0;1} (XOR %edx{15;1} 0x1{15;1}){0;1}){0;1}
+[(0x1D,2)] ; %eflags{11;1} := (AND (XOR %edx{15;1} %tmpr0_17{15;1}){0;1} (XOR %edx{15;1} 0x1{0;1}){0;1}){0;1}
 [(0x1D,3)] ; %eflags{7;1} := %tmpr0_17{15;1}
 [(0x1D,4)] ; %eflags{6;1} := (EQ %tmpr0_17{0;16} 0x0{0;16}){0;1}
 [(0x1D,5)] ; %eflags{4;1} := %tmpr0_17{4;1}
@@ -23,7 +23,7 @@
 [(0x2C,0)] @{asm:=cltd   }@ ; StaticArrow (0x2C,0) %edx{0;32} := (EXTEND_S %eax{0;32} 0x40{0;32}){32;32}  --> (0x2D,0)
 [(0x2D,0)] @{asm:=cmp    $0xffffffff,%edx}@ ; %tmpr0_33{0;33} := (SUB %edx{0;32} 0xFFFFFFFF{0;32}){0;33}
 [(0x2D,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x2D,2)] ; %eflags{11;1} := (AND (XOR %edx{31;1} %tmpr0_33{31;1}){0;1} (XOR %edx{31;1} 0x1{31;1}){0;1}){0;1}
+[(0x2D,2)] ; %eflags{11;1} := (AND (XOR %edx{31;1} %tmpr0_33{31;1}){0;1} (XOR %edx{31;1} 0x1{0;1}){0;1}){0;1}
 [(0x2D,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0x2D,4)] ; %eflags{6;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x2D,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
@@ -33,7 +33,7 @@
 [(0x3B,0)] @{asm:=cltd   }@ ; StaticArrow (0x3B,0) %edx{0;32} := (EXTEND_S %eax{0;32} 0x40{0;32}){32;32}  --> (0x3C,0)
 [(0x3C,0)] @{asm:=cmp    $0x0,%edx}@ ; %tmpr0_33{0;33} := (SUB %edx{0;32} 0x0{0;32}){0;33}
 [(0x3C,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x3C,2)] ; %eflags{11;1} := (AND (XOR %edx{31;1} %tmpr0_33{31;1}){0;1} (XOR %edx{31;1} 0x0{31;1}){0;1}){0;1}
+[(0x3C,2)] ; %eflags{11;1} := (AND (XOR %edx{31;1} %tmpr0_33{31;1}){0;1} (XOR %edx{31;1} 0x0{0;1}){0;1}){0;1}
 [(0x3C,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
 [(0x3C,4)] ; %eflags{6;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x3C,5)] ; %eflags{4;1} := %tmpr0_33{4;1}

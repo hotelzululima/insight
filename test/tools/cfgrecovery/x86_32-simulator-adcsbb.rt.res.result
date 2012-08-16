@@ -16,7 +16,7 @@
 [(0xD,0)] @{asm:=jae    0x6666}@ ; StaticArrow (0xD,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x6666,0); StaticArrow (0xD,0) Skip << %eflags{0;1} >> --> (0x13,0)
 [(0x13,0)] @{asm:=cmp    $0x0,%ah}@ ; %tmpr0_9{0;9} := (SUB %eax{8;8} 0x0{0;8}){0;9}
 [(0x13,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
-[(0x13,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{7;1}){0;1}){0;1}
+[(0x13,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}
 [(0x13,3)] ; %eflags{7;1} := %tmpr0_9{7;1}
 [(0x13,4)] ; %eflags{6;1} := (EQ %tmpr0_9{0;8} 0x0{0;8}){0;1}
 [(0x13,5)] ; %eflags{4;1} := %tmpr0_9{4;1}
@@ -39,7 +39,7 @@
 [(0x22,0)] @{asm:=jae    0x6666}@ ; StaticArrow (0x22,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x6666,0); StaticArrow (0x22,0) Skip << %eflags{0;1} >> --> (0x28,0)
 [(0x28,0)] @{asm:=cmp    $0xff,%ah}@ ; %tmpr0_9{0;9} := (SUB %eax{8;8} 0xFF{0;8}){0;9}
 [(0x28,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
-[(0x28,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x1{7;1}){0;1}){0;1}
+[(0x28,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x1{0;1}){0;1}){0;1}
 [(0x28,3)] ; %eflags{7;1} := %tmpr0_9{7;1}
 [(0x28,4)] ; %eflags{6;1} := (EQ %tmpr0_9{0;8} 0x0{0;8}){0;1}
 [(0x28,5)] ; %eflags{4;1} := %tmpr0_9{4;1}
@@ -57,7 +57,7 @@
 [(0x35,0)] @{asm:=jb     0x6666}@ ; StaticArrow (0x35,0) Skip << %eflags{0;1} >> --> (0x6666,0); StaticArrow (0x35,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x3B,0)
 [(0x3B,0)] @{asm:=cmp    $0xfe,%ah}@ ; %tmpr0_9{0;9} := (SUB %eax{8;8} 0xFE{0;8}){0;9}
 [(0x3B,1)] ; %eflags{0;1} := %tmpr0_9{8;1}
-[(0x3B,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x1{7;1}){0;1}){0;1}
+[(0x3B,2)] ; %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x1{0;1}){0;1}){0;1}
 [(0x3B,3)] ; %eflags{7;1} := %tmpr0_9{7;1}
 [(0x3B,4)] ; %eflags{6;1} := (EQ %tmpr0_9{0;8} 0x0{0;8}){0;1}
 [(0x3B,5)] ; %eflags{4;1} := %tmpr0_9{4;1}

@@ -38,7 +38,7 @@
 #include <io/expressions/expr-parser.hh>
 #include <kernel/insight.hh>
 #include <kernel/expressions/PatternMatching.hh>
-#include <kernel/expressions/ExprUtils.hh>
+#include <kernel/expressions/exprutils.hh>
 
 using namespace std;
 
