@@ -148,28 +148,28 @@ domains_source = \
 
 ## io module
 io_sources = \
-	io/binaryloaders/BinaryLoader.cc 		\
-	io/binaryloaders/BinaryLoader.hh 		\
-	io/binaryloaders/BinutilsBinaryLoader.cc	\
-	io/binaryloaders/BinutilsBinaryLoader.hh 	\
-        io/expressions/expr-writer.hh			\
-        io/expressions/expr-writer.cc			\
-        io/expressions/smtlib-writer.hh			\
-        io/expressions/smtlib-writer.cc			\
-	io/expressions/expr-parser.hh 			\
-	io/expressions/ExprLexer.hh 			\
-	io/expressions/ExprLexer.ll			\
-	io/expressions/ExprParser.yy 			\
-	io/microcodeloaders/MicrocodeLoader.cc 		\
-	io/microcodeloaders/MicrocodeLoader.hh 		\
-	io/microcodeloaders/xml_microcode_parser.cc	\
-	io/microcodeloaders/xml_microcode_parser.hh 	\
-	io/microcodewriters/MicrocodeWriter.cc 		\
-	io/microcodewriters/MicrocodeWriter.hh 		\
-	io/microcodewriters/xml_microcode_generator.cc	\
-	io/microcodewriters/xml_microcode_generator.hh 	\
-	io/processloaders/ProcessLoader.cc 		\
-	io/processloaders/ProcessLoader.hh
+	io/binary/BinaryLoader.cc 		\
+	io/binary/BinaryLoader.hh 		\
+	io/binary/BinutilsBinaryLoader.cc	\
+	io/binary/BinutilsBinaryLoader.hh 	\
+        io/expressions/expr-writer.hh		\
+        io/expressions/expr-writer.cc		\
+        io/expressions/smtlib-writer.hh		\
+        io/expressions/smtlib-writer.cc		\
+	io/expressions/expr-parser.hh 		\
+	io/expressions/ExprLexer.hh 		\
+	io/expressions/ExprLexer.ll		\
+	io/expressions/ExprParser.yy 		\
+	io/microcode/MicrocodeLoader.cc 	\
+	io/microcode/MicrocodeLoader.hh 	\
+	io/microcode/xml_microcode_parser.cc	\
+	io/microcode/xml_microcode_parser.hh 	\
+	io/microcode/MicrocodeWriter.cc		\
+	io/microcode/MicrocodeWriter.hh		\
+	io/microcode/xml_microcode_generator.cc	\
+	io/microcode/xml_microcode_generator.hh	\
+	io/process/ProcessLoader.cc 	 	\
+	io/process/ProcessLoader.hh
 
 io_built_sources = \
 	io/expressions/stack.hh 	      	\

@@ -41,8 +41,8 @@
 #include <kernel/insight.hh>
 
 #include <decoders/binutils/BinutilsDecoder.hh>
-#include <io/binaryloaders/BinutilsBinaryLoader.hh>
-#include <io/microcodewriters/xml_microcode_generator.hh>
+#include <io/binary/BinutilsBinaryLoader.hh>
+#include <io/microcode/xml_microcode_generator.hh>
 
 #include "linearsweep.hh"
 #include "recursivetraversal.hh"

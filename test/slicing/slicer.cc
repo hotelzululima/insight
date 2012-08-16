@@ -41,7 +41,7 @@
 #include <domains/ExprSemantics.hh>
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/concrete_context.hh>
-#include <io/binaryloaders/BinutilsBinaryLoader.hh>
+#include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/expressions/expr-parser.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>

@@ -37,7 +37,7 @@
 #include <domains/concrete/concrete_context.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
-#include <io/binaryloaders/BinutilsBinaryLoader.hh>
+#include <io/binary/BinutilsBinaryLoader.hh>
 #include <utils/Log.hh>
 
 

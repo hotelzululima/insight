@@ -28,15 +28,14 @@
  * SUCH DAMAGE.
  */
 
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
 
-#include <io/microcodeloaders/xml_microcode_parser.hh>
-
+#include "xml_microcode_parser.hh"
 #include "xml_microcode_generator.hh"
 
 using namespace std;
