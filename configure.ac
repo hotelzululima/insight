@@ -104,8 +104,8 @@ dnl Option and variable settings
 dnl ********************************************************************
 
 dnl Initial settings of flags variables
-CFLAGS="-Wall -Wextra -D_FORTIFY_SOURCE=2"
-CXXFLAGS="-Wall -Wextra -D_FORTIFY_SOURCE=2"
+CFLAGS="${CFLAGS} -Wall -Wextra -D_FORTIFY_SOURCE=2"
+CXXFLAGS="${CXXFLAGS} -Wall -Wextra -D_FORTIFY_SOURCE=2"
 CPPFLAGS="${CPPFLAGS}"
 LDFLAGS="${LDFLAGS}"
 LIBS="${LIBS}"
