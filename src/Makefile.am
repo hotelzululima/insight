@@ -20,8 +20,8 @@ analyses_sources = \
 
 ## utils module
 utils_source = \
-        utils/graph.hh         \
-        utils/graph.ii         \
+        utils/graph.hh		\
+        utils/graph.ii		\
 	utils/Log.cc		\
 	utils/Log.hh		\
 	utils/Object.cc		\
@@ -172,16 +172,16 @@ io_sources = \
 	io/process/ProcessLoader.hh
 
 io_built_sources = \
-	io/expressions/stack.hh 	      	\
-	io/expressions/location.hh		\
-	io/expressions/position.hh		\
+	io/expressions/stack.hh 	\
+	io/expressions/location.hh	\
+	io/expressions/position.hh	\
 	io/expressions/ExprLexer.cc 	\
 	io/expressions/ExprParser.hh  	\
 	io/expressions/ExprParser.cc 
 
 io/expressions/stack.hh		\
-io/expressions/location.hh		\
-io/expressions/position.hh		\
+io/expressions/location.hh	\
+io/expressions/position.hh	\
 io/expressions/ExprParser.hh 	\
 io/expressions/ExprParser.cc:	\
 io/expressions/ExprParser.yy
@@ -189,8 +189,8 @@ io/expressions/ExprParser.yy
 		${srcdir}/io/expressions/ExprParser.yy
 
 io/expressions/ExprLexer.hh \
-io/expressions/ExprLexer.cc : \
-       io/expressions/ExprLexer.ll \
+io/expressions/ExprLexer.cc :		\
+       io/expressions/ExprLexer.ll	\
        io/expressions/ExprParser.hh
 	$(LEX) --outfile=io/expressions/ExprLexer.cc \
 		${srcdir}/io/expressions/ExprLexer.ll
@@ -239,10 +239,10 @@ BUILT_SOURCES+= \
 	decoders/binutils/x86-32/x86_32_parser.cc 
 
 arm_decoder= \
-	decoders/binutils/arm/arm_decoder.hh \
-	decoders/binutils/arm/arm_decoder.cc \
-        decoders/binutils/arm/arm_parser.yy  \
-        decoders/binutils/arm/arm_scanner.ll \
+	decoders/binutils/arm/arm_decoder.hh	\
+	decoders/binutils/arm/arm_decoder.cc	\
+        decoders/binutils/arm/arm_parser.yy	\
+        decoders/binutils/arm/arm_scanner.ll	\
 	decoders/binutils/arm/arm_translate.hh  \
 	decoders/binutils/arm/arm_translate.cc  \
 	decoders/binutils/arm/arm_translation_functions.hh \
@@ -252,17 +252,17 @@ arm_decoder= \
 	decoders/binutils/arm/arm_E_instr.cc	\
 	decoders/binutils/arm/arm_L_instr.cc	\
 	decoders/binutils/arm/arm_M_instr.cc	\
-	decoders/binutils/arm/arm_N_instr.cc \
-	decoders/binutils/arm/arm_P_instr.cc \
-	decoders/binutils/arm/arm_R_instr.cc \
-	decoders/binutils/arm/arm_S_instr.cc \
+	decoders/binutils/arm/arm_N_instr.cc	\
+	decoders/binutils/arm/arm_P_instr.cc	\
+	decoders/binutils/arm/arm_R_instr.cc	\
+	decoders/binutils/arm/arm_S_instr.cc	\
 	decoders/binutils/arm/arm_O_instr.cc	\
 	decoders/binutils/arm/arm_U_instr.cc
 
 BUILT_SOURCES+= \
 	decoders/binutils/arm/stack.hh 	      	\
-	decoders/binutils/arm/location.hh       	\
-	decoders/binutils/arm/position.hh       	\
+	decoders/binutils/arm/location.hh       \
+	decoders/binutils/arm/position.hh       \
 	decoders/binutils/arm/arm_scanner.hh 	\
 	decoders/binutils/arm/arm_scanner.cc 	\
 	decoders/binutils/arm/arm_parser.hh  	\
@@ -280,17 +280,17 @@ decoders_sources = \
 
 
 decoders/binutils/x86-32/stack.hh		\
-decoders/binutils/x86-32/location.hh 	\
-decoders/binutils/x86-32/position.hh 	\
+decoders/binutils/x86-32/location.hh 		\
+decoders/binutils/x86-32/position.hh 		\
 decoders/binutils/x86-32/x86_32_parser.hh 	\
 decoders/binutils/x86-32/x86_32_parser.cc:	\
   decoders/binutils/x86-32/x86_32_parser.yy
 	$(YACC) --output=decoders/binutils/x86-32/x86_32_parser.cc \
 		${srcdir}/decoders/binutils/x86-32/x86_32_parser.yy
 
-decoders/binutils/x86-32/x86_32_scanner.hh 	\
-decoders/binutils/x86-32/x86_32_scanner.cc : \
-       decoders/binutils/x86-32/x86_32_scanner.ll \
+decoders/binutils/x86-32/x86_32_scanner.hh 		\
+decoders/binutils/x86-32/x86_32_scanner.cc : 		\
+       decoders/binutils/x86-32/x86_32_scanner.ll 	\
        decoders/binutils/x86-32/x86_32_parser.hh
 	$(LEX) --outfile=decoders/binutils/x86-32/x86_32_scanner.cc \
 	       --header-file=decoders/binutils/x86-32/x86_32_scanner.hh \
@@ -323,7 +323,7 @@ libinsight_la_SOURCES =  \
 	$(analyses_sources) 	\
 	$(decoders_sources) 	\
 	$(domains_source) 	\
-	$(io_sources) 	\
+	$(io_sources) 		\
 	$(utils_source)
 
 libinsight_la_CPPFLAGS = @BINUTILS_CFLAGS@
