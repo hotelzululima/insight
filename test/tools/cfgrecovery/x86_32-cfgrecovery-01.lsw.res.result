@@ -1,33 +1,33 @@
 [(0x0,0)] @{asm:=mov    $0x1,%ax}@ ; StaticArrow (0x0,0) %eax{0;16} := 0x1{0;16}  --> (0x4,0)
 [(0x4,0)] @{asm:=mov    $0x2,%bx}@ ; StaticArrow (0x4,0) %ebx{0;16} := 0x2{0;16}  --> (0x8,0)
-[(0x8,0)] @{asm:=call   0x18}@ ; %esp := (SUB %esp 0x4)
-[(0x8,1)] ; [%esp] := 0xD
+[(0x8,0)] @{asm:=call   0x18}@ ; %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x8,1)] ; [%esp{0;32}]{0;32} := 0xD{0;32}
 [(0x8,2)] @{callret:=CALL}@ ; StaticArrow (0x8,2) Skip  --> (0x18,0)
-[(0xD,0)] @{asm:=call   0x1d}@ ; %esp := (SUB %esp 0x4)
-[(0xD,1)] ; [%esp] := 0x12
+[(0xD,0)] @{asm:=call   0x1d}@ ; %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0xD,1)] ; [%esp{0;32}]{0;32} := 0x12{0;32}
 [(0xD,2)] @{callret:=CALL}@ ; StaticArrow (0xD,2) Skip  --> (0x1D,0)
-[(0x12,0)] @{asm:=call   0x22}@ ; %esp := (SUB %esp 0x4)
-[(0x12,1)] ; [%esp] := 0x17
+[(0x12,0)] @{asm:=call   0x22}@ ; %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x12,1)] ; [%esp{0;32}]{0;32} := 0x17{0;32}
 [(0x12,2)] @{callret:=CALL}@ ; StaticArrow (0x12,2) Skip  --> (0x22,0)
-[(0x17,0)] @{asm:=ret    }@ ; %tmpr0_32 := [%esp]
-[(0x17,1)] ; %esp := (ADD %esp 0x4)
-[(0x17,2)] @{callret:=RET}@ ; DynamicArrow (0x17,2) Jmp %tmpr0_32  --> << %tmpr0_32 >>
+[(0x17,0)] @{asm:=ret    }@ ; %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
+[(0x17,1)] ; %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
+[(0x17,2)] @{callret:=RET}@ ; DynamicArrow (0x17,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
 [(0x18,0)] @{asm:=mov    $0x3,%ax}@ ; StaticArrow (0x18,0) %eax{0;16} := 0x3{0;16}  --> (0x1C,0)
-[(0x1C,0)] @{asm:=ret    }@ ; %tmpr0_32 := [%esp]
-[(0x1C,1)] ; %esp := (ADD %esp 0x4)
-[(0x1C,2)] @{callret:=RET}@ ; DynamicArrow (0x1C,2) Jmp %tmpr0_32  --> << %tmpr0_32 >>
+[(0x1C,0)] @{asm:=ret    }@ ; %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
+[(0x1C,1)] ; %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
+[(0x1C,2)] @{callret:=RET}@ ; DynamicArrow (0x1C,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
 [(0x1D,0)] @{asm:=mov    $0x4,%ax}@ ; StaticArrow (0x1D,0) %eax{0;16} := 0x4{0;16}  --> (0x21,0)
-[(0x21,0)] @{asm:=ret    }@ ; %tmpr0_32 := [%esp]
-[(0x21,1)] ; %esp := (ADD %esp 0x4)
-[(0x21,2)] @{callret:=RET}@ ; DynamicArrow (0x21,2) Jmp %tmpr0_32  --> << %tmpr0_32 >>
-[(0x22,0)] @{asm:=call   0x18}@ ; %esp := (SUB %esp 0x4)
-[(0x22,1)] ; [%esp] := 0x27
+[(0x21,0)] @{asm:=ret    }@ ; %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
+[(0x21,1)] ; %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
+[(0x21,2)] @{callret:=RET}@ ; DynamicArrow (0x21,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+[(0x22,0)] @{asm:=call   0x18}@ ; %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x22,1)] ; [%esp{0;32}]{0;32} := 0x27{0;32}
 [(0x22,2)] @{callret:=CALL}@ ; StaticArrow (0x22,2) Skip  --> (0x18,0)
 [(0x27,0)] @{asm:=mov    %bx,%ax}@ ; StaticArrow (0x27,0) %eax{0;16} := %ebx{0;16}  --> (0x2A,0)
-[(0x2A,0)] @{asm:=call   0x1d}@ ; %esp := (SUB %esp 0x4)
-[(0x2A,1)] ; [%esp] := 0x2F
+[(0x2A,0)] @{asm:=call   0x1d}@ ; %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x2A,1)] ; [%esp{0;32}]{0;32} := 0x2F{0;32}
 [(0x2A,2)] @{callret:=CALL}@ ; StaticArrow (0x2A,2) Skip  --> (0x1D,0)
-[(0x2F,0)] @{asm:=ret    }@ ; %tmpr0_32 := [%esp]
-[(0x2F,1)] ; %esp := (ADD %esp 0x4)
-[(0x2F,2)] @{callret:=RET}@ ; DynamicArrow (0x2F,2) Jmp %tmpr0_32  --> << %tmpr0_32 >>
+[(0x2F,0)] @{asm:=ret    }@ ; %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
+[(0x2F,1)] ; %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
+[(0x2F,2)] @{callret:=RET}@ ; DynamicArrow (0x2F,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
 

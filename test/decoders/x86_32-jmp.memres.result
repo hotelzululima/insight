@@ -14,11 +14,11 @@
 [(0xF,0)] @{asm:=jmpw   *%ax}@ ; DynamicArrow (0xF,0) Jmp %eax{0;16}  --> << %eax{0;16} >>
 
 **** Decode instruction: jmp    *0x12345678
-[(0x12,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x12,0) Jmp [0x12345678]  --> << [0x12345678] >>
+[(0x12,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x12,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
 
 **** Decode instruction: jmp    *%eax
-[(0x18,0)] @{asm:=jmp    *%eax}@ ; DynamicArrow (0x18,0) Jmp %eax  --> << %eax >>
+[(0x18,0)] @{asm:=jmp    *%eax}@ ; DynamicArrow (0x18,0) Jmp %eax{0;32}  --> << %eax{0;32} >>
 
 **** Decode instruction: jmp    *0x12345678
-[(0x1A,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x1A,0) Jmp [0x12345678]  --> << [0x12345678] >>
+[(0x1A,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x1A,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
 

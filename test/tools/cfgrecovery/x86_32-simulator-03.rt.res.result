@@ -1,11 +1,11 @@
-[(0x0,0)] @{asm:=movb   $0x0,0x12fa792}@ ; StaticArrow (0x0,0) [0x12FA792]{0;8} := 0x0{0;8}  --> (0x7,0)
-[(0x7,0)] @{asm:=mov    $0x8a000000,%eax}@ ; StaticArrow (0x7,0) %eax := 0x8A000000  --> (0xC,0)
-[(0xC,0)] @{asm:=add    $0x8a000000,%eax}@ ; %tmpr0_33{0;33} := (ADD %eax 0x8A000000){0;33}
+[(0x0,0)] @{asm:=movb   $0x0,0x12fa792}@ ; StaticArrow (0x0,0) [0x12FA792{0;32}]{0;8} := 0x0{0;8}  --> (0x7,0)
+[(0x7,0)] @{asm:=mov    $0x8a000000,%eax}@ ; StaticArrow (0x7,0) %eax{0;32} := 0x8A000000{0;32}  --> (0xC,0)
+[(0xC,0)] @{asm:=add    $0x8a000000,%eax}@ ; %tmpr0_33{0;33} := (ADD %eax{0;32} 0x8A000000{0;32}){0;33}
 [(0xC,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0xC,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (NOT (XOR %eax{31;1} 0x8A000000{31;1}){0;1}){0;1}){0;1}
-[(0xC,3)] ; %eax := %tmpr0_33
+[(0xC,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (NOT (XOR %eax{31;1} 0x1{31;1}){0;1}){0;1}){0;1}
+[(0xC,3)] ; %eax{0;32} := %tmpr0_33{0;32}
 [(0xC,4)] ; %eflags{7;1} := %eax{31;1}
-[(0xC,5)] ; %eflags{6;1} := (EQ %eax 0x0){0;1}
+[(0xC,5)] ; %eflags{6;1} := (EQ %eax{0;32} 0x0{0;32}){0;1}
 [(0xC,6)] ; %eflags{4;1} := %eax{4;1}
 [(0xC,7)] ; StaticArrow (0xC,7) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %eax{0;1}){0;1} %eax{1;1}){0;1} %eax{2;1}){0;1} %eax{3;1}){0;1} %eax{4;1}){0;1} %eax{5;1}){0;1} %eax{6;1}){0;1} %eax{7;1}){0;1}  --> (0x11,0)
 [(0x11,0)] @{asm:=jo     0x1000}@ ; StaticArrow (0x11,0) Skip << %eflags{11;1} >> --> (0x1000,0); StaticArrow (0x11,0) Skip << (NOT %eflags{11;1}){0;1} >> --> (0x17,0)

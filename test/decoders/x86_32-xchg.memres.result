@@ -11,51 +11,51 @@
 [(0x4,0)] 
 
 **** Decode instruction: xchg   %eax,%ecx
-[(0x4,0)] @{asm:=xchg   %eax,%ecx}@ ; %tmpr0_32 := %eax
-[(0x4,1)] ; %eax := %ecx
-[(0x4,2)] ; StaticArrow (0x4,2) %ecx := %tmpr0_32  --> (0x5,0)
+[(0x4,0)] @{asm:=xchg   %eax,%ecx}@ ; %tmpr0_32{0;32} := %eax{0;32}
+[(0x4,1)] ; %eax{0;32} := %ecx{0;32}
+[(0x4,2)] ; StaticArrow (0x4,2) %ecx{0;32} := %tmpr0_32{0;32}  --> (0x5,0)
 [(0x5,0)] 
 
 **** Decode instruction: xchg   %eax,%ecx
-[(0x5,0)] @{asm:=xchg   %eax,%ecx}@ ; %tmpr0_32 := %eax
-[(0x5,1)] ; %eax := %ecx
-[(0x5,2)] ; StaticArrow (0x5,2) %ecx := %tmpr0_32  --> (0x6,0)
+[(0x5,0)] @{asm:=xchg   %eax,%ecx}@ ; %tmpr0_32{0;32} := %eax{0;32}
+[(0x5,1)] ; %eax{0;32} := %ecx{0;32}
+[(0x5,2)] ; StaticArrow (0x5,2) %ecx{0;32} := %tmpr0_32{0;32}  --> (0x6,0)
 [(0x6,0)] 
 
 **** Decode instruction: xchg   %ch,0x1111
 [(0x6,0)] @{asm:=xchg   %ch,0x1111}@ ; %tmpr0_8{0;8} := %ecx{8;8}
-[(0x6,1)] ; %ecx{8;8} := [0x1111]{0;8}
-[(0x6,2)] ; StaticArrow (0x6,2) [0x1111]{0;8} := %tmpr0_8{0;8}  --> (0xC,0)
+[(0x6,1)] ; %ecx{8;8} := [0x1111{0;32}]{0;8}
+[(0x6,2)] ; StaticArrow (0x6,2) [0x1111{0;32}]{0;8} := %tmpr0_8{0;8}  --> (0xC,0)
 [(0xC,0)] 
 
 **** Decode instruction: xchg   %ch,0x1111
 [(0xC,0)] @{asm:=xchg   %ch,0x1111}@ ; %tmpr0_8{0;8} := %ecx{8;8}
-[(0xC,1)] ; %ecx{8;8} := [0x1111]{0;8}
-[(0xC,2)] ; StaticArrow (0xC,2) [0x1111]{0;8} := %tmpr0_8{0;8}  --> (0x12,0)
+[(0xC,1)] ; %ecx{8;8} := [0x1111{0;32}]{0;8}
+[(0xC,2)] ; StaticArrow (0xC,2) [0x1111{0;32}]{0;8} := %tmpr0_8{0;8}  --> (0x12,0)
 [(0x12,0)] 
 
 **** Decode instruction: xchg   %cx,0x1111
 [(0x12,0)] @{asm:=xchg   %cx,0x1111}@ ; %tmpr0_16{0;16} := %ecx{0;16}
-[(0x12,1)] ; %ecx{0;16} := [0x1111]{0;16}
-[(0x12,2)] ; StaticArrow (0x12,2) [0x1111]{0;16} := %tmpr0_16{0;16}  --> (0x19,0)
+[(0x12,1)] ; %ecx{0;16} := [0x1111{0;32}]{0;16}
+[(0x12,2)] ; StaticArrow (0x12,2) [0x1111{0;32}]{0;16} := %tmpr0_16{0;16}  --> (0x19,0)
 [(0x19,0)] 
 
 **** Decode instruction: xchg   %cx,0x1111
 [(0x19,0)] @{asm:=xchg   %cx,0x1111}@ ; %tmpr0_16{0;16} := %ecx{0;16}
-[(0x19,1)] ; %ecx{0;16} := [0x1111]{0;16}
-[(0x19,2)] ; StaticArrow (0x19,2) [0x1111]{0;16} := %tmpr0_16{0;16}  --> (0x20,0)
+[(0x19,1)] ; %ecx{0;16} := [0x1111{0;32}]{0;16}
+[(0x19,2)] ; StaticArrow (0x19,2) [0x1111{0;32}]{0;16} := %tmpr0_16{0;16}  --> (0x20,0)
 [(0x20,0)] 
 
 **** Decode instruction: xchg   %ecx,0x1111
-[(0x20,0)] @{asm:=xchg   %ecx,0x1111}@ ; %tmpr0_32 := %ecx
-[(0x20,1)] ; %ecx := [0x1111]
-[(0x20,2)] ; StaticArrow (0x20,2) [0x1111] := %tmpr0_32  --> (0x26,0)
+[(0x20,0)] @{asm:=xchg   %ecx,0x1111}@ ; %tmpr0_32{0;32} := %ecx{0;32}
+[(0x20,1)] ; %ecx{0;32} := [0x1111{0;32}]{0;32}
+[(0x20,2)] ; StaticArrow (0x20,2) [0x1111{0;32}]{0;32} := %tmpr0_32{0;32}  --> (0x26,0)
 [(0x26,0)] 
 
 **** Decode instruction: xchg   %ecx,0x1111
-[(0x26,0)] @{asm:=xchg   %ecx,0x1111}@ ; %tmpr0_32 := %ecx
-[(0x26,1)] ; %ecx := [0x1111]
-[(0x26,2)] ; StaticArrow (0x26,2) [0x1111] := %tmpr0_32  --> (0x2C,0)
+[(0x26,0)] @{asm:=xchg   %ecx,0x1111}@ ; %tmpr0_32{0;32} := %ecx{0;32}
+[(0x26,1)] ; %ecx{0;32} := [0x1111{0;32}]{0;32}
+[(0x26,2)] ; StaticArrow (0x26,2) [0x1111{0;32}]{0;32} := %tmpr0_32{0;32}  --> (0x2C,0)
 [(0x2C,0)] 
 
 **** Decode instruction: xchg   %bh,%ch
@@ -83,14 +83,14 @@
 [(0x36,0)] 
 
 **** Decode instruction: xchg   %ebx,%ecx
-[(0x36,0)] @{asm:=xchg   %ebx,%ecx}@ ; %tmpr0_32 := %ebx
-[(0x36,1)] ; %ebx := %ecx
-[(0x36,2)] ; StaticArrow (0x36,2) %ecx := %tmpr0_32  --> (0x38,0)
+[(0x36,0)] @{asm:=xchg   %ebx,%ecx}@ ; %tmpr0_32{0;32} := %ebx{0;32}
+[(0x36,1)] ; %ebx{0;32} := %ecx{0;32}
+[(0x36,2)] ; StaticArrow (0x36,2) %ecx{0;32} := %tmpr0_32{0;32}  --> (0x38,0)
 [(0x38,0)] 
 
 **** Decode instruction: xchg   %ecx,%ebx
-[(0x38,0)] @{asm:=xchg   %ecx,%ebx}@ ; %tmpr0_32 := %ecx
-[(0x38,1)] ; %ecx := %ebx
-[(0x38,2)] ; StaticArrow (0x38,2) %ebx := %tmpr0_32  --> (0x3A,0)
+[(0x38,0)] @{asm:=xchg   %ecx,%ebx}@ ; %tmpr0_32{0;32} := %ecx{0;32}
+[(0x38,1)] ; %ecx{0;32} := %ebx{0;32}
+[(0x38,2)] ; StaticArrow (0x38,2) %ebx{0;32} := %tmpr0_32{0;32}  --> (0x3A,0)
 [(0x3A,0)] 
 

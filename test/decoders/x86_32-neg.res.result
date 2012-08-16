@@ -4,8 +4,8 @@
 [(0x2,0)] 
 
 **** Decode instruction: negb   0x1234
-[(0x2,0)] @{asm:=negb   0x1234}@ ; %eflags{0;1} := (NEQ [0x1234]{0;8} 0x0{0;8}){0;1}
-[(0x2,1)] ; StaticArrow (0x2,1) [0x1234]{0;8} := (NEG [0x1234]{0;8}){0;8}  --> (0x8,0)
+[(0x2,0)] @{asm:=negb   0x1234}@ ; %eflags{0;1} := (NEQ [0x1234{0;32}]{0;8} 0x0{0;8}){0;1}
+[(0x2,1)] ; StaticArrow (0x2,1) [0x1234{0;32}]{0;8} := (NEG [0x1234{0;32}]{0;8}){0;8}  --> (0x8,0)
 [(0x8,0)] 
 
 **** Decode instruction: neg    %bx
@@ -14,17 +14,17 @@
 [(0xB,0)] 
 
 **** Decode instruction: negw   0x1234
-[(0xB,0)] @{asm:=negw   0x1234}@ ; %eflags{0;1} := (NEQ [0x1234]{0;16} 0x0{0;16}){0;1}
-[(0xB,1)] ; StaticArrow (0xB,1) [0x1234]{0;16} := (NEG [0x1234]{0;16}){0;16}  --> (0x12,0)
+[(0xB,0)] @{asm:=negw   0x1234}@ ; %eflags{0;1} := (NEQ [0x1234{0;32}]{0;16} 0x0{0;16}){0;1}
+[(0xB,1)] ; StaticArrow (0xB,1) [0x1234{0;32}]{0;16} := (NEG [0x1234{0;32}]{0;16}){0;16}  --> (0x12,0)
 [(0x12,0)] 
 
 **** Decode instruction: neg    %ebx
-[(0x12,0)] @{asm:=neg    %ebx}@ ; %eflags{0;1} := (NEQ %ebx 0x0){0;1}
-[(0x12,1)] ; StaticArrow (0x12,1) %ebx := (NEG %ebx)  --> (0x14,0)
+[(0x12,0)] @{asm:=neg    %ebx}@ ; %eflags{0;1} := (NEQ %ebx{0;32} 0x0{0;32}){0;1}
+[(0x12,1)] ; StaticArrow (0x12,1) %ebx{0;32} := (NEG %ebx{0;32}){0;32}  --> (0x14,0)
 [(0x14,0)] 
 
 **** Decode instruction: negl   0x1234
-[(0x14,0)] @{asm:=negl   0x1234}@ ; %eflags{0;1} := (NEQ [0x1234] 0x0){0;1}
-[(0x14,1)] ; StaticArrow (0x14,1) [0x1234] := (NEG [0x1234])  --> (0x1A,0)
+[(0x14,0)] @{asm:=negl   0x1234}@ ; %eflags{0;1} := (NEQ [0x1234{0;32}]{0;32} 0x0{0;32}){0;1}
+[(0x14,1)] ; StaticArrow (0x14,1) [0x1234{0;32}]{0;32} := (NEG [0x1234{0;32}]{0;32}){0;32}  --> (0x1A,0)
 [(0x1A,0)] 
 

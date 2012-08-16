@@ -2,15 +2,15 @@
 [(0x5,0)] @{asm:=jmp    0x123a}@ ; StaticArrow (0x5,0) Skip  --> (0x123A,0)
 [(0xA,0)] @{asm:=jmp    0xedcba993}@ ; StaticArrow (0xA,0) Skip  --> (0xEDCBA993,0)
 [(0xF,0)] @{asm:=jmpw   *%ax}@ ; DynamicArrow (0xF,0) Jmp %eax{0;16}  --> << %eax{0;16} >>
-[(0x12,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x12,0) Jmp [0x12345678]  --> << [0x12345678] >>
-[(0x13,0)] @{asm:=and    $0x12345678,%eax}@ ; %eax := (AND %eax 0x12345678)
+[(0x12,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x12,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
+[(0x13,0)] @{asm:=and    $0x12345678,%eax}@ ; %eax{0;32} := (AND %eax{0;32} 0x12345678{0;32}){0;32}
 [(0x13,1)] ; %eflags{7;1} := %eax{31;1}
-[(0x13,2)] ; %eflags{6;1} := (EQ %eax 0x0){0;1}
+[(0x13,2)] ; %eflags{6;1} := (EQ %eax{0;32} 0x0{0;32}){0;1}
 [(0x13,3)] ; %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %eax{0;1}){0;1} %eax{1;1}){0;1} %eax{2;1}){0;1} %eax{3;1}){0;1} %eax{4;1}){0;1} %eax{5;1}){0;1} %eax{6;1}){0;1} %eax{7;1}){0;1}
 [(0x13,4)] ; %eflags{0;1} := 0x0{0;1}
 [(0x13,5)] ; StaticArrow (0x13,5) %eflags{11;1} := 0x0{0;1}  --> (0x18,0)
-[(0x18,0)] @{asm:=jmp    *%eax}@ ; DynamicArrow (0x18,0) Jmp %eax  --> << %eax >>
-[(0x1A,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x1A,0) Jmp [0x12345678]  --> << [0x12345678] >>
+[(0x18,0)] @{asm:=jmp    *%eax}@ ; DynamicArrow (0x18,0) Jmp %eax{0;32}  --> << %eax{0;32} >>
+[(0x1A,0)] @{asm:=jmp    *0x12345678}@ ; DynamicArrow (0x1A,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
 [(0x123A,0)] 
 [(0xEDCBA993,0)] 
 

@@ -47,12 +47,11 @@ public:
     int bv_offset = e->get_bv_offset ();
     int bv_size = e->get_bv_size ();
 
-    if ((bv_offset != 0 || bv_size != BV_DEFAULT_SIZE))
-      out << std::dec << "{" << bv_offset << ";" << bv_size << "}";
+    out << std::dec << "{" << bv_offset << ";" << bv_size << "}";
   }
 
   virtual void visit (const Constant *c) {
-    out << "0x" << std::hex << std::uppercase << c->get_not_truncated_value ();
+    out << "0x" << std::hex << std::uppercase << c->get_val ();
     output_bv_window (c);
   }
 

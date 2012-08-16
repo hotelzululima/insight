@@ -1,72 +1,72 @@
-[(0x0,0)] @{asm:=movb   $0x0,0x12fa792}@ ; StaticArrow (0x0,0) [0x12FA792]{0;8} := 0x0{0;8}  --> (0x7,0)
-[(0x7,0)] @{asm:=mov    $0x12345678,%ebx}@ ; StaticArrow (0x7,0) %ebx := 0x12345678  --> (0xC,0)
-[(0xC,0)] @{asm:=popcnt %ebx,%eax}@ ; %eax := (EXTEND_U %ebx{0;1} 0x20)
-[(0xC,1)] ; %eax := (ADD %eax (EXTEND_U %ebx{1;1} 0x20))
-[(0xC,2)] ; %eax := (ADD %eax (EXTEND_U %ebx{2;1} 0x20))
-[(0xC,3)] ; %eax := (ADD %eax (EXTEND_U %ebx{3;1} 0x20))
-[(0xC,4)] ; %eax := (ADD %eax (EXTEND_U %ebx{4;1} 0x20))
-[(0xC,5)] ; %eax := (ADD %eax (EXTEND_U %ebx{5;1} 0x20))
-[(0xC,6)] ; %eax := (ADD %eax (EXTEND_U %ebx{6;1} 0x20))
-[(0xC,7)] ; %eax := (ADD %eax (EXTEND_U %ebx{7;1} 0x20))
-[(0xC,8)] ; %eax := (ADD %eax (EXTEND_U %ebx{8;1} 0x20))
-[(0xC,9)] ; %eax := (ADD %eax (EXTEND_U %ebx{9;1} 0x20))
-[(0xC,10)] ; %eax := (ADD %eax (EXTEND_U %ebx{10;1} 0x20))
-[(0xC,11)] ; %eax := (ADD %eax (EXTEND_U %ebx{11;1} 0x20))
-[(0xC,12)] ; %eax := (ADD %eax (EXTEND_U %ebx{12;1} 0x20))
-[(0xC,13)] ; %eax := (ADD %eax (EXTEND_U %ebx{13;1} 0x20))
-[(0xC,14)] ; %eax := (ADD %eax (EXTEND_U %ebx{14;1} 0x20))
-[(0xC,15)] ; %eax := (ADD %eax (EXTEND_U %ebx{15;1} 0x20))
-[(0xC,16)] ; %eax := (ADD %eax (EXTEND_U %ebx{16;1} 0x20))
-[(0xC,17)] ; %eax := (ADD %eax (EXTEND_U %ebx{17;1} 0x20))
-[(0xC,18)] ; %eax := (ADD %eax (EXTEND_U %ebx{18;1} 0x20))
-[(0xC,19)] ; %eax := (ADD %eax (EXTEND_U %ebx{19;1} 0x20))
-[(0xC,20)] ; %eax := (ADD %eax (EXTEND_U %ebx{20;1} 0x20))
-[(0xC,21)] ; %eax := (ADD %eax (EXTEND_U %ebx{21;1} 0x20))
-[(0xC,22)] ; %eax := (ADD %eax (EXTEND_U %ebx{22;1} 0x20))
-[(0xC,23)] ; %eax := (ADD %eax (EXTEND_U %ebx{23;1} 0x20))
-[(0xC,24)] ; %eax := (ADD %eax (EXTEND_U %ebx{24;1} 0x20))
-[(0xC,25)] ; %eax := (ADD %eax (EXTEND_U %ebx{25;1} 0x20))
-[(0xC,26)] ; %eax := (ADD %eax (EXTEND_U %ebx{26;1} 0x20))
-[(0xC,27)] ; %eax := (ADD %eax (EXTEND_U %ebx{27;1} 0x20))
-[(0xC,28)] ; %eax := (ADD %eax (EXTEND_U %ebx{28;1} 0x20))
-[(0xC,29)] ; %eax := (ADD %eax (EXTEND_U %ebx{29;1} 0x20))
-[(0xC,30)] ; %eax := (ADD %eax (EXTEND_U %ebx{30;1} 0x20))
-[(0xC,31)] ; %eax := (ADD %eax (EXTEND_U %ebx{31;1} 0x20))
+[(0x0,0)] @{asm:=movb   $0x0,0x12fa792}@ ; StaticArrow (0x0,0) [0x12FA792{0;32}]{0;8} := 0x0{0;8}  --> (0x7,0)
+[(0x7,0)] @{asm:=mov    $0x12345678,%ebx}@ ; StaticArrow (0x7,0) %ebx{0;32} := 0x12345678{0;32}  --> (0xC,0)
+[(0xC,0)] @{asm:=popcnt %ebx,%eax}@ ; %eax{0;32} := (EXTEND_U %ebx{0;1} 0x20{0;32}){0;32}
+[(0xC,1)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{1;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,2)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{2;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,3)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{3;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,4)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{4;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,5)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{5;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,6)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{6;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,7)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{7;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,8)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{8;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,9)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{9;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,10)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{10;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,11)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{11;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,12)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{12;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,13)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{13;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,14)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{14;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,15)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{15;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,16)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{16;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,17)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{17;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,18)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{18;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,19)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{19;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,20)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{20;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,21)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{21;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,22)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{22;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,23)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{23;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,24)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{24;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,25)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{25;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,26)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{26;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,27)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{27;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,28)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{28;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,29)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{29;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,30)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{30;1} 0x20{0;32}){0;32}){0;32}
+[(0xC,31)] ; %eax{0;32} := (ADD %eax{0;32} (EXTEND_U %ebx{31;1} 0x20{0;32}){0;32}){0;32}
 [(0xC,32)] ; %eflags{11;1} := 0x0{0;1}
 [(0xC,33)] ; %eflags{7;1} := 0x0{0;1}
 [(0xC,34)] ; %eflags{4;1} := 0x0{0;1}
 [(0xC,35)] ; %eflags{0;1} := 0x0{0;1}
 [(0xC,36)] ; %eflags{2;1} := 0x0{0;1}
-[(0xC,37)] ; StaticArrow (0xC,37) %eflags{6;1} := (EQ %ebx 0x0){0;1}  --> (0x10,0)
+[(0xC,37)] ; StaticArrow (0xC,37) %eflags{6;1} := (EQ %ebx{0;32} 0x0{0;32}){0;1}  --> (0x10,0)
 [(0x10,0)] @{asm:=je     0x6666}@ ; StaticArrow (0x10,0) Skip << %eflags{6;1} >> --> (0x6666,0); StaticArrow (0x10,0) Skip << (NOT %eflags{6;1}){0;1} >> --> (0x16,0)
 [(0x16,0)] @{asm:=jb     0x6666}@ ; StaticArrow (0x16,0) Skip << %eflags{0;1} >> --> (0x6666,0); StaticArrow (0x16,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x1C,0)
 [(0x1C,0)] @{asm:=jp     0x6666}@ ; StaticArrow (0x1C,0) Skip << %eflags{2;1} >> --> (0x6666,0); StaticArrow (0x1C,0) Skip << (NOT %eflags{2;1}){0;1} >> --> (0x22,0)
 [(0x22,0)] @{asm:=jo     0x6666}@ ; StaticArrow (0x22,0) Skip << %eflags{11;1} >> --> (0x6666,0); StaticArrow (0x22,0) Skip << (NOT %eflags{11;1}){0;1} >> --> (0x28,0)
 [(0x28,0)] @{asm:=js     0x6666}@ ; StaticArrow (0x28,0) Skip << %eflags{7;1} >> --> (0x6666,0); StaticArrow (0x28,0) Skip << (NOT %eflags{7;1}){0;1} >> --> (0x2E,0)
-[(0x2E,0)] @{asm:=cmp    $0xd,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax 0xD){0;33}
+[(0x2E,0)] @{asm:=cmp    $0xd,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax{0;32} 0xD{0;32}){0;33}
 [(0x2E,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x2E,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0xD{31;1}){0;1}){0;1}
+[(0x2E,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0x0{31;1}){0;1}){0;1}
 [(0x2E,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
-[(0x2E,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
+[(0x2E,4)] ; %eflags{6;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x2E,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
 [(0x2E,6)] ; StaticArrow (0x2E,6) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %tmpr0_33{0;1}){0;1} %tmpr0_33{1;1}){0;1} %tmpr0_33{2;1}){0;1} %tmpr0_33{3;1}){0;1} %tmpr0_33{4;1}){0;1} %tmpr0_33{5;1}){0;1} %tmpr0_33{6;1}){0;1} %tmpr0_33{7;1}){0;1}  --> (0x31,0)
 [(0x31,0)] @{asm:=jne    0x6666}@ ; StaticArrow (0x31,0) Skip << (NOT %eflags{6;1}){0;1} >> --> (0x6666,0); StaticArrow (0x31,0) Skip << %eflags{6;1} >> --> (0x37,0)
-[(0x37,0)] @{asm:=popcnt %bx,%ax}@ ; %eax{0;16} := (EXTEND_U %ebx{0;1} 0x10){0;16}
-[(0x37,1)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{1;1} 0x10){0;16}){0;16}
-[(0x37,2)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{2;1} 0x10){0;16}){0;16}
-[(0x37,3)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{3;1} 0x10){0;16}){0;16}
-[(0x37,4)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{4;1} 0x10){0;16}){0;16}
-[(0x37,5)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{5;1} 0x10){0;16}){0;16}
-[(0x37,6)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{6;1} 0x10){0;16}){0;16}
-[(0x37,7)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{7;1} 0x10){0;16}){0;16}
-[(0x37,8)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{8;1} 0x10){0;16}){0;16}
-[(0x37,9)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{9;1} 0x10){0;16}){0;16}
-[(0x37,10)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{10;1} 0x10){0;16}){0;16}
-[(0x37,11)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{11;1} 0x10){0;16}){0;16}
-[(0x37,12)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{12;1} 0x10){0;16}){0;16}
-[(0x37,13)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{13;1} 0x10){0;16}){0;16}
-[(0x37,14)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{14;1} 0x10){0;16}){0;16}
-[(0x37,15)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{15;1} 0x10){0;16}){0;16}
+[(0x37,0)] @{asm:=popcnt %bx,%ax}@ ; %eax{0;16} := (EXTEND_U %ebx{0;1} 0x10{0;32}){0;16}
+[(0x37,1)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{1;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,2)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{2;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,3)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{3;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,4)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{4;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,5)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{5;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,6)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{6;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,7)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{7;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,8)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{8;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,9)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{9;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,10)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{10;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,11)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{11;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,12)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{12;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,13)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{13;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,14)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{14;1} 0x10{0;32}){0;16}){0;16}
+[(0x37,15)] ; %eax{0;16} := (ADD %eax{0;16} (EXTEND_U %ebx{15;1} 0x10{0;32}){0;16}){0;16}
 [(0x37,16)] ; %eflags{11;1} := 0x0{0;1}
 [(0x37,17)] ; %eflags{7;1} := 0x0{0;1}
 [(0x37,18)] ; %eflags{4;1} := 0x0{0;1}
@@ -78,11 +78,11 @@
 [(0x48,0)] @{asm:=jp     0x6666}@ ; StaticArrow (0x48,0) Skip << %eflags{2;1} >> --> (0x6666,0); StaticArrow (0x48,0) Skip << (NOT %eflags{2;1}){0;1} >> --> (0x4E,0)
 [(0x4E,0)] @{asm:=jo     0x6666}@ ; StaticArrow (0x4E,0) Skip << %eflags{11;1} >> --> (0x6666,0); StaticArrow (0x4E,0) Skip << (NOT %eflags{11;1}){0;1} >> --> (0x54,0)
 [(0x54,0)] @{asm:=js     0x6666}@ ; StaticArrow (0x54,0) Skip << %eflags{7;1} >> --> (0x6666,0); StaticArrow (0x54,0) Skip << (NOT %eflags{7;1}){0;1} >> --> (0x5A,0)
-[(0x5A,0)] @{asm:=cmp    $0x8,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax 0x8){0;33}
+[(0x5A,0)] @{asm:=cmp    $0x8,%eax}@ ; %tmpr0_33{0;33} := (SUB %eax{0;32} 0x8{0;32}){0;33}
 [(0x5A,1)] ; %eflags{0;1} := %tmpr0_33{32;1}
-[(0x5A,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0x8{31;1}){0;1}){0;1}
+[(0x5A,2)] ; %eflags{11;1} := (AND (XOR %eax{31;1} %tmpr0_33{31;1}){0;1} (XOR %eax{31;1} 0x0{31;1}){0;1}){0;1}
 [(0x5A,3)] ; %eflags{7;1} := %tmpr0_33{31;1}
-[(0x5A,4)] ; %eflags{6;1} := (EQ %tmpr0_33 0x0){0;1}
+[(0x5A,4)] ; %eflags{6;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x5A,5)] ; %eflags{4;1} := %tmpr0_33{4;1}
 [(0x5A,6)] ; StaticArrow (0x5A,6) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %tmpr0_33{0;1}){0;1} %tmpr0_33{1;1}){0;1} %tmpr0_33{2;1}){0;1} %tmpr0_33{3;1}){0;1} %tmpr0_33{4;1}){0;1} %tmpr0_33{5;1}){0;1} %tmpr0_33{6;1}){0;1} %tmpr0_33{7;1}){0;1}  --> (0x5D,0)
 [(0x5D,0)] @{asm:=jne    0x6666}@ ; StaticArrow (0x5D,0) Skip << (NOT %eflags{6;1}){0;1} >> --> (0x6666,0); StaticArrow (0x5D,0) Skip << %eflags{6;1} >> --> (0x63,0)

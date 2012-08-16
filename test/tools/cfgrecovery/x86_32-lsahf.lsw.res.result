@@ -1,4 +1,4 @@
-[(0x0,0)] @{asm:=lahf   }@ ; StaticArrow (0x0,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2){0;8}){0;8} (LSH %eflags{4;1} 0x4){0;8}){0;8} (LSH %eflags{6;1} 0x6){0;8}){0;8} (LSH %eflags{7;1} 0x7){0;8}){0;8}  --> (0x1,0)
+[(0x0,0)] @{asm:=lahf   }@ ; StaticArrow (0x0,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x1,0)
 [(0x1,0)] @{asm:=sahf   }@ ; %eflags{0;1} := %eax{8;1}
 [(0x1,1)] ; %eflags{2;1} := %eax{10;1}
 [(0x1,2)] ; %eflags{4;1} := %eax{12;1}

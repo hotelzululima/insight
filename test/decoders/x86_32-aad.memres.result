@@ -1,5 +1,5 @@
 **** Decode instruction: aad    $0xa
-[(0x0,0)] @{asm:=aad    $0xa}@ ; %eax{0;8} := (ADD %eax{0;8} (MUL_U %eax{8;8} 0xA){0;8}){0;8}
+[(0x0,0)] @{asm:=aad    $0xa}@ ; %eax{0;8} := (ADD %eax{0;8} (MUL_U %eax{8;8} 0xA{0;32}){0;8}){0;8}
 [(0x0,1)] ; %eax{8;8} := 0x0{0;8}
 [(0x0,2)] ; %eflags{7;1} := %eax{7;1}
 [(0x0,3)] ; %eflags{6;1} := (EQ %eax{0;8} 0x0{0;8}){0;1}
@@ -7,7 +7,7 @@
 [(0x2,0)] 
 
 **** Decode instruction: aad    $0x12
-[(0x2,0)] @{asm:=aad    $0x12}@ ; %eax{0;8} := (ADD %eax{0;8} (MUL_U %eax{8;8} 0x12){0;8}){0;8}
+[(0x2,0)] @{asm:=aad    $0x12}@ ; %eax{0;8} := (ADD %eax{0;8} (MUL_U %eax{8;8} 0x12{0;32}){0;8}){0;8}
 [(0x2,1)] ; %eax{8;8} := 0x0{0;8}
 [(0x2,2)] ; %eflags{7;1} := %eax{7;1}
 [(0x2,3)] ; %eflags{6;1} := (EQ %eax{0;8} 0x0{0;8}){0;1}

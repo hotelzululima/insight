@@ -7,35 +7,35 @@ lvalue: %eax
 ================================================================================
 Running backward arrow < StaticArrow (0x4,0) %ecx{8;8} := %eax{8;8}  --> (0x6,0) >
 New context at pp (0x4,0) :
-	(EQ {elt} %eax)
-Maximum dependencies at pp (0x4,0) : { %eax  }
+	(EQ {elt}{0;32} %eax{0;32}){0;32}
+Maximum dependencies at pp (0x4,0) : { %eax{0;32}  }
 ================================================================================
 Running backward arrow < StaticArrow (0x2,0) %ebx{8;8} := %eax{8;8}  --> (0x4,0) >
 New context at pp (0x2,0) :
-	(EQ {elt} %eax)
-Maximum dependencies at pp (0x2,0) : { %eax  }
+	(EQ {elt}{0;32} %eax{0;32}){0;32}
+Maximum dependencies at pp (0x2,0) : { %eax{0;32}  }
 ================================================================================
 Running backward arrow < StaticArrow (0x0,0) %eax{8;8} := 0x8{0;8}  --> (0x2,0) >
 New context at pp (0x0,0) :
-	(EQ {elt} %eax)
-Maximum dependencies at pp (0x0,0) : { %eax  }
+	(EQ {elt}{0;32} %eax{0;32}){0;32}
+Maximum dependencies at pp (0x0,0) : { %eax{0;32}  }
 DataDependency: Fixpoint Reached!
 ================================================================================
 Dependencies:
 (0x0,0) <== DataDependency: Fixpoint Reached!
-{ %eax  }
+{ %eax{0;32}  }
 DataDependency: Fixpoint Reached!
 StaticArrow (0x0,0) %eax{8;8} := 0x8{0;8}  --> (0x2,0)
 (0x2,0) <== DataDependency: Fixpoint Reached!
-{ %eax  }
+{ %eax{0;32}  }
 DataDependency: Fixpoint Reached!
 StaticArrow (0x2,0) %ebx{8;8} := %eax{8;8}  --> (0x4,0)
 (0x4,0) <== DataDependency: Fixpoint Reached!
-{ %eax  }
+{ %eax{0;32}  }
 DataDependency: Fixpoint Reached!
 StaticArrow (0x4,0) %ecx{8;8} := %eax{8;8}  --> (0x6,0)
 (0x6,0) <== DataDependency: Fixpoint Reached!
-{ %eax  }
+{ %eax{0;32}  }
 ================================================================================
 
 * Useless statements:
