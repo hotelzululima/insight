@@ -42,7 +42,7 @@ using namespace std;
 Decoder *DecoderFactory::get_Decoder(MicrocodeArchitecture *arch,
                                      ConcreteMemory *mem)
 {
-  Decoder *decoder = new binutils::BinutilsDecoder(arch, mem);
+  Decoder *decoder = new BinutilsDecoder(arch, mem);
 
   return decoder;
 }

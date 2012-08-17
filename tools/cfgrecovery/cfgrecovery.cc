@@ -50,7 +50,6 @@
 #include "cfgrecovery.hh"
 
 using namespace std;
-using namespace binutils;
 
 typedef
   tr1::unordered_map < string, string, tr1::hash<string> > disas_t;

@@ -36,7 +36,6 @@
 #include <io/binary/BinutilsBinaryLoader.hh>
 
 using namespace std;
-using namespace binutils;
 
 int 
 main (int argc, char **argv)

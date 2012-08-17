@@ -36,7 +36,6 @@
 #include "x86_32_decoder.hh"
 
 using namespace std;
-using namespace binutils;
 
 bool x86_32_scanner_open(const string &instr);
 void x86_32_scanner_close();

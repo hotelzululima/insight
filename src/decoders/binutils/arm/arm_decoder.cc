@@ -36,7 +36,6 @@
 #include "arm_decoder.hh"
 
 using namespace std;
-using namespace binutils;
 
 bool arm_scanner_open(const string &instr);
 void arm_scanner_close();

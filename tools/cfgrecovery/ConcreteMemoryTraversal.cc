@@ -108,7 +108,7 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
       if (verbosity > 1)
 	{
 	  string inst = 
-	    ((binutils::BinutilsDecoder *) decoder)->get_instruction (addr);
+	    ((BinutilsDecoder *) decoder)->get_instruction (addr);
 	  cerr << addr << " : " << inst << endl;
 	}
       ConcreteAddress next = decoder->decode (mc, addr);

@@ -47,41 +47,36 @@ typedef bool
                  const ConcreteAddress &start,
                  const ConcreteAddress &next);
 
-/* Enclose all the decoders that rely on the GNU binutils */
-namespace binutils
+
+/* Abstract class that factorize code common to all binutils decoders */
+class BinutilsDecoder : public Decoder
 {
+public:
+  BinutilsDecoder(MicrocodeArchitecture *arch, ConcreteMemory *mem);
+  virtual ~BinutilsDecoder();
 
-  /* Abstract class that factorize code common to all binutils decoders */
-  class BinutilsDecoder : public Decoder
-  {
-  public:
-    BinutilsDecoder(MicrocodeArchitecture *arch, ConcreteMemory *mem);
-    virtual ~BinutilsDecoder();
+  /***** Using the decoder *****/
 
-    /***** Using the decoder *****/
+  /* Returns the microcode and the address of the next instruction */
+  virtual ConcreteAddress decode(Microcode *mc,
+				 const ConcreteAddress &addr);
 
-    /* Returns the microcode and the address of the next instruction */
-    virtual ConcreteAddress decode(Microcode *mc,
-				   const ConcreteAddress &addr);
+  /* Returns the address of the next instruction */
+  virtual ConcreteAddress next(const ConcreteAddress &addr);
 
-    /* Returns the address of the next instruction */
-    virtual ConcreteAddress next(const ConcreteAddress &addr);
+  /* Returns a string with instruction's mnemonic and its arguments */
+  std::string get_instruction (const ConcreteAddress &addr);
 
-    /* Returns a string with instruction's mnemonic and its arguments */
-    std::string get_instruction (const ConcreteAddress &addr);
+  /***** Setting the decoder *****/
+  struct disassemble_info *get_disassembler_info();
+  void set_disassembler_info(struct disassemble_info *info);
 
-    /***** Setting the decoder *****/
-    struct disassemble_info *get_disassembler_info();
-    void set_disassembler_info(struct disassemble_info *info);
-
-  private:
-    /* Decoder internal fields */
-    decoder_ftype decoder;              /* Decoder function */
-    struct disassemble_info *info;      /* Disassembler info */
-    disassembler_ftype disassembler_fn; /* Disassembler function */
-    std::stringstream *instr_buffer;    /* Disassembled instruction buffer */
-  };
-
-} /* namespace binutils */
+private:
+  /* Decoder internal fields */
+  decoder_ftype decoder;              /* Decoder function */
+  struct disassemble_info *info;      /* Disassembler info */
+  disassembler_ftype disassembler_fn; /* Disassembler function */
+  std::stringstream *instr_buffer;    /* Disassembled instruction buffer */
+};
 
 #endif /* BINUTILSDECODER_HH */

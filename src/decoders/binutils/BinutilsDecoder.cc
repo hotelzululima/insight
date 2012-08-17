@@ -46,7 +46,6 @@
 #include "BinutilsDecoder.hh"
 
 using namespace std;
-using namespace binutils;
 
 /* A few magic numbers coming from objdump code */
 #define INSTR_MAX_SIZE 32
