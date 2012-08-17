@@ -10,6 +10,7 @@ AUTOMAKE_OPTIONS=subdir-objects
 
 EXTRA_DIST = \
 	test-samples 			\
+	check-results.sh		\
         io/Kyuafile 			\
         domains/concrete/Kyuafile 	\
         domains/Kyuafile 		\
