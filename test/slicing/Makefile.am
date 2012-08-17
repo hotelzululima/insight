@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 AUTOMAKE_OPTIONS=parallel-tests
-CHECKRESULTS=${srcdir}/check-results.sh
+CHECKRESULTS=${top_srcdir}/test/check-results.sh
 
 TEST_SAMPLES_DIR=@TEST_SAMPLES_DIR@
 
