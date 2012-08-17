@@ -31,6 +31,7 @@
 #include <atf-c++.hpp>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
@@ -42,65 +43,61 @@ using namespace std;
 
 #define ALL_X86_CC							\
   X86_32_CC (NP,  "(NOT %pf)",						\
-	     "(NOT %eflags{2;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvnot ((_ extract 2 2 ) eflags))) \n") \
   X86_32_CC (A,   "(NOT (OR %cf %zf){0;1})",				\
-	     "(NOT (OR %eflags{0;1} %eflags{6;1}){0;1}){0;1}")		\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)))) \n")		\
   X86_32_CC (AE,  "(NOT %cf)",						\
-	     "(NOT %eflags{0;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not ((_ extract 0 0 ) eflags))) \n")					\
   X86_32_CC (B,   "%cf",						\
-	     "%eflags{0;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert ((_ extract 0 0 ) eflags)) \n")						\
   X86_32_CC (BE,  "(OR %cf %zf){0;1}",					\
-	     "(OR %eflags{0;1} %eflags{6;1}){0;1}")			\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags))) \n")			\
   X86_32_CC (E,   "%zf",						\
-	     "%eflags{6;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (= ((_ extract 6 6 ) eflags) #b0))) \n")						\
   X86_32_CC (G,   "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})",		\
-	     "(NOT (OR (XOR %eflags{7;1} %eflags{11;1}){0;1} "		\
-	     "%eflags{6;1}){0;1}){0;1}")				\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)))) \n")				\
   X86_32_CC (GE,  "(NOT (XOR %sf %of){0;1})",				\
-	     "(NOT (XOR %eflags{7;1} %eflags{11;1}){0;1}){0;1}")	\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)))) \n")	\
   X86_32_CC (L,   "(XOR %sf %of){0;1}",					\
-	     "(XOR %eflags{7;1} %eflags{11;1}){0;1}")			\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags))) \n")			\
   X86_32_CC (LE,  "(OR (XOR %sf %of){0;1} %zf){0;1}",			\
-	     "(OR (XOR %eflags{7;1} %eflags{11;1}){0;1} "		\
-	     "%eflags{6;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags))) \n")					\
   X86_32_CC (NA,  "(OR %cf %zf){0;1}",					\
-	     "(OR %eflags{0;1} %eflags{6;1}){0;1}")			\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags))) \n")			\
   X86_32_CC (NAE, "%cf",						\
-	     "%eflags{0;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert ((_ extract 0 0 ) eflags)) \n")						\
   X86_32_CC (NB,  "(NOT %cf)",						\
-	     "(NOT %eflags{0;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not ((_ extract 0 0 ) eflags))) \n")					\
   X86_32_CC (NBE, "(NOT (OR %cf %zf){0;1})",				\
-	     "(NOT (OR %eflags{0;1} %eflags{6;1}){0;1}){0;1}")		\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)))) \n")		\
   X86_32_CC (NE,  "(NOT %zf)",						\
-	     "(NOT %eflags{6;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvnot ((_ extract 6 6 ) eflags))) \n")					\
   X86_32_CC (NG,  "(OR (XOR %sf %of){0;1} %zf){0;1}",			\
-	     "(OR (XOR %eflags{7;1} %eflags{11;1}){0;1} "		\
-	     "%eflags{6;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags))) \n")					\
   X86_32_CC (NGE, "(XOR %sf %of){0;1}",					\
-	     "(XOR %eflags{7;1} %eflags{11;1}){0;1}")			\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags))) \n")			\
   X86_32_CC (NL,  "(NOT (XOR %sf %of){0;1})",				\
-	     "(NOT (XOR %eflags{7;1} %eflags{11;1}){0;1}){0;1}")	\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)))) \n")	\
   X86_32_CC (NLE, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})",		\
-	     "(NOT (OR (XOR %eflags{7;1} %eflags{11;1}){0;1} "		\
-	     "%eflags{6;1}){0;1}){0;1}")				\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)))) \n")				\
   X86_32_CC (NO,  "(NOT %of)",						\
-	     "(NOT %eflags{11;1}){0;1}")				\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvnot ((_ extract 11 11 ) eflags))) \n")				\
   X86_32_CC (NS,  "(NOT %sf)",						\
-	     "(NOT %eflags{7;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvnot ((_ extract 7 7 ) eflags))) \n")					\
   X86_32_CC (NZ,  "(NOT %zf)",						\
-	     "(NOT %eflags{6;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvnot ((_ extract 6 6 ) eflags))) \n")					\
   X86_32_CC (O,   "%of",						\
-	     "%eflags{11;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (= ((_ extract 11 11 ) eflags) #b0))) \n")						\
   X86_32_CC (P,   "%pf",						\
-	     "%eflags{2;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (= ((_ extract 2 2 ) eflags) #b0))) \n")						\
   X86_32_CC (PE,  "%pf",						\
-	     "%eflags{2;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (= ((_ extract 2 2 ) eflags) #b0))) \n")						\
   X86_32_CC (PO,  "(NOT %pf)",						\
-	     "(NOT %eflags{2;1}){0;1}")					\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (bvnot ((_ extract 2 2 ) eflags))) \n")					\
   X86_32_CC (S,   "%sf",						\
-	     "%eflags{7;1}")						\
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (= ((_ extract 7 7 ) eflags) #b0))) \n")						\
   X86_32_CC (Z,   "%zf",						\
-	     "%eflags{6;1}")
+	     "(declare-fun memory () (Array (_ BitVec 32 ) (_ BitVec 8 ) )) \n(declare-fun eflags () (_ BitVec 32) ) \n(assert (not (= ((_ extract 6 6 ) eflags) #b0))) \n")
 
 #define X86_32_CC(id, e, expout) \
 ATF_TEST_CASE(smtlib_ ## id); \
@@ -128,7 +125,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   Expr *e = expr_parser (expr, &ma);
   ostringstream oss;
 
-  smtlib_writer (oss, e, &ma);
+  smtlib_writer (oss, e, &ma, true);
   
   ATF_REQUIRE_EQ (oss.str (), expectedout);
 
@@ -138,35 +135,46 @@ s_check_expr_to_smtlib (const string &, const string &expr,
 ALL_X86_CC
 #undef X86_32_CC
 
+#if 1
 #define X86_32_CC(id, e, expout) \
   ATF_ADD_TEST_CASE(tcs, smtlib_ ## id);
 
-#if 0
+
 ATF_INIT_TEST_CASES(tcs)
 {
   ALL_X86_CC
 }
 #else
 
+static void 
+gen_string (const string &e, const MicrocodeArchitecture &ma)
+{					      
+  Expr *ex = expr_parser (e, &ma);            
+  ostringstream oss;				
+  smtlib_writer (oss, ex, &ma, true);	
+  string smte = oss.str ();			
+  string::size_type i = smte.find ('\n'); 
+  while (i != string::npos)			
+    {						
+      string s = smte.replace (i, 1, "\\n");	
+      smte = s;					
+      i = smte.find ('\n');			
+    } 
+  cout << *ex << "-->" << smte << endl;
+  ex->deref ();					
+}
+
+#define X86_32_CC(id, e, expout) gen_string (e, ma);
+
 int 
-main (int , char **argv)
+main()
 {
   insight::init ();
   const Architecture *x86_32 = 
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
-
-  Expr *e = expr_parser (string (argv[1]), &ma);
-
-  if (e == NULL)
-    cerr << "syntax error" << endl;
-  else
-    {
-      smtlib_writer (cout, e, &ma);
-      e->deref ();
-    }
-  
-  insight::terminate ();  
+  ALL_X86_CC 
+  insight::terminate ();
 
   return 0;
 }

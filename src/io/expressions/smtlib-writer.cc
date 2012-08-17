@@ -378,22 +378,25 @@ s_create_variables (std::ostream &out, const Expr *e,
 
 void 
 smtlib_writer (std::ostream &out, const Expr *e, 
-	       const MicrocodeArchitecture *mca) 
+	       const MicrocodeArchitecture *mca, bool expr_only) 
   throw (SMTLibUnsupportedExpression)
 {
   SMTLibVisitor writer (out, mca);
 
-  out << "(set-option :print-success false) " << endl
-      << "(set-logic QF_AUFBV) " << endl
-      << endl;
-
+  if (! expr_only)
+    {
+      out << "(set-option :print-success false) " << endl
+	  << "(set-logic QF_AUFBV) " << endl
+	  << endl;
+    }
   s_create_variables (out, e, mca);
   out << "(assert ";
   writer.output_boolean (e); 
-  out << ") "<< endl
-      << "(check-sat) " << endl
-      << "(exit) " << endl
-      << endl;
-
+  out << ") "<< endl;
+  if (! expr_only)
+    {
+      out << "(check-sat) " << endl
+	  << endl;
+    }
   out.flush ();
 }
