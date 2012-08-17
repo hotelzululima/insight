@@ -157,8 +157,6 @@ string MicrocodeNode::pp() const
     {
       bool is_simple = false;
 
-      oss << "; ";
-
       if ((*succ)->is_static ())
 	{
 	  StaticArrow *sa = (StaticArrow *) *succ;
