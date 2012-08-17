@@ -41,83 +41,21 @@
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 
-/********************* Libbfd specific flags **************************/
-
-typedef struct flag
-{
-  int value;
-  std::string label;
-} flag_t;
-
-static flag_t bfd_flags[] =
-{
-  {EXEC_P, "EXEC_P"},
-  {DYNAMIC, "DYNAMIC"},
-  {WP_TEXT, "WP_TEXT"},
-  {D_PAGED, "D_PAGED"},
-  {HAS_SYMS, "HAS_SYMS"},
-  {HAS_DEBUG, "HAS_DEBUG"},
-  {HAS_RELOC, "HAS_RELOC"},
-  {HAS_LOCALS, "HAS_LOCALS"},
-  {HAS_LINENO, "HAS_LINENO"},
-  {HAS_LOAD_PAGE, "HAS_LOAD_PAGE"},
-  {BFD_IN_MEMORY, "BFD_IN_MEMORY"},
-  {BFD_IS_RELAXABLE, "BFD_IS_RELAXABLE"},
-  {BFD_LINKER_CREATED, "BFD_LINKER_CREATED"},
-  {BFD_TRADITIONAL_FORMAT, "BFD_TRADITIONAL_FORMAT"},
-#ifdef BFD_DETERMINISTIC_OUTPUT
-  {BFD_DETERMINISTIC_OUTPUT, "BFD_DETERMINISTIC_OUTPUT"},
-#endif
-  {0, ""}
-};
-
-static flag_t bfd_sec_flags[] =
-{
-  {SEC_ALLOC, "ALLOC"},
-  {SEC_LOAD, "LOAD"},
-  {SEC_RELOC, "RELOC"},
-  {SEC_READONLY, "READONLY"},
-  {SEC_CODE, "CODE"},
-  {SEC_DATA, "DATA"},
-  {SEC_ROM, "ROM"},
-  {SEC_CONSTRUCTOR, "CONSTRUCTOR"},
-  {SEC_HAS_CONTENTS, "HAS_CONTENTS"},
-  {SEC_NEVER_LOAD, "NEVER_LOAD"},
-  {SEC_THREAD_LOCAL, "THREAD_LOCAL"},
-  {SEC_HAS_GOT_REF, "HAS_GOT_REF"},
-  {SEC_IS_COMMON, "IS_COMMON"},
-  {SEC_DEBUGGING, "DEBUGGING"},
-  {SEC_IN_MEMORY, "IN_MEMORY"},
-  {SEC_EXCLUDE, "EXCLUDE"},
-  {SEC_SORT_ENTRIES, "SORT_ENTRIES"},
-  {SEC_LINK_ONCE, "LINK_ONCE"},
-  {SEC_LINK_DUPLICATES, "LINK_DUPLICATES"},
-  {SEC_LINK_DUPLICATES_DISCARD, "LINK_DUPLICATES_DISCARD"},
-  {SEC_LINK_DUPLICATES_ONE_ONLY, "LINK_DUPLICATES_ONE_ONLY"},
-  {SEC_LINK_DUPLICATES_SAME_SIZE, "LINK_DUPLICATES_SAME_SIZE"},
-  {SEC_LINKER_CREATED, "LINKER_CREATED"},
-  {SEC_KEEP, "KEEP"},
-  {SEC_SMALL_DATA, "SMALL_DATA"},
-  {SEC_MERGE, "MERGE"},
-  {SEC_STRINGS, "STRINGS"},
-  {SEC_GROUP, "GROUP"},
-#ifdef SEC_COFF_NOREAD
-  {SEC_COFF_NOREAD, "COFF_NOREAD"},
-#endif
-  {SEC_COFF_SHARED, "COFF_SHARED"},
-  {SEC_COFF_SHARED_LIBRARY, "COFF_SHARED_LIBRARY"},
-  {SEC_TIC54X_BLOCK, "TIC54X_BLOCK"},
-  {SEC_TIC54X_CLINK, "TIC54X_CLINK"},
-  {0, ""}
-};
-
-
 /*************** BinutilsBinaryLoader class definition ****************/
 
 /* BinutilsBinaryLoader is based upon the GNU BFD library. */
 class BinutilsBinaryLoader : public BinaryLoader
 {
 public:
+
+  /********************* Libbfd specific flags **************************/
+  /** \brief Store a comprehensive string about libbfd flags */
+  /* FIXME: Replace it by a t1::unordered_map */
+  typedef struct flag
+  {
+    int value;
+    std::string label;
+  } flag_t;
 
   /******************* BinutilsBinaryLoader Exceptions ******************/
   /** \brief Exception thrown when an error occurs at libbfd level */
@@ -143,5 +81,68 @@ protected:
 private:
   void add_section_of (ConcreteMemory *memory, bfd *file) const;
 };
+
+
+static BinutilsBinaryLoader::flag_t bfd_flags[] =
+    {
+      {EXEC_P, "EXEC_P"},
+      {DYNAMIC, "DYNAMIC"},
+      {WP_TEXT, "WP_TEXT"},
+      {D_PAGED, "D_PAGED"},
+      {HAS_SYMS, "HAS_SYMS"},
+      {HAS_DEBUG, "HAS_DEBUG"},
+      {HAS_RELOC, "HAS_RELOC"},
+      {HAS_LOCALS, "HAS_LOCALS"},
+      {HAS_LINENO, "HAS_LINENO"},
+      {HAS_LOAD_PAGE, "HAS_LOAD_PAGE"},
+      {BFD_IN_MEMORY, "BFD_IN_MEMORY"},
+      {BFD_IS_RELAXABLE, "BFD_IS_RELAXABLE"},
+      {BFD_LINKER_CREATED, "BFD_LINKER_CREATED"},
+      {BFD_TRADITIONAL_FORMAT, "BFD_TRADITIONAL_FORMAT"},
+#ifdef BFD_DETERMINISTIC_OUTPUT
+      {BFD_DETERMINISTIC_OUTPUT, "BFD_DETERMINISTIC_OUTPUT"},
+#endif
+      {0, ""}
+    };
+
+  static BinutilsBinaryLoader::flag_t bfd_sec_flags[] =
+    {
+      {SEC_ALLOC, "ALLOC"},
+      {SEC_LOAD, "LOAD"},
+      {SEC_RELOC, "RELOC"},
+      {SEC_READONLY, "READONLY"},
+      {SEC_CODE, "CODE"},
+      {SEC_DATA, "DATA"},
+      {SEC_ROM, "ROM"},
+      {SEC_CONSTRUCTOR, "CONSTRUCTOR"},
+      {SEC_HAS_CONTENTS, "HAS_CONTENTS"},
+      {SEC_NEVER_LOAD, "NEVER_LOAD"},
+      {SEC_THREAD_LOCAL, "THREAD_LOCAL"},
+      {SEC_HAS_GOT_REF, "HAS_GOT_REF"},
+      {SEC_IS_COMMON, "IS_COMMON"},
+      {SEC_DEBUGGING, "DEBUGGING"},
+      {SEC_IN_MEMORY, "IN_MEMORY"},
+      {SEC_EXCLUDE, "EXCLUDE"},
+      {SEC_SORT_ENTRIES, "SORT_ENTRIES"},
+      {SEC_LINK_ONCE, "LINK_ONCE"},
+      {SEC_LINK_DUPLICATES, "LINK_DUPLICATES"},
+      {SEC_LINK_DUPLICATES_DISCARD, "LINK_DUPLICATES_DISCARD"},
+      {SEC_LINK_DUPLICATES_ONE_ONLY, "LINK_DUPLICATES_ONE_ONLY"},
+      {SEC_LINK_DUPLICATES_SAME_SIZE, "LINK_DUPLICATES_SAME_SIZE"},
+      {SEC_LINKER_CREATED, "LINKER_CREATED"},
+      {SEC_KEEP, "KEEP"},
+      {SEC_SMALL_DATA, "SMALL_DATA"},
+      {SEC_MERGE, "MERGE"},
+      {SEC_STRINGS, "STRINGS"},
+      {SEC_GROUP, "GROUP"},
+#ifdef SEC_COFF_NOREAD
+      {SEC_COFF_NOREAD, "COFF_NOREAD"},
+#endif
+      {SEC_COFF_SHARED, "COFF_SHARED"},
+      {SEC_COFF_SHARED_LIBRARY, "COFF_SHARED_LIBRARY"},
+      {SEC_TIC54X_BLOCK, "TIC54X_BLOCK"},
+      {SEC_TIC54X_CLINK, "TIC54X_CLINK"},
+      {0, ""}
+    };
 
 #endif /* IO_BINUTILSBINARYLOADER_HH */
