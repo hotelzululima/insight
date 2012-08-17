@@ -1,12 +1,12 @@
 **** Decode instruction: aaa    
-[(0x0,0)] @{asm:=aaa    }@ ; StaticArrow (0x0,0) Skip << (NOT (OR (NOT (LEQ_U (AND %eax{0;8} 0xF{0;8}){0;8} 0x9{0;8}){0;1}){0;1} (EQ %eflags{4;1} 0x1{0;1}){0;1}){0;1}){0;1} >> --> (0x0,6); StaticArrow (0x0,0) Skip << (OR (NOT (LEQ_U (AND %eax{0;8} 0xF{0;8}){0;8} 0x9{0;8}){0;1}){0;1} (EQ %eflags{4;1} 0x1{0;1}){0;1}){0;1} >> --> (0x0,1)
-[(0x0,1)] ; %eax{0;8} := (ADD %eax{0;8} 0x6{0;8}){0;8}
-[(0x0,2)] ; %eax{8;8} := (ADD %eax{8;8} 0x1{0;8}){0;8}
-[(0x0,3)] ; %eflags{4;1} := 0x1{0;1}
-[(0x0,4)] ; %eflags{0;1} := 0x1{0;1}
-[(0x0,5)] ; StaticArrow (0x0,5) %eax{0;8} := (AND %eax{0;8} 0xF{0;8}){0;8}  --> (0x1,0)
-[(0x0,6)] ; %eflags{4;1} := 0x0{0;1}
-[(0x0,7)] ; %eflags{0;1} := 0x0{0;1}
-[(0x0,8)] ; StaticArrow (0x0,8) %eax{0;8} := (AND %eax{0;8} 0xF{0;8}){0;8}  --> (0x1,0)
+[(0x0,0)] @{asm:=aaa    }@ StaticArrow (0x0,0) Skip << (NOT (OR (NOT (LEQ_U (AND %eax{0;8} 0xF{0;8}){0;8} 0x9{0;8}){0;1}){0;1} (EQ %eflags{4;1} 0x1{0;1}){0;1}){0;1}){0;1} >> --> (0x0,6); StaticArrow (0x0,0) Skip << (OR (NOT (LEQ_U (AND %eax{0;8} 0xF{0;8}){0;8} 0x9{0;8}){0;1}){0;1} (EQ %eflags{4;1} 0x1{0;1}){0;1}){0;1} >> --> (0x0,1)
+[(0x0,1)] %eax{0;8} := (ADD %eax{0;8} 0x6{0;8}){0;8}
+[(0x0,2)] %eax{8;8} := (ADD %eax{8;8} 0x1{0;8}){0;8}
+[(0x0,3)] %eflags{4;1} := 0x1{0;1}
+[(0x0,4)] %eflags{0;1} := 0x1{0;1}
+[(0x0,5)] StaticArrow (0x0,5) %eax{0;8} := (AND %eax{0;8} 0xF{0;8}){0;8}  --> (0x1,0)
+[(0x0,6)] %eflags{4;1} := 0x0{0;1}
+[(0x0,7)] %eflags{0;1} := 0x0{0;1}
+[(0x0,8)] StaticArrow (0x0,8) %eax{0;8} := (AND %eax{0;8} 0xF{0;8}){0;8}  --> (0x1,0)
 [(0x1,0)] 
 
