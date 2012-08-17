@@ -105,8 +105,13 @@ public:
    * This allows to modify the expressions. (same as
    * MicrocodeNode.expr_list) */
   std::vector<Expr **> * expr_list();
-
   std::string pp() const ;
+
+  struct lt_node {
+    bool operator()(MicrocodeNode *n1, MicrocodeNode *n2) const {
+      return n1->get_loc().lessThan(n2->get_loc());
+    }
+  };
 };
 
 /***********************************************************************/
@@ -185,6 +190,12 @@ public:
    *  condition attribute. */
   friend std::vector<Expr **> * MicrocodeNode::expr_list();
   virtual std::string pp() const = 0;
+
+  struct lt_arrow {
+    bool operator()(StmtArrow *n1, StmtArrow *n2) const {
+      return ((long long int) n1) < ((long long int) n2) ;
+    }
+  };
 };
 
 /***********************************************************************/
@@ -294,19 +305,7 @@ public:
   std::string pp() const;
 };
 
-/*****************************************************************************/
-/* Nodes and arrows sets                                                     */
-/*****************************************************************************/
-struct lt_node {
-  bool operator()(MicrocodeNode *n1, MicrocodeNode *n2) const {
-    return n1->get_loc().lessThan(n2->get_loc());
-  }
-};
-struct lt_arrow {
-  bool operator()(StmtArrow *n1, StmtArrow *n2) const {
-    return ((long long int) n1) < ((long long int) n2) ;
-  }
-};
+/* MicrocodeAddress Hash function */
 namespace std {
   namespace tr1 {
     template<>
@@ -318,7 +317,11 @@ namespace std {
   }
 }
 
-typedef std::set<MicrocodeNode *, lt_node> MicrocodeNodeSet;
-typedef std::set<StmtArrow *, lt_arrow> MicrocodeArrowSet;
+/*****************************************************************************/
+/* Nodes and arrows sets                                                     */
+/*****************************************************************************/
+typedef std::set<MicrocodeNode *, MicrocodeNode::lt_node> MicrocodeNodeSet;
+typedef std::set<StmtArrow *, StmtArrow::lt_arrow> MicrocodeArrowSet;
+
 #endif /* KERNEL_MICROCODE_MICROCODE_NODE_HH */
 
