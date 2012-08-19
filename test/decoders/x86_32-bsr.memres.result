@@ -1,44 +1,44 @@
 **** Decode instruction: bsr    %bx,%ax
-[(0x0,0)] @{asm:=bsr    %bx,%ax}@ ; StaticArrow (0x0,0) Skip << (NOT (EQ %ebx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x0,2); StaticArrow (0x0,0) Skip << (EQ %ebx{0;16} 0x0{0;16}){0;1} >> --> (0x0,1)
-[(0x0,1)] ; StaticArrow (0x0,1) %eflags{6;1} := 0x1{0;1}  --> (0x4,0)
-[(0x0,2)] ; %eflags{6;1} := 0x0{0;1}
-[(0x0,3)] ; %tmpr0_16{0;16} := 0xF{0;16}
-[(0x0,4)] ; StaticArrow (0x0,4) Skip << (EQ (EXTRACT %ebx{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x0,5); StaticArrow (0x0,4) Skip << (NOT (EQ (EXTRACT %ebx{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x0,7)
-[(0x0,5)] ; %tmpr0_16{0;16} := (SUB %tmpr0_16{0;16} 0x1{0;16}){0;16}
-[(0x0,6)] ; StaticArrow (0x0,6) Skip  --> (0x0,4)
-[(0x0,7)] ; StaticArrow (0x0,7) %eax{0;16} := %tmpr0_16{0;16}  --> (0x4,0)
+[(0x0,0)] @{asm:=bsr    %bx,%ax}@ StaticArrow (0x0,0) Skip << (NOT (EQ %ebx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x0,2)StaticArrow (0x0,0) Skip << (EQ %ebx{0;16} 0x0{0;16}){0;1} >> --> (0x0,1)
+[(0x0,1)] StaticArrow (0x0,1) %eflags{6;1} := 0x1{0;1}  --> (0x4,0)
+[(0x0,2)] %eflags{6;1} := 0x0{0;1}
+[(0x0,3)] %tmpr0_16{0;16} := 0xF{0;16}
+[(0x0,4)] StaticArrow (0x0,4) Skip << (EQ (EXTRACT %ebx{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x0,5)StaticArrow (0x0,4) Skip << (NOT (EQ (EXTRACT %ebx{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x0,7)
+[(0x0,5)] %tmpr0_16{0;16} := (SUB %tmpr0_16{0;16} 0x1{0;16}){0;16}
+[(0x0,6)] StaticArrow (0x0,6) Skip  --> (0x0,4)
+[(0x0,7)] StaticArrow (0x0,7) %eax{0;16} := %tmpr0_16{0;16}  --> (0x4,0)
 [(0x4,0)] 
 
 **** Decode instruction: bsr    0x1234,%ax
-[(0x4,0)] @{asm:=bsr    0x1234,%ax}@ ; StaticArrow (0x4,0) Skip << (NOT (EQ [0x1234{0;32}]{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x4,2); StaticArrow (0x4,0) Skip << (EQ [0x1234{0;32}]{0;16} 0x0{0;16}){0;1} >> --> (0x4,1)
-[(0x4,1)] ; StaticArrow (0x4,1) %eflags{6;1} := 0x1{0;1}  --> (0xC,0)
-[(0x4,2)] ; %eflags{6;1} := 0x0{0;1}
-[(0x4,3)] ; %tmpr0_16{0;16} := 0xF{0;16}
-[(0x4,4)] ; StaticArrow (0x4,4) Skip << (EQ (EXTRACT [0x1234{0;32}]{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x4,5); StaticArrow (0x4,4) Skip << (NOT (EQ (EXTRACT [0x1234{0;32}]{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x4,7)
-[(0x4,5)] ; %tmpr0_16{0;16} := (SUB %tmpr0_16{0;16} 0x1{0;16}){0;16}
-[(0x4,6)] ; StaticArrow (0x4,6) Skip  --> (0x4,4)
-[(0x4,7)] ; StaticArrow (0x4,7) %eax{0;16} := %tmpr0_16{0;16}  --> (0xC,0)
+[(0x4,0)] @{asm:=bsr    0x1234,%ax}@ StaticArrow (0x4,0) Skip << (NOT (EQ [0x1234{0;32}]{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0x4,2)StaticArrow (0x4,0) Skip << (EQ [0x1234{0;32}]{0;16} 0x0{0;16}){0;1} >> --> (0x4,1)
+[(0x4,1)] StaticArrow (0x4,1) %eflags{6;1} := 0x1{0;1}  --> (0xC,0)
+[(0x4,2)] %eflags{6;1} := 0x0{0;1}
+[(0x4,3)] %tmpr0_16{0;16} := 0xF{0;16}
+[(0x4,4)] StaticArrow (0x4,4) Skip << (EQ (EXTRACT [0x1234{0;32}]{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0x4,5)StaticArrow (0x4,4) Skip << (NOT (EQ (EXTRACT [0x1234{0;32}]{0;16} %tmpr0_16{0;16} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0x4,7)
+[(0x4,5)] %tmpr0_16{0;16} := (SUB %tmpr0_16{0;16} 0x1{0;16}){0;16}
+[(0x4,6)] StaticArrow (0x4,6) Skip  --> (0x4,4)
+[(0x4,7)] StaticArrow (0x4,7) %eax{0;16} := %tmpr0_16{0;16}  --> (0xC,0)
 [(0xC,0)] 
 
 **** Decode instruction: bsr    %ebx,%eax
-[(0xC,0)] @{asm:=bsr    %ebx,%eax}@ ; StaticArrow (0xC,0) Skip << (NOT (EQ %ebx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0xC,2); StaticArrow (0xC,0) Skip << (EQ %ebx{0;32} 0x0{0;32}){0;1} >> --> (0xC,1)
-[(0xC,1)] ; StaticArrow (0xC,1) %eflags{6;1} := 0x1{0;1}  --> (0xF,0)
-[(0xC,2)] ; %eflags{6;1} := 0x0{0;1}
-[(0xC,3)] ; %tmpr0_32{0;32} := 0x1F{0;32}
-[(0xC,4)] ; StaticArrow (0xC,4) Skip << (EQ (EXTRACT %ebx{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0xC,5); StaticArrow (0xC,4) Skip << (NOT (EQ (EXTRACT %ebx{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0xC,7)
-[(0xC,5)] ; %tmpr0_32{0;32} := (SUB %tmpr0_32{0;32} 0x1{0;32}){0;32}
-[(0xC,6)] ; StaticArrow (0xC,6) Skip  --> (0xC,4)
-[(0xC,7)] ; StaticArrow (0xC,7) %eax{0;32} := %tmpr0_32{0;32}  --> (0xF,0)
+[(0xC,0)] @{asm:=bsr    %ebx,%eax}@ StaticArrow (0xC,0) Skip << (NOT (EQ %ebx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0xC,2)StaticArrow (0xC,0) Skip << (EQ %ebx{0;32} 0x0{0;32}){0;1} >> --> (0xC,1)
+[(0xC,1)] StaticArrow (0xC,1) %eflags{6;1} := 0x1{0;1}  --> (0xF,0)
+[(0xC,2)] %eflags{6;1} := 0x0{0;1}
+[(0xC,3)] %tmpr0_32{0;32} := 0x1F{0;32}
+[(0xC,4)] StaticArrow (0xC,4) Skip << (EQ (EXTRACT %ebx{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0xC,5)StaticArrow (0xC,4) Skip << (NOT (EQ (EXTRACT %ebx{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0xC,7)
+[(0xC,5)] %tmpr0_32{0;32} := (SUB %tmpr0_32{0;32} 0x1{0;32}){0;32}
+[(0xC,6)] StaticArrow (0xC,6) Skip  --> (0xC,4)
+[(0xC,7)] StaticArrow (0xC,7) %eax{0;32} := %tmpr0_32{0;32}  --> (0xF,0)
 [(0xF,0)] 
 
 **** Decode instruction: bsr    0x12345678,%ebx
-[(0xF,0)] @{asm:=bsr    0x12345678,%ebx}@ ; StaticArrow (0xF,0) Skip << (NOT (EQ [0x12345678{0;32}]{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0xF,2); StaticArrow (0xF,0) Skip << (EQ [0x12345678{0;32}]{0;32} 0x0{0;32}){0;1} >> --> (0xF,1)
-[(0xF,1)] ; StaticArrow (0xF,1) %eflags{6;1} := 0x1{0;1}  --> (0x16,0)
-[(0xF,2)] ; %eflags{6;1} := 0x0{0;1}
-[(0xF,3)] ; %tmpr0_32{0;32} := 0x1F{0;32}
-[(0xF,4)] ; StaticArrow (0xF,4) Skip << (EQ (EXTRACT [0x12345678{0;32}]{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0xF,5); StaticArrow (0xF,4) Skip << (NOT (EQ (EXTRACT [0x12345678{0;32}]{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0xF,7)
-[(0xF,5)] ; %tmpr0_32{0;32} := (SUB %tmpr0_32{0;32} 0x1{0;32}){0;32}
-[(0xF,6)] ; StaticArrow (0xF,6) Skip  --> (0xF,4)
-[(0xF,7)] ; StaticArrow (0xF,7) %ebx{0;32} := %tmpr0_32{0;32}  --> (0x16,0)
+[(0xF,0)] @{asm:=bsr    0x12345678,%ebx}@ StaticArrow (0xF,0) Skip << (NOT (EQ [0x12345678{0;32}]{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0xF,2)StaticArrow (0xF,0) Skip << (EQ [0x12345678{0;32}]{0;32} 0x0{0;32}){0;1} >> --> (0xF,1)
+[(0xF,1)] StaticArrow (0xF,1) %eflags{6;1} := 0x1{0;1}  --> (0x16,0)
+[(0xF,2)] %eflags{6;1} := 0x0{0;1}
+[(0xF,3)] %tmpr0_32{0;32} := 0x1F{0;32}
+[(0xF,4)] StaticArrow (0xF,4) Skip << (EQ (EXTRACT [0x12345678{0;32}]{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1} >> --> (0xF,5)StaticArrow (0xF,4) Skip << (NOT (EQ (EXTRACT [0x12345678{0;32}]{0;32} %tmpr0_32{0;32} 0x1{0;1}){0;1} 0x0{0;1}){0;1}){0;1} >> --> (0xF,7)
+[(0xF,5)] %tmpr0_32{0;32} := (SUB %tmpr0_32{0;32} 0x1{0;32}){0;32}
+[(0xF,6)] StaticArrow (0xF,6) Skip  --> (0xF,4)
+[(0xF,7)] StaticArrow (0xF,7) %ebx{0;32} := %tmpr0_32{0;32}  --> (0x16,0)
 [(0x16,0)] 
 
