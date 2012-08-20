@@ -43,8 +43,8 @@ public:
 
 
 extern void 
-smtlib_writer (std::ostream &out, const Expr *e, 
-	       const MicrocodeArchitecture *mca, bool expr_only) 
+smtlib_writer (std::ostream &out, const Expr *e, const std::string &memvar, 
+	       int bits_per_addr)
   throw (SMTLibUnsupportedExpression);
 
 #endif /* ! IO_EXPRESSIONS_SMTLIB_WRITER_HH */

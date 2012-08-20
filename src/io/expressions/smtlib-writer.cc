@@ -33,26 +33,20 @@
 #include <iomanip>
 #include <cassert>
 #include <kernel/expressions/ExprVisitor.hh>
-#include <kernel/expressions/exprutils.hh>
-#include <tr1/unordered_set>
 
 using namespace std;
-using namespace std::tr1;
-using namespace exprutils;
-
-
-typedef unordered_set<const Expr *> ExprSet;
 
 class SMTLibVisitor : public ConstExprVisitor 
 {
   ostream &out;
-  const MicrocodeArchitecture *mca;
+  const string &memvar;
+  int addrsize;
 
 public:
 
 
-  SMTLibVisitor (ostream &o,const MicrocodeArchitecture *mca) 
-    : ConstExprVisitor(), out (o), mca (mca) {}
+  SMTLibVisitor (ostream &o, const string &mv, int bpa)
+    : ConstExprVisitor(), out (o), memvar (mv), addrsize (bpa) {}
 
   ~SMTLibVisitor () { }
 
@@ -131,18 +125,25 @@ public:
   }
 
   void output_boolean (const Expr *e) {
-    bool is_boolean = has_boolean_bv (e);
-    if (! is_boolean)
-      out << "(not (= ";
+    bool is_bool = is_boolean (e);
+    if (! is_bool)
+      {
+	if (e->get_bv_size () > 1)
+	  out << "(not (= ";
+	else
+	  out << "(= ";
+      }
     e->acceptVisitor (this);
-    if (! is_boolean)
+    if (! is_bool)
       {
 	out << " ";
-	if (e->get_bv_size () % 8 == 0)
-	  out << "#x" << string (e->get_bv_size () / 4, '0');
+	if (e->get_bv_size () == 1)
+	  out << "#b1";
+	else if (e->get_bv_size () % 8 == 0)
+	  out << "#x" << string (e->get_bv_size () / 4, '0') << ')';
 	else 
-	  out << "#b" << string (e->get_bv_size (), '0');	 
-	out << "))";
+	  out << "#b" << string (e->get_bv_size (), '0') << ')';
+	out << ")";
       }
   }
 
@@ -299,9 +300,8 @@ public:
 
   virtual void visit (const MemCell *e) {
     // to be fixed !!!
-    int addrsize = 8 * mca->get_reference_arch ()->address_range;
     int extend = addrsize - e->get_addr ()->get_bv_size ();
-    out << "(select memory ";
+    out << "(select " << memvar << " ";
     if (extend > 0)
       out << "((_ zero_extend " << extend << ") ";
     e->get_addr ()->acceptVisitor (this);
@@ -331,72 +331,13 @@ public:
   }
 };
 
-static void
-s_create_variables (std::ostream &out, const Expr *e, 
-		   const MicrocodeArchitecture *mca) 
-{
-  const Architecture *arch = mca->get_reference_arch ();
-
-  out << "(declare-fun memory () (Array "
-      << "(_ BitVec " << (8 * arch->address_range) << " ) "
-      << "(_ BitVec 8 ) "
-      << ")) " << endl;
-
-  ExprSet vars = collect_subterms_of_type<ExprSet, Variable> (e, true);
-
-  for (ExprSet::const_iterator i = vars.begin (); i != vars.end (); i++)
-    {
-      const Variable *v = dynamic_cast<const Variable *>(*i);
-
-      assert (v != NULL);
-      out << "(declare-fun " << v->get_id () << " () "
-	  << "(_ BitVec " << v->get_bv_size () << ") " 
-	  << ") " << endl;	  
-    }
-
-  vars = collect_subterms_of_type<ExprSet, RegisterExpr> (e, true);
-  unordered_set<const RegisterDesc *> cache;
-  for (ExprSet::const_iterator i = vars.begin (); i != vars.end (); i++)
-    {
-      const RegisterExpr *reg = dynamic_cast<const RegisterExpr *>(*i);
-
-      assert (reg != NULL);
-
-      const RegisterDesc *regdesc = reg->get_descriptor ();
-      
-      if (! (cache.find (regdesc) == cache.end ()))
-	continue;
-      
-      assert (! regdesc->is_alias ());
-      
-      out << "(declare-fun " << regdesc->get_label () << " () "
-	  << "(_ BitVec " << regdesc->get_register_size () << ") " 
-	  << ") " << endl;
-      cache.insert (regdesc);
-    }
-}
-
 void 
-smtlib_writer (std::ostream &out, const Expr *e, 
-	       const MicrocodeArchitecture *mca, bool expr_only) 
+smtlib_writer (std::ostream &out, const Expr *e, const std::string &memvar, 
+	       int addrsize)
   throw (SMTLibUnsupportedExpression)
 {
-  SMTLibVisitor writer (out, mca);
+  SMTLibVisitor writer (out, memvar, addrsize);
 
-  if (! expr_only)
-    {
-      out << "(set-option :print-success false) " << endl
-	  << "(set-logic QF_AUFBV) " << endl
-	  << endl;
-    }
-  s_create_variables (out, e, mca);
-  out << "(assert ";
   writer.output_boolean (e); 
-  out << ") "<< endl;
-  if (! expr_only)
-    {
-      out << "(check-sat) " << endl
-	  << endl;
-    }
   out.flush ();
 }
