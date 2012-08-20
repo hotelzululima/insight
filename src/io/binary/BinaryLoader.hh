@@ -34,6 +34,7 @@
 #include <string>
 #include <stdexcept>
 
+#include <utils/option.hh>
 #include <utils/tools.hh>
 
 #include <kernel/Architecture.hh>
@@ -123,6 +124,8 @@ public:
 
   const Architecture * get_architecture() const;
   ConcreteAddress get_entrypoint() const;
+
+  virtual Option<ConcreteAddress> get_symbol_value(const std::string) const;
 
   virtual ConcreteMemory * get_memory() const = 0;
 

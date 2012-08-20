@@ -36,10 +36,11 @@
 #include <list>
 #include <stdexcept>
 
-#include <io/binary/BinaryLoader.hh>
+#include <tr1/unordered_map>
 
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
+#include <io/binary/BinaryLoader.hh>
 
 /*************** BinutilsBinaryLoader class definition ****************/
 
@@ -71,10 +72,12 @@ public:
   virtual ~BinutilsBinaryLoader();
 
   ConcreteMemory * get_memory() const;
+  Option<ConcreteAddress> get_symbol_value(const std::string) const;
 
   /* BinutilsBinaryLoader specific fields and methods */
 protected:
   bfd *abfd;
+  std::tr1::unordered_map<std::string, ConcreteAddress> symbols;
   std::string get_BFD_format() const;
   const Architecture *get_BFD_architecture() const;
 

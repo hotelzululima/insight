@@ -150,6 +150,20 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
       /* Pushing the section to the loader */
       this->sections.push_back(section);
     }
+
+  /* Read symbols */
+  size_t ssyms = bfd_get_symtab_upper_bound(bfd_file);
+  if (ssyms > 0) {
+    asymbol **syms = (asymbol **) operator new (ssyms);
+    long nsyms = bfd_canonicalize_symtab(bfd_file, syms);
+
+    for (long i = 0; i < nsyms; i++) {
+      symbols[string(bfd_asymbol_name(syms[i]))] =
+	ConcreteAddress(bfd_asymbol_value(syms[i]));
+    }
+
+    delete syms;
+  }
 }
 
 BinutilsBinaryLoader::~BinutilsBinaryLoader()
@@ -206,4 +220,14 @@ BinutilsBinaryLoader::get_memory() const
     }
 
   return memory;
+}
+
+Option<ConcreteAddress>
+BinutilsBinaryLoader::get_symbol_value(const std::string s) const {
+  tr1::unordered_map<string, ConcreteAddress>::const_iterator it;
+
+  it = symbols.find(s);
+  return it == symbols.end()?
+    Option<ConcreteAddress>() :
+    Option<ConcreteAddress>(it->second);
 }
