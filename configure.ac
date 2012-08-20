@@ -179,6 +179,14 @@ dnl ********************************************************************
 dnl Checking for specific programs, headers and libraries
 dnl ********************************************************************
 
+dnl Checking for Z3 solver
+AC_CHECK_PROG([has_z3_solver], [z3], [yes], [no])
+if test ${has_z3_solver} = "yes"; then
+    AC_DEFINE([HAVE_Z3_SOLVER],[1])
+else
+    AC_DEFINE([HAVE_Z3_SOLVER],[0],[Defined to 1 if Z3 is installed])
+fi
+
 dnl Checking for binutils (libbfd, libopcodes)
 AC_ARG_WITH([binutils-header],
 	    AS_HELP_STRING(
