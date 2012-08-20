@@ -28,15 +28,15 @@
  * SUCH DAMAGE.
  */
 
-#include <tools/cfgrecovery/FloodTraversal.hh>
+#include "FloodTraversal.hh"
 
 #include <stdlib.h>
 
 using namespace std;
 
 FloodTraversal::FloodTraversal (bool scan_all, 
-					    const ConcreteMemory *memory, 
-					    Decoder *decoder)
+				const ConcreteMemory *memory, 
+				Decoder *decoder)
   : ConcreteMemoryTraversal (memory, decoder), scan_all (scan_all)
 {
 }

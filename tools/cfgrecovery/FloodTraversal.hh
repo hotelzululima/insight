@@ -31,8 +31,8 @@
 #ifndef CFGRECOVERY_FLOOD_TRAVERSAL_HH
 #define CFGRECOVERY_FlOOD_TRAVERSAL_HH
 
-#include <tools/cfgrecovery/ConcreteMemoryTraversal.hh>
-#include <tools/cfgrecovery/cfgrecovery.hh>
+#include "ConcreteMemoryTraversal.hh"
+#include "cfgrecovery.hh"
 
 class FloodTraversal : public ConcreteMemoryTraversal
 {
