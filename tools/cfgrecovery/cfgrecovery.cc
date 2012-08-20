@@ -32,8 +32,6 @@
 #include <iostream>
 #include <map>
 
-#include <tr1/unordered_map>
-
 #include <ctype.h>
 #include <getopt.h>
 #include <libgen.h>
@@ -53,13 +51,37 @@
 
 using namespace std;
 
-typedef
-  tr1::unordered_map < string, string, tr1::hash<string> > disas_t;
-
 /* Global options */
 int verbosity = 0;	           /* verbosity level */
 ostream * output;                  /* output stream */
 ofstream output_file;              /* output file */
+
+struct disassembler {
+  const char *name;
+  const char *desc;
+  Microcode * (*process)(const ConcreteAddress *, ConcreteMemory *, Decoder *);
+} disassemblers[] = {
+  /* List must be kept sorted by name */
+  { "dare", "directed automated random exploration", NULL },
+  { "flood", "flood traversal", flood_traversal },
+  { "kinder1", "CFG reconstruction by abstract interpretation", NULL },
+  { "kinder2", "alternating CFG reconstruction", NULL },
+  { "linear", "linear sweep", linearsweep },
+  { "predicate", "path predicate validation", NULL },
+  { "recursive", "recursive traversal", recursivetraversal },
+  /* List must be kept sorted by name */
+};
+
+#define NDISASSEMBLERS (sizeof disassemblers / sizeof disassemblers[0])
+
+static struct disassembler *
+disassembler_lookup(const char *name) {
+  for (size_t i = 0; i < NDISASSEMBLERS; i++)
+    if (strcmp(disassemblers[i].name, name) == 0)
+      return disassemblers + i;
+
+  return NULL;
+}
 
 /* usage(status): Display the usage of the program and quit with
  * 'status' as return value. */
@@ -131,19 +153,8 @@ main (int argc, char *argv[])
     {NULL, 0, NULL, 0}
   };
 
-  /* Setting the list of disassembly types */
-  disas_t disassemblers;
-
-  disassemblers["flood"] = "flood traversal";
-  disassemblers["linear"] = "linear sweep";
-  disassemblers["recursive"] = "recursive traversal";
-  disassemblers["predicate"] = "path predicate validation";
-  disassemblers["dare"] = "directed automated random exploration";
-  disassemblers["kinder1"] = "CFG reconstruction by abstract interpretation";
-  disassemblers["kinder2"] = "alternating CFG reconstruction";
-
   /* Setting default disassembly type */
-  string disassembler = "linear";
+  const char *disassembler = "linear";
 
   /* Setting entrypoint */
   ConcreteAddress * entrypoint = NULL;
@@ -155,17 +166,15 @@ main (int argc, char *argv[])
     switch (optc)
       {
       case 'd':		/* Select disassembly type */
-	disassembler = string(optarg);
+	disassembler = optarg;
 	break;
 
       case 'l':		/* List disassembly types */
 	cout << "Disassembler types ('value to pass' = description):" << endl;
-	/* FIXME: Should order the displayed list to get a better output */
-	for (disas_t::iterator it = disassemblers.begin ();
-	     it != disassemblers.end (); ++it)
-	  {
-	    cout << "  '" << it->first << "' = " << it->second << endl;
-	  }
+	for (size_t i = 0; i < NDISASSEMBLERS; i++) {
+	    cout << "  '" << disassemblers[i].name << "' = " <<
+	      disassemblers[i].desc << endl;
+	}
 	exit (EXIT_SUCCESS);
 	break;
 
@@ -297,58 +306,24 @@ main (int argc, char *argv[])
   Microcode * mc = NULL;
 
   /* Starting disassembly with proper disassembler */
-  if (disassembler == "flood")
-    {
-      if (verbosity > 0)
-	cout << "Starting flood traversal disassembly" << endl;
+  struct disassembler *dis = disassembler_lookup(disassembler);
+  if (dis == NULL) {
+    cerr << prog_name
+	 << ": error: '" << disassembler << "' disassembler is unknown" << endl
+	 << "Type '" << prog_name << " -l' to list all disassemblers" << endl;
+    exit (EXIT_FAILURE);
+  }
 
-      mc = flood_traversal(entrypoint, memory, decoder);
-    }
-  else if (disassembler == "linear")
-    {
-      if (verbosity > 0)
-	cout << "Starting linear sweep disassembly" << endl;
+  if (dis->process == NULL) {
+    cerr << prog_name << ": error: '" << dis->name << " (" << dis->desc <<
+      ")' disassembler is not yet implemented" << endl;
+    usage(EXIT_FAILURE);
+  }
 
-      mc = linearsweep(entrypoint, memory, decoder);
-    }
-  else if (disassembler == "recursive")
-    {
-      if (verbosity > 0)
-	cout << "Starting recursive traversal disassembly" << endl;
+  if (verbosity > 0)
+    cout << "Starting " << dis->desc << " disassembly" << endl;
 
-      mc = recursivetraversal(entrypoint, memory, decoder);
-    }
-  else if (disassembler == "predicate")
-    {
-      cerr << prog_name
-	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
-      usage(EXIT_FAILURE);
-    }
-  else if (disassembler == "dare")
-    {
-      cerr << prog_name
-	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
-      usage(EXIT_FAILURE);
-    }
-  else if (disassembler == "kinder1")
-    {
-      cerr << prog_name
-	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
-      usage(EXIT_FAILURE);
-    }
-  else if (disassembler == "kinder2")
-    {
-      cerr << prog_name
-	   << ": error: '" << disassembler << "' disassembler is not yet implemented" << endl;
-      usage(EXIT_FAILURE);
-    }
-  else
-    {
-      cerr << prog_name
-	   << ": error: '" << disassembler << "' disassembler is unknown" << endl
-	   << "Type '" << prog_name << " -l' to list all disassemblers" << endl;
-      exit (EXIT_FAILURE);
-    }
+  mc = dis->process(entrypoint, memory, decoder);
 
   mc->sort ();
     
