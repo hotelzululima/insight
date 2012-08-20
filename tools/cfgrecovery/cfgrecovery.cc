@@ -45,6 +45,7 @@
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
 
+#include "FloodTraversal.hh"
 #include "linearsweep.hh"
 #include "recursivetraversal.hh"
 
@@ -133,6 +134,7 @@ main (int argc, char *argv[])
   /* Setting the list of disassembly types */
   disas_t disassemblers;
 
+  disassemblers["flood"] = "flood traversal";
   disassemblers["linear"] = "linear sweep";
   disassemblers["recursive"] = "recursive traversal";
   disassemblers["predicate"] = "path predicate validation";
@@ -295,7 +297,14 @@ main (int argc, char *argv[])
   Microcode * mc = NULL;
 
   /* Starting disassembly with proper disassembler */
-  if (disassembler == "linear")
+  if (disassembler == "flood")
+    {
+      if (verbosity > 0)
+	cout << "Starting flood traversal disassembly" << endl;
+
+      mc = flood_traversal(entrypoint, memory, decoder);
+    }
+  else if (disassembler == "linear")
     {
       if (verbosity > 0)
 	cout << "Starting linear sweep disassembly" << endl;
