@@ -34,6 +34,7 @@
 
 #include <tr1/unordered_map>
 
+#include <ctype.h>
 #include <getopt.h>
 #include <libgen.h>
 #include <stdlib.h>
@@ -144,6 +145,7 @@ main (int argc, char *argv[])
 
   /* Setting entrypoint */
   ConcreteAddress * entrypoint = NULL;
+  const char *entrypoint_symbol = NULL;
 
   /* Parsing options */
   while ((optc =
@@ -166,7 +168,16 @@ main (int argc, char *argv[])
 	break;
 
       case 'e':		/* Force entrypoint */
-	entrypoint = new ConcreteAddress(strtoul (optarg, NULL, 0));
+	if (isdigit(optarg[0])) {
+	  entrypoint = new ConcreteAddress(strtoul (optarg, NULL, 0));
+	  entrypoint_symbol = NULL;
+	} else {
+	  entrypoint_symbol = optarg;
+	  if (entrypoint != NULL) {
+	    entrypoint = NULL;
+	    delete entrypoint;
+	  }
+	}
 	break;
 
       case 'f':		/* Output file format */
@@ -259,6 +270,13 @@ main (int argc, char *argv[])
   ConcreteMemory * memory = loader->get_memory();
 
   /* Setting the entrypoint */
+  if (entrypoint_symbol != NULL) {
+    Option<ConcreteAddress> val =
+      loader->get_symbol_value(string(entrypoint_symbol));
+    if (val.hasValue())
+      entrypoint = new ConcreteAddress(val.getValue());
+  }
+
   if (entrypoint == NULL)
     entrypoint = new ConcreteAddress(loader->get_entrypoint());
 
