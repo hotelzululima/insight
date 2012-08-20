@@ -40,41 +40,55 @@
 
 using namespace std;
 
+#if HAVE_Z3_SOLVER 
+
 #define ALL_TESTS					\
   SOLVER_TEST (NP, "(NOT %pf)", ExprSolver::SAT)  \
   SOLVER_TEST (US1, "(EQ (NOT %pf) %pf)", ExprSolver::UNSAT) \
   SOLVER_TEST (S2, "(OR (NOT %pf) %pf){0;1}", ExprSolver::SAT) \
   SOLVER_TEST (US2, "(NOT (OR (NOT %pf) %pf){0;1})", ExprSolver::UNSAT) \
-  SOLVER_TEST (S3, "[%eax]{0;8}", ExprSolver::SAT)				\
+  SOLVER_TEST (S3, "[%eax]{0;8}", ExprSolver::SAT)			
 
 
 #define SOLVER_TEST(id, e, res)     \
-ATF_TEST_CASE(id); \
+ATF_TEST_CASE(id);		    \
 \
-ATF_TEST_CASE_HEAD(id)	\
+ATF_TEST_CASE_HEAD(id)			\
 { \
   set_md_var ("descr", \
 	      "Check expression solver against satisfiability of " # id); \
 } \
 \
-ATF_TEST_CASE_BODY(id) \
+ATF_TEST_CASE_BODY(id)			\
 { \
   s_check_tautology (# id, e, res); \
 }
-
 static void
 s_check_tautology (const string &, const string &expr, ExprSolver::Result res)
 {
-  insight::init ();
+  ConfigTable cfg;
+
+#if HAVE_Z3_SOLVER
+  cfg.set ("solver.default.command", "z3");
+  cfg.set ("solver.default.nb_args", 2);
+  cfg.set ("solver.default.arg0", "-smt2");
+  cfg.set ("solver.default.arg1", "-in");
+#endif
+
+  insight::init (cfg);
   const Architecture *x86_32 = 
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 
   Expr *e = expr_parser (expr, &ma);
   ATF_REQUIRE (e != NULL);
+#if HAVE_Z3_SOLVER
   ExprSolver *s = ExprSolver::create_default_solver (&ma);
 
-  ATF_REQUIRE_EQ (s->check_sat (e), res);
+  ATF_REQUIRE_EQ (s->check_sat (e), res); 
+#else
+  ATF_REQUIRE_EQ (res, res);
+#endif
   e->deref ();
 
   insight::terminate ();
@@ -90,3 +104,22 @@ ATF_INIT_TEST_CASES(tcs)
 {
   ALL_TESTS
 }
+
+#else
+ATF_TEST_CASE(NO_Z3_SOLVER);
+
+ATF_TEST_CASE_HEAD(NO_Z3_SOLVER)
+{ 
+  set_md_var ("descr", "Z3 has not been found."); 
+} 
+
+ATF_TEST_CASE_BODY(NO_Z3_SOLVER) 
+{ 
+}
+
+ATF_INIT_TEST_CASES(tcs)
+{
+  ATF_ADD_TEST_CASE(tcs, NO_Z3_SOLVER);
+}
+#endif
+

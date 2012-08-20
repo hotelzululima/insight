@@ -33,6 +33,7 @@
 
 # include <stdexcept>
 # include <kernel/Expressions.hh>
+# include <utils/ConfigTable.hh>
 
 class ExprSolver 
 {
@@ -50,11 +51,18 @@ public:
     }
   };
 
-  static void init ();
+  class UnknownSolverException : public SolverException {
+  public:
+    UnknownSolverException (const std::string &msg) 
+      : SolverException (msg) {
+    }
+  };
+
+  static void init (const ConfigTable &cfg);
   static void terminate ();
 
   static ExprSolver *create_default_solver (const MicrocodeArchitecture *mca)
-    throw (UnexpectedResponseException);
+    throw (UnexpectedResponseException, UnknownSolverException);
 
   enum Result { SAT, UNSAT, UNKNOWN };
  

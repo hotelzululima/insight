@@ -35,6 +35,7 @@
 
 #include <tr1/unordered_set>
 #include <ext/stdio_filebuf.h>
+#include <csignal>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -49,8 +50,8 @@ using namespace exprutils;
 typedef __gnu_cxx::stdio_filebuf<char> file_buffer;
 
 static bool
-s_create_pipe (const std::string &cmd, int nb_args,
-	       const std::string *args, FILE **rwstreams);
+s_create_pipe (const std::string &cmd, const vector<string> &args,
+	       FILE **rwstreams);
 
 ExprProcessSolver::ExprProcessSolver (const MicrocodeArchitecture *mca, 
 				      const string &cmd, 
@@ -61,14 +62,14 @@ ExprProcessSolver::ExprProcessSolver (const MicrocodeArchitecture *mca,
 
 ExprProcessSolver * 
 ExprProcessSolver::create (const MicrocodeArchitecture *mca, 
-			   const std::string &cmd, int nb_args,
-			   const std::string *args)
-  throw (UnexpectedResponseException)
+			   const std::string &cmd, 
+			   const std::vector<std::string> &args)
+  throw (UnexpectedResponseException, UnknownSolverException)
 {
   FILE *pipestreams[2];
   ExprProcessSolver *result = NULL;
 
-  if (s_create_pipe (cmd, nb_args, args, pipestreams))
+  if (s_create_pipe (cmd, args, pipestreams))
     {
       istream *i = new istream (new file_buffer (pipestreams[0], 
 						 std::ios_base::in));
@@ -258,9 +259,9 @@ ExprProcessSolver::get_result ()
   return result;
 }
 
-static bool
-s_create_pipe (const std::string &cmd, int nb_args,
-	       const std::string *args, FILE **rwstreams)
+static bool 
+s_create_pipe (const std::string &cmd, const vector<string> &args,
+	       FILE **rwstreams)
 {
   int parent_child_pipe[2];
   int child_parent_pipe[2];
@@ -289,13 +290,14 @@ s_create_pipe (const std::string &cmd, int nb_args,
       dup (child_parent_pipe[1]); // associate write part of C --> P to stdout
       close (parent_child_pipe[0]); // close useless fd
       close (child_parent_pipe[1]); // close useless fd
+      int nb_args = args.size ();
       char *tmp[nb_args + 2];
       tmp[0] = ::strdup (cmd.c_str ());
       for (int i = 0; i < nb_args; i++)
 	tmp[i + 1] = ::strdup (args[i].c_str ());
       tmp[nb_args + 1] = NULL;
       if (execvp (cmd.c_str (), tmp) < 0)
-	perror (cmd.c_str ());
+	kill (getppid (), SIGCHLD);
     } 
   else 
     {

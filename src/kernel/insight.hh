@@ -31,9 +31,11 @@
 #ifndef KERNEL_INSIGHT_HH
 #define KERNEL_INSIGHT_HH
 
+# include <utils/ConfigTable.hh>
+
 namespace insight
 {
-  void init();
+  void init (const ConfigTable &cfg = ConfigTable ());
 
   void terminate();
 };

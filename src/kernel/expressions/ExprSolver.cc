@@ -31,18 +31,26 @@
 #include "ExprSolver.hh"
 
 #include <kernel/expressions/ExprProcessSolver.hh>
+#include <vector>
 
 using namespace std;
 
-static const string default_solver_command = "z3";
-static const string default_solver_args[] = { "-smt2", "-in" };
-static int default_solver_nb_args = 
-  sizeof (default_solver_args)/sizeof (default_solver_args[0]);
+static string default_solver_command;
+static vector<string> default_solver_args;
 
 void 
-ExprSolver::init ()
+ExprSolver::init (const ConfigTable &cfg)
 {
-  
+  default_solver_command = cfg.get ("solver.default.command");
+
+  int nb_args = cfg.get_integer ("solver.default.nb_args");
+
+  for (int i = 0; i < nb_args; i++)
+    {
+      ostringstream pref;
+      pref << "solver.default.arg" << i;
+      default_solver_args.push_back (cfg.get (pref.str ()));
+    }
 }
 
 void 
@@ -52,11 +60,9 @@ ExprSolver::terminate ()
   
 ExprSolver *
 ExprSolver::create_default_solver (const MicrocodeArchitecture *mca)
-  throw (UnexpectedResponseException)
-{
-  
+  throw (UnexpectedResponseException, UnknownSolverException)
+{  
   return ExprProcessSolver::create (mca, default_solver_command,
-				    default_solver_nb_args,
 				    default_solver_args);
 }
 

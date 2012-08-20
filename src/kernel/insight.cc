@@ -37,12 +37,12 @@
 static int init_count = 0;
 
 void 
-insight::init()
+insight::init(const ConfigTable &cfg)
 {
   if (init_count == 0)
     {
       Architecture::init ();
-      Expr::init ();
+      Expr::init (cfg);
     }
   init_count++;
 }

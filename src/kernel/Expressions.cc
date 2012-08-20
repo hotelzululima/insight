@@ -37,6 +37,7 @@
 #include <tr1/unordered_map>
 #include <tr1/unordered_map>
 #include <kernel/expressions/ExprVisitor.hh>
+#include <kernel/expressions/ExprSolver.hh>
 #include <io/expressions/expr-writer.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
@@ -1108,9 +1109,10 @@ QuantifiedExpr::acceptVisitor (ConstExprVisitor *visitor) const
 }
  
 void 
-Expr::init ()
+Expr::init (const ConfigTable &cfg)
 {
   expr_store = new ExprStore (100);
+  ExprSolver::init (cfg);
 }
 
 void 

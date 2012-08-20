@@ -32,6 +32,7 @@
 # define KERNEL_EXPRESSIONS_EXPRPROCESSSOLVER_HH
 
 # include <iostream>
+# include <vector>
 # include <kernel/expressions/ExprSolver.hh>
 
 class ExprProcessSolver : public ExprSolver
@@ -47,8 +48,8 @@ protected:
 public:
   static ExprProcessSolver *
   create (const MicrocodeArchitecture *mca, const std::string &cmd, 
-	  int nb_args, const std::string *args)
-    throw (UnexpectedResponseException);
+	  const std::vector<std::string> &args)
+    throw (UnexpectedResponseException, UnknownSolverException);
 
   virtual ~ExprProcessSolver ();
 

@@ -33,6 +33,7 @@
 #include <string>
 
 #include <utils/option.hh>
+#include <utils/ConfigTable.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/expressions/Operators.hh>
 #include <tr1/unordered_set>
@@ -100,7 +101,7 @@ protected:
 
 public:
 
-  static void init ();
+  static void init (const ConfigTable &cfg);
   static void terminate ();
   
   virtual void acceptVisitor (ExprVisitor &visitor);
