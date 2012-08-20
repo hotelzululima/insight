@@ -35,81 +35,36 @@
 
 using namespace std;
 
-LinearSweepTraversal::LinearSweepTraversal (bool scan_all, 
-					    const ConcreteMemory *memory, 
+LinearSweepTraversal::LinearSweepTraversal(const ConcreteMemory *memory, 
 					    Decoder *decoder)
-  : ConcreteMemoryTraversal (memory, decoder), scan_all (scan_all)
+  : ConcreteMemoryTraversal(memory, decoder)
 {
 }
 
-LinearSweepTraversal::~LinearSweepTraversal ()
+LinearSweepTraversal::~LinearSweepTraversal()
 {
 }
 
 void 
-LinearSweepTraversal::treat_new_arrow (Microcode *, 
-				       const MicrocodeNode *, 
-				       const StmtArrow *arrow,
-				       const ConcreteAddress &next)
+LinearSweepTraversal::treat_new_arrow(Microcode *, 
+				      const MicrocodeNode *, 
+				      const StmtArrow *,
+				      const ConcreteAddress &next)
 {
-  const Architecture *arch = decoder->get_arch ()->get_reference_arch ();
-
-  const StaticArrow *sa = dynamic_cast<const StaticArrow *> (arrow);
-  MicrocodeAddress tgt;
-  bool tgt_is_defined = false;
-  
-  ConcreteAddress src (arrow->get_src ()->get_loc().getGlobal ());
-
-  if (mem->is_defined (src) && can_visit (src))
-    add_to_todo_list (src);
-
-  if (sa == NULL)
-    {
-      const DynamicArrow *da = dynamic_cast<const DynamicArrow *> (arrow);
-      MemCell *mc = dynamic_cast<MemCell *> (da->get_target ());
-      
-      if (mc != NULL && mc->get_addr ()->is_Constant ())
-	{
-	  Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());
-	  ConcreteAddress a (cst->get_val());
-	  
-	  if (mem->is_defined(a))
-	    {
-	      ConcreteValue val = 
-		mem->get (a, arch->address_range, arch->endianness);
-	      tgt = MicrocodeAddress (val.get ());
-	      tgt_is_defined = true;
-	    }
-	}
-    }
-  else
-    {
-      tgt = sa->get_target ();
-      tgt_is_defined = true;
-    }
-  
-  if (tgt_is_defined && tgt.getLocal () == 0)
-    {
-      ConcreteAddress ctgt (tgt.getGlobal ());
-      
-      if (mem->is_defined (ctgt) && can_visit (ctgt))
-	add_to_todo_list (ctgt);
-    }
-
-  if (scan_all && can_visit (next.get_address ()))
-    add_to_todo_list (next);
+  if (can_visit (next.get_address ()))
+    add_to_todo_list(next);
 }
 
 /* Linear sweep disassembly method */
 Microcode *
-linearsweep (const ConcreteAddress * entrypoint,
-	     ConcreteMemory * memory,
-	     Decoder * decoder)
+linearsweep(const ConcreteAddress *entrypoint,
+	    ConcreteMemory *memory,
+	    Decoder *decoder)
 {
-  Microcode * mc = new Microcode();
-  LinearSweepTraversal lst (true, memory, decoder);
+  Microcode *mc = new Microcode();
+  LinearSweepTraversal lst(memory, decoder);
 
-  lst.compute (mc, *entrypoint);
-  
+  lst.compute(mc, *entrypoint);
+
   return mc;
 }

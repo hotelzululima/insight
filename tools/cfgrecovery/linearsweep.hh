@@ -28,13 +28,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef CFGRECOVERY_LINEARSWEEP_HH
-#define CFGRECOVERY_LINEARSWEEP_HH
-
-#include <decoders/Decoder.hh>
-#include <domains/concrete/ConcreteAddress.hh>
-#include <domains/concrete/ConcreteMemory.hh>
-#include <kernel/Microcode.hh>
+#ifndef CFGRECOVERY_LINEAR_SWEEP_HH
+#define CFGRECOVERY_LINEAR_SWEEP_HH
 
 #include "ConcreteMemoryTraversal.hh"
 #include "cfgrecovery.hh"
@@ -42,21 +37,18 @@
 class LinearSweepTraversal : public ConcreteMemoryTraversal
 {
 public :
-  LinearSweepTraversal (bool scan_all, 
-			const ConcreteMemory *memory, Decoder *decoder);
-  ~LinearSweepTraversal ();
+  LinearSweepTraversal(const ConcreteMemory *memory, Decoder *decoder);
+  ~LinearSweepTraversal();
 
 protected:
-  void treat_new_arrow (Microcode *,
-			const MicrocodeNode *, const StmtArrow *arrow, 
-			const ConcreteAddress &next);
-private:
-  bool scan_all;
+  void treat_new_arrow(Microcode *,
+		       const MicrocodeNode *, const StmtArrow *arrow, 
+		       const ConcreteAddress &next);
 };
 
 /* Linear sweep disassembly method */
-Microcode * linearsweep (const ConcreteAddress * entrypoint,
-			 ConcreteMemory * memory,
-			 Decoder * decoder);
+Microcode *linearsweep(const ConcreteAddress * entrypoint,
+		       ConcreteMemory * memory,
+		       Decoder * decoder);
 
-#endif /* CFGRECOVERY_LINEARSWEEP_HH */
+#endif /* CFGRECOVERY_LINEAR_SWEEP_HH */
