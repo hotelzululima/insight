@@ -4,4 +4,5 @@ test_suite("Insight")
 
 atf_test_program{name="architecture_test"}
 atf_test_program{name="expr_parser_test"}
+atf_test_program{name="expr_solver_test"}
 atf_test_program{name="expression_test"}

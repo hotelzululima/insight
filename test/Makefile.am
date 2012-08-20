@@ -28,6 +28,7 @@ check_PROGRAMS = \
 	io/expr_to_smtlib_test	   		\
 	kernel/architecture_test 		\
 	kernel/expr_parser_test 		\
+	kernel/expr_solver_test 		\
 	kernel/expression_test
 
 # Kernel module tests
@@ -36,6 +37,9 @@ kernel_architecture_test_SOURCES = \
 
 kernel_expr_parser_test_SOURCES = \
 	kernel/expr_parser_test.cc
+
+kernel_expr_solver_test_SOURCES = \
+	kernel/expr_solver_test.cc
 
 kernel_expression_test_SOURCES = \
 	kernel/expression_test.cc

@@ -83,6 +83,10 @@ kernel_source = \
 	kernel/expressions/ExprRewritingRule.cc	\
 	kernel/expressions/ExprReplaceSubtermRule.hh	\
 	kernel/expressions/ExprReplaceSubtermRule.cc	\
+	kernel/expressions/ExprSolver.hh	\
+	kernel/expressions/ExprSolver.cc	\
+	kernel/expressions/ExprProcessSolver.hh	\
+	kernel/expressions/ExprProcessSolver.cc	\
 	kernel/expressions/Operators.cc   	\
 	kernel/expressions/Operators.def  	\
 	kernel/expressions/Operators.hh   	\
