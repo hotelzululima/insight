@@ -20,6 +20,8 @@ analyses_sources = \
 
 ## utils module
 utils_source = \
+        utils/ConfigTable.hh	\
+        utils/ConfigTable.cc	\
         utils/graph.hh		\
         utils/graph.ii		\
 	utils/Log.cc		\

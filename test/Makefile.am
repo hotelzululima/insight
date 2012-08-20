@@ -16,6 +16,7 @@ EXTRA_DIST = \
         domains/Kyuafile 		\
         kernel/Kyuafile 		\
         slicing/Kyuafile 		\
+        utils/Kyuafile	 		\
         Kyuafile
 
 
@@ -29,7 +30,8 @@ check_PROGRAMS = \
 	kernel/architecture_test 		\
 	kernel/expr_parser_test 		\
 	kernel/expr_solver_test 		\
-	kernel/expression_test
+	kernel/expression_test			\
+	utils/configtable_test
 
 # Kernel module tests
 kernel_architecture_test_SOURCES = \
@@ -65,6 +67,10 @@ domains_concrete_concretevalue_test_SOURCES = \
 domains_concrete_simulator_test_SOURCES = \
 	domains/concrete/simulator_test_cases.hh \
 	domains/concrete/simulator_test.cc
+
+# Io module tests
+utils_configtable_test_SOURCES = \
+	utils/configtable_test.cc
 
 check: all kyua-tests
 
