@@ -275,6 +275,10 @@ main (int argc, char *argv[])
       loader->get_symbol_value(string(entrypoint_symbol));
     if (val.hasValue())
       entrypoint = new ConcreteAddress(val.getValue());
+    else {
+      cerr << "Error: symbol '" << entrypoint_symbol << "' not found" << endl;
+      exit(EXIT_FAILURE);
+    }
   }
 
   if (entrypoint == NULL)
