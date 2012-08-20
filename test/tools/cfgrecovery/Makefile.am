@@ -9,7 +9,7 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_LSW_FLAGS = -d linear
+CFGR_FLD_FLAGS = -d flood
 CFGR_RT_FLAGS = -d recursive
 
 X86_32_RT_TESTS = \
@@ -110,76 +110,76 @@ X86_32_RT_TESTS = \
         \
         ${dummy}
 
-X86_32_LSW_TESTS = \
-	x86_32-aaa.lsw.res \
-	x86_32-aad.lsw.res \
-	x86_32-aam.lsw.res \
-	x86_32-aas.lsw.res \
-	x86_32-and.lsw.res \
+X86_32_FLD_TESTS = \
+	x86_32-aaa.fld.res \
+	x86_32-aad.fld.res \
+	x86_32-aam.fld.res \
+	x86_32-aas.fld.res \
+	x86_32-and.fld.res \
         \
-        x86_32-bound.lsw.res \
-        x86_32-bsf.lsw.res \
-        x86_32-bsr.lsw.res \
-        x86_32-bswap.lsw.res \
-        x86_32-bt.lsw.res \
-        x86_32-btc.lsw.res \
-        x86_32-btr.lsw.res \
-        x86_32-bts.lsw.res \
+        x86_32-bound.fld.res \
+        x86_32-bsf.fld.res \
+        x86_32-bsr.fld.res \
+        x86_32-bswap.fld.res \
+        x86_32-bt.fld.res \
+        x86_32-btc.fld.res \
+        x86_32-btr.fld.res \
+        x86_32-bts.fld.res \
         \
-	x86_32-call.lsw.res \
-	x86_32-cmp.lsw.res \
-	x86_32-cmps.lsw.res \
-	x86_32-cmpxchg.lsw.res \
+	x86_32-call.fld.res \
+	x86_32-cmp.fld.res \
+	x86_32-cmps.fld.res \
+	x86_32-cmpxchg.fld.res \
 	\
-	x86_32-daadas.lsw.res \
-	x86_32-div.lsw.res \
+	x86_32-daadas.fld.res \
+	x86_32-div.fld.res \
         \
-        x86_32-enter-leave.lsw.res \
+        x86_32-enter-leave.fld.res \
         \
-	x86_32-idiv.lsw.res \
-	x86_32-imul.lsw.res \
-	x86_32-int.lsw.res \
+	x86_32-idiv.fld.res \
+	x86_32-imul.fld.res \
+	x86_32-int.fld.res \
 	\
-	x86_32-jcc.lsw.res \
-	x86_32-jmp.lsw.res \
+	x86_32-jcc.fld.res \
+	x86_32-jmp.fld.res \
         \
-        x86_32-lsahf.lsw.res \
-	x86_32-lea.lsw.res \
-	x86_32-lods.lsw.res \
-	x86_32-loop.lsw.res \
+        x86_32-lsahf.fld.res \
+	x86_32-lea.fld.res \
+	x86_32-lods.fld.res \
+	x86_32-loop.fld.res \
         \
-	x86_32-mov.lsw.res \
-	x86_32-movbe.lsw.res \
-	x86_32-movs.lsw.res \
-	x86_32-movsxz.lsw.res \
-	x86_32-mul.lsw.res \
+	x86_32-mov.fld.res \
+	x86_32-movbe.fld.res \
+	x86_32-movs.fld.res \
+	x86_32-movsxz.fld.res \
+	x86_32-mul.fld.res \
         \
-	x86_32-neg.lsw.res \
-	x86_32-nop.lsw.res \
-	x86_32-not.lsw.res \
-	x86_32-or.lsw.res \
+	x86_32-neg.fld.res \
+	x86_32-nop.fld.res \
+	x86_32-not.fld.res \
+	x86_32-or.fld.res \
         \
-	x86_32-popcnt.lsw.res \
-	x86_32-pop.lsw.res \
-	x86_32-pop16.lsw.res \
-	x86_32-popa.lsw.res \
-	x86_32-popa16.lsw.res \
-	x86_32-push.lsw.res \
-	x86_32-pusha.lsw.res \
-	x86_32-push16.lsw.res \
+	x86_32-popcnt.fld.res \
+	x86_32-pop.fld.res \
+	x86_32-pop16.fld.res \
+	x86_32-popa.fld.res \
+	x86_32-popa16.fld.res \
+	x86_32-push.fld.res \
+	x86_32-pusha.fld.res \
+	x86_32-push16.fld.res \
         \
-	x86_32-rotate.lsw.res \
+	x86_32-rotate.fld.res \
         \
-	x86_32-scas.lsw.res \
-	x86_32-shift.lsw.res \
-	x86_32-sbb.lsw.res \
-	x86_32-setcc.lsw.res \
+	x86_32-scas.fld.res \
+	x86_32-shift.fld.res \
+	x86_32-sbb.fld.res \
+	x86_32-setcc.fld.res \
         \
-	x86_32-xadd.lsw.res \
-	x86_32-xchg.lsw.res \
-	x86_32-xor.lsw.res \
+	x86_32-xadd.fld.res \
+	x86_32-xchg.fld.res \
+	x86_32-xor.fld.res \
         \
-	x86_32-cfgrecovery-01.lsw.res \
+	x86_32-cfgrecovery-01.fld.res \
         \
         ${dummy}
 
@@ -282,81 +282,81 @@ X86_32_RT_TESTS += \
         \
         ${dummy}
 
-X86_32_LSW_TESTS += \
-	x86_32-aaa.lsw.memres \
-	x86_32-aad.lsw.memres \
-	x86_32-aam.lsw.memres \
-	x86_32-aas.lsw.memres \
-	x86_32-and.lsw.memres \
+X86_32_FLD_TESTS += \
+	x86_32-aaa.fld.memres \
+	x86_32-aad.fld.memres \
+	x86_32-aam.fld.memres \
+	x86_32-aas.fld.memres \
+	x86_32-and.fld.memres \
         \
-        x86_32-bound.lsw.memres \
-        x86_32-bsf.lsw.memres \
-        x86_32-bsr.lsw.memres \
-        x86_32-bswap.lsw.memres \
-        x86_32-bt.lsw.memres \
-        x86_32-btc.lsw.memres \
-        x86_32-btr.lsw.memres \
-        x86_32-bts.lsw.memres \
+        x86_32-bound.fld.memres \
+        x86_32-bsf.fld.memres \
+        x86_32-bsr.fld.memres \
+        x86_32-bswap.fld.memres \
+        x86_32-bt.fld.memres \
+        x86_32-btc.fld.memres \
+        x86_32-btr.fld.memres \
+        x86_32-bts.fld.memres \
         \
-        x86_32-call.lsw.memres \
-	x86_32-cmp.lsw.memres \
-	x86_32-cmps.lsw.memres \
-	x86_32-cmpxchg.lsw.memres \
+        x86_32-call.fld.memres \
+	x86_32-cmp.fld.memres \
+	x86_32-cmps.fld.memres \
+	x86_32-cmpxchg.fld.memres \
         \
-	x86_32-daadas.lsw.memres \
-	x86_32-div.lsw.memres \
+	x86_32-daadas.fld.memres \
+	x86_32-div.fld.memres \
         \
-        x86_32-enter-leave.lsw.memres \
+        x86_32-enter-leave.fld.memres \
         \
-	x86_32-idiv.lsw.memres \
-	x86_32-imul.lsw.memres \
-	x86_32-int.lsw.memres \
+	x86_32-idiv.fld.memres \
+	x86_32-imul.fld.memres \
+	x86_32-int.fld.memres \
 	\
-	x86_32-jcc.lsw.memres \
-	x86_32-jmp.lsw.memres \
+	x86_32-jcc.fld.memres \
+	x86_32-jmp.fld.memres \
         \
-        x86_32-lsahf.lsw.memres \
-	x86_32-lea.lsw.memres \
-	x86_32-lods.lsw.memres \
-	x86_32-loop.lsw.memres \
+        x86_32-lsahf.fld.memres \
+	x86_32-lea.fld.memres \
+	x86_32-lods.fld.memres \
+	x86_32-loop.fld.memres \
         \
-	x86_32-mov.lsw.memres \
-	x86_32-movbe.lsw.memres \
-	x86_32-movs.lsw.memres \
-	x86_32-movsxz.lsw.memres \
-	x86_32-mul.lsw.memres \
+	x86_32-mov.fld.memres \
+	x86_32-movbe.fld.memres \
+	x86_32-movs.fld.memres \
+	x86_32-movsxz.fld.memres \
+	x86_32-mul.fld.memres \
         \
-	x86_32-neg.lsw.memres \
-	x86_32-nop.lsw.memres \
-	x86_32-not.lsw.memres \
-	x86_32-or.lsw.memres \
+	x86_32-neg.fld.memres \
+	x86_32-nop.fld.memres \
+	x86_32-not.fld.memres \
+	x86_32-or.fld.memres \
         \
-	x86_32-popcnt.lsw.memres \
-	x86_32-pop.lsw.memres \
-	x86_32-pop16.lsw.memres \
-	x86_32-popa.lsw.memres \
-	x86_32-popa16.lsw.memres \
-	x86_32-push.lsw.memres \
-	x86_32-pusha.lsw.memres \
-	x86_32-push16.lsw.memres \
+	x86_32-popcnt.fld.memres \
+	x86_32-pop.fld.memres \
+	x86_32-pop16.fld.memres \
+	x86_32-popa.fld.memres \
+	x86_32-popa16.fld.memres \
+	x86_32-push.fld.memres \
+	x86_32-pusha.fld.memres \
+	x86_32-push16.fld.memres \
         \
-	x86_32-rotate.lsw.memres \
+	x86_32-rotate.fld.memres \
         \
-	x86_32-scas.lsw.memres \
-	x86_32-shift.lsw.memres \
-	x86_32-sbb.lsw.memres \
-	x86_32-setcc.lsw.memres \
+	x86_32-scas.fld.memres \
+	x86_32-shift.fld.memres \
+	x86_32-sbb.fld.memres \
+	x86_32-setcc.fld.memres \
         \
-	x86_32-xadd.lsw.memres \
-	x86_32-xchg.lsw.memres \
-	x86_32-xor.lsw.memres \
+	x86_32-xadd.fld.memres \
+	x86_32-xchg.fld.memres \
+	x86_32-xor.fld.memres \
         \
-	x86_32-cfgrecovery-01.lsw.res \
+	x86_32-cfgrecovery-01.fld.res \
         \
         ${dummy}
 endif
 
-BASE_TESTS = ${X86_32_RT_TESTS} ${X86_32_LSW_TESTS} 
+BASE_TESTS = ${X86_32_RT_TESTS} ${X86_32_FLD_TESTS} 
 
 
 TESTS = \
@@ -369,14 +369,14 @@ MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
-%.lsw.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${CFGRECOVERY} ${CFGR_LSW_FLAGS}  $< > $@ 2>&1
+%.fld.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	 @${CFGRECOVERY} ${CFGR_FLD_FLAGS}  $< > $@ 2>&1
 
 %.rt.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
 	 @${CFGRECOVERY} ${CFGR_RT_FLAGS}  $< > $@ 2>&1
 
-%.lsw.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_LSW_FLAGS} $< > $@ 2>&1
+%.fld.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_FLD_FLAGS} $< > $@ 2>&1
 
 %.rt.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
 	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} $< > $@ 2>&1
@@ -386,7 +386,7 @@ check-diff : ${BASE_TESTS}
 if WITH_VALGRIND
 	@ for t in ${BASE_TESTS}; do \
           TNAME=`basename $${t} .res`; \
-          if test "$${t}" = "$${TNAME}.lsw.res"; then \
+          if test "$${t}" = "$${TNAME}.fld.res"; then \
             diff -q "$${TNAME}.res" "$${TNAME}.memres" >> check-diff; \
           fi; \
         done
