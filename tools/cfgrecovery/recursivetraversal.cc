@@ -28,19 +28,20 @@
  * SUCH DAMAGE.
  */
 
+#include "recursivetraversal.hh"
+
 #include <stdlib.h>
 
 #include <kernel/annotations/CallRetAnnotation.hh>
 #include <analyses/slicing/Slicing.hh>
 #include <tr1/unordered_map>
 
-#include "linearsweep.hh"
-#include "recursivetraversal.hh"
+#include "FloodTraversal.hh"
 
 using namespace std;
 using namespace std::tr1;
 
-class RecursiveTraversal : public LinearSweepTraversal
+class RecursiveTraversal : public FloodTraversal
 {
   struct CA_Hash { 
     size_t operator()(const ConcreteAddress &F) const {
@@ -61,7 +62,7 @@ class RecursiveTraversal : public LinearSweepTraversal
 
 public :
   RecursiveTraversal (const ConcreteMemory *memory, Decoder *decoder) 
-    : LinearSweepTraversal (false, memory, decoder), stack ()
+    : FloodTraversal (false, memory, decoder), stack ()
   {
   }
       
@@ -74,7 +75,7 @@ protected:
 			const MicrocodeNode *entry, const StmtArrow *arrow, 
 			const ConcreteAddress &next)
   {    
-    LinearSweepTraversal::treat_new_arrow (mc, entry, arrow, next);
+    FloodTraversal::treat_new_arrow (mc, entry, arrow, next);
 
     MicrocodeNode *src = arrow->get_src ();
 
@@ -132,7 +133,7 @@ protected:
 		MicrocodeNode *tgt = mc->get_or_create_node (nma);
 		StmtArrow *a =
 		  retnode.first->add_successor (cond, tgt, new Skip ());
-		LinearSweepTraversal::treat_new_arrow (mc, entry, a, next);
+		FloodTraversal::treat_new_arrow (mc, entry, a, next);
 	      }
 	    else
 	      {
@@ -167,7 +168,7 @@ protected:
 		MicrocodeNode *tgt = mc->get_or_create_node (nma);
 		StmtArrow *a =
 		  arrow->get_src ()->add_successor (cond, tgt, new Skip ());
-		LinearSweepTraversal::treat_new_arrow (mc, entry, a, next);
+		FloodTraversal::treat_new_arrow (mc, entry, a, next);
 	      }
 	    else
 	      {
