@@ -4,6 +4,7 @@ bin_PROGRAMS = cfgrecovery
 
 cfgrecovery_SOURCES = \
 	cfgrecovery.cc cfgrecovery.hh \
+	FloodTraversal.cc FloodTraversal.hh \
 	linearsweep.cc linearsweep.hh \
 	recursivetraversal.cc recursivetraversal.hh \
         ConcreteMemoryTraversal.cc ConcreteMemoryTraversal.hh
