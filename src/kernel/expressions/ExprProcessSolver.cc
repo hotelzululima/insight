@@ -32,7 +32,7 @@
 
 #include <io/expressions/smtlib-writer.hh>
 #include <kernel/expressions/exprutils.hh>
-#include <utils/Log.hh"
+#include <utils/Log.hh>
 
 #include <tr1/unordered_set>
 #include <ext/stdio_filebuf.h>
