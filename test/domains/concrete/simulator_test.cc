@@ -55,8 +55,8 @@ static void
 s_simulate (const char *filename)
 {
   ConfigTable ct;
-  ct.set ("debug.enabled", false);
-  ct.set ("debug.stdio.enabled", true);
+  ct.set ("log.debug.enabled", false);
+  ct.set ("log.stdio.enabled", true);
 
   insight::init (ct);
 

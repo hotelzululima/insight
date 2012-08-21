@@ -98,16 +98,16 @@ bool log::debug_is_on = DEBUG_IS_ON;
 void 
 log::init (const ConfigTable &cfg)
 {
-  debug_is_on = cfg.get_boolean ("debug.enabled");
+  debug_is_on = cfg.get_boolean ("log.debug.enabled");
 
-  if (cfg.get_boolean ("debug.stdio.enabled"))
+  if (cfg.get_boolean ("log.stdio.enabled"))
     {
       STDLISTENER = new StdStreamListener ();
-      if (cfg.get_boolean ("debug.stdio.debug_is_cerr"))
+      if (cfg.get_boolean ("log.stdio.debug.is_cerr"))
       	STDLISTENER->set_out (cerr);
       
       int maxlevel =
-	cfg.get_integer ("debug.stdio.debugmaxlevel", -1);
+	cfg.get_integer ("log.stdio.debug.maxlevel", -1);
       STDLISTENER->set_max_level (maxlevel);
       
       log::add_listener (STDLISTENER);

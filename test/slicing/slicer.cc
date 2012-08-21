@@ -123,8 +123,8 @@ int main(int argc, char **argv)
       exit (EXIT_FAILURE);
     }
   ConfigTable ct;
-  ct.set ("debug.enabled", true);
-  ct.set ("debug.stdio.enabled", true);
+  ct.set ("log.debug.enabled", true);
+  ct.set ("log.stdio.enabled", true);
 
   insight::init (ct);
   {

@@ -50,18 +50,18 @@ namespace log
 
   /*
    * Configuration properties:
-   * debug.enabled:
-   *   debug_is_on variable is assign the value of this property
-   *
-   * debug.stdio.enabled:
+   * log.stdio.enabled:
    *   if true then a default listener based on standard streams is set using
    *   add_listener.
    *
-   * debug.stdio.debug_is_cerr:
+   * log.debug.enabled:
+   *   debug_is_on variable is assign the value of this property
+   *
+   * log.stdio.debug.is_cerr:
    *   if true then std::cerr stream is used for the debug stream instead of 
    *   std::cout.
    * 
-   * debug.stdio.debugmaxlevel:
+   * log.stdio.debug.maxlevel:
    *   set the maximal output level for debug stream; if the maxlevel is not 
    *   set or is negative then no limit is positioned.
    */

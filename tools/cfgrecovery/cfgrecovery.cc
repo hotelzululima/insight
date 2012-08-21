@@ -106,6 +106,7 @@ usage (int status)
 	<< "  -o, --output FILE\twrite output to FILE" << endl
 	<< "  -h, --help\t\tdisplay this help" << endl
 	<< "  -v, --verbose\t\tincrease verbosity level" << endl
+	<< "  -D, --debug\t\tenable debug traces" << endl
 	<< "  -V, --version\t\tdisplay version and exit" << endl;
     }
 
@@ -148,6 +149,7 @@ main (int argc, char *argv[])
     {"format", required_argument, NULL, 'f'},
     {"output", required_argument, NULL, 'o'},
     {"help", no_argument, NULL, 'h'},
+    {"debug", no_argument, NULL, 'D'},
     {"verbose", no_argument, NULL, 'v'},
     {"version", no_argument, NULL, 'V'},
     {NULL, 0, NULL, 0}
@@ -160,9 +162,12 @@ main (int argc, char *argv[])
   ConcreteAddress * entrypoint = NULL;
   const char *entrypoint_symbol = NULL;
 
+  /* Setting debug trace */
+  bool enable_debug = false;
+
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "ld:e:f:o:hvV", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "ld:e:f:o:hDvV", long_opts, NULL)) != -1)
     switch (optc)
       {
       case 'd':		/* Select disassembly type */
@@ -217,6 +222,10 @@ main (int argc, char *argv[])
 	verbosity += 1;
 	break;
 
+      case 'D':
+	enable_debug = true;
+	break;
+
       case 'V':		/* Display version number and exit */
 	version ();
 	break;
@@ -258,7 +267,15 @@ main (int argc, char *argv[])
   string execfile_name = argv[optind];
 
   /* Starting insight and initializing the needed objects */
-  insight::init();
+  ConfigTable config; 
+  config.set ("log.stdio.enabled", true);
+  config.set ("log.debug.enabled", enable_debug);
+  if (enable_debug)
+    {
+      config.set ("log.stdio.debug.is_cerr", true);
+      config.set ("log.stdio.debug.maxleve", verbosity);
+    }
+  insight::init (config);
 
   /* Getting the loader */
   BinaryLoader * loader;

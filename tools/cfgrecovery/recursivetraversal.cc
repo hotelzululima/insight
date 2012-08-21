@@ -31,7 +31,7 @@
 #include "recursivetraversal.hh"
 
 #include <stdlib.h>
-
+#include <utils/Log.hh>
 #include <kernel/annotations/CallRetAnnotation.hh>
 #include <analyses/slicing/Slicing.hh>
 #include <tr1/unordered_map>
@@ -178,8 +178,8 @@ protected:
       }
     else
       {
-	cerr << src->get_loc ()
-	     << ": error: ret without matching call" << endl;
+	log::error << src->get_loc ()
+		   << ": error: ret without matching call" << endl;
       }
   }
 };
