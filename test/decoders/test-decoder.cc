@@ -41,14 +41,16 @@ int
 main (int argc, char **argv)
 {
   int result = EXIT_SUCCESS;
+  ConfigTable ct;
+  ct.set ("debug.enabled", false);
+  ct.set ("debug.stdio.enabled", true);
 
-  insight::init ();
-  Log::add_listener (Log::STD_STREAM_LOG);
+  insight::init (ct);
 
   if (argc != 2)
     {
-      cerr << "wrong # of arguments" << endl;
-      cerr << "USAGE: " << argv[0] << " binary-filename" << endl;
+      log::error << "wrong # of arguments" << endl
+		 << "USAGE: " << argv[0] << " binary-filename" << endl;
       result = EXIT_FAILURE;
     }
   else
@@ -66,17 +68,17 @@ main (int argc, char **argv)
 	  
 	  try
 	    {
-	      cout << "**** Decode instruction: " 
-		   << decoder->get_instruction (start) 
-		   << endl;
+	      log::display << "**** Decode instruction: " 
+			   << decoder->get_instruction (start) 
+			   << endl;
 	      start = decoder->decode (mc, start);
 
 	      mc->sort ();
-	      cout << mc->pp () << endl;
+	      log::display << mc->pp () << endl;
 	    }
 	  catch (std::runtime_error &e)
 	    {
-	      cerr << e.what() << endl;
+	      log::error << e.what() << endl;
 	      result = EXIT_FAILURE;
 	    }
 	  

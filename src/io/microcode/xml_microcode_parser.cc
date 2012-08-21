@@ -65,7 +65,7 @@ using namespace std;
     sprintf(prefix, "Xml parse error [line %d]: ", node->line);    \
     sprintf(the_reason, reason);                                   \
     strcat(prefix, the_reason);                                    \
-    Log::fatal_error(prefix);                                      \
+    log::fatal_error(prefix);                                      \
   }
 
 /*****************************************************************************/
@@ -99,13 +99,13 @@ pair<xmlDocPtr, xmlNodePtr> xml_get_root_from_file(const string filename)
   xmlKeepBlanksDefault(0);
   doc = xmlParseFile(filename.c_str());
   if (doc == NULL)
-    Log::fatal_error("Xml Document XML not valid\n");
+    log::fatal_error("Xml Document XML not valid\n");
 
   root = xmlDocGetRootElement(doc);
   if (root == NULL)
     {
       xmlFreeDoc(doc);
-      Log::fatal_error("XML Document empty\n");
+      log::fatal_error("XML Document empty\n");
     }
 
   return pair<xmlDocPtr, xmlNodePtr> (doc, root);
@@ -549,7 +549,7 @@ xml_parse_mc_program(const string filename)
 
   if (elts->size() == 0)
     {
-      Log::warning ("xml_parse_mc_program:: empty program !");
+      log::warning << "xml_parse_mc_program:: empty program !" << endl;
       return new Microcode(elts, MicrocodeAddress(0, 0));
     }
 

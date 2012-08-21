@@ -122,13 +122,14 @@ int main(int argc, char **argv)
 	   << "USAGE: " << argv[0] << " inputfile max-step addr lvalue" << endl;
       exit (EXIT_FAILURE);
     }
+  ConfigTable ct;
+  ct.set ("debug.enabled", true);
+  ct.set ("debug.stdio.enabled", true);
 
-  insight::init ();
+  insight::init (ct);
   {
     DataDependency::ConsiderJumpCondMode(true);
     DataDependency::OnlySimpleSetsMode(true);
-    Log::add_listener (Log::STD_STREAM_LOG);
-    Log::set_verbose_level(3);
     
     test_slicing(argv[1], atoi(argv[2]), strtol(argv[3],0,0), argv[4]);
     cout << endl;

@@ -186,7 +186,7 @@ lvalue:
 	reg = data.arch->get_register (reg->get_label ());
       $$ = RegisterExpr::create (reg, offset, size);
     } catch(Architecture::RegisterDescNotFound &) {
-      Log::errorln ("unknown register '" + *$2 + "'"); 
+      log::error << "unknown register '" << *$2 << "'" << endl; 
       YYERROR;      
     }
     delete $2;

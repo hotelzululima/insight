@@ -338,7 +338,7 @@ compute_constants (const Expr *e)
 #include <kernel/expressions/Operators.def>
 #undef UNARY_OP
 	    default:
-	      Log::fatal_error ("unknown UnaryOp code");
+	      log::fatal_error ("unknown UnaryOp code");
 	    }
 	  result = c;
 	}
@@ -360,7 +360,7 @@ compute_constants (const Expr *e)
 #include <kernel/expressions/Operators.def>
 #undef BINARY_OP
 	    default:
-	      Log::fatal_error ("unknown UnaryOp code");
+	      log::fatal_error ("unknown UnaryOp code");
 	    }
 	  result = c;
 	}

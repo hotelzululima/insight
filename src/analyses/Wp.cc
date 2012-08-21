@@ -84,8 +84,8 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
   if (stmt->is_Jump())
     return post;
 
-  if (! stmt->is_Assignment())
-    Log::fatal_error("weakest_precondition: unknown statement");
+  log::check ("weakest_precondition: unknown statement",
+	      stmt->is_Assignment());
 
   Assignment *assmt = dynamic_cast<Assignment *>(stmt);
 
@@ -171,8 +171,12 @@ Expr * weakest_precondition(Expr * post, StmtArrow *arrow)
     Expr::createImplies (arrow->get_condition(),
 			 weakest_precondition(post, arrow->get_stmt()));
   simplify_level0 (&phi);
-  Log::separator(2);
-  Log::print("Backward step on :\n" + phi->to_string () + "\n", 2);
+  if (log::debug_is_on)
+    {
+      log::debug << string (79 ,'*') << endl
+		 << "Backward step on :" << endl
+		 << phi->to_string () << endl;
+    }
   return phi;
 }
 
@@ -221,7 +225,7 @@ public:
       }
     catch (OptionNoValueExc &)
       {
-        Log::warning ("process: unable to extract target");
+        log::warning << "process: unable to extract target" << endl;
       }
   };
 
@@ -247,7 +251,7 @@ public:
           break;
         }
     if (!found_invariant)
-      Log::warning ("Loop without invariant");
+      log::warning << "Loop without invariant" << endl;
   };
 
   bool continue_run()
@@ -267,7 +271,7 @@ public:
 
   MicrocodeAddress current_path_get_target()
   {
-    Log::check("current_path_get_last_annotation: current path empty", current_path->size() > 0);
+    log::check("current_path_get_last_annotation: current path empty", current_path->size() > 0);
     return current_path->back().back()->extract_target().getValue();
   };
 
@@ -288,7 +292,7 @@ public:
               return subpath;
         }
     }
-    Log::warning ("current_path_extract: cannot find bounds");
+    log::warning << "current_path_extract: cannot find bounds" << endl;
     cout << start.pp() << "-" << end.pp() << endl;
     return subpath;
   };

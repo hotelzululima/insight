@@ -148,8 +148,8 @@ int GraphInterface<Node, Edge>::get_nb_predecessors(Node *n) const
 template<typename Edge>
 void dfr_pop(std::list< std::vector<Edge *> > & stack)
 {
-  Log::check("dfr_pop : stack empty", stack.size() > 0);
-  Log::check("dfr_pop : last list empty", stack.back().size() > 0);
+  log::check("dfr_pop : stack empty", stack.size() > 0);
+  log::check("dfr_pop : last list empty", stack.back().size() > 0);
   UNUSED Edge *last = NULL;
   stack.back().pop_back();
   while (stack.size() > 0 && stack.back().size() == 0)
@@ -197,7 +197,7 @@ void GraphInterface<Node, Edge>::depth_first_run(Node *start, GraphVisitor<Node,
     }
   catch (GetNodeNotFoundExc &)       // A priori, this check is useless, but, just in case.
     {
-      Log::fatal_error("depth_first_run: no node corresponding to target.");
+      log::fatal_error("depth_first_run: no node corresponding to target.");
     }
 
   // ------ Let's rock ----------------

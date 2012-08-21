@@ -368,7 +368,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
     }
 
   if (! stmt->is_Assignment ())
-    Log::fatal_error("slicing: run_backward : statement type unknown");
+    log::fatal_error("slicing: run_backward : statement type unknown");
 
   // The processing of assignment of form LV := RV (where LV is a left-value 
   // and RV is a term) is twofold:
@@ -517,8 +517,8 @@ DataDependency::update_from_program_point (ConcreteProgramPoint pp)
       StaticArrow *sa = dynamic_cast<StaticArrow *> (preds->at (i));
 
       if (sa == NULL)
-        Log::warningln ("Caution: I ignore all the dynamic arrows "
-			"for analysis");
+        log::warning << ("Caution: I ignore all the dynamic arrows "
+			 "for analysis") << endl;
       else
 	pending_arrows.push_back(sa);
     }
@@ -575,23 +575,24 @@ bool DataDependency::OnlySimpleSets() { return only_simple_sets_flag; };
 /*****************************************************************************/
 
 // \todo to be moved anywhere else
-void print_expressions(std::vector<Expr*> * expr_lst, int verb) {
-  Log::emph ("{ ", verb);
+void print_expressions(std::vector<Expr*> * expr_lst, int) {
+  log::debug << "{ ";
   for (int i=0; i<(int) expr_lst->size(); i++) {
-    Log::emph ((*expr_lst)[i]->to_string () + " ", verb);
+    log::debug << (*expr_lst)[i]->to_string () << " ";
     (*expr_lst)[i]->deref ();
   }
-  Log::emph (" }", verb);
+  log::debug << " }";
 }
 
 // \todo to be moved anywhere else
-void print_expressions(list<Expr*> * expr_lst, int verb) {
-  Log::emph ("{ ", verb);
+void print_expressions(list<Expr*> * expr_lst, int ) {
+  log::debug << "|";
+
   for (list<Expr*>::iterator i=expr_lst->begin(); i != expr_lst->end(); i++) {
-    Log::emph ((*i)->to_string (), verb);
+    log::debug << ((*i)->to_string ()) << " ";
     (*i)->deref ();
   }
-  Log::emph (" }", verb);
+  log::debug << " }";
 }
 
 
@@ -609,25 +610,31 @@ bool DataDependency::InverseStep()
 
   if (target_context == NULL)
     {
-      Log::fatal_error("DataDependency: DataDependency: should be a "
+      log::fatal_error("DataDependency: DataDependency: should be a "
 		       "context here");
     }
 
   DataDependencyLocalContext * new_context = 
     target_context->run_backward (the_arrow);
 
-  Log::separator(2);
-  Log::print ("Running backward arrow ", 2);
-  Log::emphln ("< " + the_arrow->pp() + " >", 2);
-  Log::println ("New context at pp " + the_arrow->get_origin().pp() + " :", 2);
-  Log::println (string ("\t") + (*(new_context->get_watched_lvalues()))->to_string (), 2);
-  Log::print ("Maximum dependencies at pp " + the_arrow->get_origin().pp() 
-	      + " : ", 2);
-
-  std::vector<Expr*> upper_set =
-    ConditionalSet::cs_possible_values((*(new_context->get_watched_lvalues())));
-  print_expressions(&upper_set,2);
-  Log::println("",2);
+  if (log::debug_is_on)
+    {
+      log::debug << log::separator << endl
+		 << "Running backward arrow < " << the_arrow->pp() << " >" 
+		 << endl
+		 << "New context at pp " << the_arrow->get_origin().pp() 
+		 << " :" << endl
+		 << "\t" 
+		 <<  (*(new_context->get_watched_lvalues()))->to_string () 
+		 << endl
+		 << "Maximum dependencies at pp " 
+		 << the_arrow->get_origin().pp()  << " : ";
+      
+      std::vector<Expr*> upper_set =
+	ConditionalSet::cs_possible_values((*(new_context->get_watched_lvalues())));
+      print_expressions(&upper_set,2);
+      log::debug << endl;
+    }
 
   ConcreteProgramPoint origin_pp (the_arrow->get_origin());
   DataDependencyLocalContext *origin_context = get_local_context (origin_pp);
@@ -659,7 +666,7 @@ DataDependency::ComputeFixpoint (int max_step_nb)
     InverseStep ();
 
   if (max_step_nb > 0) 
-    Log::emphln ("DataDependency: Fixpoint Reached!", 2);
+    log::debug << "DataDependency: Fixpoint Reached!" << endl;
 }
 
 Expr * 
@@ -717,52 +724,54 @@ DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
 
   vector<StmtArrow*> result;
 
-  Log::separator(2);
-  Log::println ( "Dependencies:", 2 );
-
-  for (int n=0; n<(int) nodes->size(); n++) 
+  if (log::debug_is_on)
     {
-      Log::print ( (*nodes)[n]->get_loc().pp(), 2 );
-      Log::print ( " <== ", 2 );
-      std::vector<Expr*> deps = 
-	invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
-      print_expressions(& deps, 2);
-      Log::println("", 2);
+      log::debug << log::separator << endl
+		 << "Dependencies:" << endl;
 
-      std::vector<LValue*> lv_deps;
-
-      std::vector<StmtArrow *> * succs = (*nodes)[n]->get_successors();
-      for (int s=0; s<(int) succs->size(); s++) 
+      for (int n=0; n<(int) nodes->size(); n++) 
 	{
-	  if (! (*succs)[s]->get_stmt()->is_Assignment()) 
-	    continue;
+	  log::debug << (*nodes)[n]->get_loc().pp() << " <== ";
+	  std::vector<Expr*> deps = 
+	    invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
+	  print_expressions(& deps, 2);
+	  log::debug << endl;
 
-	  LValue * the_lv = ((Assignment *) (*succs)[s]->get_stmt())->get_lval();
-	  Option<MicrocodeAddress> tgtopt = (*succs)[s]->extract_target();
-	  if (!tgtopt.hasValue()) 
-	    continue;
+	  std::vector<LValue*> lv_deps;
 
-	  MicrocodeAddress addr = tgtopt.getValue();
-	  std::vector<Expr*> tgt_deps = 
-	    invfix.get_simple_dependencies (addr, max_step_nb);
-	  bool influence = false;
-	  for (int d=0; d<(int) tgt_deps.size(); d++) 
+	  std::vector<StmtArrow *> * succs = (*nodes)[n]->get_successors();
+	  for (int s=0; s<(int) succs->size(); s++) 
 	    {
-	      if ((tgt_deps[d]->contains(the_lv)) ||                    // Case 1: one dependency contains the modified lv
-		  (tgt_deps[d]->is_MemCell() && the_lv->is_MemCell()))  // Case 2: the modified lv is a memory reference and there is a memory reference in the dependency (brutal!)
-		{ influence = true; break; }
-	    }
-	  for (int d=0; d<(int) tgt_deps.size(); d++) 
-	    tgt_deps[d]->deref ();
-	  if (influence) {
-	    Log::emphln ((*succs)[s]->pp(), 2);
-	    result.push_back((*succs)[s]);
-	  }
-	  else
-	    Log::println ( (*succs)[s]->pp(), 2);
-	}	
+	      if (! (*succs)[s]->get_stmt()->is_Assignment()) 
+		continue;
+
+	      LValue * the_lv = ((Assignment *) (*succs)[s]->get_stmt())->get_lval();
+	      Option<MicrocodeAddress> tgtopt = (*succs)[s]->extract_target();
+	      if (!tgtopt.hasValue()) 
+		continue;
+
+	      MicrocodeAddress addr = tgtopt.getValue();
+	      std::vector<Expr*> tgt_deps = 
+		invfix.get_simple_dependencies (addr, max_step_nb);
+	      bool influence = false;
+	      for (int d=0; d<(int) tgt_deps.size(); d++) 
+		{
+		  if ((tgt_deps[d]->contains(the_lv)) ||                    // Case 1: one dependency contains the modified lv
+		      (tgt_deps[d]->is_MemCell() && the_lv->is_MemCell()))  // Case 2: the modified lv is a memory reference and there is a memory reference in the dependency (brutal!)
+		    { influence = true; break; }
+		}
+	      for (int d=0; d<(int) tgt_deps.size(); d++) 
+		tgt_deps[d]->deref ();
+	      if (influence) {
+		log::debug <<  (*succs)[s]->pp() << endl;
+		result.push_back((*succs)[s]);
+	      }
+	      else
+		log::debug << (*succs)[s]->pp() << endl;
+	    }	
+	}
+      log::debug << log::separator << endl;
     }
-  Log::separator(2);
 
   return result;
 }

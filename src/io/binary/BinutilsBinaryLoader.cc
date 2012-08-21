@@ -208,9 +208,10 @@ BinutilsBinaryLoader::get_memory() const
 	      ConcreteValue v = memory->get (current, 1,
 					     Architecture::BigEndian);
 	      if (! (v == val))
-		Log::warningln ("address " + current.to_string()
-				+ " is reassigned :"
-				+ v.to_string() + " -> " + val.to_string(), 2);
+		log::warning << "address " << current.to_string()
+			     << " is reassigned :"
+			     << v.to_string() << " -> " << val.to_string()
+			     << std::endl;
 	    }
           memory->put(current, ConcreteValue(8, *ptr), Architecture::BigEndian);
         }

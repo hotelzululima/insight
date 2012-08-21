@@ -58,11 +58,11 @@ public:
 
   void add (const ConfigTable &other);
 
-  std::string get (const std::string &name) const;
+  std::string get (const std::string &name, const std::string &def = "") const;
 
-  long long get_integer (const std::string &name) const;
+  long long get_integer (const std::string &name, long long def = 0) const;
 
-  bool get_boolean (const std::string &name) const;
+  bool get_boolean (const std::string &name, bool def = false) const;
 
   void save (std::ostream &out) const;
 

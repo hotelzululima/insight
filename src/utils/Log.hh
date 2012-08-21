@@ -30,57 +30,60 @@
 #ifndef UTILS_LOG_HH
 #define UTILS_LOG_HH
 
-#include <set>
-#include <kernel/Architecture.hh>
+# include <iostream>
+# include <utils/ConfigTable.hh>
+# include <config.h>
 
-#include "config.h"
-
-class Log
+namespace log 
 {
-public:
-
   class Listener {
   public:
     virtual ~Listener () { }
-    virtual void fatal_error (std::string) { }
-
-    virtual void error (std::string, int) { }
-    virtual void warning (std::string, int) { }
-    virtual void print (std::string, int) { } 
-    virtual void separator (int) { } 
-    virtual void emph (std::string, int) { }
+    virtual void error (const std::string &) { }
+    virtual void warning (const std::string &) { }
+    virtual void display (const std::string &) { } 
+    virtual void debug (const std::string &, int) { } 
   };
 
-  static Listener *STD_STREAM_LOG;
 
-  static void add_listener (Listener *listener, bool once = true);
-  static void remove_listener (Listener *listener);
+  extern bool debug_is_on;
 
-  static void set_verbose_level (int level);
-  static void fatal_error (std::string msg) NORETURN;
-  static void check (std::string msg, bool cond);
+  /*
+   * Configuration properties:
+   * debug.enabled:
+   *   debug_is_on variable is assign the value of this property
+   *
+   * debug.stdio.enabled:
+   *   if true then a default listener based on standard streams is set using
+   *   add_listener.
+   *
+   * debug.stdio.debug_is_cerr:
+   *   if true then std::cerr stream is used for the debug stream instead of 
+   *   std::cout.
+   * 
+   * debug.stdio.debugmaxlevel:
+   *   set the maximal output level for debug stream; if the maxlevel is not 
+   *   set or is negative then no limit is positioned.
+   */
+  extern void init (const ConfigTable &cfg);
+  extern void terminate ();
 
-  static void error (std::string msg, int verbose = 0);
-  static void errorln (std::string msg, int verbose = 0);
+  extern void add_listener (Listener *listener, bool once = true);
+  extern void remove_listener (Listener *listener);
 
-  static void warning (std::string msg, int verbose = 0);
-  static void warningln (std::string msg, int verbose = 0);
+  extern void inc_debug_level ();
+  extern void dec_debug_level ();
+  extern void start_debug_block (const std::string &msg);
+  extern void end_debug_block ();
 
-  static void print (std::string msg, int verbose = 0);
-  static void println (std::string msg, int verbose = 0);
+  extern void fatal_error (const std::string &msg) NORETURN; // for compat
+  extern void check (const std::string &msg, bool cond); // for compat
+  extern const std::string separator;
 
-  static void emph (std::string str, int verbose = 0);
-  static void emphln (std::string str, int verbose = 0);
-
-  static void separator (int verbose = 0);
-
-private:
-  typedef std::multiset<Listener *> listener_set;
-  typedef listener_set::iterator listener_iterator; 
-
-  static listener_set listeners;
-
-  static int verbose_level;  
+  extern std::ostream error;
+  extern std::ostream warning;
+  extern std::ostream display;
+  extern std::ostream debug;
 };
 
 #endif /* ! UTILS_LOG_HH */

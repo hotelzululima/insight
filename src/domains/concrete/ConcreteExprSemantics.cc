@@ -254,7 +254,7 @@ ConcreteExprSemantics::BV_OP_DIV_U_eval(ConcreteValue v1, ConcreteValue v2,
   // \todo semantique de unsigned
   if (v2.get() == 0)
     {
-      Log::warning ("division by 0");
+      log::warning << "division by 0" << std::endl;
       val = 0;
     }
   else
@@ -275,7 +275,7 @@ ConcreteExprSemantics::BV_OP_DIV_S_eval(ConcreteValue v1, ConcreteValue v2,
 
   if (v2.get() == 0)
     {
-      Log::warning ("division by 0");
+      log::warning << "division by 0" << std::endl;
       val = 0;
     }
   else

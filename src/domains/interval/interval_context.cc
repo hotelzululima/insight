@@ -52,7 +52,7 @@ IntervalContext::merge(AbstractContext<INTERVAL_CLASSES> *other)
 
   if (ctx == NULL)
     {
-      Log::fatal_error("Interval context: merge with other kind of context");
+      log::fatal_error("Interval context: merge with other kind of context");
     }
 
   return ctx->memory->merge(*other->memory);

@@ -62,7 +62,7 @@ eval_unary_expr(UnaryApp *ua)
 				       ua->get_bv_offset (),
 				       ua->get_bv_size ());
     default:
-      Log::fatal_error("Context::eval Unknown unary operator");
+      log::fatal_error("Context::eval Unknown unary operator");
     }
 };
 
@@ -88,7 +88,7 @@ eval_ternary_expr(TernaryApp *ta)
       APPLY_TERNARY(EXTRACT_eval);
     
     default:
-      Log::fatal_error("Context::eval Unknown ternary operator");
+      log::fatal_error("Context::eval Unknown ternary operator");
     }
 
 #undef APPLY_TERNARY
@@ -190,7 +190,7 @@ eval_binary_expr(BinaryApp *ba)
 
 
     default:
-      Log::fatal_error("Context::eval Unknown binary operator");
+      log::fatal_error("Context::eval Unknown binary operator");
     }
 
 #undef APPLY_BINARY
@@ -206,7 +206,7 @@ eval(const Expr *e)
   Value result;
 
   if (e->is_Variable())
-    Log::fatal_error("AbstractContext<>::eval(): "
+    log::fatal_error("AbstractContext<>::eval(): "
 		     "Variable are not supported by interpreter");
   else if (e->is_Constant())
     result = Value((Constant *) e);
@@ -237,7 +237,7 @@ eval(const Expr *e)
     }
   else
     {
-      Log::fatal_error("Context::eval Expression Type unknown");
+      log::fatal_error("Context::eval Expression Type unknown");
     }
   return result;
 };
@@ -349,7 +349,7 @@ step(Arrow pa)
   //! Retrieves the current context
   Option<AbstractContext<TEMPLATE_ARGS> *> ctxt_opt = get_current_context(pp);
   if (!ctxt_opt.hasValue())
-    Log::fatal_error("step: trying to step an arrow without initial context");
+    log::fatal_error("step: trying to step an arrow without initial context");
   AbstractContext<TEMPLATE_ARGS> *context = ctxt_opt.getValue();
 
   //! Splits the context according to the condition
@@ -362,7 +362,8 @@ step(Arrow pa)
   if (!splited_ctxt_pair.first.hasValue() &&
       !splited_ctxt_pair.second.hasValue())
     {
-      Log::warningln ("step: unable to extract bool from the condition");
+      log::warning << "step: unable to extract bool from the condition" 
+		   << std::endl;
       pending_arrow_set_status(pp, arr, PAS_UNABLE_TO_EVAL_CONDITION);
       return SR_UNABLE_TO_EVALUATE_CONDITION;
     }
@@ -440,7 +441,7 @@ step(Arrow pa)
     {
       delete new_context;
       delete_pending_arrow(pp, arr);
-      Log::warningln ("step: abnormal result : target not found !");
+      log::warning << "step: abnormal result : target not found !" << std::endl;
       return SR_TARGET_NOT_FOUND;
     }
 
@@ -602,7 +603,7 @@ generic_step()
   if (pending_arrows.size() == 0) return false;
   PendingArrow<TEMPLATE_ARGS> pa = pending_arrows.front();
   if (step(pa) == SR_TARGET_NOT_FOUND)
-    Log::fatal_error("The end");
+    log::fatal_error("The end");
   return true;
 };
 

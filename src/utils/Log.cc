@@ -27,171 +27,264 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
+#include <set>
 #include <cassert>
+#include <list>
 #include <cstdlib>
-#include <iostream>
-#include <unistd.h>
 
 #include "Log.hh"
 
+#ifdef NDEBUG
+# define DEBUG_IS_ON false
+#else
+# define DEBUG_IS_ON debug
+#endif
+
 using namespace std;
 
-class StdStreamListener : public Log::Listener
+typedef std::multiset<log::Listener *> listener_set;
+typedef listener_set::iterator listener_iterator; 
+typedef void (*listener_callback)(const std::string &msg);
+
+class StdStreamListener : public log::Listener
 {
-  void fatal_error (std::string msg) { 
-    cerr << "FATAL ERROR : " << msg << endl;
+private:
+  int max_debug_level;
+  ostream *out;
+
+public: 
+  StdStreamListener () : max_debug_level(-1), out (&std::cout) { }
+
+  ~StdStreamListener () { }
+
+  void set_max_level (int level) { 
+    max_debug_level = level; 
   }
 
-  void error (std::string msg, int) { 
-    cerr << msg;
+  void set_out (ostream &o) { 
+    out = &o;
   }
 
-  void warning (std::string msg, int verbose) { 
-    cout << "LOG["<< verbose << "]: " << msg << endl;
+  void error (const std::string &msg) { 
+    cerr << msg << endl;
+  }
+
+  void warning (const std::string &msg) { 
+    cout << msg << endl;
     cout.flush ();
   }
 
-  void print (std::string msg, int) { 
-    cout << msg;
+  void display (const std::string &msg) { 
+    cout << msg << endl;
     cout.flush ();    
   } 
 
-  void separator (int) { 
-    cout << string (80, '=') << endl;
-    cout.flush ();
+  void debug (const std::string &msg, int level) { 
+    if (max_debug_level < 0 || level <= max_debug_level)
+      {
+	*out << msg << endl;
+	out->flush ();
+      }
   } 
-
-  void emph (std::string str, int) { 
-    if (isatty(1))
-      cout << "\033[32m" << str << "\033[0m";
-    else
-      cout << str;
-    cout.flush ();
-  }
 };
 
-			/* --------------- */
+static StdStreamListener *STDLISTENER = NULL;
 
-Log::listener_set Log::listeners;
-
-int Log::verbose_level = 1;
-
-Log::Listener *Log::STD_STREAM_LOG = new StdStreamListener;
-
-			/* --------------- */
+static listener_set LISTENERS;
+static int debug_level = 0;
+static list<string> debug_blocks;
+bool log::debug_is_on = DEBUG_IS_ON;
 
 void 
-Log::add_listener (Listener *listener, bool once)
+log::init (const ConfigTable &cfg)
+{
+  debug_is_on = cfg.get_boolean ("debug.enabled");
+
+  if (cfg.get_boolean ("debug.stdio.enabled"))
+    {
+      STDLISTENER = new StdStreamListener ();
+      if (cfg.get_boolean ("debug.stdio.debug_is_cerr"))
+      	STDLISTENER->set_out (cerr);
+      
+      int maxlevel =
+	cfg.get_integer ("debug.stdio.debugmaxlevel", -1);
+      STDLISTENER->set_max_level (maxlevel);
+      
+      log::add_listener (STDLISTENER);
+    }
+}
+
+void 
+log::terminate ()
+{
+  if (STDLISTENER != NULL)
+    delete STDLISTENER;
+}
+
+void
+log::add_listener (Listener *listener, bool once)
 {
   assert (listener != NULL);
-  if (listeners.find (listener) != listeners.end () && once)
+  if (LISTENERS.find (listener) != LISTENERS.end () && once)
     return;
 
-  listeners.insert (listener);
+  LISTENERS.insert (listener);
 }
 
 void 
-Log::remove_listener (Listener *listener)
+log::remove_listener (Listener *listener)
 {
   assert (listener != NULL);
-  listeners.erase (listener);
+  LISTENERS.erase (listener);
+}
+
+
+void 
+log::inc_debug_level ()
+{
+  debug_level++;
 }
 
 void 
-Log::set_verbose_level (int level)
+log::dec_debug_level ()
 {
-  verbose_level = level;
+  assert (debug_level > 0);
+  debug_level--;
 }
 
 void 
-Log::fatal_error (std::string msg) 
+log::start_debug_block (const string &msg)
 {
-  for (listener_iterator i = listeners.begin (); i != listeners.end (); i++)
-    (*i)->fatal_error (msg);
+  debug_blocks.push_front (msg);
+  log::debug << msg << endl;
+  inc_debug_level ();
+}
+
+void 
+log::end_debug_block ()
+{
+  dec_debug_level ();
+  string msg = debug_blocks.front ();
+  debug_blocks.pop_front ();
+  log::debug << msg << " terminated " << endl;
+}
+
+static void
+s_log_error (const string &msg)
+{
+  for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
+    (*i)->error (msg);
+}
+
+static void
+s_log_warning (const string &msg)
+{
+  for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
+    (*i)->warning (msg);
+}
+
+static void
+s_log_display (const string &msg)
+{
+  for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
+    (*i)->display (msg);
+}
+
+static void
+s_log_debug (const string &msg)
+{
+  if (! log::debug_is_on)
+    return;
+
+  for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
+    (*i)->debug (msg, debug_level);
+}
+
+/*
+ *
+ * OSTREAMS for logging
+ *
+ */
+class filter : public std::streambuf
+{
+public:
+  static const size_t BUFF_SIZE = 1024;
+
+  filter (listener_callback cb) 
+    : streambuf (), out_buf (new char[BUFF_SIZE + 1]), line (), callback (cb)
+				  
+  {
+    
+    this->setg (0, 0, 0);
+    this->setp (out_buf, out_buf + BUFF_SIZE - 1);
+  }
+
+  ~filter() 
+  {
+    delete [] out_buf;
+  }
+
+protected:
+  virtual int_type overflow (int_type c) {
+    char *ibegin = this->pbase ();
+    char *iend = this->pptr();
+
+    setp (out_buf, out_buf + BUFF_SIZE + 1);
+
+    for (char *i = ibegin; i != iend; i++)
+      {
+	if (*i == '\n')
+	  {
+	    callback (line);
+	    line = string ();
+	  }
+	else
+	  line += *i;
+      }
+    if ( ! traits_type::eq_int_type (c, traits_type::eof ()))
+      {
+	if (traits_type::to_char_type(c) == '\n')
+	  {
+	    callback (line);
+	    line = string ();
+	  }
+	else
+	  {
+	    line += traits_type::to_char_type(c);
+	  }
+      }
+
+    return traits_type::not_eof(c);
+  }
+
+  virtual int_type sync() {
+    return traits_type::eq_int_type (this->overflow (traits_type::eof ()),
+				     traits_type::eof ()) ? -1 : 0;
+  }
+
+private:
+  char *out_buf;
+  string line;
+  listener_callback callback;
+};
+
+std::ostream log::error (new filter (&s_log_error));
+std::ostream log::warning (new filter (&s_log_warning));
+std::ostream log::display (new filter (&s_log_display));
+std::ostream log::debug (new filter (&s_log_debug));
+
+void 
+log::fatal_error (const std::string &msg)
+{
+  log::error << msg << endl;
   abort ();
 }
 
 void 
-Log::check (std::string msg, bool cond)
+log::check (const std::string &msg, bool cond)
 {
-  if (cond) 
-    return;
-  fatal_error (string ("ASSERTION FAILED") + msg);
+  if (! cond)
+    log::fatal_error (msg);
 }
 
-void 
-Log::error (std::string msg, int verbose)
-{
-  if (verbose_level < verbose) 
-    return;
-
-  for (listener_iterator i = listeners.begin (); i != listeners.end (); i++)
-    (*i)->error  (msg, verbose);
-}
-
-void 
-Log::errorln (std::string msg, int verbose)
-{
-  error (msg + "\n", verbose);
-}
-
-
-void 
-Log::warning (std::string msg, int verbose)
-{
-  if (verbose_level < verbose) 
-    return;
-
-  for (listener_iterator i = listeners.begin (); i != listeners.end (); i++)
-    (*i)->warning  (msg, verbose);
-}
-
-void 
-Log::warningln (std::string msg, int verbose)
-{
-  warning (msg + "\n", verbose);
-}
-
-void 
-Log::print (std::string msg, int verbose)
-{
-  if (verbose_level < verbose) 
-    return;
-
-  for (listener_iterator i = listeners.begin (); i != listeners.end (); i++)
-    (*i)->print (msg, verbose);
-}
-
-void 
-Log::println (std::string msg, int verbose)
-{
-  print (msg + "\n", verbose);
-}
-
-void 
-Log::emph (std::string str, int verbose)
-{
-  if (verbose_level < verbose) 
-    return;
-
-  for (listener_iterator i = listeners.begin (); i != listeners.end (); i++)
-    (*i)->emph (str, verbose);
-}
-
-void 
-Log::emphln (std::string str, int verbose)
-{
-  emph (str + "\n", verbose);
-}
-
-void 
-Log::separator(int verbose)
-{
-  if (verbose_level < verbose) 
-    return;
-
-  for (listener_iterator i = listeners.begin (); i != listeners.end (); i++)
-    (*i)->separator (verbose);
-}
-
+const std::string log::separator = string (80, '=');

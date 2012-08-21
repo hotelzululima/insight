@@ -32,6 +32,7 @@
 
 #include <io/expressions/smtlib-writer.hh>
 #include <kernel/expressions/exprutils.hh>
+#include <utils/Log.hh"
 
 #include <tr1/unordered_set>
 #include <ext/stdio_filebuf.h>
@@ -100,14 +101,7 @@ ExprProcessSolver::check_sat (const Expr *e)
     {
       declare_variable (e);
 
-      if(0)
-	{
-	  *out << "(assert ";       
-	  smtlib_writer (*out, e, MEMORY_VAR, 
-			 8 * mca->get_reference_arch ()->address_range);
-	  *out << ") " << endl;
-	}
-      else
+      if (log::debug_is_on)
 	{
 	  ostringstream oss;
 
@@ -115,8 +109,15 @@ ExprProcessSolver::check_sat (const Expr *e)
 	  smtlib_writer (oss, e, MEMORY_VAR, 
 			 8 * mca->get_reference_arch ()->address_range);
 	  oss << ") " << endl;
-	  cerr << "SMT command " << oss.str () << endl;
+	  log::debug << "SMT command " << oss.str () << endl;
 	  *out << oss.str () << endl;
+	}
+      else
+	{
+	  *out << "(assert "; 	  
+	  smtlib_writer (*out, e, MEMORY_VAR, 
+			 8 * mca->get_reference_arch ()->address_range);
+	  *out << ") " << endl;
 	}
 
       if (read_status ())
@@ -152,7 +153,7 @@ ExprProcessSolver::exec_command (const std::string &s)
 string 
 ExprProcessSolver::exec_command (const char *s)
 {
-  cerr << "SMT command " << s << endl;
+  log::debug << "SMT command " << s << endl;
   *out << s << endl;
   out->flush ();
 
@@ -162,7 +163,7 @@ ExprProcessSolver::exec_command (const char *s)
 bool 
 ExprProcessSolver::send_command (const char *s)
 {
-  cerr << "SMT command " << s << endl;
+  log::debug << "SMT command " << s << endl;
   *out << s << endl;
   out->flush ();
 

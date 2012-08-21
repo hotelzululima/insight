@@ -54,8 +54,11 @@ using namespace std;
 static void 
 s_simulate (const char *filename)
 {
-  insight::init ();
-  Log::add_listener (Log::STD_STREAM_LOG);
+  ConfigTable ct;
+  ct.set ("debug.enabled", false);
+  ct.set ("debug.stdio.enabled", true);
+
+  insight::init (ct);
 
   BinaryLoader *loader = new BinutilsBinaryLoader (filename);
   ConcreteMemory *memory = loader->get_memory();
@@ -63,7 +66,7 @@ s_simulate (const char *filename)
   Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
   ConcreteAddress start = loader->get_entrypoint ();
 
-  cout << "Entry-point := " << start << endl;
+  log::display << "Entry-point := " << start << endl;
   Microcode *prg = Build_Microcode (&arch, memory, start);
   ConcreteExecContext *ctxt = new ConcreteExecContext (memory, decoder, prg);
   ctxt->init (ConcreteContext::empty_context ());
@@ -73,7 +76,7 @@ s_simulate (const char *filename)
 
   prg->sort ();
 
-  cout << "Microcode program : " << endl
+  log::display << "Microcode program : " << endl
        << prg->pp () << endl;
 
   for (;;)
@@ -86,8 +89,8 @@ s_simulate (const char *filename)
 	break;
 
       last_context =  ctxt->get_current_context ().getValue ();
-      last_context->memory->ConcreteMemory::output_text (cout);
-      cout << endl;
+      last_context->memory->ConcreteMemory::output_text (log::display);
+      log::display << endl;
 
       ATF_REQUIRE (simulation_can_continue);
       ATF_REQUIRE (ctxt->pending_arrows.size () > 0);

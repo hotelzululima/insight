@@ -96,19 +96,28 @@ ConfigTable::add (const ConfigTable &other)
 }
 
 std::string 
-ConfigTable::get (const std::string &name) const
+ConfigTable::get (const std::string &name, const std::string &def) const
 {
+  std::string result;
   const_iterator i = table.find (name);
 
   if (i == table.end ())
-    return string ();
-  return i->second;
+    result = def;
+  else 
+    result = i->second;
+
+  return result;
 }
 
 long long 
-ConfigTable::get_integer (const std::string &name) const
+ConfigTable::get_integer (const std::string &name, long long def) const
 {
-  long long result = strtoll (get (name).c_str (), NULL, 0);
+  long long result;
+
+  if (has (name))
+    result = strtoll (get (name).c_str (), NULL, 0);
+  else
+    result = def;
   
   return result;
 }
@@ -128,12 +137,20 @@ eq_nocase (const string &s1, const string &s2)
 }
 
 bool 
-ConfigTable::get_boolean (const std::string &name) const
+ConfigTable::get_boolean (const std::string &name, bool def) const
 {
-  string val = get (name);
-  if (eq_nocase (name, "true") || get_integer (name) != 0)
-    return true;
-  return false;
+  bool result;
+
+  if (has (name))
+    {
+      string val = get (name);
+      result = ((eq_nocase (val, "true") || get_integer (name) != 0));
+    }
+  else
+    {
+      result = def;
+    }
+  return result;
 }
 
 void 

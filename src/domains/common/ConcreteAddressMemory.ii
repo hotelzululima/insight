@@ -121,7 +121,7 @@ void ConcreteAddressMemory<Value>::put(const ConcreteAddress &a,
 
   if (bit_size & 7)
     {
-      Log::fatal_error("ConcreteAddressMemory::put():"
+      log::fatal_error("ConcreteAddressMemory::put():"
                        " size of value is not a multiple of 8");
     }
 
@@ -266,7 +266,7 @@ template <class Value>
 ConcreteAddress ConcreteAddressMemory<Value>::ValueIterator::get_address()
 {
   if (p == mem->memory.end())
-    Log::fatal_error("ValueIterator::get_address(): "
+    log::fatal_error("ValueIterator::get_address(): "
 	"attempt to retrieve an element after the end");
   return p->first;
 }
@@ -275,7 +275,7 @@ template <class Value>
 Value ConcreteAddressMemory<Value>::ValueIterator::get_value()
 {
   if (p == mem->memory.end())
-    Log::fatal_error("ValueIterator::get_value(): "
+    log::fatal_error("ValueIterator::get_value(): "
 	"attempt to retrieve an element after the end");
   return p->second.mvalue->value;
 }
@@ -285,7 +285,7 @@ Architecture::endianness_t
 ConcreteAddressMemory<Value>::ValueIterator::get_endianness()
 {
   if (p == mem->memory.end())
-    Log::fatal_error("ValueIterator::get_endianness(): "
+    log::fatal_error("ValueIterator::get_endianness(): "
 	"attempt to retrieve an element after the end");
   return p->second.mvalue->endianness;
 }
