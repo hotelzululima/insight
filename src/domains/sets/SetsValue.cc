@@ -98,7 +98,7 @@ SetsValue *SetsValue::clone() const
   return new SetsValue(*this);
 }
 
-Option<ConcreteValue> SetsValue::extract_value()
+Option<ConcreteValue> SetsValue::extract_value() const
 {
 
   if (the_set.size() == 1)
@@ -203,17 +203,13 @@ Option<bool> SetsValue::to_bool() const
   return Option<bool>(result);
 }
 
-Option<MicrocodeAddress> SetsValue::to_MicrocodeAddress()
+Option<MicrocodeAddress> SetsValue::to_MicrocodeAddress() const
 {
-  try
-    {
-      ConcreteValue addr = this->extract_value().getValue();
-      return addr.to_MicrocodeAddress();
-    }
-  catch (OptionNoValueExc &)
-    {
-      return Option<MicrocodeAddress> ();
-    }
+  Option<ConcreteValue> addr = this->extract_value();
+  if (addr.hasValue ())
+    return addr.getValue().to_MicrocodeAddress();
+  else
+    return MicrocodeAddress ();
 }
 
 bool SetsValue::operator==(const SetsValue &other) const

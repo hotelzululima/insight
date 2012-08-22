@@ -85,7 +85,7 @@ ConcreteValue::output_text(std::ostream &os) const
   os << (uint64_t)this->value << dec << "{" << this->size << "}";
 }
 
-MicrocodeAddress 
+Option<MicrocodeAddress>
 ConcreteValue::to_MicrocodeAddress () const
 {
   return MicrocodeAddress (get ());

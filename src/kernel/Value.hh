@@ -33,6 +33,7 @@
 
 #include <utils/Object.hh>
 #include <utils/Option.hh>
+#include <kernel/microcode/MicrocodeAddress.hh>
 
 /** \brief Abstract class to represent values stored in memory.
  *
@@ -56,6 +57,7 @@ public:
   int get_size() const;
 
   virtual Option<bool> to_bool () const  = 0;
+  virtual Option<MicrocodeAddress> to_MicrocodeAddress () const  = 0;
 };
 
 #endif /* KERNEL_VALUE_HH */

@@ -96,11 +96,11 @@ public:
   /*! \brief Clone the set */
   virtual SetsValue *clone() const;
 
-  Option<MicrocodeAddress> to_MicrocodeAddress();
+  Option<MicrocodeAddress> to_MicrocodeAddress() const;
 
   /*! \brief returns the concrete value if the set is actually a
       singleton, otherwise returns None */
-  Option<ConcreteValue> extract_value();
+  Option<ConcreteValue> extract_value() const;
 
   /*! \brief Return the default value. This is used when some read access is done to an
     unknown value */

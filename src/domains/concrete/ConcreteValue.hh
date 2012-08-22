@@ -75,7 +75,7 @@ public:
 
   void output_text(std::ostream &out) const;
 
-  MicrocodeAddress to_MicrocodeAddress () const;
+  Option<MicrocodeAddress> to_MicrocodeAddress () const;
 
   Option<bool> to_bool () const;
 };

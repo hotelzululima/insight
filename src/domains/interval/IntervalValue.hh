@@ -92,7 +92,7 @@ public:
   virtual Option<bool> to_bool() const;
 
   Option<MicrocodeAddress>
-  to_MicrocodeAddress()
+  to_MicrocodeAddress() const
   {
     return Option<MicrocodeAddress>();
   }
