@@ -32,6 +32,7 @@
 #define KERNEL_VALUE_HH
 
 #include <utils/Object.hh>
+#include <utils/Option.hh>
 
 /** \brief Abstract class to represent values stored in memory.
  *
@@ -53,6 +54,8 @@ public:
 
   /** \brief Get the value size in bits. */
   int get_size() const;
+
+  virtual Option<bool> to_bool () const  = 0;
 };
 
 #endif /* KERNEL_VALUE_HH */

@@ -41,7 +41,7 @@
 #include <kernel/Microcode.hh>
 #include <kernel/microcode/MicrocodeStore.hh>
 #include <utils/map-helpers.hh>
-#include <utils/option.hh>
+#include <utils/Option.hh>
 
 #define TEMPLATE \
   template <typename Address,       \

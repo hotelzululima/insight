@@ -38,7 +38,7 @@
 #include <domains/sets/SetsMemory.hh>
 #include <domains/sets/SetsValue.hh>
 #include <kernel/Architecture.hh>
-#include <utils/option.hh>
+#include <utils/Option.hh>
 
 #include <list>
 #include <map>

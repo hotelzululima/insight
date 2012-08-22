@@ -34,7 +34,7 @@
 #include <string>
 #include <stdexcept>
 
-#include <utils/option.hh>
+#include <utils/Option.hh>
 #include <utils/tools.hh>
 
 #include <kernel/Architecture.hh>

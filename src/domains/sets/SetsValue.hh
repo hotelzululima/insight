@@ -40,7 +40,7 @@
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
 
-#include <utils/option.hh>
+#include <utils/Option.hh>
 
 /*****************************************************************************/
 

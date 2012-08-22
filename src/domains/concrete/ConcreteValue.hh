@@ -38,7 +38,7 @@
 #include <kernel/Value.hh>
 #include <kernel/microcode/MicrocodeAddress.hh>
 
-#include <utils/option.hh>
+#include <utils/Option.hh>
 
 /** \brief This is the base word for memory and register contents.  */
 class ConcreteValue : public Value

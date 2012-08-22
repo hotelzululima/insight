@@ -32,7 +32,7 @@
 
 #include <string>
 
-#include <utils/option.hh>
+#include <utils/Option.hh>
 #include <utils/ConfigTable.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/expressions/Operators.hh>

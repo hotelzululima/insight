@@ -31,7 +31,7 @@ utils_source = \
 	utils/bv-manip.hh	\
 	utils/infrastructure.hh	\
 	utils/map-helpers.hh	\
-	utils/option.hh		\
+	utils/Option.hh		\
 	utils/path.hh		\
 	utils/path.ii		\
 	utils/tools.cc		\

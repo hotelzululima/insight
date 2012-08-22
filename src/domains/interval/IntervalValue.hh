@@ -32,7 +32,7 @@
 
 #include <string>
 
-#include <utils/option.hh>
+#include <utils/Option.hh>
 
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>

@@ -37,7 +37,7 @@
 #include <vector>
 #include <algorithm>
 #include <decoders/DecoderFactory.hh>
-#include <utils/option.hh>
+#include <utils/Option.hh>
 #include <utils/tools.hh>
 
 using namespace std;
