@@ -33,6 +33,8 @@
 
 #include <kernel/Architecture.hh>
 
+class UndefinedValueException;
+
 /** \brief Abstract class to represent the memory of a program.
  *
  * The memory is architecture agnostic, it is just a container that
@@ -47,20 +49,26 @@ template <typename Address, typename Value>
 class Memory : public Object
 {
 public:
-
   Memory();
   Memory(const Memory<Address, Value> &);
 
   virtual ~Memory() {};
 
   virtual Value get(const Address &, int, Architecture::endianness_t) const
-    throw (Architecture::UndefinedValue) = 0;
+    throw (UndefinedValueException) = 0;
 
   virtual void put(const Address &, const Value &,
 		   Architecture::endianness_t) = 0;
 
   /** \brief Tells whether a memory cell has been initialized before or not. */
   virtual bool is_defined(const Address &) const = 0;
+};
+
+class UndefinedValueException : public std::runtime_error
+{
+public:
+  UndefinedValueException (const std::string &where) :
+    std::runtime_error(": Undefined value at " + where) { }
 };
 
 #include "Memory.ii"

@@ -138,7 +138,7 @@ public:
   /*! \brief Construct a clone of the current object. Note that this
    *  class being abstract, it cannot be instanciated and do not
    *  have constructor. */
-  virtual AbstractContext *clone() = 0;
+  virtual AbstractContext *clone () = 0;
 
   /*! \brief Pretty printing */
   virtual std::string pp();

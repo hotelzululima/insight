@@ -151,15 +151,6 @@ public:
       std::runtime_error(": " + regname + ": register not found") { }
   };
 
-  /** \brief Exception thrown on a read attempt on an undefined memory
-   *  cell or register. */
-  class UndefinedValue : public std::runtime_error
-  {
-  public:
-    UndefinedValue(const std::string &where) :
-      std::runtime_error(": Undefined value at " + where) { }
-  };
-
   /******************** Architecture Methods ***********************/
   virtual ~Architecture();
 

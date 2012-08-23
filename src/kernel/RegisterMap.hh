@@ -33,7 +33,7 @@
 
 #include <tr1/unordered_map>
 
-#include <kernel/Architecture.hh>
+#include <kernel/Memory.hh>
 
 /** \brief Templatized class to represent the registers of a program.
  *
@@ -59,7 +59,7 @@ public:
 
   /** \brief Retrieve the content of a register */
   virtual Value get(const RegisterDesc *) const 
-  throw (Architecture::UndefinedValue);
+    throw (UndefinedValueException);
 
   /** \brief Put the value v into the register */
   virtual void put(const RegisterDesc *, Value);

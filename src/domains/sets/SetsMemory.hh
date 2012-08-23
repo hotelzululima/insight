@@ -109,7 +109,7 @@ public:
       in a and makes the union of all these sets. size is given in bytes */
   virtual SetsValue get(const SetsAddress &a, int size, 
 			Architecture::endianness_t e) const
-    throw (Architecture::UndefinedValue);
+    throw (UndefinedValueException);
 
 
   /*! \brief For each concrete address ca contained in a, adds the

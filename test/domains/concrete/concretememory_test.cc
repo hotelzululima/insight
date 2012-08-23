@@ -59,7 +59,7 @@ ATF_TEST_CASE_BODY(concretememory_registers)
   ATF_REQUIRE_EQ(memory->is_defined(eax), false);
 
   /* Check if an exception is thrown on accessing an undefined register */
-  ATF_REQUIRE_THROW(Architecture::UndefinedValue, memory->get(eax));
+  ATF_REQUIRE_THROW(UndefinedValueException, memory->get(eax));
 
   /* Assigning '00000000000000001000000000000000' to eax */
   memory->put(eax, ConcreteValue(32, 32768));

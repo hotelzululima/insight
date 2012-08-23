@@ -87,7 +87,7 @@ ConcreteAddressMemory<Value>::ConcreteAddressMemory(const ConcreteAddressMemory<
 template <class Value>
 Value ConcreteAddressMemory<Value>::get(const ConcreteAddress &a, int size,
                                         Architecture::endianness_t e) const
-  throw (Architecture::UndefinedValue)
+  throw (UndefinedValueException)
 {
 
   typename memory_type::const_iterator it = memory.find(a.get_address());
@@ -102,7 +102,7 @@ Value ConcreteAddressMemory<Value>::get(const ConcreteAddress &a, int size,
         return mval->value;
     }
 
-  throw Architecture::UndefinedValue (a.to_string ());
+  throw UndefinedValueException (a.to_string ());
 }
 
 template <class Value>

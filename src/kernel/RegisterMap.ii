@@ -50,12 +50,13 @@ RegisterMap<Value>::~RegisterMap ()
 
 template <typename Value>
 Value
-RegisterMap<Value>::get(const RegisterDesc *r) const throw (Architecture::UndefinedValue)
+RegisterMap<Value>::get(const RegisterDesc *r) const 
+  throw (UndefinedValueException)
 {
   assert (!r->is_alias());
 
   if (!is_defined(r))
-    throw Architecture::UndefinedValue (r->get_label ());
+    throw UndefinedValueException (r->get_label ());
 
   return registermap.find(r)->second;
 }
@@ -65,6 +66,7 @@ void
 RegisterMap<Value>::put(const RegisterDesc *r, Value v)
 {
   assert (!r->is_alias());
+  assert (v.get_size () == r->get_register_size ());
 
   RegisterMap<Value>::registermap[r] = v;
 }
