@@ -125,6 +125,8 @@ domains_source = \
         domains/symbolic/SymbolicExprSemantics.cc \
         domains/symbolic/SymbolicContext.hh \
         domains/symbolic/SymbolicContext.cc \
+        domains/symbolic/SymbolicExecContext.hh \
+        domains/symbolic/SymbolicExecContext.cc \
         \
 	domains/ExprSemantics.hh                   \
 	domains/ExprSemantics.ii                   \

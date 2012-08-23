@@ -16,7 +16,7 @@
 [(0x1E,5)] StaticArrow (0x1E,5) %tmpr0_8{0;8} := (SUB %tmpr0_8{0;8} 0x1{0;8}){0;8}  --> (0x1E,2)
 [(0x1E,6)] StaticArrow (0x1E,6) Skip << (EQ (AND 0x1{0;32} 0x1F{0;32}){0;8} 0x1{0;8}){0;1} >> --> (0x1E,7)StaticArrow (0x1E,6) Skip << (NOT (EQ (AND 0x1{0;32} 0x1F{0;32}){0;8} 0x1{0;8}){0;1}){0;1} >> --> (0x1E,8)
 [(0x1E,7)] StaticArrow (0x1E,7) Skip << (EQ (AND 0x1{0;32} 0x1F{0;32}){0;8} 0x0{0;8}){0;1} >> --> (0x21,0)StaticArrow (0x1E,7) Skip << (NOT (EQ (AND 0x1{0;32} 0x1F{0;32}){0;8} 0x0{0;8}){0;1}){0;1} >> --> (0x1E,8)
-[(0x1E,8)] %eflags{11;1} := (XOR %eflags{0;1} %ebx{15;1}){0;32}
+[(0x1E,8)] %eflags{11;1} := (XOR %eflags{0;1} %ebx{15;1}){0;1}
 [(0x1E,9)] %eflags{7;1} := %ebx{15;1}
 [(0x1E,10)] %eflags{6;1} := (EQ %ebx{0;16} 0x0{0;16}){0;1}
 [(0x1E,11)] StaticArrow (0x1E,11) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ebx{0;1}){0;1} %ebx{1;1}){0;1} %ebx{2;1}){0;1} %ebx{3;1}){0;1} %ebx{4;1}){0;1} %ebx{5;1}){0;1} %ebx{6;1}){0;1} %ebx{7;1}){0;1}  --> (0x21,0)

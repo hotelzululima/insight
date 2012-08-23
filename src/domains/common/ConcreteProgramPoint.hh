@@ -44,7 +44,7 @@ public:
   ConcreteProgramPoint(MicrocodeAddress a);
   ConcreteProgramPoint(const ConcreteProgramPoint &other);
 
-  MicrocodeAddress to_address();
+  MicrocodeAddress to_address() const;
   ConcreteProgramPoint next(MicrocodeAddress addr);
 
   bool equals(const ConcreteProgramPoint &other) const;

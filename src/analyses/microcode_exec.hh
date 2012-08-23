@@ -173,7 +173,7 @@ public:
      counter address via this function. It is used to get the
      corresponding instruction of the microcode program. Again we use
      concrete addresses. */
-  virtual MicrocodeAddress to_address() = 0;
+  virtual MicrocodeAddress to_address() const = 0;
 
   /*! \brief Determine the next program point, when one follows an
       edge of the microcode with target addr. Again we use concrete
@@ -335,7 +335,7 @@ public:
 
   /*! \brief Interpret a particular edge (supposed to come from the
     pending arrow list). See StepResult type for result documentation */
-  virtual StepResult step(Arrow pa);
+  virtual StepResult step(const Arrow &pa);
 
   /*! \brief Insert a new pair (program point x context) in the global
       table and set it as fresh, i.e., all outgoing arrows are set to
@@ -371,7 +371,7 @@ public:
 
   /*! \brief Retrieves a particular node of the microcode graph from a
       program point. */
-  virtual MicrocodeNode *get_node(ProgramPoint &pp);
+  virtual MicrocodeNode *get_node(const ProgramPoint &pp);
 
   /*! \brief Retrieves the context at a given program point if it is
       defined. */

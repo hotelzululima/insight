@@ -28,6 +28,7 @@
  * SUCH DAMAGE.
  */
 
+#include <kernel/expressions/exprutils.hh>
 #include <domains/symbolic/SymbolicExprSemantics.hh>
 
 #define TER_OP_DEF(op)							\
@@ -35,31 +36,43 @@
   SymbolicExprSemantics::						\
   op ## _eval (SymbolicValue v1, SymbolicValue v2, SymbolicValue v3,	\
 	       int offset, int size) {					\
-    return SymbolicValue (TernaryApp::create (op,			\
-					      v1.get_Expr ()->ref (),	\
-					      v2.get_Expr ()->ref (),	\
-					      v3.get_Expr ()->ref (),	\
-					      offset,			\
-					      size));			\
+    Expr *tmp = TernaryApp::create (op,					\
+				    v1.get_Expr ()->ref (),		\
+				    v2.get_Expr ()->ref (),		\
+				    v3.get_Expr ()->ref (),		\
+				    offset,				\
+				    size);				\
+    exprutils::simplify (&tmp);						\
+    SymbolicValue result (tmp);						\
+    tmp->deref ();							\
+    return result;							\
   } 
 
 #define BIN_OP_DEF(op)							\
   template<> SymbolicValue						\
   SymbolicExprSemantics::						\
   op ## _eval (SymbolicValue v1, SymbolicValue v2, int offset, int size) { \
-    return SymbolicValue (BinaryApp::create (op,			\
-					     v1.get_Expr ()->ref (),	\
-					     v2.get_Expr ()->ref (),	\
-					     offset, size));		\
+    Expr *tmp = BinaryApp::create (op,					\
+				   v1.get_Expr ()->ref (),		\
+				   v2.get_Expr ()->ref (),		\
+				   offset, size);			\
+    exprutils::simplify (&tmp);						\
+    SymbolicValue result (tmp);						\
+    tmp->deref ();							\
+    return result;							\
   } 
 
 #define UN_OP_DEF(op)							\
   template<> SymbolicValue						\
   SymbolicExprSemantics::						\
   op ## _eval (SymbolicValue v, int offset, int size) {			\
-    return SymbolicValue (UnaryApp::create (op, v.get_Expr ()->ref (),	\
-					    offset, size));		\
-  }
+    Expr *tmp = UnaryApp::create (op, v.get_Expr ()->ref (),		\
+				  offset, size);			\
+    exprutils::simplify (&tmp);						\
+    SymbolicValue result (tmp);						\
+    tmp->deref ();							\
+    return result;							\
+  } 
 
 /*****************************************************************************/
 

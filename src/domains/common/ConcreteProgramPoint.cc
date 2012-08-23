@@ -45,7 +45,7 @@ ConcreteProgramPoint::ConcreteProgramPoint(const ConcreteProgramPoint &other) :
 {
 }
 
-MicrocodeAddress ConcreteProgramPoint::to_address()
+MicrocodeAddress ConcreteProgramPoint::to_address() const
 {
   return *this;
 }

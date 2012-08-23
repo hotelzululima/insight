@@ -38,11 +38,6 @@
 #include <domains/symbolic/SymbolicMemory.hh>
 #include <domains/symbolic/SymbolicExprSemantics.hh>
 
-class SymbolicContext;
-class SymbolicProgramPoint;
-class SymbolicExecContext;
-
-
 #define SYMBOLIC_CLASSES \
   ConcreteAddress,       \
   SymbolicValue,         \

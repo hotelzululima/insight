@@ -82,7 +82,7 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
   Expr *ofval;
   if (go_left)
     ofval = BinaryApp::create (BV_OP_XOR, data.get_flag ("cf"),
-			       dst->extract_bit_vector (cfindex, 1));
+			       dst->extract_bit_vector (cfindex, 1), 0, 1);
   else if (keep_sign)
     ofval = Constant::zero (1);
   else
@@ -316,7 +316,8 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
   data.mc->add_assignment (from, tmpc, 
 			   BinaryApp::create (BV_OP_AND, 
 					      count->extract_bit_vector (0, 8), 
-					      Constant::create (0x1F, 0, 8)));
+					      Constant::create (0x1F, 0, 8),
+					      0, 8));
 
   Expr *cond =
     BinaryApp::create (BV_OP_GT_U, tmpc->ref (), Constant::zero (8), 0, 1);
@@ -333,7 +334,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
   data.mc->add_assignment (from, (LValue *) tmpc->ref (), 
 			   BinaryApp::create (BV_OP_MODULO, tmpc->ref (),
 					      Constant::create (dsz + (rotate_carry ? 1 : 0), 
-								0, 8)));
+								0, 8), 0, 8));
   /*
    * Rotation loop.
    */

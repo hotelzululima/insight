@@ -41,14 +41,19 @@ public:
   SymbolicValue ();
   SymbolicValue (const SymbolicValue &sv);
   SymbolicValue (int size, word_t val);
-  SymbolicValue (Expr *e);
+  explicit SymbolicValue (const Expr *e);
   virtual ~SymbolicValue ();
 
+  SymbolicValue &operator= (const SymbolicValue &sv);
   operator ConcreteAddress () const;
   virtual const Expr *get_Expr () const;
   virtual Option<bool> to_bool () const;
   virtual Option<MicrocodeAddress> to_MicrocodeAddress () const;
   virtual void output_text (std::ostream &out) const;
+
+  bool operator==(const SymbolicValue &sv) const;
+
+  static SymbolicValue unknown_value (int size);
 private:
   Expr *value;
 };

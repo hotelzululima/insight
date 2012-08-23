@@ -28,6 +28,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <kernel/expressions/exprutils.hh>
 #include "SymbolicMemory.hh"
 
 SymbolicMemory::SymbolicMemory (const ConcreteMemory *base) 
@@ -41,19 +42,17 @@ SymbolicMemory::~SymbolicMemory()
 }
 
 SymbolicValue 
-SymbolicMemory::get (const ConcreteAddress &a, int size, 
+SymbolicMemory::get (const ConcreteAddress &a, int size_in_bytes, 
 		     Architecture::endianness_t e) const
   throw (UndefinedValueException)
 {
   Expr *result = NULL;
 
-  assert (size > 0 && size % 8 == 0);
-
-  size /= 8;
-
+  assert (size_in_bytes > 0);
+  
   ConcreteAddress addr (a);
 
-  for (int i = 0; i < size && (i == 0 || result != NULL); i++, addr++)
+  for (int i = 0; i < size_in_bytes && (i == 0 || result != NULL); i++, addr++)
     {
       Expr *byte = NULL;
       MemoryMap::const_iterator ci = memory.find (addr.get_address ());
@@ -77,13 +76,13 @@ SymbolicMemory::get (const ConcreteAddress &a, int size,
 
 	      if (e == Architecture::LittleEndian)
 		{
-		  l = result; 
-		  r = byte;
+		  l = byte;
+		  r = result;
 		}
 	      else
 		{
-		  l = byte;
-		  r = result;
+		  l = result; 
+		  r = byte;
 		}
 	      assert (l->get_bv_size () + r->get_bv_size () == 8 * (i + 1));
 	      result = BinaryApp::create (BV_OP_CONCAT, l, r, 0, 8 * (i + 1));
@@ -99,7 +98,10 @@ SymbolicMemory::get (const ConcreteAddress &a, int size,
   if (result == NULL)
     throw UndefinedValueException (addr.to_string ());
   
-  return SymbolicValue (result);
+  SymbolicValue res (result);
+  result->deref ();
+
+  return res;
 }
 
 void 
@@ -132,6 +134,7 @@ SymbolicMemory::put (const ConcreteAddress &a, const SymbolicValue &v,
       Constant *e_size = Constant::create (8, 0, BV_DEFAULT_SIZE);
       memory[addr] = 
 	TernaryApp::create (BV_OP_EXTRACT, value->ref (), e_off, e_size, 0, 8);
+      exprutils::simplify (&memory[addr]);
     }
 }
 
@@ -157,4 +160,42 @@ SymbolicMemory::clone ()
   }
 
   return result;
+}
+
+bool 
+SymbolicMemory::is_defined (const RegisterDesc *rdesc) const
+{
+  return (RegisterMap<SymbolicValue>::is_defined (rdesc) ||
+	  base->is_defined (rdesc));  
+}
+
+SymbolicValue 
+SymbolicMemory::get (const RegisterDesc *rdesc) const 
+  throw (UndefinedValueException)
+{
+  SymbolicValue result;
+
+  if (RegisterMap<SymbolicValue>::is_defined (rdesc))
+    result = RegisterMap<SymbolicValue>::get (rdesc);
+  else
+    {
+      ConcreteValue cv (base->get (rdesc));
+      Expr *ev = Constant::create (cv.get (), 0, cv.get_size ());
+      result = SymbolicValue (ev);
+      ev->deref ();
+    }
+
+  return result;
+}
+
+void 
+SymbolicMemory::output_text (std::ostream &out) const
+{
+  out << "MemoryDump: " << std::endl;
+  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) {
+    out << std::hex << i->first << " " << *i->second << std::endl;
+  }
+  
+  out << "Registers: " << std::endl;
+  RegisterMap<SymbolicValue>::output_text (out);  
 }

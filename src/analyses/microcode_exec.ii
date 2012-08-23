@@ -285,13 +285,17 @@ exec(Statement *st)
 	  RegisterExpr *reg = (RegisterExpr *) assign->get_lval();
 	  const RegisterDesc *rdesc = reg->get_descriptor();
 	  Value v = eval(assign->get_rval());
-	  Value regval;
-	  if (new_ctxt->memory->is_defined(rdesc))
-	    regval = new_ctxt->memory->get(rdesc);
-	  else 
-	    regval = Value::unknown_value (rdesc->get_window_size());
+	  Value regval;	  
+	  if (v.get_size () != rdesc->get_register_size ())
+	    {
+	      if (new_ctxt->memory->is_defined(rdesc))
+		regval = new_ctxt->memory->get(rdesc);
+	      else 
+		regval = Value::unknown_value (rdesc->get_window_size());
 
-	  v = Semantics::embed_eval(regval, v, reg->get_bv_offset());
+	      v = Semantics::embed_eval(regval, v, reg->get_bv_offset());
+	    }
+
           new_ctxt->memory->put (rdesc, v);
         }
     }
@@ -341,7 +345,7 @@ split_context(Expr *condition)
 TEMPLATE
 StepResult
 AbstractExecContext<TEMPLATE_ARGS>::
-step(Arrow pa)
+step(const Arrow &pa)
 {
   ProgramPoint pp = pa.pp;
   StmtArrow *arr = pa.arr;
@@ -546,7 +550,7 @@ delete_pending_arrow(PendingArrow<TEMPLATE_ARGS> pa)
 
 TEMPLATE MicrocodeNode *
 AbstractExecContext<TEMPLATE_ARGS>::
-get_node(ProgramPoint &pp)
+get_node(const ProgramPoint &pp)
 {
   return program->get_node(pp.to_address());
 };

@@ -447,7 +447,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
   int srcsize = src->get_bv_size ();
   MicrocodeAddress from (data.start_ma);
   LValue *temp = data.get_tmp_register (TMPREG(0), 2 * srcsize);
-  LValue *temp2 = data.get_tmp_register (TMPREG(1), 2 * srcsize);
+  LValue *temp2 = data.get_tmp_register (TMPREG(1), srcsize);
   word_t min, max;  
   Expr *op;
   const char *Qname;
@@ -514,7 +514,8 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
   from++;
   data.mc->add_assignment (from, (LValue *) temp->ref (),
 			   BinaryApp::create (udiv ? BV_OP_DIV_U : BV_OP_DIV_S, 
-					      op->ref (), src->ref ()));
+					      op->ref (), src->ref (), 0, 
+					      temp->get_bv_size ()));
 
   Expr *aux = BinaryApp::create (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S,
 				 Constant::create (max, 0, srcsize), 

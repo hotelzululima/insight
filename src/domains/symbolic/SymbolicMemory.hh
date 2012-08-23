@@ -51,7 +51,8 @@ public:
   virtual ~SymbolicMemory();
 
   virtual SymbolicValue 
-  get(const ConcreteAddress &a, int size, Architecture::endianness_t e) const
+  get(const ConcreteAddress &a, int size_in_bytes, 
+      Architecture::endianness_t e) const
     throw (UndefinedValueException);
 
   virtual void put (const ConcreteAddress &a, const SymbolicValue &v, 
@@ -61,9 +62,13 @@ public:
 
   virtual SymbolicMemory *clone ();
 
-  using RegisterMap<SymbolicValue>::is_defined;
-  using RegisterMap<SymbolicValue>::get;
+  virtual bool is_defined(const RegisterDesc *rdesc) const;
+  virtual SymbolicValue get(const RegisterDesc *rdesc) const 
+    throw (UndefinedValueException);
+
   using RegisterMap<SymbolicValue>::put;
+
+  virtual void output_text (std::ostream &out) const;
 
 private:
   const ConcreteMemory *base;

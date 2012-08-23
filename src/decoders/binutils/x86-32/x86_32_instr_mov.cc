@@ -106,6 +106,9 @@ X86_32_TRANSLATE_2_OP(MOVBE)
       
       for (int i = 0; i < nb_bytes; i ++) 
 	dstbytes[i] = dst->extract_bit_vector (8 * i, 8);
+      Expr *tmp = src->extract_bit_vector (0, operand_size);
+      src->deref ();
+      src = tmp;
     }
 
   Expr *temp = data.get_tmp_register (TMPREG(0), operand_size);

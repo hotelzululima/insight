@@ -30,15 +30,8 @@
 #ifndef DOMAINS_SYMBOLIC_SYMBOLIC_EXEC_CONTEXT_HH_
 #define DOMAINS_SYMBOLIC_SYMBOLIC_EXEC_CONTEXT_HH_
 
-#include <map>
-
 #include <analyses/microcode_exec.hh>
 #include <decoders/Decoder.hh>
-#include <domains/common/SymbolicProgramPoint.hh>
-#include <domains/symbolic/SymbolicValue.hh>
-#include <domains/symbolic/SymbolicMemory.hh>
-#include <domains/symbolic/SymbolicExprSemantics.hh>
-#include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/Microcode.hh>
 #include <domains/symbolic/SymbolicContext.hh>
 
@@ -46,70 +39,17 @@ typedef AbstractExecContext<SYMBOLIC_CLASSES> SymbolicAbstractExecContext;
 
 class SymbolicExecContext : public SymbolicAbstractExecContext
 {
-  SymbolicMemory *memory;
+  const ConcreteMemory *base;
   Decoder *decoder;
 
 public:
 
-  SymbolicExecContext(SymbolicMemory *mem, Decoder *dec, 
-		      MicrocodeStore *prg) : memory (mem), decoder (dec)
-					     
-  {
-    program = prg;
-  }
+  SymbolicExecContext (const ConcreteMemory *base, Decoder *dec);
 
-  SymbolicExecContext(MicrocodeStore *prg) : memory (0), decoder (0)
-					     
-  {
-    program = prg;
-  }
-
-  virtual ~SymbolicExecContext() {
-  }
-
-  virtual StepResult step(Arrow pa) {
-    return this->AbstractExecContext<SYMBOLIC_CLASSES>::step (pa);
-  }
-
-  bool step()
-  {
-
-    // Execute a step
-    bool result =
-      ((AbstractExecContext<SYMBOLIC_CLASSES>*)this)->generic_step();
-    if (!result)
-      return false;
-
-    // This is specific to the simulator: delete all the context which
-    // have no pending arrow.
-    std::map<SymbolicProgramPoint,
-	     AbstractContext<SYMBOLIC_CLASSES>*>::iterator the_pair;
-    for (the_pair = exec_map.begin(); the_pair != exec_map.end(); the_pair++)
-      {
-        bool found = false;
-        std::list< PendingArrow<SYMBOLIC_CLASSES> >::iterator arr;
-        for (arr = pending_arrows.begin(); arr != pending_arrows.end(); arr++)
-          if (arr->pp.equals(the_pair->first))
-            {
-              found = true;
-              break;
-            }
-        if (!found)
-          {
-            exec_map.erase(the_pair);
-            the_pair = exec_map.begin();
-	    if (the_pair == exec_map.end())
-	      break;
-          }
-      }
-
-    return true;
-
-    // \todo : Remove map entries for which there is no pending arrow.
-
-  };
-
-  void request_update (SymbolicProgramPoint &pp);
+  virtual ~SymbolicExecContext();
+  virtual StepResult step (Arrow pa);
+  virtual bool step ();
+  virtual MicrocodeNode *get_node (const ConcreteProgramPoint &pp);
 };
 
 #endif /* DOMAINS_SYMBOLIC_SYMBOLIC_EXEC_CONTEXT_HH_ */

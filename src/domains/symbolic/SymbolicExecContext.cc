@@ -27,48 +27,68 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <kernel/annotations/AsmAnnotation.hh>
+#include <domains/symbolic/SymbolicExecContext.hh>
 
-#include <domains/common/SymbolicProgramPoint.hh>
-#include <domains/symbolic/SymbolicMemory.hh>
-#include <domains/symbolic/symbolic_context.hh>
-
-#include <sstream>
-
-/*****************************************************************************/
-
-bool
-SymbolicContext::
-merge(AbstractContext<SYMBOLIC_CLASSES> * other)
+SymbolicExecContext::SymbolicExecContext(const ConcreteMemory *mem, 
+					 Decoder *dec)
+  : base (mem), decoder (dec)
 {
-
-  delete memory;
-  memory = new SymbolicMemory(*(other->memory));
-  return true; /* always update the following states */
+  program = new Microcode ();
 }
 
-/*****************************************************************************/
-
-AbstractContext<SYMBOLIC_CLASSES> *
-SymbolicContext::empty_context()
+SymbolicExecContext::~SymbolicExecContext () 
 {
-  return new SymbolicContext(new SymbolicMemory());
+  delete program;
 }
 
-/*****************************************************************************/
-
-AbstractContext<SYMBOLIC_CLASSES> *
-SymbolicContext::clone()
+StepResult 
+SymbolicExecContext::step(Arrow pa) 
 {
-  SymbolicMemory *mem_cpy = new SymbolicMemory(*memory);
-  return new SymbolicContext(mem_cpy);
+  return SymbolicAbstractExecContext::step (pa);
 }
 
-/*****************************************************************************/
-
+bool 
+SymbolicExecContext::step()
+{
+  // Execute a step
+  bool result =
+    ((AbstractExecContext<SYMBOLIC_CLASSES>*)this)->generic_step();
+  if (!result)
+    return false;
+  
+  // This is specific to the simulator: delete all the context which
+  // have no pending arrow.
+  std::map<ConcreteProgramPoint,
+	   AbstractContext<SYMBOLIC_CLASSES>*>::iterator the_pair;
+  for (the_pair = exec_map.begin(); the_pair != exec_map.end(); the_pair++)
+    {
+      bool found = false;
+      std::list< PendingArrow<SYMBOLIC_CLASSES> >::iterator arr;
+      for (arr = pending_arrows.begin(); arr != pending_arrows.end(); arr++)
+	if (arr->pp.equals(the_pair->first))
+	  {
+	    found = true;
+              break;
+	  }
+      if (!found)
+	{
+	  exec_map.erase(the_pair);
+	  the_pair = exec_map.begin();
+	  if (the_pair == exec_map.end())
+	    break;
+	}
+    }
+  
+  return true;
+  
+  // \todo : Remove map entries for which there is no pending arrow.
+}
+#if 0
 void 
-SymbolicExecContext::request_update (SymbolicProgramPoint &pp)
+SymbolicExecContext::request_update (ConcreteProgramPoint &pp)
 {
-  if (!memory->is_defined (SymbolicAddress (pp.to_address().getGlobal())))
+  if (!memory->is_defined (ConcreteAddress (pp.to_address().getGlobal())))
     return;
 
   if (decoder == NULL)
@@ -85,15 +105,46 @@ SymbolicExecContext::request_update (SymbolicProgramPoint &pp)
 	      {
 		MicrocodeAddress addr = node->get_loc ();
 		assert (addr.getLocal () == 0);
-		decoder->decode (mc, SymbolicAddress (addr.getGlobal ()));
+		decoder->decode (mc, ConcreteAddress (addr.getGlobal ()));
 	      }
 	  }
       catch (GetNodeNotFoundExc)
 	{
 	  assert (pp.getLocal () == 0);
-	  decoder->decode (mc, SymbolicAddress (pp.getGlobal ()));
-	  AbstractExecContext<SYMBOLIC_CLASSES>::request_update (pp);
+	  decoder->decode (mc, ConcreteAddress (pp.getGlobal ()));
 	}
-      AbstractExecContext<SYMBOLIC_CLASSES>::request_update (pp);
+      SymbolicAbstractExecContext::request_update (pp);
     }
+}
+#endif
+
+MicrocodeNode * 
+SymbolicExecContext::get_node (const ConcreteProgramPoint &pp)
+{
+  bool is_global = (pp.getLocal () == 0);
+  MicrocodeNode *result = NULL;
+  Microcode *mc = dynamic_cast<Microcode *> (program);
+  assert (mc != NULL);
+
+  try
+    {
+      result = program->get_node (pp.to_address ());
+      if (is_global && ! result->has_annotation (AsmAnnotation::ID))
+	{
+	  // result is a node added by the decoder but asm instruction at
+	  // pp.to_address () has not yet been decoded.
+	  MicrocodeAddress addr = result->get_loc ();
+	  assert (addr.getLocal () == 0);
+	  decoder->decode (mc, ConcreteAddress (addr.getGlobal ()));
+	}	
+    }
+  catch (GetNodeNotFoundExc &)
+    {
+      if (! is_global)
+	throw;
+      decoder->decode (mc, ConcreteAddress (pp.getGlobal ()));
+      result = program->get_node (pp.to_address ());
+    }
+
+  return result;
 }

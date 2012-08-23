@@ -333,7 +333,7 @@ compute_constants (const Expr *e)
 	    {
 #define UNARY_OP(_op,_pp)						\
 	      case _op:							\
-		c = Constant::create (ConcreteExprSemantics::_op ## _eval (((Constant *) arg), offset, size).get(), offset, size); \
+		c = Constant::create (ConcreteExprSemantics::_op ## _eval (((Constant *) arg), offset, size).get(), 0, size); \
 		break;
 #include <kernel/expressions/Operators.def>
 #undef UNARY_OP
@@ -355,10 +355,33 @@ compute_constants (const Expr *e)
 	  switch (ba->get_op())
 	    {
 #define BINARY_OP(_op,_pp,_commut,_assoc)				\
-	      case _op: c = Constant::create (ConcreteExprSemantics::_op ## _eval (((Constant *) arg1),((Constant *) arg2), offset, size).get(), offset, size); \
+	      case _op: c = Constant::create (ConcreteExprSemantics::_op ## _eval (((Constant *) arg1),((Constant *) arg2), offset, size).get(), 0, size); \
 		break;
 #include <kernel/expressions/Operators.def>
 #undef BINARY_OP
+	    default:
+	      log::fatal_error ("unknown UnaryOp code");
+	    }
+	  result = c;
+	}
+    }
+
+  if (e->is_TernaryApp()) 
+    {
+      const TernaryApp * ta = (TernaryApp *) e;
+      Expr * arg1 = ta->get_arg1();
+      Expr * arg2 = ta->get_arg2();
+      Expr * arg3 = ta->get_arg3();
+      if (arg1->is_Constant() && arg2->is_Constant() && arg3->is_Constant()) 
+	{
+	  Constant * c = NULL;
+	  switch (ta->get_op())
+	    {
+#define TERNARY_OP(_op,_pp) \
+	    case _op: c = Constant::create (ConcreteExprSemantics::_op ## _eval (((Constant *) arg1),((Constant *) arg2), ((Constant *) arg3), offset, size).get(), 0, size); \
+		break;
+#include <kernel/expressions/Operators.def>
+#undef TERNARY_OP
 	    default:
 	      log::fatal_error ("unknown UnaryOp code");
 	    }
@@ -397,7 +420,7 @@ bit_field_computation (const Expr *e)
 
   if (c == NULL)
     return NULL;
-
+#if 0
   //Not -1 because it raises unsignedness error from time to time
   long long max = 1;
   max = (max << (c->get_bv_size() - c->get_bv_offset())) - 1;
@@ -414,7 +437,7 @@ bit_field_computation (const Expr *e)
 				 c->get_bv_size() - 
 				 c->get_bv_offset());
     }
-  
+#endif
   return result;
 }
 

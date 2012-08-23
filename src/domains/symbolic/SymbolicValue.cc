@@ -29,6 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <cassert>
+#include <sstream>
 #include <kernel/expressions/exprutils.hh>
 #include <kernel/Memory.hh>
 #include "SymbolicValue.hh"
@@ -54,8 +55,8 @@ SymbolicValue::SymbolicValue (int size, word_t val) : Value (size)
   value = Constant::create (val, 0, size);
 }
 
-SymbolicValue::SymbolicValue (Expr *e) 
-  : Value (e->get_bv_size ()), value (e)
+SymbolicValue::SymbolicValue (const Expr *e) 
+  : Value (e->get_bv_size ()), value (e->ref ())
 {
 }
 
@@ -63,6 +64,16 @@ SymbolicValue::~SymbolicValue ()
 {
   if (value != NULL)
     value->deref ();
+}
+
+SymbolicValue & 
+SymbolicValue::operator= (const SymbolicValue &sv)
+{
+  if (value != NULL)
+    value->deref ();
+  new (this) SymbolicValue (sv);
+
+  return *this;
 }
 
 const Expr *
@@ -90,10 +101,8 @@ SymbolicValue::to_MicrocodeAddress () const
       exprutils::simplify (&tmp);
       Constant *c = dynamic_cast<Constant *> (tmp);
       if (c != NULL)
-	{
-	  result = MicrocodeAddress ((address_t)c->get_val ());
-	  c->deref ();
-	}
+	result = MicrocodeAddress ((address_t)c->get_val ());
+      tmp->deref ();
     }
   return result;
 }
@@ -117,13 +126,34 @@ SymbolicValue::operator ConcreteAddress () const
   Expr *tmp = value->ref ();
   exprutils::simplify (&tmp);
   Constant *c  = dynamic_cast<Constant *> (tmp);
-  if (c != NULL)
-    {
-      result = ConcreteAddress ((address_t) c->get_val ());
-      c->deref ();
-    }
+  if (c != NULL)    
+    result = ConcreteAddress ((address_t) c->get_val ());    
   else
-    throw UndefinedValueException (value->to_string ());
+    {
+      tmp->deref ();
+      throw UndefinedValueException (value->to_string ());
+    }
+  tmp->deref ();
+
+  return result;
+}
+
+bool 
+SymbolicValue ::operator==(const SymbolicValue &sv) const
+{
+  return value == sv.value;
+}
+
+SymbolicValue 
+SymbolicValue::unknown_value (int size)
+{
+  static int vid = 0;
+  std::ostringstream oss;
+  oss <<  "unkval_" << vid++;
+  Expr *var = Variable::create (oss.str (), 0, size);
+  
+  SymbolicValue result (var);
+  var->deref ();
 
   return result;
 }
