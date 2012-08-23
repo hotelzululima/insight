@@ -39,7 +39,7 @@
 #include <utility>
 #include <cassert>
 
-#include "kernel/annotations/StringAnnotation.hh"
+#include <kernel/annotations/AsmAnnotation.hh>
 #include "x86-32/x86_32_decoder.hh"
 #include "arm/arm_decoder.hh"
 
@@ -220,7 +220,8 @@ BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
     {
       MicrocodeNode *node = 
 	mc->get_node (MicrocodeAddress (address.get_address ()));
-      node->add_annotation ("asm", new StringAnnotation (instr_buffer->str ()));
+      node->add_annotation (AsmAnnotation::ID,  
+			    new AsmAnnotation (instr_buffer->str ()));
     }
   else
     {

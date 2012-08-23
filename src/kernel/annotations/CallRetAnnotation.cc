@@ -29,7 +29,7 @@
  */
 #include "CallRetAnnotation.hh"
 
-Annotable::AnnotationId CallRetAnnotation::ID ("callret");
+const Annotable::AnnotationId CallRetAnnotation::ID ("callret");
 
 CallRetAnnotation::CallRetAnnotation (const Expr *target)
   : ExprAnnotation (target)

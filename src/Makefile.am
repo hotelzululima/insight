@@ -60,6 +60,8 @@ kernel_source = \
 	kernel/RegisterMap.ii 		\
 	kernel/Value.cc 		\
 	kernel/Value.hh 		\
+	kernel/annotations/AsmAnnotation.hh	\
+	kernel/annotations/AsmAnnotation.cc     \
 	kernel/annotations/StringAnnotation.hh	\
 	kernel/annotations/BooleanAnnotation.hh \
 	kernel/annotations/CallRetAnnotation.hh \

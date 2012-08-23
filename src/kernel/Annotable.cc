@@ -102,7 +102,7 @@ Annotation *Annotable::get_annotation(const char *id) const
   return this->get_annotation(tmp);
 }
 
-void Annotable::add_annotation(AnnotationId &id, Annotation *a)
+void Annotable::add_annotation(const AnnotationId &id, Annotation *a)
 {
   amap[id] = a;
 }

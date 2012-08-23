@@ -40,7 +40,7 @@ private:
   CallRetAnnotation (const Expr *target);
 
 public:
-  static Annotable::AnnotationId ID;
+  static const Annotable::AnnotationId ID;
 
   static CallRetAnnotation *create_call (const Expr *target);
   static CallRetAnnotation *create_ret ();

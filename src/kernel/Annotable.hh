@@ -64,7 +64,7 @@ public:
   Annotation *get_annotation(const char *id) const;
 
   /*! \brief add an annotation. Cf. previous remark */
-  void add_annotation(AnnotationId &id, Annotation *a);
+  void add_annotation(const AnnotationId &id, Annotation *a);
   /*! \brief add an annotation. Cf. previous remark */
   void add_annotation(const char id[], Annotation *a);
   /*! \brief returns true if contains at least one annotation */
