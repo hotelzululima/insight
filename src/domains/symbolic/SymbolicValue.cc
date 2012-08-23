@@ -1,0 +1,129 @@
+/*
+ * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * 
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the
+ *    distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+#include <cassert>
+#include <kernel/expressions/exprutils.hh>
+#include <kernel/Memory.hh>
+#include "SymbolicValue.hh"
+
+SymbolicValue::SymbolicValue () : Value (0)
+{
+  value = NULL;
+}
+
+SymbolicValue::SymbolicValue (const SymbolicValue &sv)
+  : Value (sv.get_size ())
+{  
+  if (sv.value != NULL)
+    value = sv.value->ref ();
+  else
+    value = NULL;  
+
+  assert (value == NULL || get_size () == value->get_bv_size ());
+}
+
+SymbolicValue::SymbolicValue (int size, word_t val) : Value (size)
+{
+  value = Constant::create (val, 0, size);
+}
+
+SymbolicValue::SymbolicValue (Expr *e) 
+  : Value (e->get_bv_size ()), value (e)
+{
+}
+
+SymbolicValue::~SymbolicValue ()
+{
+  if (value != NULL)
+    value->deref ();
+}
+
+const Expr *
+SymbolicValue::get_Expr () const
+{
+  return value;
+}
+
+Option<bool> 
+SymbolicValue::to_bool () const
+{
+  if (value != NULL)
+    return value->try_eval_level0 ();
+  return Option<bool> ();
+}
+
+Option<MicrocodeAddress> 
+SymbolicValue::to_MicrocodeAddress () const
+{
+  Option<MicrocodeAddress> result;
+
+  if (value != NULL)
+    {
+      Expr *tmp = value->ref ();
+      exprutils::simplify (&tmp);
+      Constant *c = dynamic_cast<Constant *> (tmp);
+      if (c != NULL)
+	{
+	  result = MicrocodeAddress ((address_t)c->get_val ());
+	  c->deref ();
+	}
+    }
+  return result;
+}
+
+void 
+SymbolicValue::output_text (std::ostream &out) const
+{
+  if (value != NULL)
+    value->output_text (out);
+  else
+    out << "<nullexpr>";
+}
+
+SymbolicValue::operator ConcreteAddress () const
+{
+  ConcreteAddress result;
+  
+  if (value == NULL)
+    throw UndefinedValueException ("undefined symbolic location");    
+
+  Expr *tmp = value->ref ();
+  exprutils::simplify (&tmp);
+  Constant *c  = dynamic_cast<Constant *> (tmp);
+  if (c != NULL)
+    {
+      result = ConcreteAddress ((address_t) c->get_val ());
+      c->deref ();
+    }
+  else
+    throw UndefinedValueException (value->to_string ());
+
+  return result;
+}

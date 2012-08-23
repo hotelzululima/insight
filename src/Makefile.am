@@ -115,6 +115,15 @@ kernel_cleanfiles = \
 
 ## domains module
 domains_source = \
+        domains/symbolic/SymbolicValue.hh \
+        domains/symbolic/SymbolicValue.cc \
+        domains/symbolic/SymbolicMemory.hh \
+        domains/symbolic/SymbolicMemory.cc \
+        domains/symbolic/SymbolicExprSemantics.hh \
+        domains/symbolic/SymbolicExprSemantics.cc \
+        domains/symbolic/SymbolicContext.hh \
+        domains/symbolic/SymbolicContext.cc \
+        \
 	domains/ExprSemantics.hh                   \
 	domains/ExprSemantics.ii                   \
 	domains/common/ConcreteAddressMemory.hh    \
