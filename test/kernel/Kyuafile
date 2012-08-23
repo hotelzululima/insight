@@ -2,7 +2,7 @@ syntax("kyuafile", 1)
 
 test_suite("Insight")
 
-atf_test_program{name="architecture_test"}
-atf_test_program{name="expr_parser_test"}
-atf_test_program{name="expr_solver_test"}
-atf_test_program{name="expression_test"}
+atf_test_program{name="kernel_architecture_test"}
+atf_test_program{name="kernel_expr_parser_test"}
+atf_test_program{name="kernel_expr_solver_test"}
+atf_test_program{name="kernel_expression_test"}

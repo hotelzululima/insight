@@ -2,4 +2,4 @@ syntax("kyuafile", 1)
 
 test_suite("Insight")
 
-atf_test_program{name="configtable_test"}
+atf_test_program{name="utils_configtable_test"}

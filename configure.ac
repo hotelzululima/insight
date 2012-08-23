@@ -288,10 +288,17 @@ AC_CONFIG_FILES([
 	doc/manuals/common-macros.texi
 	src/Makefile
 	test/Makefile
+	test/Makefile.inc
+	test/domains/Makefile
+	test/domains/concrete/Makefile
+	test/domains/symbolic/Makefile
+	test/io/Makefile
+	test/kernel/Makefile
 	test/tools/Makefile
 	test/tools/cfgrecovery/Makefile
 	test/decoders/Makefile
 	test/slicing/Makefile
+	test/utils/Makefile
 	tools/Makefile
 	tools/cfgrecovery/Makefile
 ], [ ], [ ])

@@ -1,5 +1,0 @@
-syntax("kyuafile", 1)
-
-test_suite("Insight")
-
-atf_test_program{name="slicing_test"}

@@ -1,0 +1,12 @@
+AM_CPPFLAGS = -I$(top_srcdir)/src \
+              -DTEST_SAMPLES_DIR=\"@TEST_SAMPLES_DIR@/\"
+
+LDADD = $(top_builddir)/src/libinsight.la
+
+EXTRA_DIST = Kyuafile
+
+check : kyua-tests
+
+kyua-tests: ${check_PROGRAMS}
+	@ kyua test --kyuafile=${srcdir}/Kyuafile --build-root=${builddir}
+

@@ -2,5 +2,5 @@ syntax("kyuafile", 1)
 
 test_suite("Insight")
 
-atf_test_program{name="binaryloader_test"}
-atf_test_program{name="expr_to_smtlib_test"}
+atf_test_program{name="io_binaryloader_test"}
+atf_test_program{name="io_expr_to_smtlib_test"}
