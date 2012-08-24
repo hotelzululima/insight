@@ -36,6 +36,7 @@
 #include <kernel/Expressions.hh>
 #include <kernel/insight.hh>
 #include <io/expressions/expr-parser.hh>
+#include <utils/Log.hh>
 
 using namespace std;
 

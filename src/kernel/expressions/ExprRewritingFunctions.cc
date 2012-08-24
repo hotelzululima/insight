@@ -31,6 +31,7 @@
 #include <kernel/expressions/ExprRewritingFunctions.hh>
 
 #include <algorithm>
+#include <utils/Log.hh>
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Expressions.hh>

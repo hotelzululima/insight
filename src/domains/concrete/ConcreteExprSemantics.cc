@@ -30,6 +30,7 @@
 
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <utils/bv-manip.hh>
+#include <utils/Log.hh>
 #include <iostream>
 
 /*! \ brief \todo integrer les bitfields dans les calculs */

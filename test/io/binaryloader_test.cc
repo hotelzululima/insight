@@ -35,6 +35,7 @@
 #include <kernel/Architecture.hh>
 #include <kernel/insight.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
+#include <utils/Log.hh>
 
 #ifndef TEST_SAMPLES_DIR
 # error TEST_SAMPLES_DIR is not defined

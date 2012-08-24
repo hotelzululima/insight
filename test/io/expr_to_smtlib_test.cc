@@ -31,13 +31,13 @@
 #include <atf-c++.hpp>
 #include <string>
 #include <sstream>
-#include <iostream>
 
 #include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/insight.hh>
 #include <io/expressions/smtlib-writer.hh>
 #include <io/expressions/expr-parser.hh>
+#include <utils/Log.hh>
 
 using namespace std;
 
@@ -160,7 +160,7 @@ gen_string (const string &e, const MicrocodeArchitecture &ma)
       smte = s;					
       i = smte.find ('\n');			
     } 
-  cout << *ex << "-->" << smte << endl;
+  log::display << *ex << "-->" << smte << endl;
   ex->deref ();					
 }
 

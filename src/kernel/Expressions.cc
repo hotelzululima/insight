@@ -41,7 +41,7 @@
 #include <io/expressions/expr-writer.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
-#include <utils/infrastructure.hh>
+#include <utils/Log.hh>
 
 #include <cassert>
 #include <cstdio>

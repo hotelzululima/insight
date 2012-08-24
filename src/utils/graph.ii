@@ -34,7 +34,7 @@
 #include <fstream>
 
 #include <config.h>
-
+#include <utils/Log.hh>
 #include <utils/path.hh>
 #include <utils/tools.hh>
 

@@ -39,6 +39,7 @@
 #include <kernel/insight.hh>
 #include <kernel/expressions/PatternMatching.hh>
 #include <kernel/expressions/exprutils.hh>
+#include <utils/Log.hh>
 
 using namespace std;
 

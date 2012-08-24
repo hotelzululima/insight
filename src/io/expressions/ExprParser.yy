@@ -34,6 +34,7 @@
 #include <string>
 #include <stack>
 #include <kernel/Expressions.hh>
+#include <utils/Log.hh>
 
 namespace ExprParser {
   struct ClientData;

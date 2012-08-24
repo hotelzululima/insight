@@ -34,6 +34,7 @@
 #include <domains/symbolic/SymbolicMemory.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/insight.hh>
+#include <utils/Log.hh>
 
 ATF_TEST_CASE(registers);
 ATF_TEST_CASE_HEAD(registers)

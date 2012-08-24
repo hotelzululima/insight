@@ -35,6 +35,7 @@
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/Microcode.hh>
 #include <utils/graph.hh>
+#include <utils/Log.hh>
 
 using namespace std;
 using namespace exprutils;

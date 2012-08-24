@@ -34,6 +34,7 @@
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/insight.hh>
+#include <utils/Log.hh>
 
 ATF_TEST_CASE(concreteaddress);
 ATF_TEST_CASE_HEAD(concreteaddress)

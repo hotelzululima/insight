@@ -34,8 +34,6 @@
 #include <map>
 #include <tr1/unordered_map>
 
-#include <utils/Log.hh>
-
 #if 0
 namespace std {
   namespace tr1 {

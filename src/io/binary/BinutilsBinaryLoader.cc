@@ -32,7 +32,7 @@
 
 #include <cstdlib>
 #include <sstream>
-
+#include <utils/Log.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 
 using namespace std;

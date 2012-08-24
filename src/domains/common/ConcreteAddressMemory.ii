@@ -31,7 +31,7 @@
 #include <domains/common/ConcreteAddressMemory.hh>
 
 #include <kernel/Memory.hh>
-#include <utils/tools.hh>
+#include <utils/Log.hh>
 
 #include <map>
 

@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <decoders/DecoderFactory.hh>
 #include <utils/Option.hh>
-#include <utils/tools.hh>
+#include <utils/Log.hh>
 
 using namespace std;
 

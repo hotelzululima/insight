@@ -30,6 +30,4 @@
 #ifndef UTILS_INFRASTRUCTURE_HH
 #define UTILS_INFRASTRUCTURE_HH
 
-# include <utils/Log.hh>
-
 #endif /* UTILS_INFRASTRUCTURE_HH */

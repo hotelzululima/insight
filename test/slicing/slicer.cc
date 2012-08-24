@@ -28,13 +28,9 @@
  * SUCH DAMAGE.
  */
 
-#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
-
-#include <stdio.h>
-#include <stdlib.h>
 
 #include <analyses/microcode_exec.hh>
 #include <analyses/slicing/Slicing.hh>
@@ -45,7 +41,7 @@
 #include <io/expressions/expr-parser.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
-
+#include <utils/Log.hh>
 
 using namespace std;
 
@@ -53,7 +49,7 @@ static void
 test_slicing (const char *filename, int max_step_nb, int target_addr, 
 	      const string &target_lv)
 {
-  cout << "*** Test of slicing algorithm ***" << endl
+  log::display << "*** Test of slicing algorithm ***" << endl
        << endl
        << "max number of steps: " << max_step_nb << endl
        << "targeted address: " << target_addr << endl
@@ -71,18 +67,18 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
     DataDependency::slice_it (prg, MicrocodeAddress (target_addr), lvalue);
   
   for (int i = 0; i < (int) stmt_deps.size (); i++)
-    cout  << stmt_deps[i]->pp() << endl;
-  cout << endl;
+    log::display  << stmt_deps[i]->pp() << endl;
+  log::display << endl;
 
   lvalue->deref ();
 
-  cout << "* Useless statements:" << endl;
+  log::display << "* Useless statements:" << endl;
 
   std::vector<StmtArrow*> useless_arrows = 
     DataDependency::useless_statements (prg);
   for (int i = 0; i < (int) useless_arrows.size (); i++)
-    cout << useless_arrows[i]->pp() << endl;
-  cout << endl;
+    log::display << useless_arrows[i]->pp() << endl;
+  log::display << endl;
 
   /* TO BE KEPT : For high-precision computation of dependency path
   DataDependency invfix(prg_cpy, seeds);
@@ -90,16 +86,16 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
   invfix.ComputeFixpoint(max_step_nb);
 
   Formula * deps = invfix.get_dependencies(ConcreteProgramPoint(0), 0);
-  cout << "RESULT:" << deps->pp() << endl;
+  log::display << "RESULT:" << deps->pp() << endl;
   deps->deref ();
-  cout << "SIMPLIFIED:" ;
-  Log::emph ("{ ", 2);
+  log::display << "SIMPLIFIED:" ;
+  log::emph ("{ ", 2);
   std::vector<Expr*> upper_set = invfix.get_simple_dependencies(ConcreteProgramPoint(0), 0);
   for (int i=0; i<(int) upper_set.size(); i++) {
-    Log::emph (upper_set[i]->pp() + " ", 2);
+    log::emph (upper_set[i]->pp() + " ", 2);
     upper_set[i]->deref ();
   }
-  Log::emph (" }\n", 2);
+  log::emph (" }\n", 2);
   delete prg_cpy;
   for (list<LocatedLValue>::iterator i = seeds.begin(); i != seeds.end(); i++)
     {
@@ -132,7 +128,7 @@ int main(int argc, char **argv)
     DataDependency::OnlySimpleSetsMode(true);
     
     test_slicing(argv[1], atoi(argv[2]), strtol(argv[3],0,0), argv[4]);
-    cout << endl;
+    log::display << endl;
   }
   insight::terminate ();
 
