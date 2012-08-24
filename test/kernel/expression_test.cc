@@ -111,7 +111,12 @@ ATF_TEST_CASE_HEAD (check_tautologies)
 
 ATF_TEST_CASE_BODY (check_tautologies) 
 { 
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
   Expr *F = s_parse_expr ("(NOT (AND X (NOT X){0;1}){0;1}){0;1}");
 
   ATF_REQUIRE (F != NULL);
@@ -164,7 +169,12 @@ ATF_TEST_CASE_HEAD (check_replacement)
 
 ATF_TEST_CASE_BODY(check_replacement) 
 { 
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
 
   /* 
    * compute (replace (replace (replace (Y || X) Y tmp) X Y) tmp X) 
@@ -223,7 +233,12 @@ ATF_TEST_CASE_HEAD (check_pattern_matching)
 
 ATF_TEST_CASE_BODY(check_pattern_matching) 
 { 
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
 
   /* 
    * compute PM <- match (EQ Y (ADD T Z)) $F Y T Z;

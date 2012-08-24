@@ -35,22 +35,33 @@
 
 using namespace std;
 
+const std::string ExprSolver::DEFAULT_COMMAND_PROP = 
+  "kernel.expr.solver.default.command";
+
+const std::string ExprSolver::DEFAULT_NB_ARGS_PROP =
+  "kernel.expr.solver.default.nb_args";
+
+const std::string 
+ExprSolver::DEFAULT_ARG_PROP (int index) 
+{
+  ostringstream pref;
+  pref << "solver.default.arg" << index;
+
+  return pref.str ();
+ }
+
 static string default_solver_command;
 static vector<string> default_solver_args;
 
 void 
 ExprSolver::init (const ConfigTable &cfg)
 {
-  default_solver_command = cfg.get ("solver.default.command");
+  default_solver_command = cfg.get (DEFAULT_COMMAND_PROP);
 
-  int nb_args = cfg.get_integer ("solver.default.nb_args");
+  int nb_args = cfg.get_integer (DEFAULT_NB_ARGS_PROP);
 
   for (int i = 0; i < nb_args; i++)
-    {
-      ostringstream pref;
-      pref << "solver.default.arg" << i;
-      default_solver_args.push_back (cfg.get (pref.str ()));
-    }
+    default_solver_args.push_back (cfg.get (DEFAULT_ARG_PROP (i)));
 }
 
 void 

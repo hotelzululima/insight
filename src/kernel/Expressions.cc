@@ -49,6 +49,11 @@
 
 using namespace std;
 
+Expr::ExprStore *Expr::expr_store = NULL;
+bool Expr::non_empty_store_abort = false;
+const string Expr::NON_EMPTY_STORE_ABORT_PROP =
+  "kernel.expr.non-empty-store-abort";
+
 
 Expr::Expr(int bv_offset, int bv_size) 
   : bv_offset(bv_offset), bv_size(bv_size), refcount(0)
@@ -1111,6 +1116,9 @@ QuantifiedExpr::acceptVisitor (ConstExprVisitor *visitor) const
 void 
 Expr::init (const ConfigTable &cfg)
 {
+  non_empty_store_abort = 
+    cfg.get_boolean (NON_EMPTY_STORE_ABORT_PROP, false);
+
   expr_store = new ExprStore (100);
   ExprSolver::init (cfg);
 }
@@ -1120,23 +1128,16 @@ Expr::terminate ()
 {
   if (Expr::expr_store == NULL)
     return;
-   
+  bool abortion = (Expr::expr_store->size () > 0) && non_empty_store_abort;
   if (Expr::expr_store->size () > 0)
     {      
-      int nb = Expr::expr_store->size ();
-      ExprStore::iterator i = Expr::expr_store->begin ();
-      ExprStore::iterator end = Expr::expr_store->end ();
-      cerr << "**** some exprs have not been deleted:" << endl;
-      for (; i != end; i++, nb--)
-	{
-	  assert (nb > 0);
-	  cerr << "**** refcount = " << (*i)->refcount 
-	       << " expr = " << *(*i) << endl;
-	}
-	  
+      log::error << "**** some exprs have not been deleted:" << endl;
+      dumpStore ();
     }
   delete Expr::expr_store;
   Expr::expr_store = NULL;
+  if (abortion)
+    abort ();
 }
 
 void 
@@ -1148,7 +1149,8 @@ Expr::dumpStore ()
   for (; i != end; i++, nb--)
     {
       assert (nb > 0);
-      cerr << *i << ": "<< *(*i) << " [rc=" << (*i)->refcount << "]" << endl;
+      log::error << *i << ": " 
+		 << *(*i) << " [refcount =" << (*i)->refcount << "]" << endl;
     }
 }
 
@@ -1167,9 +1169,6 @@ Expr::Equal::operator()(const Expr *const &F1, const Expr * const &F2) const
 {  
   return F1->equal (F2);
 }
-
-
-Expr::ExprStore *Expr::expr_store = NULL;
 
 Expr *
 Expr::ref () const

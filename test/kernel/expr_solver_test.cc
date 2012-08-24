@@ -68,11 +68,15 @@ s_check_tautology (const string &, const string &expr, ExprSolver::Result res)
 {
   ConfigTable cfg;
 
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
 #if HAVE_Z3_SOLVER
-  cfg.set ("solver.default.command", "z3");
-  cfg.set ("solver.default.nb_args", 2);
-  cfg.set ("solver.default.arg0", "-smt2");
-  cfg.set ("solver.default.arg1", "-in");
+  cfg.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
+  cfg.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
+  cfg.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
+  cfg.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
 #endif
 
   insight::init (cfg);

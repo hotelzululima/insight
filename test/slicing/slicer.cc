@@ -119,8 +119,9 @@ int main(int argc, char **argv)
       exit (EXIT_FAILURE);
     }
   ConfigTable ct;
-  ct.set ("log.debug.enabled", true);
-  ct.set ("log.stdio.enabled", true);
+  ct.set (log::DEBUG_ENABLED_PROP, true);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
   {

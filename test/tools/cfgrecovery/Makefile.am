@@ -9,9 +9,9 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_FLD_FLAGS = -d flood
-CFGR_LSW_FLAGS = -d linear
-CFGR_RT_FLAGS = -d recursive
+CFGR_FLD_FLAGS = -D -d flood
+CFGR_LSW_FLAGS = -D -d linear
+CFGR_RT_FLAGS = -D -d recursive
 
 X86_32_RT_TESTS = \
 	x86_32-cfgrecovery-01.rt.res \

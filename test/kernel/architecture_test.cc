@@ -66,7 +66,11 @@ s_check_x86_32 (const Architecture * arch_x86_32)
 
 ATF_TEST_CASE_BODY(architecture_x86_32)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+
+  insight::init (ct);
   /* Check full initialization (x86-32) with both arguments */
   const Architecture * arch_x86_32 =
     Architecture::getArchitecture(Architecture::X86_32,
@@ -92,7 +96,11 @@ ATF_TEST_CASE_HEAD(architecture_arm)
 }
 ATF_TEST_CASE_BODY(architecture_arm)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+
+  insight::init (ct);
   /* Check full initialization (x86-32) with both arguments */
   const Architecture * arch_arm =
     Architecture::getArchitecture(Architecture::ARM,
@@ -118,7 +126,11 @@ ATF_TEST_CASE_HEAD(architecture_missing)
 }
 ATF_TEST_CASE_BODY(architecture_missing)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+
+  insight::init (ct);
   /* Check if an exception is thrown on unknown architecture */
   ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    Architecture::getArchitecture(Architecture::Unknown));

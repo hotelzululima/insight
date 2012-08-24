@@ -117,17 +117,24 @@ static void
 s_check_expr_to_smtlib (const string &, const string &expr, 
 			const string &expectedout)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
   const Architecture *x86_32 = 
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 
   Expr *e = expr_parser (expr, &ma);
+  ATF_REQUIRE (e != NULL);
   ostringstream oss;
 
   smtlib_writer (oss, e, "memory", 32);
   
   ATF_REQUIRE_EQ (oss.str (), expectedout);
+  e->deref ();
 
   insight::terminate ();
 }
@@ -169,7 +176,11 @@ gen_string (const string &e, const MicrocodeArchitecture &ma)
 int 
 main()
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+  insight::init (ct);
   const Architecture *x86_32 = 
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);

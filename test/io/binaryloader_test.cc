@@ -51,7 +51,12 @@ ATF_TEST_CASE_HEAD(binutils_binaryloader_x86_64)
 }
 ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
 
   ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
 		    try {
@@ -72,7 +77,12 @@ ATF_TEST_CASE_HEAD(binutils_binaryloader_x86_32)
 
 ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+  insight::init (ct);
+
   BinaryLoader * loader =
     new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-i386");
 
@@ -108,7 +118,12 @@ ATF_TEST_CASE_HEAD(binutils_binaryloader_arm)
 
 ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
   BinaryLoader * loader =
     new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel");
 

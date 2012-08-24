@@ -48,6 +48,13 @@ namespace log
 
   extern bool debug_is_on;
 
+
+  
+  extern std::string DEBUG_ENABLED_PROP;
+  extern std::string STDIO_ENABLED_PROP;
+  extern std::string STDIO_DEBUG_IS_CERR_PROP;
+  extern std::string STDIO_DEBUG_MAXLEVEL_PROP;
+
   /*
    * Configuration properties:
    * log.stdio.enabled:

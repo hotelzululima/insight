@@ -95,19 +95,23 @@ static int debug_level = 0;
 static list<string> debug_blocks;
 bool log::debug_is_on = DEBUG_IS_ON;
 
+std::string log::DEBUG_ENABLED_PROP = "log.debug.enabled";
+std::string log::STDIO_ENABLED_PROP = "log.stdio.enabled";
+std::string log::STDIO_DEBUG_IS_CERR_PROP = "log.stdio.debug.is_cerr"; 
+std::string log::STDIO_DEBUG_MAXLEVEL_PROP = "log.stdio.debug.maxlevel";
+
 void 
 log::init (const ConfigTable &cfg)
 {
-  debug_is_on = cfg.get_boolean ("log.debug.enabled");
+  debug_is_on = cfg.get_boolean (DEBUG_ENABLED_PROP);
 
-  if (cfg.get_boolean ("log.stdio.enabled"))
+  if (cfg.get_boolean (STDIO_ENABLED_PROP))
     {
       STDLISTENER = new StdStreamListener ();
-      if (cfg.get_boolean ("log.stdio.debug.is_cerr"))
+      if (cfg.get_boolean (STDIO_DEBUG_IS_CERR_PROP))
       	STDLISTENER->set_out (cerr);
       
-      int maxlevel =
-	cfg.get_integer ("log.stdio.debug.maxlevel", -1);
+      int maxlevel = cfg.get_integer (STDIO_DEBUG_MAXLEVEL_PROP, -1);
       STDLISTENER->set_max_level (maxlevel);
       
       log::add_listener (STDLISTENER);

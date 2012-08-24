@@ -58,6 +58,10 @@ public:
     }
   };
 
+  static const std::string DEFAULT_COMMAND_PROP;
+  static const std::string DEFAULT_NB_ARGS_PROP;
+  static const std::string DEFAULT_ARG_PROP (int index);
+
   static void init (const ConfigTable &cfg);
   static void terminate ();
 

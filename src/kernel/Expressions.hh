@@ -100,6 +100,7 @@ protected:
   virtual ~Expr();
 
 public:
+  static const std::string NON_EMPTY_STORE_ABORT_PROP;
 
   static void init (const ConfigTable &cfg);
   static void terminate ();
@@ -241,6 +242,7 @@ private:
   typedef std::tr1::unordered_set<Expr *, Expr::Hash, Expr::Equal> ExprStore;  
 
   static ExprStore *expr_store;
+  static bool non_empty_store_abort;
   static void dumpStore ();
   mutable int refcount;
 };

@@ -44,7 +44,12 @@ ATF_TEST_CASE_HEAD(concreteaddress)
 }
 ATF_TEST_CASE_BODY(concreteaddress)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
   /* Check default initialization */
   ConcreteAddress default_address = ConcreteAddress();
   ATF_REQUIRE_EQ(default_address.get_address(), 0);

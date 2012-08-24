@@ -44,7 +44,13 @@ ATF_TEST_CASE_HEAD(registers)
 }
 ATF_TEST_CASE_BODY(registers)
 {
-  insight::init ();
+  ConfigTable ct;
+
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
 
   const Architecture * arch_x86 =
     Architecture::getArchitecture(Architecture::X86_32);
@@ -101,47 +107,55 @@ s_get_simplified (const SymbolicMemory *mem, const ConcreteAddress &a,
 
 ATF_TEST_CASE_BODY(memcells)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
-  ConcreteMemory *cm = new ConcreteMemory;
-  SymbolicMemory * memory = new SymbolicMemory (cm);
+  insight::init (ct);
+  {
+    ConcreteMemory *cm = new ConcreteMemory;
+    SymbolicMemory * memory = new SymbolicMemory (cm);
 
-  /* Check if memcells are undefined */
-  ATF_REQUIRE_EQ(memory->is_defined(ConcreteAddress::null_addr()), false);
-  ATF_REQUIRE_EQ(memory->is_defined(ConcreteAddress(6234)), false);
+    /* Check if memcells are undefined */
+    ATF_REQUIRE_EQ(memory->is_defined(ConcreteAddress::null_addr()), false);
+    ATF_REQUIRE_EQ(memory->is_defined(ConcreteAddress(6234)), false);
 
-  ConcreteAddress addr = ConcreteAddress(1024);
-  SymbolicValue value = SymbolicValue(32, 6235);
+    ConcreteAddress addr = ConcreteAddress(1024);
+    SymbolicValue value = SymbolicValue(32, 6235);
 
-  memory->put(addr, value, Architecture::LittleEndian);
+    memory->put(addr, value, Architecture::LittleEndian);
 
-  /* Check if the put() did work well */
-  ATF_REQUIRE_EQ(s_get_simplified (memory, 
-				   addr, 4, Architecture::LittleEndian), 6235);
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    addr, 2, Architecture::LittleEndian), 6235);
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    addr, 1, Architecture::LittleEndian), 91);
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    ++(++addr), 2, Architecture::LittleEndian),
-		  0);
+    /* Check if the put() did work well */
+    ATF_REQUIRE_EQ(s_get_simplified (memory, 
+				     addr, 4, Architecture::LittleEndian), 
+		   6235);
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      addr, 2, Architecture::LittleEndian), 
+		    6235);
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      addr, 1, Architecture::LittleEndian), 91);
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      ++(++addr), 2, 
+				      Architecture::LittleEndian),
+		    0);
 
-  memory->put(addr, value, Architecture::BigEndian);
+    memory->put(addr, value, Architecture::BigEndian);
 
-  /* Check if the put() did work well */
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    addr, 4, Architecture::BigEndian), 6235);
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    addr, 2, Architecture::BigEndian), 0);
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    ++(++addr), 2, Architecture::BigEndian), 
-		  6235);
-  ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				    ++addr, 1, Architecture::BigEndian), 91);
+    /* Check if the put() did work well */
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      addr, 4, Architecture::BigEndian), 6235);
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      addr, 2, Architecture::BigEndian), 0);
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      ++(++addr), 2, Architecture::BigEndian), 
+		    6235);
+    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+				      ++addr, 1, Architecture::BigEndian), 91);
 
-  delete memory;
-  delete cm;
-
+    delete memory;
+    delete cm;
+  }
   insight::terminate ();
 }
 

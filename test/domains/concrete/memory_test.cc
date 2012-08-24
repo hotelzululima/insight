@@ -43,7 +43,12 @@ ATF_TEST_CASE_HEAD(concretememory_registers)
 }
 ATF_TEST_CASE_BODY(concretememory_registers)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
 
   const Architecture * arch_x86 =
     Architecture::getArchitecture(Architecture::X86_32);
@@ -84,7 +89,10 @@ ATF_TEST_CASE_HEAD(concretememory_memcells)
 }
 ATF_TEST_CASE_BODY(concretememory_memcells)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
 
   ConcreteMemory * memory = new ConcreteMemory();
 

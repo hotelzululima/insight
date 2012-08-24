@@ -105,12 +105,7 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
 	continue;
 
       visited.insert (addr.get_address ());
-      if (log::debug_is_on)
-	{
-	  string inst = 
-	    ((BinutilsDecoder *) decoder)->get_instruction (addr);
-	  log::debug << addr << " : " << inst << endl;
-	}
+
       ConcreteAddress next = decoder->decode (mc, addr);
       MicrocodeAddress ma (addr.get_address ());
       MicrocodeNode *node = mc->get_node (ma);

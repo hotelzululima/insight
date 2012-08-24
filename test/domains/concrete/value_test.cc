@@ -45,7 +45,12 @@ ATF_TEST_CASE_HEAD(concretevalue)
 }
 ATF_TEST_CASE_BODY(concretevalue)
 {
-  insight::init ();
+  ConfigTable ct;
+  ct.set (log::DEBUG_ENABLED_PROP, false);
+  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
+  insight::init (ct);
   /* Checking default initialization */
   ConcreteValue default_value = ConcreteValue();
   ATF_REQUIRE_EQ(default_value.get(), 0);
