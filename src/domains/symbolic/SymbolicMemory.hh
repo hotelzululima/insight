@@ -43,7 +43,7 @@ class SymbolicMemory
   : public Memory<ConcreteAddress, SymbolicValue>,
     public RegisterMap<SymbolicValue>
 {
-  typedef std::tr1::unordered_map<address_t, Expr *> MemoryMap;
+  typedef std::tr1::unordered_map<address_t, SymbolicValue> MemoryMap;
 
 public:
   SymbolicMemory (const ConcreteMemory *base);

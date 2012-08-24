@@ -57,7 +57,7 @@ SymbolicMemory::get (const ConcreteAddress &a, int size_in_bytes,
       Expr *byte = NULL;
       MemoryMap::const_iterator ci = memory.find (addr.get_address ());
       if (ci != memory.end ())
-	byte = ci->second->ref ();
+	byte = ci->second.get_Expr ()->ref ();
       else if (base->is_defined (addr))
 	{
 	  ConcreteValue v = base->get (addr, 8, e);
@@ -132,9 +132,12 @@ SymbolicMemory::put (const ConcreteAddress &a, const SymbolicValue &v,
     {
       Constant *e_off = Constant::create (offset, 0, BV_DEFAULT_SIZE);
       Constant *e_size = Constant::create (8, 0, BV_DEFAULT_SIZE);
-      memory[addr] = 
+      Expr *tmp  = 
 	TernaryApp::create (BV_OP_EXTRACT, value->ref (), e_off, e_size, 0, 8);
-      exprutils::simplify (&memory[addr]);
+      exprutils::simplify (&tmp);
+
+      memory[addr] = SymbolicValue (tmp);
+      tmp->deref ();
     }
 }
 
@@ -193,7 +196,7 @@ SymbolicMemory::output_text (std::ostream &out) const
 {
   out << "MemoryDump: " << std::endl;
   for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) {
-    out << std::hex << i->first << " " << *i->second << std::endl;
+    out << std::hex << i->first << " " << i->second << std::endl;
   }
   
   out << "Registers: " << std::endl;
