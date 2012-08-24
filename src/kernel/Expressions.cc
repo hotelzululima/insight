@@ -1148,7 +1148,7 @@ Expr::dumpStore ()
   for (; i != end; i++, nb--)
     {
       assert (nb > 0);
-      cerr << *(*i) << endl;
+      cerr << *(*i) << " [rc=" << (*i)->refcount << "]" << endl;
     }
 }
 
