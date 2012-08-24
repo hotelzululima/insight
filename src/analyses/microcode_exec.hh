@@ -133,7 +133,7 @@ public:
   /***************************************************************************/
 
   /*! \brief Produce the empty context. */
-  static AbstractContext *empty_context();
+  //  static AbstractContext *empty_context();
 
   /*! \brief Construct a clone of the current object. Note that this
    *  class being abstract, it cannot be instanciated and do not
