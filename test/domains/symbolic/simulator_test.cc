@@ -60,103 +60,104 @@ s_simulate (const char *filename)
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
+  {
+    BinaryLoader *loader = new BinutilsBinaryLoader (filename);
+    ConcreteMemory *memory = loader->get_memory();
+    const Architecture *A = loader->get_architecture ();
+    // Must initialize registers
+    for (RegisterSpecs::const_iterator i = A->get_registers ()->begin ();
+	 i != A->get_registers ()->end (); i++)
+      {
+	if (! i->second->is_alias ())
+	  memory->put (i->second, 		     
+		       ConcreteValue (i->second->get_register_size (), 0) );
+      }
+    MicrocodeArchitecture arch (A);
 
-  BinaryLoader *loader = new BinutilsBinaryLoader (filename);
-  ConcreteMemory *memory = loader->get_memory();
-  const Architecture *A = loader->get_architecture ();
-  // Must initialize registers
-  for (RegisterSpecs::const_iterator i = A->get_registers ()->begin ();
-       i != A->get_registers ()->end (); i++)
-    {
-      if (! i->second->is_alias ())
-	memory->put (i->second, 		     
-		     ConcreteValue (i->second->get_register_size (), 0) );
-    }
-  MicrocodeArchitecture arch (A);
+    Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
+    ConcreteAddress start = loader->get_entrypoint ();
 
-  Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
-  ConcreteAddress start = loader->get_entrypoint ();
+    log::display << "Entry-point := " << start << endl;
+    SymbolicExecContext *ctxt = new SymbolicExecContext (memory, decoder);
 
-  log::display << "Entry-point := " << start << endl;
-  SymbolicExecContext *ctxt = new SymbolicExecContext (memory, decoder);
+    ctxt->init (SymbolicContext::empty_context (memory));
 
-  ctxt->init (SymbolicContext::empty_context (memory));
+    MicrocodeAddress lastaddr;
+    MicrocodeAddress newaddr = ctxt->get_current_program_point ().to_address ();
 
-  MicrocodeAddress lastaddr;
-  MicrocodeAddress newaddr = ctxt->get_current_program_point ().to_address ();
+    SymbolicExecContext::Context *last_context = NULL;
 
-  SymbolicExecContext::Context *last_context = NULL;
+    for (;;)
+      {      
+	lastaddr = newaddr;
 
-  for (;;)
-    {      
-      lastaddr = newaddr;
+	bool simulation_can_continue = ctxt->step();
 
-      bool simulation_can_continue = ctxt->step();
+	if (!(simulation_can_continue && 
+	      ctxt->get_current_context ().hasValue ()))
+	  break;
 
-      if (!(simulation_can_continue && 
-	    ctxt->get_current_context ().hasValue ()))
-	break;
+	if (last_context != NULL)
+	  delete last_context;
+	last_context =  ctxt->get_current_context ().getValue ()->clone ();
+	last_context->memory->output_text (log::display);
+	log::display << endl;
 
-      last_context =  ctxt->get_current_context ().getValue ();
-      last_context->memory->output_text (log::display);
-      log::display << endl;
+	ATF_REQUIRE (simulation_can_continue);
+	ATF_REQUIRE (ctxt->pending_arrows.size () > 0);
 
-      ATF_REQUIRE (simulation_can_continue);
-      ATF_REQUIRE (ctxt->pending_arrows.size () > 0);
-
-      newaddr = ctxt->get_current_program_point ().to_address ();
+	newaddr = ctxt->get_current_program_point ().to_address ();
       
-      if (lastaddr.equals (newaddr))
-	{
-	  SymbolicExecContext::Arrow pa = ctxt->pending_arrows.front ();
+	if (lastaddr.equals (newaddr))
+	  {
+	    SymbolicExecContext::Arrow pa = ctxt->pending_arrows.front ();
 
-	  if (! pa.arr->is_static ())
-	    continue;
+	    if (! pa.arr->is_static ())
+	      continue;
 	  
-	  StaticArrow *a = dynamic_cast<StaticArrow *> (pa.arr);
-	  if (a->get_condition () != NULL)
-	    {
-	      SymbolicExecContext::Context *c = 
-		ctxt->get_current_context ().getValue ();
-	      SymbolicValue v = c->eval (a->get_condition ());
-	      if (! v.to_bool().getValue ())
-		continue;
-	    }
-	  if (a->get_target().equals (lastaddr))
-	    break;
-	}
-    }
+	    StaticArrow *a = dynamic_cast<StaticArrow *> (pa.arr);
+	    if (a->get_condition () != NULL)
+	      {
+		SymbolicExecContext::Context *c = 
+		  ctxt->get_current_context ().getValue ();
+		SymbolicValue v = c->eval (a->get_condition ());
+		if (! v.to_bool().getValue ())
+		  continue;
+	      }
+	    if (a->get_target().equals (lastaddr))
+	      break;
+	  }
+      }
 
-  ATF_REQUIRE (last_context != NULL);
+    ATF_REQUIRE (last_context != NULL);
   
-  ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
-  ATF_REQUIRE (last_context->memory->is_defined (exception_handling_addr));
-  
-  SymbolicValue check_exception = 
-    last_context->memory->get (exception_handling_addr, 1, 
-			       arch.get_reference_arch ()->endianness);
+    ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
+    ATF_REQUIRE (last_context->memory->is_defined (exception_handling_addr));
 
-  if (! check_exception.to_bool().getValue ())
-    {
-      ATF_REQUIRE (lastaddr.getLocal () == 0);
-      ATF_REQUIRE (lastaddr.getGlobal () == FAILURE_ADDR ||
-		   lastaddr.getGlobal () == SUCCESS_ADDR);
-      ATF_REQUIRE (lastaddr.getGlobal () == SUCCESS_ADDR);
-    }
-  else
-    {
-      ATF_REQUIRE (lastaddr.getGlobal () != FAILURE_ADDR);
-      ATF_REQUIRE (lastaddr.getGlobal () != SUCCESS_ADDR);
-      ATF_REQUIRE (ctxt->pending_arrows.size () == 0);
-    }
+    SymbolicValue check_exception = 
+      last_context->memory->get (exception_handling_addr, 1, 
+				 arch.get_reference_arch ()->endianness);
 
-  delete ctxt; 
-  delete loader;
-  delete decoder;
-  delete memory;
-
+    if (! check_exception.to_bool().getValue ())
+      {
+	ATF_REQUIRE (lastaddr.getLocal () == 0);
+	ATF_REQUIRE (lastaddr.getGlobal () == FAILURE_ADDR ||
+		     lastaddr.getGlobal () == SUCCESS_ADDR);
+	ATF_REQUIRE (lastaddr.getGlobal () == SUCCESS_ADDR);
+      }
+    else
+      {
+	ATF_REQUIRE (lastaddr.getGlobal () != FAILURE_ADDR);
+	ATF_REQUIRE (lastaddr.getGlobal () != SUCCESS_ADDR);
+	ATF_REQUIRE (ctxt->pending_arrows.size () == 0);
+      }
+    delete last_context;
+    delete ctxt; 
+    delete loader;
+    delete decoder;
+    delete memory;
+  }
   insight::terminate ();
-
 }
 
 #include "simulator_test_cases.hh"

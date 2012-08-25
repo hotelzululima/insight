@@ -30,6 +30,7 @@
 # define SIMULATOR_TEST_CASES_HH
 
 #define SIMULATED_BINARIES \
+  BINARY_FILE (X86_32_BASE_0, "x86_32-simulator-00.bin") \
   BINARY_FILE (X86_32_BASE_1, "x86_32-simulator-01.bin") \
   BINARY_FILE (X86_32_BASE_2, "x86_32-simulator-02.bin") \
   BINARY_FILE (X86_32_BASE_3, "x86_32-simulator-03.bin") \

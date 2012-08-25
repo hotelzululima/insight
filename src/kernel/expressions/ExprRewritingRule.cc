@@ -42,8 +42,6 @@ ExprRewritingRule::ExprRewritingRule ()
 
 ExprRewritingRule::~ExprRewritingRule ()
 {
-  if (result != NULL)
-    result->deref ();
 }
 
 void 
@@ -151,7 +149,6 @@ ExprRewritingRule::rewrite (const Expr *F)
 Expr *
 ExprRewritingRule::get_result () const
 {
-  if (result != NULL)
-    return result->ref ();
-  return NULL;
+  assert (result != NULL);
+  return result;
 }

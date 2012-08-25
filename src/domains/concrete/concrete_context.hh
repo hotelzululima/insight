@@ -64,6 +64,7 @@ public:
   }
   ~ConcreteContext()
   {
+    delete memory;
   }
 
   bool merge(AbstractContext<CONCRETE_CLASSES> * other);
@@ -125,6 +126,7 @@ public:
             }
         if (!found)
           {
+	    delete the_pair->second;
             exec_map.erase(the_pair);
             the_pair = exec_map.begin();
 	    if (the_pair == exec_map.end())

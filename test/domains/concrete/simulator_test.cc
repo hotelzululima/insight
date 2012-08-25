@@ -88,8 +88,10 @@ s_simulate (const char *filename)
       if (!(simulation_can_continue && 
 	    ctxt->get_current_context ().hasValue ()))
 	break;
-
-      last_context =  ctxt->get_current_context ().getValue ();
+      
+      if (last_context != NULL)
+	delete last_context;
+      last_context =  ctxt->get_current_context ().getValue ()->clone ();
       last_context->memory->ConcreteMemory::output_text (log::display);
       log::display << endl;
 
@@ -141,7 +143,7 @@ s_simulate (const char *filename)
       ATF_REQUIRE (lastaddr.getGlobal () != SUCCESS_ADDR);
       ATF_REQUIRE (ctxt->pending_arrows.size () == 0);
     }
-  
+  delete last_context;
   delete ctxt; 
   delete prg;
   delete loader;

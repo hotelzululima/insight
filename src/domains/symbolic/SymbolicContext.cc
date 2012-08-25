@@ -49,7 +49,8 @@ SymbolicContext::merge (SymbolicAbstractContext *)
 SymbolicAbstractContext *
 SymbolicContext::clone()
 {
-  return new SymbolicContext (memory->clone ());
+  SymbolicMemory *mem = memory->clone ();
+  return new SymbolicContext (mem);
 }
 
 SymbolicContext *
