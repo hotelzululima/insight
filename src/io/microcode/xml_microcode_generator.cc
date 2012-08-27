@@ -115,20 +115,20 @@ string_of_int(int n)
 /*****************************************************************************/
 
 string
-xml_of_constant(Constant *c)
+xml_of_constant(const Constant *c)
 {
   return xml_add_attribute("size", string_of_int(c->get_bv_size()),
                            xml_elt("const", string_of_int(c->get_val())));
 }
 
 string
-xml_of_variable(Variable *v)
+xml_of_variable(const Variable *v)
 {
   return xml_add_attribute("id", v->get_id(), xml_atom("formalvar"));
 }
 
 string
-xml_of_register(RegisterExpr *reg)
+xml_of_register(const RegisterExpr *reg)
 {
   string id;
 
@@ -144,7 +144,7 @@ xml_of_register(RegisterExpr *reg)
 }
 
 string
-xml_of_memcell(MemCell *m)
+xml_of_memcell(const MemCell *m)
 {
   string addr = xml_of_expr(m->get_addr());
   // TODO: endiannness
@@ -208,7 +208,7 @@ xml_of_binary_op(BinaryOp op)
 }
 
 string
-xml_of_binaryapp(BinaryApp *b)
+xml_of_binaryapp(const BinaryApp *b)
 {
   string arg1 = xml_of_expr(b->get_arg1());
   string arg2 = xml_of_expr(b->get_arg2());
@@ -231,7 +231,7 @@ xml_of_unary_op(UnaryOp op)
 }
 
 string
-xml_of_unaryapp(UnaryApp *u)
+xml_of_unaryapp(const UnaryApp *u)
 {
   string arg1 = xml_of_expr(u->get_arg1());
   string op = xml_of_unary_op(u->get_op());
@@ -240,30 +240,30 @@ xml_of_unaryapp(UnaryApp *u)
 
 
 string
-xml_of_lvalue(Expr *lv)
+xml_of_lvalue(const Expr *lv)
 {
   if (lv->is_MemCell())
-    return xml_of_memcell((MemCell *) lv);
+    return xml_of_memcell((const MemCell *) lv);
   if (lv->is_RegisterExpr())
-    return xml_of_register((RegisterExpr *) lv);
+    return xml_of_register((const RegisterExpr *) lv);
 
   log::fatal_error("xml_of_lvalue:: lvalue type unknown");
 }
 
 string
-xml_of_expr(Expr *e)
+xml_of_expr(const Expr *e)
 {
 
   if (e->is_Variable())
-    return xml_of_variable((Variable *) e);
+    return xml_of_variable((const Variable *) e);
   if (e->is_Constant())
-    return xml_of_constant((Constant *) e);
+    return xml_of_constant((const Constant *) e);
   if (e->is_UnaryApp())
-    return xml_of_unaryapp((UnaryApp *) e);
+    return xml_of_unaryapp((const UnaryApp *) e);
   if (e->is_BinaryApp())
-    return xml_of_binaryapp((BinaryApp *) e);
+    return xml_of_binaryapp((const BinaryApp *) e);
   if (e->is_LValue())
-    return xml_of_lvalue((LValue *) e);
+    return xml_of_lvalue((const LValue *) e);
 
   log::fatal_error("xml_of_expr:: expr type unknown");
 }
@@ -281,7 +281,7 @@ xml_of_mcaddress(MicrocodeAddress addr)
 }
 
 string
-xml_guard_of_static_arrow(StaticArrow *arr)
+xml_guard_of_static_arrow(const StaticArrow *arr)
 {
   return
     xml_add_attribute("next", xml_of_mcaddress(arr->get_target()),
@@ -289,7 +289,7 @@ xml_guard_of_static_arrow(StaticArrow *arr)
 }
 
 string
-xml_of_stmtarrow(StmtArrow *arr)
+xml_of_stmtarrow(const StmtArrow *arr)
 {
   string new_stmtarrow("");
 
@@ -342,7 +342,7 @@ xml_of_stmtarrow(StmtArrow *arr)
 /*****************************************************************************/
 
 string
-xml_of_microcode_element(MicrocodeNode *elt)
+xml_of_microcode_element(const MicrocodeNode *elt)
 {
   string result = "";
   vector<StmtArrow *> * succs = elt->get_successors();

@@ -204,7 +204,7 @@ public:
   /*****************************************************************************/
 
   /*! \brief true if o is a sub-expression of this expression */
-  virtual bool contains(Expr *o) const = 0;
+  virtual bool contains(const Expr *o) const = 0;
 
   /*! \brief return the depth of the expression as a tree (or a term) */
   virtual unsigned int get_depth() const = 0;
@@ -282,7 +282,7 @@ public:
   
   bool operator<(const Variable &other) const;  /* needed for using variables as key of maps */
   virtual unsigned int get_depth() const;
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
@@ -338,7 +338,7 @@ public:
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
@@ -380,7 +380,7 @@ public:
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
@@ -432,7 +432,7 @@ public:
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
@@ -468,7 +468,7 @@ public:
   virtual size_t hash() const;
   virtual bool has_type_of(const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
@@ -503,7 +503,7 @@ public:
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
@@ -570,7 +570,7 @@ public:
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);
@@ -611,7 +611,7 @@ public:
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
 
-  bool contains(Expr *o) const;
+  bool contains(const Expr *o) const;
   virtual unsigned int get_depth() const;
 
   virtual void acceptVisitor (ExprVisitor *visitor);

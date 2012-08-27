@@ -100,7 +100,7 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
       return result;
     }
 
-  MemCell *mc = dynamic_cast<MemCell *>(assmt->get_lval());
+  const MemCell *mc = dynamic_cast<const MemCell *>(assmt->get_lval());
   assert (mc != NULL);
 
 

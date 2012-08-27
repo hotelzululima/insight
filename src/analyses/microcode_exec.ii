@@ -270,11 +270,12 @@ exec(Statement *st)
 
       if (assign->get_lval()->is_MemCell())
         {
-	  MemCell *cell = dynamic_cast<MemCell *> (assign->get_lval());
+	  const MemCell *cell = 
+	    dynamic_cast<const MemCell *> (assign->get_lval());
 	  assert (cell->get_bv_offset () == 0);
 	  assert (cell->get_bv_size () == assign->get_rval()->get_bv_size ());
 
-          Address a(eval(((MemCell *) assign->get_lval())->get_addr()));
+          Address a(eval(((const MemCell *) assign->get_lval())->get_addr()));
           Value v = eval(assign->get_rval());
           /*! \todo propagate endianness in Expr module */
           new_ctxt->memory->put(a, v, Architecture::LittleEndian);

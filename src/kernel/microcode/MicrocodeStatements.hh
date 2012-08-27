@@ -82,9 +82,9 @@ public:
   virtual ~Assignment();
   Statement *clone() const;
 
-  LValue * get_lval();
+  const LValue * get_lval() const;
   void set_lval(LValue *lv);
-  Expr * get_rval();
+  const Expr * get_rval() const;
   void set_rval(LValue *rv);
 
   std::string pp();

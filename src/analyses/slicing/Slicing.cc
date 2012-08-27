@@ -69,7 +69,7 @@ public:
   }
 };
 
-list<const LValue *> dependencies(Expr *e)
+list<const LValue *> dependencies (const Expr *e)
 {
   ExtractLValueVisitor ev;
   e->acceptVisitor (ev);
@@ -377,8 +377,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
   //   when LV is a memory reference)
   // - if LV appears in a term, then it must be replaced by RV (in a conditional
   //   way also when LV is a memory reference).
-  LValue *lval = ((Assignment *) stmt)->get_lval ();
-  Expr *rval = ((Assignment *) stmt)->get_rval ();
+  const LValue *lval = ((Assignment *) stmt)->get_lval ();
+  const Expr *rval = ((Assignment *) stmt)->get_rval ();
   DataDependencyLocalContext *new_context = 
     new DataDependencyLocalContext (*this);
 
@@ -403,9 +403,9 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues),
 					    reg_pattern, VarList (), tmp);
       reg_pattern->deref ();
-      reg_pattern = lval;
+
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues), 
-					    reg_pattern, VarList (), rval);
+					    lval, VarList (), rval);
 
       // Here one replaces the occurences of EltSymbol = lval by the 
       // dependencies of rval.
@@ -745,7 +745,8 @@ DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
 	      if (! (*succs)[s]->get_stmt()->is_Assignment()) 
 		continue;
 
-	      LValue * the_lv = ((Assignment *) (*succs)[s]->get_stmt())->get_lval();
+	      const LValue * the_lv = 
+		((Assignment *) (*succs)[s]->get_stmt())->get_lval();
 	      Option<MicrocodeAddress> tgtopt = (*succs)[s]->extract_target();
 	      if (!tgtopt.hasValue()) 
 		continue;
@@ -806,7 +807,7 @@ DataDependency::statement_used (Microcode *prg, StmtArrow *arr)
       return true;
     }
 
-  LValue * the_lv = ((Assignment *) arr->get_stmt())->get_lval();
+  const LValue * the_lv = ((Assignment *) arr->get_stmt())->get_lval();
   if (!the_lv->is_RegisterExpr ()) 
     {
       // optim: for MemCells one can do simple but efficient things
@@ -840,10 +841,10 @@ DataDependency::statement_used (Microcode *prg, StmtArrow *arr)
 
     // 2. otherwise, the edge is of form lv := expr;
     // 2.1 if the_reg is used by expr return true
-    Expr * e = ((Assignment *) new_arr->get_stmt())->get_rval();
+    const Expr * e = ((Assignment *) new_arr->get_stmt())->get_rval();
     if (e->contains(the_reg)) return true;
     // 2.2 if the_reg is contained in lv but not equal to lv, return true;
-    LValue * lv = ((Assignment *) new_arr->get_stmt())->get_lval();
+    const LValue * lv = ((Assignment *) new_arr->get_stmt())->get_lval();
     if ((!the_reg->equal(lv)) && lv->contains(the_reg)) return true;
     // 2.3 if the_reg is equal to lv continue (without following the edge)
     if (the_reg->equal(lv)) continue;

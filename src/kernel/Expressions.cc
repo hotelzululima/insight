@@ -642,43 +642,43 @@ unsigned int QuantifiedExpr::get_depth() const
 
 /*****************************************************************************/
 
-bool Variable::contains(Expr *o) const
+bool Variable::contains(const Expr *o) const
 {
   return equal (o);
 }
 
-bool Constant::contains(Expr *o) const
+bool Constant::contains(const Expr *o) const
 {
   return equal (o);
 }
 
-bool UnaryApp::contains(Expr *o) const
+bool UnaryApp::contains (const Expr *o) const
 {
   return equal (o) || arg1->contains(o);
 }
 
-bool BinaryApp::contains(Expr *o) const
+bool BinaryApp::contains (const Expr *o) const
 {
   return equal (o) || arg1->contains(o) || arg2->contains(o);
 }
 
-bool TernaryApp::contains(Expr *o) const
+bool TernaryApp::contains (const Expr *o) const
 {
   return equal(o) || arg1->contains(o) || arg2->contains(o)
       || arg3->contains(o);
 }
 
-bool MemCell::contains(Expr *o) const
+bool MemCell::contains (const Expr *o) const
 {
   return equal (o) || addr->contains(o);
 }
 
-bool RegisterExpr::contains(Expr *o) const
+bool RegisterExpr::contains (const Expr *o) const
 {
   return equal (o);
 }
 
-bool QuantifiedExpr::contains (Expr *o) const
+bool QuantifiedExpr::contains (const Expr *o) const
 {
   return equal (o) || var->contains (o) || body->contains (o);
 }

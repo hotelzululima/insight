@@ -89,23 +89,27 @@ Assignment::~Assignment()
   rval->deref ();
 };
 
-LValue * Assignment::get_lval()
+const LValue * Assignment::get_lval() const
 {
   return lval;
 };
 
 void Assignment::set_lval(LValue *lv)
 {
+  if (lval != NULL)
+    lval->deref ();
   lval = lv;
 };
 
-Expr * Assignment::get_rval()
+const Expr * Assignment::get_rval() const
 {
   return rval;
 };
 
 void Assignment::set_rval(LValue *rv)
 {
+  if (rval != NULL)
+    rval->deref ();
   rval = rv;
 };
 
