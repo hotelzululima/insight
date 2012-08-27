@@ -34,7 +34,7 @@
 #include <string>
 #include <stack>
 #include <kernel/Expressions.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 namespace ExprParser {
   struct ClientData;
@@ -187,7 +187,7 @@ lvalue:
 	reg = data.arch->get_register (reg->get_label ());
       $$ = RegisterExpr::create (reg, offset, size);
     } catch(Architecture::RegisterDescNotFound &) {
-      log::error << "unknown register '" << *$2 << "'" << endl; 
+      logs::error << "unknown register '" << *$2 << "'" << endl; 
       YYERROR;      
     }
     delete $2;

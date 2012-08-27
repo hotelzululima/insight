@@ -368,7 +368,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
     }
 
   if (! stmt->is_Assignment ())
-    log::fatal_error("slicing: run_backward : statement type unknown");
+    logs::fatal_error("slicing: run_backward : statement type unknown");
 
   // The processing of assignment of form LV := RV (where LV is a left-value 
   // and RV is a term) is twofold:
@@ -517,7 +517,7 @@ DataDependency::update_from_program_point (ConcreteProgramPoint pp)
       StaticArrow *sa = dynamic_cast<StaticArrow *> (preds->at (i));
 
       if (sa == NULL)
-        log::warning << ("Caution: I ignore all the dynamic arrows "
+        logs::warning << ("Caution: I ignore all the dynamic arrows "
 			 "for analysis") << endl;
       else
 	pending_arrows.push_back(sa);
@@ -576,23 +576,23 @@ bool DataDependency::OnlySimpleSets() { return only_simple_sets_flag; }
 
 // \todo to be moved anywhere else
 void print_expressions(std::vector<Expr*> * expr_lst, int) {
-  log::debug << "{ ";
+  logs::debug << "{ ";
   for (int i=0; i<(int) expr_lst->size(); i++) {
-    log::debug << (*expr_lst)[i]->to_string () << " ";
+    logs::debug << (*expr_lst)[i]->to_string () << " ";
     (*expr_lst)[i]->deref ();
   }
-  log::debug << " }";
+  logs::debug << " }";
 }
 
 // \todo to be moved anywhere else
 void print_expressions(list<Expr*> * expr_lst, int ) {
-  log::debug << "|";
+  logs::debug << "|";
 
   for (list<Expr*>::iterator i=expr_lst->begin(); i != expr_lst->end(); i++) {
-    log::debug << ((*i)->to_string ()) << " ";
+    logs::debug << ((*i)->to_string ()) << " ";
     (*i)->deref ();
   }
-  log::debug << " }";
+  logs::debug << " }";
 }
 
 
@@ -610,16 +610,16 @@ bool DataDependency::InverseStep()
 
   if (target_context == NULL)
     {
-      log::fatal_error("DataDependency: DataDependency: should be a "
+      logs::fatal_error("DataDependency: DataDependency: should be a "
 		       "context here");
     }
 
   DataDependencyLocalContext * new_context = 
     target_context->run_backward (the_arrow);
 
-  if (log::debug_is_on)
+  if (logs::debug_is_on)
     {
-      log::debug << log::separator << endl
+      logs::debug << logs::separator << endl
 		 << "Running backward arrow < " << the_arrow->pp() << " >" 
 		 << endl
 		 << "New context at pp " << the_arrow->get_origin().pp() 
@@ -633,7 +633,7 @@ bool DataDependency::InverseStep()
       std::vector<Expr*> upper_set =
 	ConditionalSet::cs_possible_values((*(new_context->get_watched_lvalues())));
       print_expressions(&upper_set,2);
-      log::debug << endl;
+      logs::debug << endl;
     }
 
   ConcreteProgramPoint origin_pp (the_arrow->get_origin());
@@ -666,7 +666,7 @@ DataDependency::ComputeFixpoint (int max_step_nb)
     InverseStep ();
 
   if (max_step_nb > 0) 
-    log::debug << "DataDependency: Fixpoint Reached!" << endl;
+    logs::debug << "DataDependency: Fixpoint Reached!" << endl;
 }
 
 Expr * 
@@ -724,18 +724,18 @@ DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
 
   vector<StmtArrow*> result;
 
-  if (log::debug_is_on)
+  if (logs::debug_is_on)
     {
-      log::debug << log::separator << endl
+      logs::debug << logs::separator << endl
 		 << "Dependencies:" << endl;
 
       for (int n=0; n<(int) nodes->size(); n++) 
 	{
-	  log::debug << (*nodes)[n]->get_loc().pp() << " <== ";
+	  logs::debug << (*nodes)[n]->get_loc().pp() << " <== ";
 	  std::vector<Expr*> deps = 
 	    invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
 	  print_expressions(& deps, 2);
-	  log::debug << endl;
+	  logs::debug << endl;
 
 	  std::vector<LValue*> lv_deps;
 
@@ -764,14 +764,14 @@ DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
 	      for (int d=0; d<(int) tgt_deps.size(); d++) 
 		tgt_deps[d]->deref ();
 	      if (influence) {
-		log::debug <<  (*succs)[s]->pp() << endl;
+		logs::debug <<  (*succs)[s]->pp() << endl;
 		result.push_back((*succs)[s]);
 	      }
 	      else
-		log::debug << (*succs)[s]->pp() << endl;
+		logs::debug << (*succs)[s]->pp() << endl;
 	    }	
 	}
-      log::debug << log::separator << endl;
+      logs::debug << logs::separator << endl;
     }
 
   return result;

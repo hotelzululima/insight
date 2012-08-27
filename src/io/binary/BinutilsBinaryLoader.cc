@@ -32,7 +32,7 @@
 
 #include <cstdlib>
 #include <sstream>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 
 using namespace std;
@@ -208,7 +208,7 @@ BinutilsBinaryLoader::get_memory() const
 	      ConcreteValue v = memory->get (current, 1,
 					     Architecture::BigEndian);
 	      if (! (v == val))
-		log::warning << "address " << current.to_string()
+		logs::warning << "address " << current.to_string()
 			     << " is reassigned :"
 			     << v.to_string() << " -> " << val.to_string()
 			     << std::endl;

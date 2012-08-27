@@ -59,7 +59,7 @@ using namespace std;
     sprintf(prefix, "Xml parse error [line %d]: ", node->line);    \
     sprintf(the_reason, reason);                                   \
     strcat(prefix, the_reason);                                    \
-    log::fatal_error(prefix);                                      \
+    logs::fatal_error(prefix);                                      \
   }
 
 /*****************************************************************************/
@@ -93,13 +93,13 @@ pair<xmlDocPtr, xmlNodePtr> xml_get_root_from_file(const string filename)
   xmlKeepBlanksDefault(0);
   doc = xmlParseFile(filename.c_str());
   if (doc == NULL)
-    log::fatal_error("Xml Document XML not valid\n");
+    logs::fatal_error("Xml Document XML not valid\n");
 
   root = xmlDocGetRootElement(doc);
   if (root == NULL)
     {
       xmlFreeDoc(doc);
-      log::fatal_error("XML Document empty\n");
+      logs::fatal_error("XML Document empty\n");
     }
 
   return pair<xmlDocPtr, xmlNodePtr> (doc, root);
@@ -201,7 +201,7 @@ void xml_declare_register(const string ident, int size)
     RegisterExpr::create (regdesc, 0, size);
 
   xml_register_store[ident] = reg;
-  log::debug << "new register : " << *xml_get_register(ident) << endl;
+  logs::debug << "new register : " << *xml_get_register(ident) << endl;
 
   delete regdesc;
 }
@@ -522,7 +522,7 @@ Microcode *
 xml_parse_mc_program(const string filename)
 {
 
-  log::debug << "--------------------------------------------" << endl
+  logs::debug << "--------------------------------------------" << endl
 	     << "Parsing Microcode from xml file " << filename << endl
 	     << "--------------------------------------------" << endl;
 
@@ -537,14 +537,14 @@ xml_parse_mc_program(const string filename)
   delete xml_doc_handler.first;
   xml_delete_register_store();
 
-  log::debug << "--------------------------------------------" << endl
+  logs::debug << "--------------------------------------------" << endl
 	     << "Parsing process successfull : " << elts->size() << " nodes" 
 	     << endl
 	     << "--------------------------------------------" << endl;
 
   if (elts->size() == 0)
     {
-      log::warning << "xml_parse_mc_program:: empty program !" << endl;
+      logs::warning << "xml_parse_mc_program:: empty program !" << endl;
       return new Microcode(elts, MicrocodeAddress(0, 0));
     }
 

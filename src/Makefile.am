@@ -24,8 +24,8 @@ utils_source = \
         utils/ConfigTable.cc	\
         utils/graph.hh		\
         utils/graph.ii		\
-	utils/Log.cc		\
-	utils/Log.hh		\
+	utils/logs.cc		\
+	utils/logs.hh		\
 	utils/Object.cc		\
 	utils/Object.hh		\
 	utils/bv-manip.hh	\

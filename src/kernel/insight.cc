@@ -30,7 +30,7 @@
 
 #include "kernel/insight.hh"
 
-#include "utils/Log.hh"
+#include "utils/logs.hh"
 #include "kernel/Expressions.hh"
 #include "kernel/Architecture.hh"
 
@@ -42,7 +42,7 @@ insight::init(const ConfigTable &cfg)
 {
   if (init_count == 0)
     {
-      log::init (cfg);
+      logs::init (cfg);
       Architecture::init ();
       Expr::init (cfg);
     }
@@ -57,6 +57,6 @@ insight::terminate()
     {
       Expr::terminate ();
       Architecture::terminate ();
-      log::terminate ();
+      logs::terminate ();
     }
 }

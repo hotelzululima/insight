@@ -122,21 +122,21 @@ X86_32_TRANSLATE_0_OP(CLD)
 
 X86_32_TRANSLATE_1_OP(CLFLUSH)
 {
-  log::warning << "CLFLUSH translated in NOP" << endl;
+  logs::warning << "CLFLUSH translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }
 
 X86_32_TRANSLATE_0_OP(CLI)
 {
-  log::warning << "CLI translated in NOP" << endl;
+  logs::warning << "CLI translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 
 
 X86_32_TRANSLATE_0_OP(CLTS)
 {
-  log::warning << "CLTS translated in NOP" << endl;
+  logs::warning << "CLTS translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 
@@ -270,7 +270,7 @@ X86_32_TRANSLATE_0_OP(CWTL)
 
 X86_32_TRANSLATE_0_OP(CPUID)
 {
-  log:: warning << "CPUID translated in NOP" << endl;
+  logs:: warning << "CPUID translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 
@@ -302,20 +302,20 @@ X86_32_TRANSLATE_0_OP(HLT)
 
 X86_32_TRANSLATE_0_OP(INVD)
 {
-  log:: warning << "RDSTC translated in NOP" << endl;
+  logs:: warning << "RDSTC translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 
 X86_32_TRANSLATE_1_OP(INVLPG)
 {
-  log:: warning << "RDSTC translated in INVLPG" << endl;
+  logs:: warning << "RDSTC translated in INVLPG" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }
 
 X86_32_TRANSLATE_0_OP(MWAIT)
 {
-  log:: warning << "MWAIT translated in NOP" << endl;
+  logs:: warning << "MWAIT translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 
@@ -344,42 +344,42 @@ X86_32_TRANSLATE_1_OP(NOPL)
 
 X86_32_TRANSLATE_0_OP(PAUSE)
 {
-  log:: warning << "PAUSE translated in NOP" << endl;
+  logs:: warning << "PAUSE translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 
 /*
 X86_32_TRANSLATE_0_OP (RDTSC)
 {
-  log:: warning << "RDSTC translated in NOP" << endl;
+  logs:: warning << "RDSTC translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
 }
 */
 
 X86_32_TRANSLATE_1_OP(PREFETCHT0)
 {
-  log:: warning << "PREFETCHT0 translated in NOP" << endl;
+  logs:: warning << "PREFETCHT0 translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }
 
 X86_32_TRANSLATE_1_OP(PREFETCHT1)
 {
-  log:: warning << "PREFETCHT1 translated in NOP" << endl;
+  logs:: warning << "PREFETCHT1 translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }
 
 X86_32_TRANSLATE_1_OP(PREFETCHT2)
 {
-  log:: warning << "PREFETCHT2 translated in NOP" << endl;
+  logs:: warning << "PREFETCHT2 translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }
 
 X86_32_TRANSLATE_1_OP(PREFETCHNTA)
 {
-  log:: warning << "PREFETCHTNTA translated in NOP" << endl;
+  logs:: warning << "PREFETCHTNTA translated in NOP" << endl;
   x86_32_translate<X86_32_TOKEN (NOP)> (data);
   op1->deref ();
 }

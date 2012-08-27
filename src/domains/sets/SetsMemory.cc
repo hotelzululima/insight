@@ -62,7 +62,7 @@ SetsMemory::get(const SetsAddress &a, int size,
 
   if (a.get().is_any())
     {
-      log::warning << "SetsMemory::get: found address with top value" 
+      logs::warning << "SetsMemory::get: found address with top value" 
 		   << std::endl;
       the_value.any();
       return the_value;
@@ -84,7 +84,7 @@ SetsMemory::add_to_cells(const SetsAddress &a, const SetsValue &v,
 
   if (a.get().is_any())
     {
-      log::warning << "SetsMemory::put: found address with top value" 
+      logs::warning << "SetsMemory::put: found address with top value" 
 		   << std::endl;
       // TODO : ajouter v a toutes les cellules de la memoire ?  pas
       // vraiment: ce serait un peu faux: on ajouterait seulement aux
@@ -134,7 +134,7 @@ SetsMemory::is_defined(const SetsAddress &a) const
 
   if (a.get().is_any())
     {
-      log::warning << "SetsMemory::is_memcell_defined: found address with "
+      logs::warning << "SetsMemory::is_memcell_defined: found address with "
 		   << "top value" << std::endl;
       return !mem.is_empty();
     }

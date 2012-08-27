@@ -41,7 +41,7 @@
 #include <io/expressions/expr-writer.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 #include <cassert>
 #include <cstdio>
@@ -1131,7 +1131,7 @@ Expr::terminate ()
   bool abortion = (Expr::expr_store->size () > 0) && non_empty_store_abort;
   if (Expr::expr_store->size () > 0)
     {      
-      log::error << "**** some exprs have not been deleted:" << endl;
+      logs::error << "**** some exprs have not been deleted:" << endl;
       dumpStore ();
     }
   delete Expr::expr_store;
@@ -1149,7 +1149,7 @@ Expr::dumpStore ()
   for (; i != end; i++, nb--)
     {
       assert (nb > 0);
-      log::error << *i << ": " 
+      logs::error << *i << ": " 
 		 << *(*i) << " [refcount =" << (*i)->refcount << "]" << endl;
     }
 }

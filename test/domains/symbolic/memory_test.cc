@@ -34,7 +34,7 @@
 #include <domains/symbolic/SymbolicMemory.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/insight.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 ATF_TEST_CASE(registers)
 ATF_TEST_CASE_HEAD(registers)
@@ -46,8 +46,8 @@ ATF_TEST_CASE_BODY(registers)
 {
   ConfigTable ct;
 
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
@@ -108,8 +108,8 @@ s_get_simplified (const SymbolicMemory *mem, const ConcreteAddress &a,
 ATF_TEST_CASE_BODY(memcells)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);

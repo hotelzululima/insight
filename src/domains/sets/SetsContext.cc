@@ -59,7 +59,7 @@ bool SetsContext::merge(AbstractContext<SETS_CLASSES> * other)
 {
   SetsContext *ctx = dynamic_cast<SetsContext *>(other);
   if (ctx == NULL)
-    log::fatal_error("Set context: merge with other kind of context");
+    logs::fatal_error("Set context: merge with other kind of context");
 
   return this->memory->merge(*(other->memory));
 }
@@ -126,7 +126,7 @@ ND_eval_unary_expr(SpecializedContext *s_ctxt, UnaryApp *ua)
 					ua->get_bv_offset (), 
 					ua->get_bv_size ());
     default:
-      log::fatal_error("Context::eval Unknown unary operator");
+      logs::fatal_error("Context::eval Unknown unary operator");
     }
 
 }
@@ -231,7 +231,7 @@ ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
       return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_CONCAT_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
 
     default:
-      log::fatal_error("Context::eval Unknown binary operator");
+      logs::fatal_error("Context::eval Unknown binary operator");
     }
 
 #undef APPLY_BINARY
@@ -247,7 +247,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
   ND_eval_result result;
 
   if (e->is_Variable())
-    log::fatal_error("GenericContext:eval: Variable are not supported by interpreter");
+    logs::fatal_error("GenericContext:eval: Variable are not supported by interpreter");
 
   if (e->is_Constant())
     {
@@ -270,7 +270,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
 
       ND_eval_result addresses = ND_eval(s_ctxt, mc->get_addr());
 
-      if (addresses.size() == 0) log::fatal_error("ND_eval : empty address");
+      if (addresses.size() == 0) logs::fatal_error("ND_eval : empty address");
 
       for (ND_eval_result::iterator addr_pair = addresses.begin(); addr_pair != addresses.end(); addr_pair++)
         {
@@ -282,7 +282,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
             }
           catch (OptionNoValueExc &)
             {
-              log::warning << "ND_eval: TOP value for address : returns TOP" 
+              logs::warning << "ND_eval: TOP value for address : returns TOP" 
 			   << std::endl;
               result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>() , current_s_ctxt));
               return result;
@@ -354,7 +354,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
       return result;
     }
 
-  log::fatal_error("Context::eval Expression Type unknown");
+  logs::fatal_error("Context::eval Expression Type unknown");
 }
 
 
@@ -441,7 +441,7 @@ merge_contexts(std::list< SpecializedContext *> s_ctxts)
   SpecializedContext *first_ctxt = s_ctxts.front();
   SetsContext *underlying_ctxt = first_ctxt->underlying_context;
   for (std::list< SpecializedContext *>::const_iterator ctxt = s_ctxts.begin(); ctxt != s_ctxts.end(); ctxt++)
-    if ((*ctxt)->underlying_context != underlying_ctxt) log::fatal_error("SetsContext:merge_contexts: underlying contexts different");
+    if ((*ctxt)->underlying_context != underlying_ctxt) logs::fatal_error("SetsContext:merge_contexts: underlying contexts different");
 
   // 1. collect all specialized address and registers in all the specialised context
   std::list < std::pair < ConcreteAddress, Option<ConcreteValue> > > all_specialised_mem_cells;

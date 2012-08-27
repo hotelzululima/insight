@@ -27,14 +27,14 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef UTILS_LOG_HH
-#define UTILS_LOG_HH
+#ifndef UTILS_LOGS_HH
+#define UTILS_LOGS_HH
 
 # include <iostream>
 # include <utils/ConfigTable.hh>
 # include <config.h>
 
-namespace log 
+namespace logs 
 {
   class Listener {
   public:
@@ -57,18 +57,18 @@ namespace log
 
   /*
    * Configuration properties:
-   * log.stdio.enabled:
+   * logs.stdio.enabled:
    *   if true then a default listener based on standard streams is set using
    *   add_listener.
    *
-   * log.debug.enabled:
+   * logs.debug.enabled:
    *   debug_is_on variable is assign the value of this property
    *
-   * log.stdio.debug.is_cerr:
+   * logs.stdio.debug.is_cerr:
    *   if true then std::cerr stream is used for the debug stream instead of 
    *   std::cout.
    * 
-   * log.stdio.debug.maxlevel:
+   * logs.stdio.debug.maxlevel:
    *   set the maximal output level for debug stream; if the maxlevel is not 
    *   set or is negative then no limit is positioned.
    */
@@ -93,4 +93,4 @@ namespace log
   extern std::ostream debug;
 }
 
-#endif /* ! UTILS_LOG_HH */
+#endif /* ! UTILS_LOGS_HH */

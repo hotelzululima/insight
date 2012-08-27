@@ -56,7 +56,7 @@ IntervalValue
 IntervalValue::join(const IntervalValue &v1, const IntervalValue &v2)
 {
   if (v1.get_size() != v2.get_size())
-    log::fatal_error("IntervalValue::Join(): values have different size");
+    logs::fatal_error("IntervalValue::Join(): values have different size");
 
   return IntervalValue(v1.get_size(),
                        std::min(v1.getMin(), v2.getMin()),

@@ -38,7 +38,7 @@
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 
 #ifndef TEST_SAMPLES_DIR
@@ -55,8 +55,8 @@ static void
 s_simulate (const char *filename)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
@@ -67,7 +67,7 @@ s_simulate (const char *filename)
   Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
   ConcreteAddress start = loader->get_entrypoint ();
 
-  log::display << "Entry-point := " << start << endl;
+  logs::display << "Entry-point := " << start << endl;
   Microcode *prg = Build_Microcode (&arch, memory, start);
   ConcreteExecContext *ctxt = new ConcreteExecContext (memory, decoder, prg);
   ctxt->init (ConcreteContext::empty_context ());
@@ -77,7 +77,7 @@ s_simulate (const char *filename)
 
   prg->sort ();
 
-  log::display << "Microcode program : " << endl
+  logs::display << "Microcode program : " << endl
        << prg->pp () << endl;
 
   for (;;)
@@ -92,8 +92,8 @@ s_simulate (const char *filename)
       if (last_context != NULL)
 	delete last_context;
       last_context =  ctxt->get_current_context ().getValue ()->clone ();
-      last_context->memory->ConcreteMemory::output_text (log::display);
-      log::display << endl;
+      last_context->memory->ConcreteMemory::output_text (logs::display);
+      logs::display << endl;
 
       ATF_REQUIRE (simulation_can_continue);
       ATF_REQUIRE (ctxt->pending_arrows.size () > 0);

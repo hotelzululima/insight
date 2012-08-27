@@ -203,7 +203,7 @@ xml_of_binary_op(BinaryOp op)
     case BV_OP_LT_S:
       return xml_atom("lts");
     default:
-      log::fatal_error("xml_of_binary_op:: operator not supported");
+      logs::fatal_error("xml_of_binary_op:: operator not supported");
     }
 }
 
@@ -226,7 +226,7 @@ xml_of_unary_op(UnaryOp op)
     case BV_OP_NEG:
       return xml_atom("minus");
     default:
-      log::fatal_error("xml_of_unary_op:: operator not supported");
+      logs::fatal_error("xml_of_unary_op:: operator not supported");
     }
 }
 
@@ -247,7 +247,7 @@ xml_of_lvalue(const Expr *lv)
   if (lv->is_RegisterExpr())
     return xml_of_register((const RegisterExpr *) lv);
 
-  log::fatal_error("xml_of_lvalue:: lvalue type unknown");
+  logs::fatal_error("xml_of_lvalue:: lvalue type unknown");
 }
 
 string
@@ -265,7 +265,7 @@ xml_of_expr(const Expr *e)
   if (e->is_LValue())
     return xml_of_lvalue((const LValue *) e);
 
-  log::fatal_error("xml_of_expr:: expr type unknown");
+  logs::fatal_error("xml_of_expr:: expr type unknown");
 }
 
 
@@ -300,7 +300,7 @@ xml_of_stmtarrow(const StmtArrow *arr)
       if (sarr->get_stmt()->is_Assignment())
         {
           if (!(sarr->get_condition()->eval_level0()))
-            log::fatal_error("Assignment arrow with condition not supported");
+            logs::fatal_error("Assignment arrow with condition not supported");
           string lv = xml_of_lvalue(((Assignment *) sarr->get_stmt())->get_lval());
           string v = xml_of_expr(((Assignment *) sarr->get_stmt())->get_rval());
           new_stmtarrow =
@@ -320,7 +320,7 @@ xml_of_stmtarrow(const StmtArrow *arr)
         }
 
       if (sarr->get_stmt()->is_Jump())
-        log::fatal_error("xml_of_stmtarrow:: static jump statement not supported");
+        logs::fatal_error("xml_of_stmtarrow:: static jump statement not supported");
     }
   else   // Arrow is dynamic
     {

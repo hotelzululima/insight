@@ -32,7 +32,7 @@
 #include <list>
 #include <cstdlib>
 
-#include "Log.hh"
+#include "logs.hh"
 
 #ifdef NDEBUG
 # define DEBUG_IS_ON false
@@ -42,11 +42,11 @@
 
 using namespace std;
 
-typedef std::multiset<log::Listener *> listener_set;
+typedef std::multiset<logs::Listener *> listener_set;
 typedef listener_set::iterator listener_iterator; 
 typedef void (*listener_callback)(const std::string &msg);
 
-class StdStreamListener : public log::Listener
+class StdStreamListener : public logs::Listener
 {
 private:
   int max_debug_level;
@@ -93,15 +93,15 @@ static StdStreamListener *STDLISTENER = NULL;
 static listener_set LISTENERS;
 static int debug_level = 0;
 static list<string> debug_blocks;
-bool log::debug_is_on = DEBUG_IS_ON;
+bool logs::debug_is_on = DEBUG_IS_ON;
 
-std::string log::DEBUG_ENABLED_PROP = "log.debug.enabled";
-std::string log::STDIO_ENABLED_PROP = "log.stdio.enabled";
-std::string log::STDIO_DEBUG_IS_CERR_PROP = "log.stdio.debug.is_cerr"; 
-std::string log::STDIO_DEBUG_MAXLEVEL_PROP = "log.stdio.debug.maxlevel";
+std::string logs::DEBUG_ENABLED_PROP = "logs.debug.enabled";
+std::string logs::STDIO_ENABLED_PROP = "logs.stdio.enabled";
+std::string logs::STDIO_DEBUG_IS_CERR_PROP = "logs.stdio.debug.is_cerr"; 
+std::string logs::STDIO_DEBUG_MAXLEVEL_PROP = "logs.stdio.debug.maxlevel";
 
 void 
-log::init (const ConfigTable &cfg)
+logs::init (const ConfigTable &cfg)
 {
   debug_is_on = cfg.get_boolean (DEBUG_ENABLED_PROP);
 
@@ -114,19 +114,19 @@ log::init (const ConfigTable &cfg)
       int maxlevel = cfg.get_integer (STDIO_DEBUG_MAXLEVEL_PROP, -1);
       STDLISTENER->set_max_level (maxlevel);
       
-      log::add_listener (STDLISTENER);
+      logs::add_listener (STDLISTENER);
     }
 }
 
 void 
-log::terminate ()
+logs::terminate ()
 {
   if (STDLISTENER != NULL)
     delete STDLISTENER;
 }
 
 void
-log::add_listener (Listener *listener, bool once)
+logs::add_listener (Listener *listener, bool once)
 {
   assert (listener != NULL);
   if (LISTENERS.find (listener) != LISTENERS.end () && once)
@@ -136,7 +136,7 @@ log::add_listener (Listener *listener, bool once)
 }
 
 void 
-log::remove_listener (Listener *listener)
+logs::remove_listener (Listener *listener)
 {
   assert (listener != NULL);
   LISTENERS.erase (listener);
@@ -144,60 +144,60 @@ log::remove_listener (Listener *listener)
 
 
 void 
-log::inc_debug_level ()
+logs::inc_debug_level ()
 {
   debug_level++;
 }
 
 void 
-log::dec_debug_level ()
+logs::dec_debug_level ()
 {
   assert (debug_level > 0);
   debug_level--;
 }
 
 void 
-log::start_debug_block (const string &msg)
+logs::start_debug_block (const string &msg)
 {
   debug_blocks.push_front (msg);
-  log::debug << msg << endl;
+  logs::debug << msg << endl;
   inc_debug_level ();
 }
 
 void 
-log::end_debug_block ()
+logs::end_debug_block ()
 {
   dec_debug_level ();
   string msg = debug_blocks.front ();
   debug_blocks.pop_front ();
-  log::debug << msg << " terminated " << endl;
+  logs::debug << msg << " terminated " << endl;
 }
 
 static void
-s_log_error (const string &msg)
+s_logs_error (const string &msg)
 {
   for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
     (*i)->error (msg);
 }
 
 static void
-s_log_warning (const string &msg)
+s_logs_warning (const string &msg)
 {
   for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
     (*i)->warning (msg);
 }
 
 static void
-s_log_display (const string &msg)
+s_logs_display (const string &msg)
 {
   for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
     (*i)->display (msg);
 }
 
 static void
-s_log_debug (const string &msg)
+s_logs_debug (const string &msg)
 {
-  if (! log::debug_is_on)
+  if (! logs::debug_is_on)
     return;
 
   for (listener_iterator i = LISTENERS.begin (); i != LISTENERS.end (); i++)
@@ -272,23 +272,23 @@ private:
   listener_callback callback;
 };
 
-std::ostream log::error (new filter (&s_log_error));
-std::ostream log::warning (new filter (&s_log_warning));
-std::ostream log::display (new filter (&s_log_display));
-std::ostream log::debug (new filter (&s_log_debug));
+std::ostream logs::error (new filter (&s_logs_error));
+std::ostream logs::warning (new filter (&s_logs_warning));
+std::ostream logs::display (new filter (&s_logs_display));
+std::ostream logs::debug (new filter (&s_logs_debug));
 
 void 
-log::fatal_error (const std::string &msg)
+logs::fatal_error (const std::string &msg)
 {
-  log::error << msg << endl;
+  logs::error << msg << endl;
   abort ();
 }
 
 void 
-log::check (const std::string &msg, bool cond)
+logs::check (const std::string &msg, bool cond)
 {
   if (! cond)
-    log::fatal_error (msg);
+    logs::fatal_error (msg);
 }
 
-const std::string log::separator = string (80, '=');
+const std::string logs::separator = string (80, '=');

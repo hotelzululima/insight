@@ -35,7 +35,7 @@
 
 using namespace std;
 
-ATF_TEST_CASE(basics);
+ATF_TEST_CASE(basics)
 ATF_TEST_CASE_HEAD(basics)
 {
   set_md_var("descr", "Check basic operations of ConfigTable.");
@@ -67,7 +67,7 @@ ATF_TEST_CASE_BODY(basics)
   insight::terminate ();
 }
 
-ATF_TEST_CASE(io);
+ATF_TEST_CASE(io)
 ATF_TEST_CASE_HEAD(io)
 {
   set_md_var("descr", "Check IO operations of ConfigTable.");

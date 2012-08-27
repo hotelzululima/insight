@@ -37,7 +37,7 @@
 #include <kernel/insight.hh>
 #include <io/expressions/smtlib-writer.hh>
 #include <io/expressions/expr-parser.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 using namespace std;
 
@@ -118,8 +118,8 @@ s_check_expr_to_smtlib (const string &, const string &expr,
 			const string &expectedout)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
@@ -167,7 +167,7 @@ gen_string (const string &e, const MicrocodeArchitecture &ma)
       smte = s;					
       i = smte.find ('\n');			
     } 
-  log::display << *ex << "-->" << smte << endl;
+  logs::display << *ex << "-->" << smte << endl;
   ex->deref ();					
 }
 
@@ -177,8 +177,8 @@ int
 main()
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
   insight::init (ct);
   const Architecture *x86_32 = 

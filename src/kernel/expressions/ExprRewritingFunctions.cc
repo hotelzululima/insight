@@ -31,7 +31,7 @@
 #include <kernel/expressions/ExprRewritingFunctions.hh>
 
 #include <algorithm>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <domains/concrete/ConcreteValue.hh>
 #include <kernel/Expressions.hh>
@@ -339,7 +339,7 @@ compute_constants (const Expr *e)
 #include <kernel/expressions/Operators.def>
 #undef UNARY_OP
 	    default:
-	      log::fatal_error ("unknown UnaryOp code");
+	      logs::fatal_error ("unknown UnaryOp code");
 	    }
 	  result = c;
 	}
@@ -361,7 +361,7 @@ compute_constants (const Expr *e)
 #include <kernel/expressions/Operators.def>
 #undef BINARY_OP
 	    default:
-	      log::fatal_error ("unknown UnaryOp code");
+	      logs::fatal_error ("unknown UnaryOp code");
 	    }
 	  result = c;
 	}
@@ -384,7 +384,7 @@ compute_constants (const Expr *e)
 #include <kernel/expressions/Operators.def>
 #undef TERNARY_OP
 	    default:
-	      log::fatal_error ("unknown UnaryOp code");
+	      logs::fatal_error ("unknown UnaryOp code");
 	    }
 	  result = c;
 	}

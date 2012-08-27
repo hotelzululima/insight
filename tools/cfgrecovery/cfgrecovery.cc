@@ -268,12 +268,12 @@ main (int argc, char *argv[])
 
   /* Starting insight and initializing the needed objects */
   ConfigTable config; 
-  config.set (log::STDIO_ENABLED_PROP, true);
-  config.set (log::DEBUG_ENABLED_PROP, enable_debug);
+  config.set (logs::STDIO_ENABLED_PROP, true);
+  config.set (logs::DEBUG_ENABLED_PROP, enable_debug);
   if (enable_debug)
     {
-      config.set (log::STDIO_DEBUG_IS_CERR_PROP, true);
-      config.set (log::STDIO_DEBUG_MAXLEVEL_PROP, verbosity);
+      config.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
+      config.set (logs::STDIO_DEBUG_MAXLEVEL_PROP, verbosity);
       config.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
     }
   insight::init (config);

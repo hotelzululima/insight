@@ -32,7 +32,7 @@
 
 #include <kernel/Architecture.hh>
 #include <kernel/insight.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 ATF_TEST_CASE(architecture_x86_32)
 ATF_TEST_CASE_HEAD(architecture_x86_32)
@@ -67,8 +67,8 @@ s_check_x86_32 (const Architecture * arch_x86_32)
 ATF_TEST_CASE_BODY(architecture_x86_32)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
 
   insight::init (ct);
   /* Check full initialization (x86-32) with both arguments */
@@ -97,8 +97,8 @@ ATF_TEST_CASE_HEAD(architecture_arm)
 ATF_TEST_CASE_BODY(architecture_arm)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
 
   insight::init (ct);
   /* Check full initialization (x86-32) with both arguments */
@@ -127,8 +127,8 @@ ATF_TEST_CASE_HEAD(architecture_missing)
 ATF_TEST_CASE_BODY(architecture_missing)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
 
   insight::init (ct);
   /* Check if an exception is thrown on unknown architecture */

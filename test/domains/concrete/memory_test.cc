@@ -33,7 +33,7 @@
 #include <domains/concrete/ConcreteMemory.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/insight.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 ATF_TEST_CASE(concretememory_registers)
 ATF_TEST_CASE_HEAD(concretememory_registers)
@@ -44,8 +44,8 @@ ATF_TEST_CASE_HEAD(concretememory_registers)
 ATF_TEST_CASE_BODY(concretememory_registers)
 {
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);

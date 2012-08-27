@@ -35,7 +35,7 @@
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/Microcode.hh>
 #include <utils/graph.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 
 using namespace std;
 using namespace exprutils;
@@ -85,7 +85,7 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
   if (stmt->is_Jump())
     return post;
 
-  log::check ("weakest_precondition: unknown statement",
+  logs::check ("weakest_precondition: unknown statement",
 	      stmt->is_Assignment());
 
   Assignment *assmt = dynamic_cast<Assignment *>(stmt);
@@ -172,9 +172,9 @@ Expr * weakest_precondition(Expr * post, StmtArrow *arrow)
     Expr::createImplies (arrow->get_condition(),
 			 weakest_precondition(post, arrow->get_stmt()));
   simplify_level0 (&phi);
-  if (log::debug_is_on)
+  if (logs::debug_is_on)
     {
-      log::debug << string (79 ,'*') << endl
+      logs::debug << string (79 ,'*') << endl
 		 << "Backward step on :" << endl
 		 << phi->to_string () << endl;
     }
@@ -226,7 +226,7 @@ public:
       }
     catch (OptionNoValueExc &)
       {
-        log::warning << "process: unable to extract target" << endl;
+        logs::warning << "process: unable to extract target" << endl;
       }
   };
 
@@ -252,7 +252,7 @@ public:
           break;
         }
     if (!found_invariant)
-      log::warning << "Loop without invariant" << endl;
+      logs::warning << "Loop without invariant" << endl;
   };
 
   bool continue_run()
@@ -272,7 +272,7 @@ public:
 
   MicrocodeAddress current_path_get_target()
   {
-    log::check("current_path_get_last_annotation: current path empty", current_path->size() > 0);
+    logs::check("current_path_get_last_annotation: current path empty", current_path->size() > 0);
     return current_path->back().back()->extract_target().getValue();
   };
 
@@ -293,7 +293,7 @@ public:
               return subpath;
         }
     }
-    log::warning << "current_path_extract: cannot find bounds" << endl;
+    logs::warning << "current_path_extract: cannot find bounds" << endl;
     cout << start.pp() << "-" << end.pp() << endl;
     return subpath;
   };

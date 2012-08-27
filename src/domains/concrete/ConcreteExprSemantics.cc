@@ -30,7 +30,7 @@
 
 #include <domains/concrete/ConcreteExprSemantics.hh>
 #include <utils/bv-manip.hh>
-#include <utils/Log.hh>
+#include <utils/logs.hh>
 #include <iostream>
 
 /*! \ brief \todo integrer les bitfields dans les calculs */
@@ -255,7 +255,7 @@ ConcreteExprSemantics::BV_OP_DIV_U_eval(ConcreteValue v1, ConcreteValue v2,
   // \todo semantique de unsigned
   if (v2.get() == 0)
     {
-      log::warning << "division by 0" << std::endl;
+      logs::warning << "division by 0" << std::endl;
       val = 0;
     }
   else
@@ -276,7 +276,7 @@ ConcreteExprSemantics::BV_OP_DIV_S_eval(ConcreteValue v1, ConcreteValue v2,
 
   if (v2.get() == 0)
     {
-      log::warning << "division by 0" << std::endl;
+      logs::warning << "division by 0" << std::endl;
       val = 0;
     }
   else

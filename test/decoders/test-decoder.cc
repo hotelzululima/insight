@@ -42,15 +42,15 @@ main (int argc, char **argv)
 {
   int result = EXIT_SUCCESS;
   ConfigTable ct;
-  ct.set (log::DEBUG_ENABLED_PROP, false);
-  ct.set (log::STDIO_ENABLED_PROP, true);
+  ct.set (logs::DEBUG_ENABLED_PROP, false);
+  ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
 
   if (argc != 2)
     {
-      log::error << "wrong # of arguments" << endl
+      logs::error << "wrong # of arguments" << endl
 		 << "USAGE: " << argv[0] << " binary-filename" << endl;
       result = EXIT_FAILURE;
     }
@@ -69,17 +69,17 @@ main (int argc, char **argv)
 	  
 	  try
 	    {
-	      log::display << "**** Decode instruction: " 
+	      logs::display << "**** Decode instruction: " 
 			   << decoder->get_instruction (start) 
 			   << endl;
 	      start = decoder->decode (mc, start);
 
 	      mc->sort ();
-	      log::display << mc->pp () << endl;
+	      logs::display << mc->pp () << endl;
 	    }
 	  catch (std::runtime_error &e)
 	    {
-	      log::error << e.what() << endl;
+	      logs::error << e.what() << endl;
 	      result = EXIT_FAILURE;
 	    }
 	  
