@@ -42,7 +42,7 @@ namespace ExprParser {
 
   extern bool init_lexer (const std::string &input);
   extern void terminate_lexer ();
-};
+}
 
 
 

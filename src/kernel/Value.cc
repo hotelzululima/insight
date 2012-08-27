@@ -38,5 +38,5 @@ int
 Value::get_size() const
 {
   return size;
-};
+}
 

@@ -51,7 +51,7 @@ public:
   void set (const std::string &name, const std::string &value);
   void set (const std::string &name, const char *value);
   void set (const std::string &name, int value);
-  void set (const std::string &name, long long value);
+  void set (const std::string &name, long value);
   void set (const std::string &name, bool value);
 
   bool has (const std::string &name) const;
@@ -60,7 +60,7 @@ public:
 
   std::string get (const std::string &name, const std::string &def = "") const;
 
-  long long get_integer (const std::string &name, long long def = 0) const;
+  long get_integer (const std::string &name, long def = 0) const;
 
   bool get_boolean (const std::string &name, bool def = false) const;
 

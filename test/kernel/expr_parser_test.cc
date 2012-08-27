@@ -103,7 +103,7 @@ using namespace std;
 	     "%eflags{6;1}")
 
 #define X86_32_CC(id, e, expout) \
-ATF_TEST_CASE(expr_parser_for_cc_ ## id); \
+ATF_TEST_CASE(expr_parser_for_cc_ ## id) \
 \
 ATF_TEST_CASE_HEAD(expr_parser_for_cc_ ## id)	\
 { \

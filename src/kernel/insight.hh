@@ -38,6 +38,6 @@ namespace insight
   void init (const ConfigTable &cfg = ConfigTable ());
 
   void terminate();
-};
+}
 
 #endif /* KERNEL_INSIGHT_HH */

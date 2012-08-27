@@ -64,7 +64,7 @@ eval_unary_expr(UnaryApp *ua)
     default:
       log::fatal_error("Context::eval Unknown unary operator");
     }
-};
+}
 
 /*****************************************************************************/
 
@@ -92,7 +92,7 @@ eval_ternary_expr(TernaryApp *ta)
     }
 
 #undef APPLY_TERNARY
-};
+}
 
 /*****************************************************************************/
 
@@ -194,7 +194,7 @@ eval_binary_expr(BinaryApp *ba)
     }
 
 #undef APPLY_BINARY
-};
+}
 
 /*****************************************************************************/
 
@@ -240,7 +240,7 @@ eval(const Expr *e)
       log::fatal_error("Context::eval Expression Type unknown");
     }
   return result;
-};
+}
 
 /*****************************************************************************/
 
@@ -252,7 +252,7 @@ pp()
   return "";
   // FIXME: Request for member ‘to_string’ is ambiguous
   // return memory->to_string ();
-};
+}
 
 /*****************************************************************************/
 
@@ -305,7 +305,7 @@ exec(Statement *st)
 
   return new_ctxt;
 
-};
+}
 
 /*****************************************************************************/
 
@@ -339,7 +339,7 @@ split_context(Expr *condition)
 		      Option<AbstractContext<TEMPLATE_ARGS> *> >
     (Option<AbstractContext<TEMPLATE_ARGS> *>(this),
      Option<AbstractContext<TEMPLATE_ARGS> *>(this));
-};
+}
 
 /*****************************************************************************/
 
@@ -452,7 +452,7 @@ step(const Arrow &pa)
 
   return SR_OK;
 
-};
+}
 
 TEMPLATE void
 AbstractExecContext<TEMPLATE_ARGS>::
@@ -463,7 +463,7 @@ pending_arrow_set_status(ProgramPoint &pp,
   // \todo humm, pas trop efficace...
   delete_pending_arrow(pp, arr);
   add_pending_arrow(pp, arr, st);
-};
+}
 
 TEMPLATE void
 AbstractExecContext<TEMPLATE_ARGS>::
@@ -473,7 +473,7 @@ add_pending_arrow(ProgramPoint pp,
 {
   // \todo : verifier qu'on ne met pas de doublons
   pending_arrows.push_back(PendingArrow<TEMPLATE_ARGS>(pp, arr, st));
-};
+}
 
 TEMPLATE
 void
@@ -484,7 +484,7 @@ request_update(ProgramPoint &pp)
   MicrocodeNode *node = get_node(pp);
   MicrocodeNode_iterate_successors(*node, succ)
     add_pending_arrow(pp, *succ, PAS_PENDING);
-};
+}
 
 /*****************************************************************/
 
@@ -516,7 +516,7 @@ delete_pending_arrow(ProgramPoint &pp, StmtArrow *arr)
   DPAPred<TEMPLATE_ARGS>::arr = arr;
   pending_arrows.remove_if(DPAPred<TEMPLATE_ARGS>());
 
-};
+}
 
 /*****************************************************************/
 
@@ -545,7 +545,7 @@ delete_pending_arrow(PendingArrow<TEMPLATE_ARGS> pa)
   DPACompletePred<TEMPLATE_ARGS>::the_pa = &pa;
   pending_arrows.remove_if(DPACompletePred<TEMPLATE_ARGS>());
 
-};
+}
 
 /*****************************************************************/
 
@@ -554,7 +554,7 @@ AbstractExecContext<TEMPLATE_ARGS>::
 get_node(const ProgramPoint &pp)
 {
   return program->get_node(pp.to_address());
-};
+}
 
 TEMPLATE
 Option<AbstractContext<TEMPLATE_ARGS> *>
@@ -573,7 +573,7 @@ get_current_context(ProgramPoint &pp)
 
   // TODO: est ce vraiment la bonne syntaxe ?
   return Option<AbstractContext<TEMPLATE_ARGS> *>();
-};
+}
 
 
 TEMPLATE ProgramPoint
@@ -610,7 +610,7 @@ generic_step()
   if (step(pa) == SR_TARGET_NOT_FOUND)
     log::fatal_error("The end");
   return true;
-};
+}
 
 /*****************************************************************************/
 
@@ -644,7 +644,7 @@ init(AbstractContext<TEMPLATE_ARGS> *ctxt)
   ProgramPoint *cpp = ProgramPoint::init_program_point(program->entry_point());
   this->set_context_and_request_update(*cpp, ctxt);
   delete cpp;
-};
+}
 
 /*****************************************************************************/
 
@@ -663,4 +663,4 @@ pp()
     }
 
   return oss.str();
-};
+}

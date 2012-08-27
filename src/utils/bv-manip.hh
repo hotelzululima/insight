@@ -117,6 +117,6 @@ extend_unsigned (word_t val, int current_size)
   return val & mask;
 }
 
-};
+}
 
 #endif /* UTILS_BV_MANIP_HH */

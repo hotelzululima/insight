@@ -134,7 +134,7 @@ Expr::eval_level0() const
 int Expr::get_bv_size() const
 {
   return bv_size;
-};
+}
 
 int Expr::get_bv_offset() const
 {
@@ -248,7 +248,7 @@ Constant::get_val() const
 { 
   return BitVectorManip::extract_from_word (val, get_bv_offset (), 
 					    get_bv_size ()); 
-};
+}
 
 constant_t 
 Constant::get_not_truncated_value() const

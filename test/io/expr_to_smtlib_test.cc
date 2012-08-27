@@ -100,7 +100,7 @@ using namespace std;
 	     "(= ((_ extract 6 6 ) eflags) #b1)")
 
 #define X86_32_CC(id, e, expout) \
-ATF_TEST_CASE(smtlib_ ## id); \
+ATF_TEST_CASE(smtlib_ ## id) \
 \
 ATF_TEST_CASE_HEAD(smtlib_ ## id)	\
 { \
@@ -144,7 +144,7 @@ ALL_X86_CC
 
 #if 1
 #define X86_32_CC(id, e, expout) \
-  ATF_ADD_TEST_CASE(tcs, smtlib_ ## id);
+  ATF_ADD_TEST_CASE(tcs, smtlib_ ## id)
 
 
 ATF_INIT_TEST_CASES(tcs)

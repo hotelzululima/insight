@@ -102,7 +102,7 @@ s_check_equivalence (Expr *F1, Expr *F2, const char *file, int line)
   F->deref ();
 }
 
-ATF_TEST_CASE (check_tautologies);
+ATF_TEST_CASE (check_tautologies)
 
 ATF_TEST_CASE_HEAD (check_tautologies)
 { 
@@ -160,7 +160,7 @@ s_replace (Expr *F, Expr *P, Expr *V)
   return result;
 }
 
-ATF_TEST_CASE (check_replacement);
+ATF_TEST_CASE (check_replacement)
 
 ATF_TEST_CASE_HEAD (check_replacement)
 { 
@@ -224,7 +224,7 @@ ATF_TEST_CASE_BODY(check_replacement)
 
 			/* --------------- */
 
-ATF_TEST_CASE (check_pattern_matching);
+ATF_TEST_CASE (check_pattern_matching)
 
 ATF_TEST_CASE_HEAD (check_pattern_matching)
 { 

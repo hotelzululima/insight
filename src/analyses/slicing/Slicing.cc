@@ -567,10 +567,10 @@ DataDependency::~DataDependency()
 bool DataDependency::consider_jump_cond_flag = false;
 bool DataDependency::only_simple_sets_flag = false;
 
-void DataDependency::ConsiderJumpCondMode(bool set) { consider_jump_cond_flag = set; };
-bool DataDependency::ConsiderJumpCond() { return consider_jump_cond_flag; };
-void DataDependency::OnlySimpleSetsMode(bool set) { only_simple_sets_flag = set; };
-bool DataDependency::OnlySimpleSets() { return only_simple_sets_flag; };
+void DataDependency::ConsiderJumpCondMode(bool set) { consider_jump_cond_flag = set; }
+bool DataDependency::ConsiderJumpCond() { return consider_jump_cond_flag; }
+void DataDependency::OnlySimpleSetsMode(bool set) { only_simple_sets_flag = set; }
+bool DataDependency::OnlySimpleSets() { return only_simple_sets_flag; }
 
 /*****************************************************************************/
 

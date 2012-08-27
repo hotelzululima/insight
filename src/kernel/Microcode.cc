@@ -322,7 +322,7 @@ void Microcode::simplify_and_clean_targets()
   for (set<MicrocodeNode *>::iterator new_node = new_nodes.begin();
        new_node != new_nodes.end(); new_node++)
     nodes->push_back( *new_node );
-};
+}
 
 
 /*****************************************************************************/

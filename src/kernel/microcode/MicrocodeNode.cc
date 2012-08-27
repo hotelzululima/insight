@@ -135,9 +135,9 @@ void MicrocodeNode::add_predecessor(StmtArrow * arr) {
 
 MicrocodeAddress MicrocodeNode::get_loc() const {
   return loc;
-};
-std::vector<StmtArrow *> * MicrocodeNode::get_successors() const { return successors; };
-std::vector<StmtArrow *> * MicrocodeNode::get_predecessors() const { return predecessors; };
+}
+std::vector<StmtArrow *> * MicrocodeNode::get_successors() const { return successors; }
+std::vector<StmtArrow *> * MicrocodeNode::get_predecessors() const { return predecessors; }
 
 string MicrocodeNode::pp() const
 {
@@ -357,7 +357,7 @@ StaticArrow::StaticArrow(MicrocodeAddress origin,
 		                 Expr *condition) :
   StmtArrow(origin, stmt, annotations, condition),
   target(target)
-{};
+{}
 
 StaticArrow::StaticArrow(MicrocodeAddress origin,
                          MicrocodeAddress target,
@@ -365,42 +365,42 @@ StaticArrow::StaticArrow(MicrocodeAddress origin,
                          Expr *condition) :
   StmtArrow(origin, stmt, condition),
   target(target)
-{};
+{}
 
 StaticArrow::StaticArrow(const StaticArrow &other) :
   StmtArrow(other),
   target(other.target)
-{};
+{}
 
 StaticArrow::~StaticArrow() {}
 
 StmtArrow * StaticArrow::clone() {
   return new StaticArrow(*this);
-};
+}
 
 Option<MicrocodeAddress> StaticArrow::extract_target() const
 {
   return Option<MicrocodeAddress>(target);
-};
+}
 
 MicrocodeAddress StaticArrow::get_target() const
 {
   return target;
-};
+}
 
 MicrocodeAddress StaticArrow::get_concrete_target() const
 {
   return target;
-};
+}
 
 void StaticArrow::set_concrete_target(MicrocodeAddress nvo)
 {
   target = nvo;
-};
+}
 
 void StaticArrow::set_tgt(MicrocodeNode * n) {
 	tgt = n;
-};
+}
 
 string StaticArrow::pp() const 
 {
@@ -439,7 +439,7 @@ DynamicArrow::DynamicArrow(MicrocodeAddress origin,
                            Expr *condition) :
   StmtArrow(origin, stmt, annotations, condition),
   target(target)
-{};
+{}
 
 DynamicArrow::DynamicArrow(MicrocodeAddress origin,
                            Expr *target,
@@ -447,24 +447,24 @@ DynamicArrow::DynamicArrow(MicrocodeAddress origin,
                            Expr *condition) :
   StmtArrow(origin, stmt, condition),
   target(target)
-{};
+{}
 
 DynamicArrow::DynamicArrow(const DynamicArrow &other) :
   StmtArrow(other),
   target(other.target->ref ())
-{};
+{}
 
 StmtArrow * DynamicArrow::clone()
 {
   return new DynamicArrow(*this);
-};
+}
 
 DynamicArrow::~DynamicArrow();
 
 Expr * DynamicArrow::get_target() const
 {
   return target;
-};
+}
 
 Option<MicrocodeAddress> DynamicArrow::extract_target() const
 {
@@ -472,4 +472,4 @@ Option<MicrocodeAddress> DynamicArrow::extract_target() const
     return Option<MicrocodeAddress>(MicrocodeAddress(((Constant *) target)->get_val()));
   else
     return Option<MicrocodeAddress>();
-};
+}

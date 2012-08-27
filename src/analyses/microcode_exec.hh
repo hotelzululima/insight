@@ -209,7 +209,7 @@ typedef enum
   PAS_PENDING,                  //! The arrow has not been explored yet
   PAS_UNABLE_TO_EVAL_CONDITION, //! The arrow has already been explored
   //  but condition could not be evaluated.
-  PAS_UNABLE_TO_EVAL_TARGET,    //! The arrow has already been explored the
+  PAS_UNABLE_TO_EVAL_TARGET    //! The arrow has already been explored the
   // condition was true but target could
   // not be evaluated.
 } PendingArrowStatus;

@@ -38,14 +38,14 @@
 
 namespace ExprParser {
   struct ClientData;
- };
-};
+ }
+}
 
 %code provides {
   namespace ExprParser {
     extern Expr *
     parse_Expr (const MicrocodeArchitecture *arch, const std::string &input);
-  };
+  }
  }
 
 %define namespace "ExprParser"

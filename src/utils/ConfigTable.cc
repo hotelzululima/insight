@@ -68,7 +68,7 @@ ConfigTable::set (const std::string &name, int value)
 }
 
 void 
-ConfigTable::set (const std::string &name, long long value)
+ConfigTable::set (const std::string &name, long value)
 {
   ostringstream oss;
 
@@ -109,10 +109,10 @@ ConfigTable::get (const std::string &name, const std::string &def) const
   return result;
 }
 
-long long 
-ConfigTable::get_integer (const std::string &name, long long def) const
+long 
+ConfigTable::get_integer (const std::string &name, long def) const
 {
-  long long result;
+  long result;
 
   if (has (name))
     result = strtoll (get (name).c_str (), NULL, 0);

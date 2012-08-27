@@ -53,12 +53,6 @@ using namespace std;
 
 #define XML_PARSER_DEBUG_MODE 0
 
-#if XML_PARSER_DEBUG_MODE
-#define XML_DBG(x...) printf(x)
-#else
-#define XML_DBG(x...)
-#endif
-
 #define XML_PARSE_ERROR(node, reason...) {                         \
     char prefix[1024];                                             \
     char the_reason[1024];                                         \
@@ -196,7 +190,7 @@ RegisterExpr *xml_get_register(string ident)
 void xml_reset_register_store()
 {
   xml_register_store.clear();
-};
+}
 
 void xml_declare_register(const string ident, int size)
 {
@@ -207,7 +201,7 @@ void xml_declare_register(const string ident, int size)
     RegisterExpr::create (regdesc, 0, size);
 
   xml_register_store[ident] = reg;
-  XML_DBG("new register : %s\n", xml_get_register(ident)->pp());
+  log::debug << "new register : " << *xml_get_register(ident) << endl;
 
   delete regdesc;
 }
@@ -528,9 +522,9 @@ Microcode *
 xml_parse_mc_program(const string filename)
 {
 
-  XML_DBG("--------------------------------------------\n");
-  XML_DBG("Parsing Microcode from xml file %s\n", filename);
-  XML_DBG("--------------------------------------------\n");
+  log::debug << "--------------------------------------------" << endl
+	     << "Parsing Microcode from xml file " << filename << endl
+	     << "--------------------------------------------" << endl;
 
   pair<xmlDocPtr, xmlNodePtr>
     xml_doc_handler = xml_get_root_from_file(filename.c_str());
@@ -543,9 +537,10 @@ xml_parse_mc_program(const string filename)
   delete xml_doc_handler.first;
   xml_delete_register_store();
 
-  XML_DBG("--------------------------------------------\n");
-  XML_DBG("Parsing process successfull : %d nodes\n", (int) elts->size());
-  XML_DBG("--------------------------------------------\n");
+  log::debug << "--------------------------------------------" << endl
+	     << "Parsing process successfull : " << elts->size() << " nodes" 
+	     << endl
+	     << "--------------------------------------------" << endl;
 
   if (elts->size() == 0)
     {

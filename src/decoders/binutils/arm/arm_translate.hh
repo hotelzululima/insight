@@ -84,7 +84,7 @@ enum UPDATE_FLAGS_FOR_INSTRUCTIONS {
   POP_INS = 0,
 
   CMP_INS = N_FLAG + Z_FLAG + C_FLAG + V_FLAG,
-  CMN_INS = N_FLAG + Z_FLAG + C_FLAG + V_FLAG,
+  CMN_INS = N_FLAG + Z_FLAG + C_FLAG + V_FLAG
 };
 
 /* --------------- */

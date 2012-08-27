@@ -244,7 +244,7 @@ ValueIterator::ValueIterator(const ValueIterator &other) :
 
 template <class Value>
 ConcreteAddressMemory<Value>::
-ValueIterator::~ValueIterator() {};
+ValueIterator::~ValueIterator() {}
 
 template <class Value>
 bool ConcreteAddressMemory<Value>::ValueIterator::end()

@@ -54,15 +54,15 @@
 
 /*****************************************************************************/
 
-BIN_OP_DEF(BV_OP_ADD_eval, +);
-BIN_OP_DEF(BV_OP_SUB_eval, -);
-BIN_OP_DEF(BV_OP_AND_eval, &);
-BIN_OP_DEF(BV_OP_OR_eval,  |);
-BIN_OP_DEF(BV_OP_XOR_eval, ^);
-BIN_OP_DEF(BV_OP_LSH_eval, <<);
-BIN_OP_DEF(BV_OP_NEQ_eval,  !=);
-BIN_OP_DEF(BV_OP_EQ_eval,  ==);
-BIN_OP_DEF(BV_OP_MODULO_eval, %);
+BIN_OP_DEF(BV_OP_ADD_eval, +)
+BIN_OP_DEF(BV_OP_SUB_eval, -)
+BIN_OP_DEF(BV_OP_AND_eval, &)
+BIN_OP_DEF(BV_OP_OR_eval,  |)
+BIN_OP_DEF(BV_OP_XOR_eval, ^)
+BIN_OP_DEF(BV_OP_LSH_eval, <<)
+BIN_OP_DEF(BV_OP_NEQ_eval,  !=)
+BIN_OP_DEF(BV_OP_EQ_eval,  ==)
+BIN_OP_DEF(BV_OP_MODULO_eval, %)
 
 			/* --------------- */
 
@@ -356,8 +356,8 @@ ConcreteExprSemantics::BV_OP_CONCAT_eval(ConcreteValue v1, ConcreteValue v2,
 							  offset, size));
 }
 
-UN_OP_DEF(BV_OP_NEG_eval, -);
-UN_OP_DEF(BV_OP_NOT_eval, ~);
+UN_OP_DEF(BV_OP_NEG_eval, -)
+UN_OP_DEF(BV_OP_NOT_eval, ~)
 
 template<>
 ConcreteValue 

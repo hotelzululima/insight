@@ -304,4 +304,4 @@ list<MCPath> sequencialize(Microcode * prg)
   SequentialisationVisitor v(prg);
   prg->depth_first_run(prg->get_node(prg->entry_point()), v);
   return v.segments;
-};
+}

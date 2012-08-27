@@ -163,7 +163,7 @@ s_simulate (const char *filename)
 #include "simulator_test_cases.hh"
 
 #define BINARY_FILE(id, file) \
-ATF_TEST_CASE(id); \
+ATF_TEST_CASE(id) \
 \
 ATF_TEST_CASE_HEAD(id)	\
 { \

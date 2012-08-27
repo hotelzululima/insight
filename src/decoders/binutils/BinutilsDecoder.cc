@@ -283,7 +283,7 @@ s_binutils_sprintf(stringstream *sstream, const char *format, ...)
 {
   va_list args;
   size_t buffer_size = 80;
-  char buffer[buffer_size];
+  char *buffer = new char[buffer_size];
 
   /* Using the stack is way more efficient in term of speed. That is
    * why it first do an attempt to use the stack and if it fail, it
@@ -308,6 +308,7 @@ s_binutils_sprintf(stringstream *sstream, const char *format, ...)
       if (tmp == NULL)
         {
           free(xbuffer);
+	  free (buffer);
           throw Decoder::DecoderUnexpectedError("out of memory");
         }
       else
@@ -331,6 +332,7 @@ s_binutils_sprintf(stringstream *sstream, const char *format, ...)
     {
       *sstream << buffer;
     }
+  delete [] (buffer);
 
   return result;
 }

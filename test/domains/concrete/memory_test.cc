@@ -35,7 +35,7 @@
 #include <kernel/insight.hh>
 #include <utils/Log.hh>
 
-ATF_TEST_CASE(concretememory_registers);
+ATF_TEST_CASE(concretememory_registers)
 ATF_TEST_CASE_HEAD(concretememory_registers)
 {
   set_md_var("descr",
@@ -81,7 +81,7 @@ ATF_TEST_CASE_BODY(concretememory_registers)
   insight::terminate ();
 }
 
-ATF_TEST_CASE(concretememory_memcells);
+ATF_TEST_CASE(concretememory_memcells)
 ATF_TEST_CASE_HEAD(concretememory_memcells)
 {
   set_md_var("descr",

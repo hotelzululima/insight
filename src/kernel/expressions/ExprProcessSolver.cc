@@ -328,7 +328,7 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
       close (parent_child_pipe[0]); // close useless fd
       close (child_parent_pipe[1]); // close useless fd
       int nb_args = args.size ();
-      char *tmp[nb_args + 2];
+      char **tmp = new char *[nb_args + 2];
       tmp[0] = ::strdup (cmd.c_str ());
       for (int i = 0; i < nb_args; i++)
 	tmp[i + 1] = ::strdup (args[i].c_str ());

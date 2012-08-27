@@ -36,7 +36,7 @@
 #include <kernel/insight.hh>
 #include <utils/Log.hh>
 
-ATF_TEST_CASE(concreteaddress);
+ATF_TEST_CASE(concreteaddress)
 ATF_TEST_CASE_HEAD(concreteaddress)
 {
   set_md_var("descr",

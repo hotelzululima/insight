@@ -193,7 +193,7 @@ public:
 
   struct lt_arrow {
     bool operator()(StmtArrow *n1, StmtArrow *n2) const {
-      return ((long long int) n1) < ((long long int) n2) ;
+      return ((long) n1) < ((long) n2) ;
     }
   };
 };

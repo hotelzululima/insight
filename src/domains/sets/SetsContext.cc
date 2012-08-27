@@ -355,7 +355,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
     }
 
   log::fatal_error("Context::eval Expression Type unknown");
-};
+}
 
 
 /*****************************************************************************/

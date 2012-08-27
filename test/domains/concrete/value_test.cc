@@ -37,7 +37,7 @@
 #include <kernel/insight.hh>
 #include <utils/Log.hh>
 
-ATF_TEST_CASE(concretevalue);
+ATF_TEST_CASE(concretevalue)
 ATF_TEST_CASE_HEAD(concretevalue)
 {
   set_md_var("descr",

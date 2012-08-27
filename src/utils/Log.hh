@@ -91,6 +91,6 @@ namespace log
   extern std::ostream warning;
   extern std::ostream display;
   extern std::ostream debug;
-};
+}
 
 #endif /* ! UTILS_LOG_HH */

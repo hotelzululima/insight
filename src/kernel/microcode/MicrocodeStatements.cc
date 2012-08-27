@@ -66,52 +66,52 @@ string External::pp()
 
 /**********************************************************************/
 
-Statement::Statement() {};
-Statement::Statement(const Statement &) {};
-Statement::~Statement() {} ;
+Statement::Statement() {}
+Statement::Statement(const Statement &) {}
+Statement::~Statement() {} 
 
-Skip::Skip() : Statement() {};
-Skip::Skip(const Skip &sk) : Statement(sk) {};
-Skip::~Skip() {};
+Skip::Skip() : Statement() {}
+Skip::Skip(const Skip &sk) : Statement(sk) {}
+Skip::~Skip() {}
 
 /**********************************************************************/
 
-Assignment::Assignment(LValue *lv, Expr *v) : Statement(), lval(lv), rval(v) { };
+Assignment::Assignment(LValue *lv, Expr *v) : Statement(), lval(lv), rval(v) { }
 Assignment::Assignment(const Assignment &as) : Statement(as)
 {
   lval = (LValue *) as.lval->ref ();
   rval = as.rval->ref ();
-};
+}
 
 Assignment::~Assignment()
 {
   lval->deref ();
   rval->deref ();
-};
+}
 
 const LValue * Assignment::get_lval() const
 {
   return lval;
-};
+}
 
 void Assignment::set_lval(LValue *lv)
 {
   if (lval != NULL)
     lval->deref ();
   lval = lv;
-};
+}
 
 const Expr * Assignment::get_rval() const
 {
   return rval;
-};
+}
 
 void Assignment::set_rval(LValue *rv)
 {
   if (rval != NULL)
     rval->deref ();
   rval = rv;
-};
+}
 
 /**********************************************************************/
 
@@ -216,23 +216,23 @@ vector<Expr **> * External::expr_list()
 
 /*****************************************************************************/
 
-Jump::Jump(Expr *target) : Statement(), target(target) {};
+Jump::Jump(Expr *target) : Statement(), target(target) {}
 
 Jump::Jump(const Jump &jp) : Statement(jp) {
 	target = jp.target->ref ();
-};
+}
 
 Jump::~Jump() {
   target->deref ();
-};
+}
 
 Expr * Jump::get_target() {
 	return target;
-};
+}
 
 /*****************************************************************************/
 
-External::External(std::string id) : Statement(), id(id) {};
-External::External(const External &bb) : Statement(bb), id(bb.id) {};
-External::~External() {};
-std::string External::get_id() { return id; };
+External::External(std::string id) : Statement(), id(id) {}
+External::External(const External &bb) : Statement(bb), id(bb.id) {}
+External::~External() {}
+std::string External::get_id() { return id; }

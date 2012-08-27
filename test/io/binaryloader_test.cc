@@ -43,7 +43,7 @@
 
 using namespace std;
 
-ATF_TEST_CASE(binutils_binaryloader_x86_64);
+ATF_TEST_CASE(binutils_binaryloader_x86_64)
 ATF_TEST_CASE_HEAD(binutils_binaryloader_x86_64)
 {
   set_md_var("descr",
@@ -68,7 +68,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
   insight::terminate ();
 }
 
-ATF_TEST_CASE(binutils_binaryloader_x86_32);
+ATF_TEST_CASE(binutils_binaryloader_x86_32)
 ATF_TEST_CASE_HEAD(binutils_binaryloader_x86_32)
 {
   set_md_var("descr",
@@ -109,7 +109,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
   insight::terminate ();
 }
 
-ATF_TEST_CASE(binutils_binaryloader_arm);
+ATF_TEST_CASE(binutils_binaryloader_arm)
 ATF_TEST_CASE_HEAD(binutils_binaryloader_arm)
 {
   set_md_var("descr",

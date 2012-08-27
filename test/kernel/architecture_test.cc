@@ -34,7 +34,7 @@
 #include <kernel/insight.hh>
 #include <utils/Log.hh>
 
-ATF_TEST_CASE(architecture_x86_32);
+ATF_TEST_CASE(architecture_x86_32)
 ATF_TEST_CASE_HEAD(architecture_x86_32)
 {
   set_md_var("descr",
@@ -87,7 +87,7 @@ ATF_TEST_CASE_BODY(architecture_x86_32)
   insight::terminate ();
 }
 
-ATF_TEST_CASE(architecture_arm);
+ATF_TEST_CASE(architecture_arm)
 ATF_TEST_CASE_HEAD(architecture_arm)
 {
   set_md_var("descr",
@@ -118,7 +118,7 @@ ATF_TEST_CASE_BODY(architecture_arm)
   insight::terminate ();
 }
 
-ATF_TEST_CASE(architecture_missing);
+ATF_TEST_CASE(architecture_missing)
 ATF_TEST_CASE_HEAD(architecture_missing)
 {
   set_md_var("descr",

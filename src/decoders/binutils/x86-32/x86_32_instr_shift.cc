@@ -148,22 +148,22 @@ X86_32_TRANSLATE_1_OP(op) \
 { x86_32_translate<X86_32_TOKEN(op)> (data, Constant::create (1), op1); }
 
 
-translate_shift_one_bit (SAL);
+translate_shift_one_bit (SAL)
 translate_shift_one_bit (SALB)
-translate_shift_one_bit (SALL);
-translate_shift_one_bit (SALW);
-translate_shift_one_bit (SAR);
-translate_shift_one_bit (SARB);
-translate_shift_one_bit (SARL);
-translate_shift_one_bit (SARW);
-translate_shift_one_bit (SHL);
-translate_shift_one_bit (SHLB);
-translate_shift_one_bit (SHLL);
-translate_shift_one_bit (SHLW);
-translate_shift_one_bit (SHR);
-translate_shift_one_bit (SHRB);
-translate_shift_one_bit (SHRL);
-translate_shift_one_bit (SHRW);
+translate_shift_one_bit (SALL)
+translate_shift_one_bit (SALW)
+translate_shift_one_bit (SAR)
+translate_shift_one_bit (SARB)
+translate_shift_one_bit (SARL)
+translate_shift_one_bit (SARW)
+translate_shift_one_bit (SHL)
+translate_shift_one_bit (SHLB)
+translate_shift_one_bit (SHLL)
+translate_shift_one_bit (SHLW)
+translate_shift_one_bit (SHR)
+translate_shift_one_bit (SHRB)
+translate_shift_one_bit (SHRL)
+translate_shift_one_bit (SHRW)
 
 #define translate_shift_two_args(op,szc,sz)				\
 X86_32_TRANSLATE_2_OP(op ## szc)					\
@@ -175,21 +175,21 @@ X86_32_TRANSLATE_2_OP(op ## szc)					\
   x86_32_translate<X86_32_TOKEN(op)> (data, aux, op2); \
 }
 
-translate_shift_two_args(SAL,B,8);
-translate_shift_two_args(SAL,L,32);
-translate_shift_two_args(SAL,W,16);
+translate_shift_two_args(SAL,B,8)
+translate_shift_two_args(SAL,L,32)
+translate_shift_two_args(SAL,W,16)
 
-translate_shift_two_args(SAR,B,8);
-translate_shift_two_args(SAR,L,32);
-translate_shift_two_args(SAR,W,16);
+translate_shift_two_args(SAR,B,8)
+translate_shift_two_args(SAR,L,32)
+translate_shift_two_args(SAR,W,16)
 
-translate_shift_two_args(SHL,B,8);
-translate_shift_two_args(SHL,L,32);
-translate_shift_two_args(SHL,W,16);
+translate_shift_two_args(SHL,B,8)
+translate_shift_two_args(SHL,L,32)
+translate_shift_two_args(SHL,W,16)
 
-translate_shift_two_args(SHR,B,8);
-translate_shift_two_args(SHR,L,32);
-translate_shift_two_args(SHR,W,16);
+translate_shift_two_args(SHR,B,8)
+translate_shift_two_args(SHR,L,32)
+translate_shift_two_args(SHR,W,16)
 
 			/* --------------- */
 
@@ -210,26 +210,26 @@ translate_shift_two_args(SHR,W,16);
 					op1);				\
   }
 
-translate_rotate_one_bit_wosz (RCL);
-translate_rotate_one_bit_wosz (RCR); 
-translate_rotate_one_bit_wosz (ROL); 
-translate_rotate_one_bit_wosz (ROR); 
+translate_rotate_one_bit_wosz (RCL)
+translate_rotate_one_bit_wosz (RCR) 
+translate_rotate_one_bit_wosz (ROL) 
+translate_rotate_one_bit_wosz (ROR) 
 
-translate_rotate_one_bit_wsz (RCLB, 8);
-translate_rotate_one_bit_wsz (RCLW, 16);
-translate_rotate_one_bit_wsz (RCLL, 32);
+translate_rotate_one_bit_wsz (RCLB, 8)
+translate_rotate_one_bit_wsz (RCLW, 16)
+translate_rotate_one_bit_wsz (RCLL, 32)
 
-translate_rotate_one_bit_wsz (RCRB, 8);
-translate_rotate_one_bit_wsz (RCRW, 16);
-translate_rotate_one_bit_wsz (RCRL, 32);
+translate_rotate_one_bit_wsz (RCRB, 8)
+translate_rotate_one_bit_wsz (RCRW, 16)
+translate_rotate_one_bit_wsz (RCRL, 32)
 
-translate_rotate_one_bit_wsz (ROLB, 8);
-translate_rotate_one_bit_wsz (ROLW, 16);
-translate_rotate_one_bit_wsz (ROLL, 32);
+translate_rotate_one_bit_wsz (ROLB, 8)
+translate_rotate_one_bit_wsz (ROLW, 16)
+translate_rotate_one_bit_wsz (ROLL, 32)
 
-translate_rotate_one_bit_wsz (RORB, 8);
-translate_rotate_one_bit_wsz (RORW, 16);
-translate_rotate_one_bit_wsz (RORL, 32);
+translate_rotate_one_bit_wsz (RORB, 8)
+translate_rotate_one_bit_wsz (RORW, 16)
+translate_rotate_one_bit_wsz (RORL, 32)
 
 
 #define translate_rotate_two_args(op,szc,sz)			\
@@ -239,21 +239,21 @@ translate_rotate_one_bit_wsz (RORL, 32);
     x86_32_translate<X86_32_TOKEN(op)> (data, op1, op2);	\
   }
 
-translate_rotate_two_args (RCL, B, 8);
-translate_rotate_two_args (RCL, W, 16);
-translate_rotate_two_args (RCL, L, 32);
+translate_rotate_two_args (RCL, B, 8)
+translate_rotate_two_args (RCL, W, 16)
+translate_rotate_two_args (RCL, L, 32)
 
-translate_rotate_two_args (RCR, B, 8);
-translate_rotate_two_args (RCR, W, 16);
-translate_rotate_two_args (RCR, L, 32);
+translate_rotate_two_args (RCR, B, 8)
+translate_rotate_two_args (RCR, W, 16)
+translate_rotate_two_args (RCR, L, 32)
 
-translate_rotate_two_args (ROL, B, 8);
-translate_rotate_two_args (ROL, W, 16);
-translate_rotate_two_args (ROL, L, 32);
+translate_rotate_two_args (ROL, B, 8)
+translate_rotate_two_args (ROL, W, 16)
+translate_rotate_two_args (ROL, L, 32)
 
-translate_rotate_two_args (ROR, B, 8);
-translate_rotate_two_args (ROR, W, 16);
-translate_rotate_two_args (ROR, L, 32);
+translate_rotate_two_args (ROR, B, 8)
+translate_rotate_two_args (ROR, W, 16)
+translate_rotate_two_args (ROR, L, 32)
 
 static void
 s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *bitcount, 
