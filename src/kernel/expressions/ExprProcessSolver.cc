@@ -42,6 +42,8 @@
 #include <cstdlib>
 #include <cassert>
 
+#include <unistd.h>
+
 using namespace std;
 using namespace std::tr1;
 using namespace exprutils;
@@ -67,7 +69,7 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca,
 			   const std::vector<std::string> &args)
   throw (UnexpectedResponseException, UnknownSolverException)
 {
-  FILE *pipestreams[2];
+  FILE *pipestreams[2] = {NULL, NULL};
   ExprProcessSolver *result = NULL;
 
   if (s_create_pipe (cmd, args, pipestreams))
@@ -282,13 +284,27 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
 
   if (cpid == 0) 
     {
+      int fid;
+
       /* Child code */
       close (parent_child_pipe[1]); // close write part of P --> C
       close (child_parent_pipe[0]); // close read part of C --> P      
       close (0); // close stdin
-      dup (parent_child_pipe[0]); // associate read part of P --> C to stdin
+      fid = dup (parent_child_pipe[0]); // associate read part of P --> C to stdin
+      if (fid < 0)
+	{
+	  perror("dup stdin pipe");
+	  return false;
+	}
+
       close (1); // close stdout
-      dup (child_parent_pipe[1]); // associate write part of C --> P to stdout
+      fid = dup (child_parent_pipe[1]); // associate write part of C --> P to stdout
+      if (fid < 0)
+	{
+	  perror("dup stdout pipe");
+	  return false;
+	}
+
       close (parent_child_pipe[0]); // close useless fd
       close (child_parent_pipe[1]); // close useless fd
       int nb_args = args.size ();
