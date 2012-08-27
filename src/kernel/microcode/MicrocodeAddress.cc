@@ -89,6 +89,14 @@ bool MicrocodeAddress::lessThan(const MicrocodeAddress &other) const
           ((global == other.global) && (local < other.local)));
 }
 
+MicrocodeAddress & 
+MicrocodeAddress::operator = (const MicrocodeAddress &other)
+{
+  new (this) MicrocodeAddress (other.global, other.local);
+
+  return *this;
+}
+
 bool MicrocodeAddress::operator==(const MicrocodeAddress &other) const
 {
   return ((global == other.global) && (local == other.local));

@@ -62,14 +62,12 @@ public:
   address_t getGlobal() const;
   address_t getLocal() const;
 
-  //  Expr * next();
-  // bool of_term(Expr *t);
-
   MicrocodeAddress operator++ (int);
   virtual std::string pp() const ;
 
   bool equals(const MicrocodeAddress &other) const;
   bool lessThan(const MicrocodeAddress &other) const;
+  MicrocodeAddress &operator = (const MicrocodeAddress &other);
 
 private:
   bool operator==(const MicrocodeAddress &other) const;
