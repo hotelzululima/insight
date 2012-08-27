@@ -84,3 +84,22 @@ ExprSolver::ExprSolver (const MicrocodeArchitecture *mca) : mca (mca)
 ExprSolver::~ExprSolver ()
 {
 }
+
+Constant * 
+ExprSolver::evaluate (const Expr *e, const Expr *context) 
+  throw (UnexpectedResponseException)
+{
+  Constant *result = NULL;
+  Variable *var = Variable::create ("_unk", 0, e->get_bv_size ());
+  Expr *phi = Expr::createAnd (Expr::createEquality (var, e->ref ()),
+			       context->ref ( ));
+
+  push ();
+  if (check_sat (phi) == SAT)
+    result = get_value_of (var);
+  phi->deref ();
+  var->deref ();
+  pop ();
+
+  return result;
+}

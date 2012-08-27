@@ -99,42 +99,38 @@ ExprProcessSolver::check_sat (const Expr *e)
 {
   ExprSolver::Result result = ExprSolver::UNSAT;
     
-  if (send_command ("(push 1)"))
+  declare_variable (e);
+  
+  if (log::debug_is_on)
     {
-      declare_variable (e);
+      ostringstream oss;
+      
+      oss << "(assert ";       
+      smtlib_writer (oss, e, MEMORY_VAR, 
+		     8 * mca->get_reference_arch ()->address_range);
+      oss << ") " << endl;
+      log::debug << "SMT command " << oss.str () << endl;
+      *out << oss.str () << endl;
+    }
+  else
+    {
+      *out << "(assert "; 	  
+      smtlib_writer (*out, e, MEMORY_VAR, 
+		     8 * mca->get_reference_arch ()->address_range);
+      *out << ") " << endl;
+    }
 
-      if (log::debug_is_on)
-	{
-	  ostringstream oss;
-
-	  oss << "(assert ";       
-	  smtlib_writer (oss, e, MEMORY_VAR, 
-			 8 * mca->get_reference_arch ()->address_range);
-	  oss << ") " << endl;
-	  log::debug << "SMT command " << oss.str () << endl;
-	  *out << oss.str () << endl;
-	}
-      else
-	{
-	  *out << "(assert "; 	  
-	  smtlib_writer (*out, e, MEMORY_VAR, 
-			 8 * mca->get_reference_arch ()->address_range);
-	  *out << ") " << endl;
-	}
-
-      if (read_status ())
-	{
-	  string res = exec_command ("(check-sat)");
-	  if (res == "sat") 
-	    result = ExprSolver::SAT;
-	  else if (res == "unsat") 
-	    result = ExprSolver::UNSAT;
-	  else if (res == "unknown") 
-	    result = ExprSolver::UNKNOWN;
-	  else 
-	    throw UnexpectedResponseException ("check-sat: " + res);
-	}
-      send_command ("(pop 1)");
+  if (read_status ())
+    {
+      string res = exec_command ("(check-sat)");
+      if (res == "sat") 
+	result = ExprSolver::SAT;
+      else if (res == "unsat") 
+	result = ExprSolver::UNSAT;
+      else if (res == "unknown") 
+	result = ExprSolver::UNKNOWN;
+      else 
+	throw UnexpectedResponseException ("check-sat: " + res);
     }
   
   return result;
@@ -262,6 +258,30 @@ ExprProcessSolver::get_result ()
   return result;
 }
 
+void 
+ExprProcessSolver::push ()
+  throw (UnexpectedResponseException)
+{
+  if (! send_command ("(push 1)"))
+    throw UnexpectedResponseException ("push: failure");
+}
+
+void 
+ExprProcessSolver::pop ()
+  throw (UnexpectedResponseException)
+{
+  if (! send_command ("(pop 1)"))
+    throw UnexpectedResponseException ("pop: failure");
+}
+
+Constant * 
+ExprProcessSolver::get_value_of (const Expr *)
+  throw (UnexpectedResponseException)
+{
+  throw UnexpectedResponseException("get_value_of: not implemented");
+}
+
+
 static bool 
 s_create_pipe (const std::string &cmd, const vector<string> &args,
 	       FILE **rwstreams)
@@ -327,3 +347,4 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
 
   return true;
 }
+

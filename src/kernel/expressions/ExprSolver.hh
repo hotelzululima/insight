@@ -75,7 +75,18 @@ public:
   virtual Result check_sat (const Expr *e) 
     throw (UnexpectedResponseException) = 0;
 
+  virtual Constant *evaluate (const Expr *e, const Expr *context) 
+    throw (UnexpectedResponseException);
+
+  virtual void push () 
+    throw (UnexpectedResponseException) = 0;
+  virtual void pop () 
+    throw (UnexpectedResponseException) = 0;
+  virtual Constant *get_value_of (const Expr *var)
+    throw (UnexpectedResponseException) = 0;
+
 protected:
+
 
   ExprSolver (const MicrocodeArchitecture *mca);
 

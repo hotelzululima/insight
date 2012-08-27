@@ -56,6 +56,13 @@ public:
   virtual Result check_sat (const Expr *e)
     throw (UnexpectedResponseException);
 
+  virtual void push () 
+    throw (UnexpectedResponseException);
+  virtual void pop () 
+    throw (UnexpectedResponseException);
+  virtual Constant *get_value_of (const Expr *var)
+    throw (UnexpectedResponseException);
+
 protected:
   bool init ();
   bool write_header ();
@@ -66,6 +73,7 @@ protected:
   std::string exec_command (const char *s);
   bool declare_variable (const Expr *e);
   std::string get_result ();
+
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_EXPRPROCESSSOLVER_HH */
