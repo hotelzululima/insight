@@ -150,7 +150,7 @@ SymbolicMemory::is_defined (const ConcreteAddress &a) const
 
 
 SymbolicMemory *
-SymbolicMemory::clone ()
+SymbolicMemory::clone () const
 {
   SymbolicMemory *result = new SymbolicMemory (base);
   

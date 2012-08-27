@@ -60,7 +60,7 @@ public:
 
   virtual bool is_defined(const ConcreteAddress &a) const;
 
-  virtual SymbolicMemory *clone ();
+  virtual SymbolicMemory *clone () const;
 
   virtual bool is_defined(const RegisterDesc *rdesc) const;
   virtual SymbolicValue get(const RegisterDesc *rdesc) const 
