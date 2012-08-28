@@ -32,6 +32,7 @@
 
 #include <io/expressions/smtlib-writer.hh>
 #include <kernel/expressions/exprutils.hh>
+#include <io/expressions/expr-parser.hh>
 #include <utils/logs.hh>
 
 #include <tr1/unordered_set>
@@ -47,6 +48,7 @@
 using namespace std;
 using namespace std::tr1;
 using namespace exprutils;
+typedef ExprSolver::UnexpectedResponseException UnexpectedResponseException;
 
 #define MEMORY_VAR "MEM"
 
@@ -274,11 +276,146 @@ ExprProcessSolver::pop ()
     throw UnexpectedResponseException ("pop: failure");
 }
 
+static bool
+s_parse_result_line (const string &line, vector< pair<string,string> > &result)
+{
+  list<int> pos;
+  string::const_iterator c = line.begin ();
+  enum { RFP, RSP, RE, RSE, RPE, RV, RCP } st = RFP;
+  pair<string,string> couple;
+  string::size_type i;
+
+  for (i = 0; i < line.size (); i++, c++)
+    {
+      if (st == RFP)
+	{
+	  if (*c == '(') 
+	    st = RSP;
+	  else if (! isspace (*c))
+	    return false;	    
+	}	 
+      else if (st == RSP)
+	{
+	  if (*c == '(') 
+	    st = RE;
+	  else if (*c == ')')
+	    break;
+	  else if (! isspace (*c))
+	    return false;	    
+	}
+      else if (st == RE)
+	{
+	  if (isspace (*c))
+	    continue;
+	  if (*c == ')')
+	    return false;
+	  pos.push_front (i);
+	  st = (*c == '(')  ? RPE : RSE;
+	}
+      else if (st == RSE)
+	{
+	  if (*c == '(' || *c == ')')
+	    return false;
+	  if (isspace (*c))
+	    {
+	      int spos = pos.front ();
+	      pos.pop_front();
+	      couple.first = line.substr (spos, i - spos);
+	      st = RV;
+	    }
+	}
+      else if (st == RPE)
+	{
+	  if (*c == '(')
+	    pos.push_front (i);
+	  else if (*c == ')')
+	    {
+	      int spos = pos.front ();
+	      pos.pop_front();
+	      if (pos.empty ())
+		{
+		  st = RV;
+		  couple.first = line.substr (spos, i - spos + 1);  
+		}
+	    }
+	}
+      else if (st == RV)
+	{
+	  if (pos.empty ())
+	    {
+	      if (*c == '#' || isalnum (*c))
+		pos.push_front (i);
+	      else if (! isspace (*c))
+		return false;
+	    }
+	  else if (isspace (*c) || *c == ')')
+	    {
+	      int spos = pos.front ();
+	      pos.pop_front();
+	      couple.second = line.substr (spos, i - spos);
+	      result.push_back (couple);
+	      st = (*c == ')') ? RSP : RCP;
+	    }
+	  else if (*c == '(')
+	    return false;
+	}
+      else if (st == RCP)
+	{
+	  if (*c == ')')
+	    st = RSP;
+	  else if (! isspace (*c))
+	    return false;
+	}
+    }
+
+  if (st != RSP || i != line.size () - 1)
+    result.clear ();
+
+  return ! result.empty ();
+}
+
 Constant * 
-ExprProcessSolver::get_value_of (const Expr *)
+ExprProcessSolver::get_value_of (const Expr *e)
   throw (UnexpectedResponseException)
 {
-  throw UnexpectedResponseException("get_value_of: not implemented");
+  Constant *result = NULL;
+  ostringstream oss;
+  oss << "(get-value (";
+  smtlib_writer (oss, e, MEMORY_VAR, 
+		 8 * mca->get_reference_arch ()->address_range, false);
+  oss << "))";
+
+  string res = exec_command (oss.str ());
+  vector< pair<string,string> > couples;
+  if (s_parse_result_line (res, couples))
+    {
+      if (couples.size () > 1)
+	throw UnexpectedResponseException ("get_value_of: " + res);
+      string value = couples[0].second;
+      if (value[0] == '#')
+	{
+	  if (value[1] == 'x' || value[1] == 'b')
+	    {
+	      value[0] = '0';
+	      result = (Constant *)expr_parser (value, mca);
+	      assert (result->is_Constant ());
+	    }
+	  else
+	    {
+	      throw UnexpectedResponseException ("get_value_of: " + res);
+	    }
+	}
+      else if (value == "false")
+	result = Constant::False ();
+      else if (value == "true")
+	result = Constant::True ();
+      else
+	throw UnexpectedResponseException ("get_value_of: " + res);
+    }
+
+  if (result == NULL)
+    throw UnexpectedResponseException ("get_value_of: " + res);
+  return result;
 }
 
 
