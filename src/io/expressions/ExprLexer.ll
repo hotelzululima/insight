@@ -156,6 +156,18 @@ optype    [bswlqt]
 [\n]+  { yylloc->lines(yyleng); yylloc->step(); }
 
  /* Integer values */
+"0b"[01][01]* {
+                 char *s = yytext + 2;
+		 yylval->intValue = 0;
+		 for (; *s; s++)
+		   {
+		     yylval->intValue <<= 1;
+		     if (*s == '1') 
+		       yylval->intValue |= 1;
+		   }
+		 return token::TOK_INTEGER;
+                }
+
 "0x"?{hexvalue} {
                    if (yytext[1] != 'x')
 		     yylval->intValue = strtol (yytext, NULL, 10);
