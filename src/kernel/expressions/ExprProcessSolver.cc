@@ -107,7 +107,7 @@ ExprProcessSolver::check_sat (const Expr *e)
       
       oss << "(assert ";       
       smtlib_writer (oss, e, MEMORY_VAR, 
-		     8 * mca->get_reference_arch ()->address_range);
+		     8 * mca->get_reference_arch ()->address_range, true);
       oss << ") " << endl;
       logs::debug << "SMT command " << oss.str () << endl;
       *out << oss.str () << endl;
@@ -116,7 +116,7 @@ ExprProcessSolver::check_sat (const Expr *e)
     {
       *out << "(assert "; 	  
       smtlib_writer (*out, e, MEMORY_VAR, 
-		     8 * mca->get_reference_arch ()->address_range);
+		     8 * mca->get_reference_arch ()->address_range, true);
       *out << ") " << endl;
     }
 

@@ -150,6 +150,8 @@ public:
   virtual void visit (const UnaryApp *e) {
     const char *op;
     bool is_bool = is_boolean (e);
+    bool extract = (e->get_bv_offset () != 0 ||
+		    e->get_bv_size () != e->get_arg1 ()->get_bv_size ());
 
     if (e->get_op () == BV_OP_NOT)
       op = is_bool ? "not" : "bvnot";
@@ -159,12 +161,19 @@ public:
 	op = "bvneg";
       }
 
-    out << "(" << op << " ";
+    if (extract)
+      {
+	out << "(";
+	extract_bv_window (e);
+      }
+    out << "(" << op << " ";      
     if (is_bool)
       output_boolean (e->get_arg1 ());
     else
       e->get_arg1 ()->acceptVisitor (this);
     out << ")";
+    if (extract)
+      out << ")";
   }
 
   bool need_extract (const BinaryApp *e) {
@@ -203,8 +212,8 @@ public:
 	  {
 	    if (extract)
 	      {
-		out << "(";
 		extract_bv_window (e);
+		out << "(";
 	      }
 	      
 	    out << (op == BV_OP_AND ? "bvand " : "bvor ");
@@ -333,11 +342,14 @@ public:
 
 void 
 smtlib_writer (std::ostream &out, const Expr *e, const std::string &memvar, 
-	       int addrsize)
+	       int addrsize, bool as_boolean)
   throw (SMTLibUnsupportedExpression)
 {
   SMTLibVisitor writer (out, memvar, addrsize);
 
-  writer.output_boolean (e); 
+  if (as_boolean)
+    writer.output_boolean (e); 
+  else
+    e->acceptVisitor (writer);
   out.flush ();
 }

@@ -131,7 +131,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   ATF_REQUIRE (e != NULL);
   ostringstream oss;
 
-  smtlib_writer (oss, e, "memory", 32);
+  smtlib_writer (oss, e, "memory", 32, true);
   
   ATF_REQUIRE_EQ (oss.str (), expectedout);
   e->deref ();
