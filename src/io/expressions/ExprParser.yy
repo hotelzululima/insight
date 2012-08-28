@@ -217,6 +217,11 @@ expr_parser (const std::string &in, const MicrocodeArchitecture *arch)
   ExprParser::Parser parser (data);
   if (parser.parse () == 0)
     assert (data.result != NULL);
+  else if (data.result != NULL)
+    {
+      data.result->deref ();
+      data.result = NULL;
+    }  
   ExprParser::terminate_lexer ();
 
   return data.result;
