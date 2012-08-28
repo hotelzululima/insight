@@ -141,7 +141,7 @@ DataDependencyLocalContext::~DataDependencyLocalContext()
 
 bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value, Expr **phi);
 static Expr *
-crm_apply_bin_op(BinaryOp op, const Expr *A, const Expr *B);
+crm_apply_bin_op(BinaryOp op, const Expr *A, const Expr *B, int o, int sz);
 
 /* Replace any memory reference of form [x] in phi by (IF (x==addr) THEN value ELSE [x])
  * and propagate the replacement all along the terms. */
@@ -162,7 +162,8 @@ bool conditional_rewrite_memref(const Expr *addr, const Expr *value, Expr **phi)
 }
 
 static Expr * 
-crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2)
+crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2, 
+		 int o, int sz)
 {
   Variable *Varg1 = Variable::create ("ARG1");
   Variable *Varg2 = Variable::create ("ARG2");
@@ -173,7 +174,8 @@ crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2)
   free_variables.push_back(Varg2);
   Expr * v =
     Expr::createEquality(Variable::create ("TERM_VALUE"),
-		      BinaryApp::create (op, Varg1->ref (), Varg2->ref ()));
+			 BinaryApp::create (op, Varg1->ref (), Varg2->ref (), 
+					    o, sz));
   bottom_up_rewrite_pattern_and_assign (&arg2_pattern, p, free_variables, v );
   p->deref ();
   v->deref ();
@@ -320,7 +322,9 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
       bool arg2_modified = 
 	conditional_rewrite_memref_aux(addr, value,  & arg2);
       
-      Expr * new_phi = crm_apply_bin_op(ba->get_op(), arg1, arg2);
+      Expr * new_phi = crm_apply_bin_op(ba->get_op(), arg1, arg2,
+					ba->get_bv_offset (), 
+					ba->get_bv_size ());
       *phi = new_phi;
       
       arg1->deref();

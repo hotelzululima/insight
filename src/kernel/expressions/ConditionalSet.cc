@@ -51,8 +51,7 @@ ConditionalSet::EltSymbol ()
 
 inline Expr *IsIn (const Expr *elt) 
 {
-  return BinaryApp::create (BV_OP_EQ, ConditionalSet::EltSymbol (), 
-			    elt->ref ());
+  return BinaryApp::createEquality(ConditionalSet::EltSymbol (), elt->ref ());
 }
 
 void ConditionalSet::cs_simplify(Expr **set)

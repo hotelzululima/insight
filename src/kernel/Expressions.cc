@@ -87,7 +87,7 @@ Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 Expr * 
 Expr::createEquality (Expr *A, Expr *B)
 {
-  return BinaryApp::create (BV_OP_EQ, A, B);
+  return BinaryApp::create (BV_OP_EQ, A, B, 0, 1);
 }
 
 Expr *

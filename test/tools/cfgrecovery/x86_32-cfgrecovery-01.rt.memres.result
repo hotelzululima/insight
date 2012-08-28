@@ -16,11 +16,11 @@
 [(0x18,0)] @{asm:=mov    $0x3,%ax}@ StaticArrow (0x18,0) %eax{0;16} := 0x3{0;16}  --> (0x1C,0)
 [(0x1C,0)] @{asm:=ret    }@ %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
 [(0x1C,1)] %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
-[(0x1C,2)] @{callret:=RET}@ DynamicArrow (0x1C,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>StaticArrow (0x1C,2) Skip << (EQ %tmpr0_32{0;32} 0xD{0;32}){0;32} >> --> (0xD,0)StaticArrow (0x1C,2) Skip << (EQ %tmpr0_32{0;32} 0x27{0;32}){0;32} >> --> (0x27,0)
+[(0x1C,2)] @{callret:=RET}@ DynamicArrow (0x1C,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>StaticArrow (0x1C,2) Skip << (EQ %tmpr0_32{0;32} 0xD{0;32}){0;1} >> --> (0xD,0)StaticArrow (0x1C,2) Skip << (EQ %tmpr0_32{0;32} 0x27{0;32}){0;1} >> --> (0x27,0)
 [(0x1D,0)] @{asm:=mov    $0x4,%ax}@ StaticArrow (0x1D,0) %eax{0;16} := 0x4{0;16}  --> (0x21,0)
 [(0x21,0)] @{asm:=ret    }@ %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
 [(0x21,1)] %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
-[(0x21,2)] @{callret:=RET}@ DynamicArrow (0x21,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>StaticArrow (0x21,2) Skip << (EQ %tmpr0_32{0;32} 0x12{0;32}){0;32} >> --> (0x12,0)StaticArrow (0x21,2) Skip << (EQ %tmpr0_32{0;32} 0x2F{0;32}){0;32} >> --> (0x2F,0)
+[(0x21,2)] @{callret:=RET}@ DynamicArrow (0x21,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>StaticArrow (0x21,2) Skip << (EQ %tmpr0_32{0;32} 0x12{0;32}){0;1} >> --> (0x12,0)StaticArrow (0x21,2) Skip << (EQ %tmpr0_32{0;32} 0x2F{0;32}){0;1} >> --> (0x2F,0)
 [(0x22,0)] @{asm:=call   0x18}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
 [(0x22,1)] [%esp{0;32}]{0;32} := 0x27{0;32}
 [(0x22,2)] @{callret:=CALL}@ StaticArrow (0x22,2) Skip  --> (0x18,0)
@@ -30,5 +30,5 @@
 [(0x2A,2)] @{callret:=CALL}@ StaticArrow (0x2A,2) Skip  --> (0x1D,0)
 [(0x2F,0)] @{asm:=ret    }@ %tmpr0_32{0;32} := [%esp{0;32}]{0;32}
 [(0x2F,1)] %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}
-[(0x2F,2)] @{callret:=RET}@ DynamicArrow (0x2F,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>StaticArrow (0x2F,2) Skip << (EQ %tmpr0_32{0;32} 0x17{0;32}){0;32} >> --> (0x17,0)
+[(0x2F,2)] @{callret:=RET}@ DynamicArrow (0x2F,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>StaticArrow (0x2F,2) Skip << (EQ %tmpr0_32{0;32} 0x17{0;32}){0;1} >> --> (0x17,0)
 
