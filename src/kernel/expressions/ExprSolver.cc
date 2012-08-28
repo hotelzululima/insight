@@ -91,7 +91,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 {
   Constant *result = NULL;
   Variable *var = Variable::create ("_unk", 0, e->get_bv_size ());
-  Expr *phi = Expr::createAnd (Expr::createEquality (var, e->ref ()),
+  Expr *phi = Expr::createAnd (Expr::createEquality (var->ref (), e->ref ()),
 			       context->ref ( ));
 
   push ();
