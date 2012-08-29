@@ -53,7 +53,7 @@ public:
 
   virtual ~ExprProcessSolver ();
 
-  virtual Result check_sat (const Expr *e)
+  virtual Result check_sat (const Expr *e, bool preserve)
     throw (UnexpectedResponseException);
 
   virtual void push () 

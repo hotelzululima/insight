@@ -44,7 +44,8 @@ public:
 
 extern void 
 smtlib_writer (std::ostream &out, const Expr *e, const std::string &memvar, 
-	       int bits_per_addr, bool as_boolean)
+	       int bits_per_addr, Architecture::endianness_t endian, 
+	       bool as_boolean)
   throw (SMTLibUnsupportedExpression);
 
 

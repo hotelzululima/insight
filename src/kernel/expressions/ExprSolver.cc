@@ -30,6 +30,7 @@
  */
 #include "ExprSolver.hh"
 
+#include <utils/logs.hh>
 #include <kernel/expressions/ExprProcessSolver.hh>
 #include <vector>
 
@@ -89,17 +90,26 @@ Constant *
 ExprSolver::evaluate (const Expr *e, const Expr *context) 
   throw (UnexpectedResponseException)
 {
+  BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " / " + 
+		   context->to_string ());
+
   Constant *result = NULL;
   Variable *var = Variable::create ("_unk", 0, e->get_bv_size ());
   Expr *phi = Expr::createAnd (Expr::createEquality (var->ref (), e->ref ()),
 			       context->ref ( ));
 
   push ();
-  if (check_sat (phi) == SAT)
-    result = get_value_of (var);
+  if (check_sat (phi, false) == SAT)
+    {
+      result = get_value_of (var);
+      if (logs::debug_is_on)
+	logs::debug << *result << std::endl;
+    }
   phi->deref ();
   var->deref ();
   pop ();
+
+  END_DBG_BLOCK ();
 
   return result;
 }

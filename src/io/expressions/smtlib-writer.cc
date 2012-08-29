@@ -41,12 +41,14 @@ class SMTLibVisitor : public ConstExprVisitor
   ostream &out;
   const string &memvar;
   int addrsize;
+  Architecture::endianness_t endian;
 
 public:
 
 
-  SMTLibVisitor (ostream &o, const string &mv, int bpa)
-    : ConstExprVisitor(), out (o), memvar (mv), addrsize (bpa) {}
+  SMTLibVisitor (ostream &o, const string &mv, int bpa, 
+		 Architecture::endianness_t e)
+    : ConstExprVisitor(), out (o), memvar (mv), addrsize (bpa), endian (e) {}
 
   ~SMTLibVisitor () { }
 
@@ -125,36 +127,28 @@ public:
   }
 
   void output_boolean (const Expr *e) {
-    bool is_bool = is_boolean (e);
-    if (! is_bool)
-      {
-	if (e->get_bv_size () > 1)
-	  out << "(not (= ";
-	else
-	  out << "(= ";
-      }
+    if (e->get_bv_size () > 1)
+      out << "(not (= ";
+    else
+      out << "(= ";
     e->acceptVisitor (this);
-    if (! is_bool)
-      {
-	out << " ";
-	if (e->get_bv_size () == 1)
-	  out << "#b1";
-	else if (e->get_bv_size () % 8 == 0)
-	  out << "#x" << string (e->get_bv_size () / 4, '0') << ')';
-	else 
-	  out << "#b" << string (e->get_bv_size (), '0') << ')';
-	out << ")";
-      }
+    out << " ";
+    if (e->get_bv_size () == 1)
+      out << "#b1";
+    else if (e->get_bv_size () % 8 == 0)
+      out << "#x" << string (e->get_bv_size () / 4, '0') << ')';
+    else 
+      out << "#b" << string (e->get_bv_size (), '0') << ')';
+    out << ")";
   }
 
   virtual void visit (const UnaryApp *e) {
     const char *op;
-    bool is_bool = is_boolean (e);
     bool extract = (e->get_bv_offset () != 0 ||
 		    e->get_bv_size () != e->get_arg1 ()->get_bv_size ());
 
     if (e->get_op () == BV_OP_NOT)
-      op = is_bool ? "not" : "bvnot";
+      op = "bvnot";
     else
       {
 	assert (e->get_op () == BV_OP_NEG);
@@ -167,10 +161,7 @@ public:
 	extract_bv_window (e);
       }
     out << "(" << op << " ";      
-    if (is_bool)
-      output_boolean (e->get_arg1 ());
-    else
-      e->get_arg1 ()->acceptVisitor (this);
+    e->get_arg1 ()->acceptVisitor (this);
     out << ")";
     if (extract)
       out << ")";
@@ -192,68 +183,73 @@ public:
   }
 
   virtual void visit (const BinaryApp *e) {
-    bool is_bool = is_boolean (e);
     BinaryOp op = e->get_op ();
     const char *op_str = NULL;
     bool extract = need_extract (e); 	  	
+    bool extend = false;
+    bool ite = false;
 
     switch (op)
       {
       case BV_OP_AND: case BV_OP_OR:
 	out << "(";
-	if (is_bool)
+	if (extract)
 	  {
-	    out << (op == BV_OP_AND ? "and " : "or ");
-	    output_boolean (e->get_arg1 ());
-	    out << " ";
-	    output_boolean (e->get_arg2 ());
+	    extract_bv_window (e);
+	    out << "(";
 	  }
-	else
-	  {
-	    if (extract)
-	      {
-		extract_bv_window (e);
-		out << "(";
-	      }
 	      
-	    out << (op == BV_OP_AND ? "bvand " : "bvor ");
-	    e->get_arg1 ()->acceptVisitor (this);
-	    out << " ";
-	    e->get_arg2 ()->acceptVisitor (this);
-	    if (extract)
-	      {
-		out << ")";
-	      }
+	out << (op == BV_OP_AND ? "bvand " : "bvor ");
+	e->get_arg1 ()->acceptVisitor (this);
+	out << " ";
+	e->get_arg2 ()->acceptVisitor (this);
+	if (extract)
+	  {
+	    out << ")";
 	  }
 	out << ")";
 	break;
 
+      case BV_OP_MUL_S: 
+      case BV_OP_MUL_U: op_str = "bvmul"; extend = true; goto output_binary_1;
+      case BV_OP_ADD: op_str = "bvadd"; extend = true; goto output_binary_1;
+      case BV_OP_SUB: op_str = "bvsub"; extend = true; goto output_binary_1;
 
       case BV_OP_LSH: op_str = "bvshl"; goto output_binary_1;
       case BV_OP_RSH_U: op_str = "bvlshr"; goto output_binary_1;
       case BV_OP_RSH_S: op_str = "bvashr"; goto output_binary_1;
       case BV_OP_MODULO:
 	op_str = "bvurem"; goto output_binary_1; // to be fix with signed mod.
-      case BV_OP_MUL_S: 
-      case BV_OP_MUL_U: op_str = "bvmul"; goto output_binary_1;
       case BV_OP_DIV_S: op_str = "bvsdiv"; goto output_binary_1;
       case BV_OP_DIV_U: op_str = "bvudiv"; goto output_binary_1;
       case BV_OP_CONCAT: op_str = "concat"; goto output_binary_1;
-      case BV_OP_ADD: op_str = "bvadd"; goto output_binary_1;
-      case BV_OP_SUB: op_str = "bvsub"; goto output_binary_1;
       case BV_OP_XOR: op_str = "bvxor"; goto output_binary_1;
-      case BV_OP_NEQ: op_str = "distinct"; extract = false; 
-	goto output_binary_1;
-      case BV_OP_EQ: op_str = "="; extract = false; goto output_binary_1;
-      case BV_OP_GEQ_U: op_str = "bvuge"; extract = false; goto output_binary_1;
-      case BV_OP_GEQ_S: op_str = "bvsge"; extract = false; goto output_binary_1;
-      case BV_OP_LT_U: op_str = "bvult"; extract = false; goto output_binary_1;
-      case BV_OP_LT_S: op_str = "bvslt"; extract = false; goto output_binary_1;
-      case BV_OP_GT_U: op_str = "bvugt"; extract = false; goto output_binary_1;
-      case BV_OP_GT_S: op_str = "bvsgt"; extract = false; goto output_binary_1;
-      case BV_OP_LEQ_U: op_str = "bvule"; extract = false; goto output_binary_1;
-      case BV_OP_LEQ_S: op_str = "bvsle"; extract = false; goto output_binary_1;
+
+
+      case BV_OP_NEQ: op_str = "distinct"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_EQ: op_str = "="; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_GEQ_U: op_str = "bvuge"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_GEQ_S: op_str = "bvsge"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_LT_U: op_str = "bvult"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_LT_S: op_str = "bvslt"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_GT_U: op_str = "bvugt"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_GT_S: op_str = "bvsgt"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_LEQ_U: op_str = "bvule"; 
+	extract = false; ite = true; goto output_binary_1;
+      case BV_OP_LEQ_S: op_str = "bvsle"; 
+	extract = false; ite = true; goto output_binary_1;
+
       output_binary_1:
+	if (ite)
+	  out << "(ite ";
 	if (extract)
 	  {
 	    out << "(";
@@ -261,23 +257,39 @@ public:
 	  }
 
 	out << "(" << op_str << " ";
+	if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
+	  {
+	    int ext = (e->get_bv_size () - e->get_arg1 ()->get_bv_size ());
+	    out << "((_ zero_extend " << dec << ext << ") ";
+	  }
 	e->get_arg1 ()->acceptVisitor (this);
+	if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
+	  out << ") ";
 	out << " ";
+	if (extend && e->get_bv_size () > e->get_arg2 ()->get_bv_size ())
+	  {
+	    int ext = (e->get_bv_size () - e->get_arg2 ()->get_bv_size ());
+	    out << "((_ zero_extend " << dec << ext << ") ";
+	  }
 	e->get_arg2 ()->acceptVisitor (this);
+	if (extend && e->get_bv_size () > e->get_arg2 ()->get_bv_size ())
+	  out << ") ";
 	out << ")";
 	if (extract)
 	  out << ")";
+	if (ite)
+	  out << " #b1 #b0) ";
 	break;
 
       case BV_OP_ROR: op_str = "rotate_right"; goto output_binary_2;
       case BV_OP_ROL: op_str = "rotate_left"; goto output_binary_2;
-      case BV_OP_EXTEND_U: op_str = "signed_extend"; goto output_binary_2;
-      case BV_OP_EXTEND_S: op_str = "zero_extend"; goto output_binary_2;
+      case BV_OP_EXTEND_U: op_str = "zero_extend"; goto output_binary_2;
+      case BV_OP_EXTEND_S: op_str = "sign_extend"; goto output_binary_2;
       output_binary_2:
 	{
 	  Constant *c = dynamic_cast <Constant *> (e->get_arg2 ());
 	  if (c == NULL)
-	  throw SMTLibUnsupportedExpression (e->to_string ());
+	    throw SMTLibUnsupportedExpression (e->to_string ());
 	  word_t val = c->get_val ();
 	  if (op == BV_OP_EXTEND_U || op == BV_OP_EXTEND_S)
 	    val = c->get_val () - e->get_arg1 ()->get_bv_size ();
@@ -308,15 +320,47 @@ public:
   }
 
   virtual void visit (const MemCell *e) {
-    // to be fixed !!!
-    int extend = addrsize - e->get_addr ()->get_bv_size ();
-    out << "(select " << memvar << " ";
-    if (extend > 0)
-      out << "((_ zero_extend " << extend << ") ";
-    e->get_addr ()->acceptVisitor (this);
-    if (extend > 0)
-      out << ")";
-    out << ")";
+    assert (e->get_bv_size () >= 8 && e->get_bv_size () % 8 == 0);
+    
+    if (e->get_bv_size () == 8)
+      {
+	// to be fixed !!!
+	int extend = addrsize - e->get_addr ()->get_bv_size ();
+	out << "(select " << memvar << " ";
+	if (extend > 0)
+	  out << "((_ zero_extend " << extend << ") ";
+	e->get_addr ()->acceptVisitor (this);
+	if (extend > 0)
+	  out << ")";
+	out << ")";
+      }
+    else
+      {
+	int nb_bytes = e->get_bv_size () / 8;
+	Expr *bv = e->extract_bit_vector (0, 8);
+
+	for (int i = 1; i < nb_bytes; i++)
+	  {
+	    Expr *byte = e->extract_bit_vector (8 * i, 8);
+	    Expr *tmp;
+	    Expr *aux[2];
+	    if (endian == Architecture::LittleEndian)
+	      {
+		aux[0] = byte;
+		aux[1] = bv;
+	      }
+	    else
+	      {
+		aux[0] = bv;
+		aux[1] = byte;
+	      }
+	    tmp = BinaryApp::create (BV_OP_CONCAT, aux[0], aux[1], 
+				     0, 8 * (i + 1));
+	    bv = tmp;
+	  }
+	bv->acceptVisitor (this);
+	bv->deref ();
+      }
   }
 
   virtual void visit (const RegisterExpr *e) {
@@ -342,10 +386,10 @@ public:
 
 void 
 smtlib_writer (std::ostream &out, const Expr *e, const std::string &memvar, 
-	       int addrsize, bool as_boolean)
+	       int addrsize, Architecture::endianness_t endian, bool as_boolean)
   throw (SMTLibUnsupportedExpression)
 {
-  SMTLibVisitor writer (out, memvar, addrsize);
+  SMTLibVisitor writer (out, memvar, addrsize, endian);
 
   if (as_boolean)
     writer.output_boolean (e); 

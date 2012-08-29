@@ -93,34 +93,36 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca,
 
 ExprProcessSolver::~ExprProcessSolver ()
 {
+  delete in->rdbuf ();
+  delete out->rdbuf ();
+  delete in;
+  delete out;
 }
 
 ExprSolver::Result 
-ExprProcessSolver::check_sat (const Expr *e) 
+ExprProcessSolver::check_sat (const Expr *e, bool preserve) 
   throw (UnexpectedResponseException)
 {
+  BEGIN_DBG_BLOCK ("check_sat : " + e->to_string ());
+  if (preserve)
+    push ();
   ExprSolver::Result result = ExprSolver::UNSAT;
     
   declare_variable (e);
-  
+
   if (logs::debug_is_on)
     {
-      ostringstream oss;
-      
-      oss << "(assert ";       
-      smtlib_writer (oss, e, MEMORY_VAR, 
-		     8 * mca->get_reference_arch ()->address_range, true);
-      oss << ") " << endl;
-      logs::debug << "SMT command " << oss.str () << endl;
-      *out << oss.str () << endl;
+      logs::debug << "(assert ";
+      smtlib_writer (logs::debug, e, MEMORY_VAR, 
+		     8 * mca->get_reference_arch ()->address_range, 
+		     mca->get_reference_arch ()->endianness, true);
+      logs::debug << ") " << endl;
     }
-  else
-    {
-      *out << "(assert "; 	  
-      smtlib_writer (*out, e, MEMORY_VAR, 
-		     8 * mca->get_reference_arch ()->address_range, true);
-      *out << ") " << endl;
-    }
+  *out << "(assert ";  
+  smtlib_writer (*out, e, MEMORY_VAR, 
+		 8 * mca->get_reference_arch ()->address_range, 
+		 mca->get_reference_arch ()->endianness, true);
+  *out << ") " << endl;
 
   if (read_status ())
     {
@@ -133,8 +135,14 @@ ExprProcessSolver::check_sat (const Expr *e)
 	result = ExprSolver::UNKNOWN;
       else 
 	throw UnexpectedResponseException ("check-sat: " + res);
+      if (logs::debug_is_on)
+	logs::debug << res << endl;
     }
-  
+  if (preserve)
+    pop ();
+
+  END_DBG_BLOCK ();
+
   return result;
 }
 
@@ -153,7 +161,7 @@ ExprProcessSolver::exec_command (const std::string &s)
 string 
 ExprProcessSolver::exec_command (const char *s)
 {
-  logs::debug << "SMT command " << s << endl;
+  logs::debug << s << endl;
   *out << s << endl;
   out->flush ();
 
@@ -163,7 +171,7 @@ ExprProcessSolver::exec_command (const char *s)
 bool 
 ExprProcessSolver::send_command (const char *s)
 {
-  logs::debug << "SMT command " << s << endl;
+  logs::debug << s << endl;
   *out << s << endl;
   out->flush ();
 
@@ -221,7 +229,7 @@ ExprProcessSolver::declare_variable (const Expr *e)
       assert (v != NULL);
       oss << "(declare-fun " << v->get_id () << " () "
 	  << "(_ BitVec " << v->get_bv_size () << ") " 
-	  << ") " << endl;	  
+	  << ") ";	  
       if (! send_command (oss.str ()))      
 	return false;
     }
@@ -243,7 +251,7 @@ ExprProcessSolver::declare_variable (const Expr *e)
       ostringstream oss;
       oss << "(declare-fun " << regdesc->get_label () << " () "
 	  << "(_ BitVec " << regdesc->get_register_size () << ") " 
-	  << ") " << endl;
+	  << ") ";
       if (! send_command (oss.str ()))      
 	return false;
       cache.insert (regdesc);
@@ -382,7 +390,8 @@ ExprProcessSolver::get_value_of (const Expr *e)
   ostringstream oss;
   oss << "(get-value (";
   smtlib_writer (oss, e, MEMORY_VAR, 
-		 8 * mca->get_reference_arch ()->address_range, false);
+		 8 * mca->get_reference_arch ()->address_range, 
+		 mca->get_reference_arch ()->endianness, false);
   oss << "))";
 
   string res = exec_command (oss.str ());
@@ -397,8 +406,11 @@ ExprProcessSolver::get_value_of (const Expr *e)
 	  if (value[1] == 'x' || value[1] == 'b')
 	    {
 	      value[0] = '0';
-	      result = (Constant *)expr_parser (value, mca);
-	      assert (result->is_Constant ());
+	      Constant *c = (Constant *) expr_parser (value, mca);
+	      assert (c->is_Constant ());
+	      result = Constant::create (c->get_val (), 0, 
+					 e->get_bv_size ());
+	      c->deref ();
 	    }
 	  else
 	    {

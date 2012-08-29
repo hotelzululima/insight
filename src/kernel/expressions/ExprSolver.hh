@@ -72,7 +72,7 @@ public:
  
   virtual ~ExprSolver ();
 
-  virtual Result check_sat (const Expr *e) 
+  virtual Result check_sat (const Expr *e, bool preserve) 
     throw (UnexpectedResponseException) = 0;
 
   virtual Constant *evaluate (const Expr *e, const Expr *context) 
@@ -86,8 +86,6 @@ public:
     throw (UnexpectedResponseException) = 0;
 
 protected:
-
-
   ExprSolver (const MicrocodeArchitecture *mca);
 
   const MicrocodeArchitecture *mca;
