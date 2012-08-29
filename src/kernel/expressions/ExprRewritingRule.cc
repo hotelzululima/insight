@@ -112,7 +112,7 @@ ExprRewritingRule::visit (const MemCell *mc)
 {
   Expr *arg = mc->get_addr ();
   arg->acceptVisitor (this);
-  arg = dynamic_cast<Expr *> (arg);
+  arg = dynamic_cast<Expr *> (result);
 
   Expr *tmp = MemCell::create (arg, mc->get_bv_offset (), mc->get_bv_size ());
   result = rewrite (tmp);
