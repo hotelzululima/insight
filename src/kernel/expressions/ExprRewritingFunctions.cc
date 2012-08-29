@@ -126,7 +126,8 @@ conjunction_simplification (const Expr *phi)
   Expr *result = NULL;
 
   if (conj->get_arg1 () == conj->get_arg2 ())
-    result = conj->get_arg1 ()->ref ();
+    result = conj->get_arg1 ()->extract_bit_vector (phi->get_bv_offset (),
+						    phi->get_bv_size ());
   else if (conj->get_arg1 ()->is_TrueFormula ())
     result = conj->get_arg2 ()->ref ();
   else if (conj->get_arg2 ()->is_TrueFormula ())
@@ -148,7 +149,8 @@ disjunction_simplification (const Expr *phi)
   Expr *result = NULL;
 
   if (disj->get_arg1 () == disj->get_arg2 ())
-    result = disj->get_arg1 ()->ref ();
+    result = disj->get_arg1 ()->extract_bit_vector (phi->get_bv_offset (),
+						    phi->get_bv_size ());
   else if (disj->get_arg1 ()->is_FalseFormula ())
     result = disj->get_arg2 ()->ref ();
   else if (disj->get_arg2 ()->is_FalseFormula ())
@@ -156,7 +158,7 @@ disjunction_simplification (const Expr *phi)
   else if (disj->get_arg1 ()->is_TrueFormula () || 
 	   disj->get_arg1 ()->is_TrueFormula ())
     result = Constant::True ();
-
+    
   return result;
 }
 
@@ -475,7 +477,7 @@ binary_operations_simplification (const Expr *e)
 	  (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
-	  arg2 = Constant::create (c1 + c2);
+	  arg2 = Constant::create (c1 + c2, 0, arg1->get_bv_size ());
 	  result = BinaryApp::create (op, arg1, arg2, ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
@@ -483,7 +485,7 @@ binary_operations_simplification (const Expr *e)
 	       (op == BV_OP_MUL_U && o->get_op() == BV_OP_MUL_U))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
-	  arg2 = Constant::create (c1 * c2);
+	  arg2 = Constant::create (c1 * c2, 0, arg1->get_bv_size ());
 	  result = BinaryApp::create (op, arg1, arg2, 
 				      ba->get_bv_offset(),
 				      ba->get_bv_size());
@@ -494,11 +496,11 @@ binary_operations_simplification (const Expr *e)
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  if (c1 - c2 < 0)
 	    {
-	      arg2 = Constant::create (c2 - c1);
+	      arg2 = Constant::create (c2 - c1, 0, arg1->get_bv_size ());
 	      op = BV_OP_SUB;
 	    }
 	  else
-	    arg2 = Constant::create (c1 - c2);
+	    arg2 = Constant::create (c1 - c2, 0, arg1->get_bv_size ());
 	  result = BinaryApp::create (op, arg1, arg2, 
 				      ba->get_bv_offset(),
 				      ba->get_bv_size());
@@ -509,11 +511,11 @@ binary_operations_simplification (const Expr *e)
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  if (c1 - c2 < 0)
 	    {
-	      arg2 = Constant::create (c2 - c1);
+	      arg2 = Constant::create (c2 - c1, 0, arg1->get_bv_size ());
 	      op = BV_OP_ADD;
 	    }
 	  else
-	    arg2 = Constant::create (c1 - c2);
+	    arg2 = Constant::create (c1 - c2, 0, arg1->get_bv_size ());
 	  result = BinaryApp::create (op, arg1, arg2, 
 				      ba->get_bv_offset(), 
 				      ba->get_bv_size());
