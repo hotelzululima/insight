@@ -78,6 +78,12 @@ address_t MicrocodeAddress::getLocal() const
   return this->local;
 }
 
+std::size_t 
+MicrocodeAddress::hashcode () const
+{
+  return 19 * getGlobal () + 177 * getLocal ();
+}
+
 bool MicrocodeAddress::equals(const MicrocodeAddress &other) const
 {
   return ((global == other.global) && (local == other.local));

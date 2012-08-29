@@ -51,4 +51,12 @@ struct EqualsFunctor
     }
 };
 
+template <class T>
+struct HashFunctor
+{
+  std::size_t operator() (const T &a) const {
+    return a.hashcode ();
+  }
+};
+
 #endif /* UTILS_MAP_HELPERS_HH_ */

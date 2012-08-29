@@ -65,6 +65,7 @@ public:
   MicrocodeAddress operator++ (int);
   virtual std::string pp() const ;
 
+  std::size_t hashcode () const;
   bool equals(const MicrocodeAddress &other) const;
   bool lessThan(const MicrocodeAddress &other) const;
   MicrocodeAddress &operator = (const MicrocodeAddress &other);
