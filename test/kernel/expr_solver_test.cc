@@ -50,6 +50,7 @@ using namespace std;
   SOLVER_TEST (S2, "(OR (NOT %pf) %pf){0;1}", ExprSolver::SAT) \
   SOLVER_TEST (US2, "(NOT (OR (NOT %pf) %pf){0;1})", ExprSolver::UNSAT) \
   SOLVER_TEST (S3, "[%eax]{0;8}", ExprSolver::SAT) \
+  \
   EVAL_TEST (E1, "(MUL_U 3{0;32} Y{0;32}){0;32}", "(EQ Y{0;32} 5)", "15{0;32}")
 
 #define SOLVER_TEST(id, e, res)     \

@@ -225,7 +225,8 @@ BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
     }
   else
     {
-      throw Decoder::DecoderUnexpectedError ("syntax error @" + address.to_string ());
+      throw Decoder::DecoderUnexpectedError ("syntax error @" + 
+					     address.to_string ());
     }
 
   return result;
