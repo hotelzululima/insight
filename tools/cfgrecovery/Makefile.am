@@ -7,7 +7,12 @@ cfgrecovery_SOURCES = \
 	FloodTraversal.cc FloodTraversal.hh \
 	linearsweep.cc linearsweep.hh \
 	recursivetraversal.cc recursivetraversal.hh \
-        ConcreteMemoryTraversal.cc ConcreteMemoryTraversal.hh
+        ConcreteMemoryTraversal.cc ConcreteMemoryTraversal.hh \
+        SymbolicSimulator.cc SymbolicSimulator.hh \
+        SymbolicState.cc SymbolicState.hh \
+        symbexec.cc symbexec.hh \
+        \
+        ${dummy}
 
 cfgrecovery_CPPFLAGS = @BINUTILS_CFLAGS@ -I$(top_srcdir)/src
 cfgrecovery_CXXFLAGS = -Wno-deprecated

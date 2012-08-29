@@ -38,14 +38,17 @@
 #include <stdlib.h>
 
 #include <kernel/insight.hh>
+#include <kernel/expressions/ExprSolver.hh>
 
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
 
+#include <config.h>
 #include "FloodTraversal.hh"
 #include "linearsweep.hh"
 #include "recursivetraversal.hh"
+#include "symbexec.hh"
 
 #include "cfgrecovery.hh"
 
@@ -69,10 +72,14 @@ struct disassembler {
   { "linear", "linear sweep", linearsweep },
   { "predicate", "path predicate validation", NULL },
   { "recursive", "recursive traversal", recursivetraversal },
+#if HAVE_Z3_SOLVER
+  { "symsim", "symbolic traversal", symbexec },
+#endif
   /* List must be kept sorted by name */
+  { NULL, NULL, NULL }
 };
 
-#define NDISASSEMBLERS (sizeof disassemblers / sizeof disassemblers[0])
+#define NDISASSEMBLERS ((sizeof disassemblers / sizeof disassemblers[0])-1)
 
 static struct disassembler *
 disassembler_lookup(const char *name) {
@@ -273,9 +280,15 @@ main (int argc, char *argv[])
   if (enable_debug)
     {
       config.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
-      config.set (logs::STDIO_DEBUG_MAXLEVEL_PROP, verbosity);
       config.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
     }
+#if HAVE_Z3_SOLVER
+  config.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
+  config.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
+  config.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
+  config.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
+#endif
+
   insight::init (config);
 
   /* Getting the loader */
