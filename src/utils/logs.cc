@@ -46,19 +46,29 @@ typedef std::multiset<logs::Listener *> listener_set;
 typedef listener_set::iterator listener_iterator; 
 typedef void (*listener_callback)(const std::string &msg);
 
+static listener_set LISTENERS;
+static int debug_level = 0;
+static list<string> debug_blocks;
+bool logs::debug_is_on = DEBUG_IS_ON;
+
 class StdStreamListener : public logs::Listener
 {
 private:
   int max_debug_level;
+  int tabsize;
   ostream *out;
 
 public: 
-  StdStreamListener () : max_debug_level(-1), out (&std::cout) { }
+  StdStreamListener () : max_debug_level(-1), tabsize (0), out (&std::cout) { }
 
   ~StdStreamListener () { }
 
   void set_max_level (int level) { 
     max_debug_level = level; 
+  }
+
+  void set_tabsize (int tab) { 
+    tabsize = tab; 
   }
 
   void set_out (ostream &o) { 
@@ -82,7 +92,7 @@ public:
   void debug (const std::string &msg, int level) { 
     if (max_debug_level < 0 || level <= max_debug_level)
       {
-	*out << msg << endl;
+	*out << string (level * tabsize, ' ') << msg << endl;
 	out->flush ();
       }
   } 
@@ -90,15 +100,12 @@ public:
 
 static StdStreamListener *STDLISTENER = NULL;
 
-static listener_set LISTENERS;
-static int debug_level = 0;
-static list<string> debug_blocks;
-bool logs::debug_is_on = DEBUG_IS_ON;
 
 std::string logs::DEBUG_ENABLED_PROP = "logs.debug.enabled";
 std::string logs::STDIO_ENABLED_PROP = "logs.stdio.enabled";
 std::string logs::STDIO_DEBUG_IS_CERR_PROP = "logs.stdio.debug.is_cerr"; 
 std::string logs::STDIO_DEBUG_MAXLEVEL_PROP = "logs.stdio.debug.maxlevel";
+std::string logs::STDIO_DEBUG_TABSIZE_PROP = "logs.stdio.debug.tabsize";
 
 void 
 logs::init (const ConfigTable &cfg)
@@ -113,6 +120,9 @@ logs::init (const ConfigTable &cfg)
       
       int maxlevel = cfg.get_integer (STDIO_DEBUG_MAXLEVEL_PROP, -1);
       STDLISTENER->set_max_level (maxlevel);
+
+      int tabsize = cfg.get_integer (STDIO_DEBUG_TABSIZE_PROP, 2);
+      STDLISTENER->set_tabsize (tabsize);
       
       logs::add_listener (STDLISTENER);
     }

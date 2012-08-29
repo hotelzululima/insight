@@ -54,6 +54,7 @@ namespace logs
   extern std::string STDIO_ENABLED_PROP;
   extern std::string STDIO_DEBUG_IS_CERR_PROP;
   extern std::string STDIO_DEBUG_MAXLEVEL_PROP;
+  extern std::string STDIO_DEBUG_TABSIZE_PROP;
 
   /*
    * Configuration properties:
@@ -80,6 +81,7 @@ namespace logs
 
   extern void inc_debug_level ();
   extern void dec_debug_level ();
+
   extern void start_debug_block (const std::string &msg);
   extern void end_debug_block ();
 
@@ -92,5 +94,11 @@ namespace logs
   extern std::ostream display;
   extern std::ostream debug;
 }
+
+# define BEGIN_DBG_BLOCK(_m)						\
+  do { if (logs::debug_is_on) logs::start_debug_block (_m); } while (0)
+
+# define END_DBG_BLOCK() \
+  do { if (logs::debug_is_on) logs::end_debug_block (); } while (0)
 
 #endif /* ! UTILS_LOGS_HH */
