@@ -116,6 +116,13 @@ SymbolicValue::output_text (std::ostream &out) const
     out << "<nullexpr>";
 }
 
+void
+SymbolicValue::simplify ()
+{
+  if (value != NULL)
+    exprutils::simplify (&value);
+}
+
 SymbolicValue::operator ConcreteAddress () const
 {
   ConcreteAddress result;
@@ -157,3 +164,4 @@ SymbolicValue::unknown_value (int size)
 
   return result;
 }
+

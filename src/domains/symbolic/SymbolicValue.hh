@@ -50,7 +50,7 @@ public:
   virtual Option<bool> to_bool () const;
   virtual Option<MicrocodeAddress> to_MicrocodeAddress () const;
   virtual void output_text (std::ostream &out) const;
-
+  virtual void simplify ();
   bool operator==(const SymbolicValue &sv) const;
 
   static SymbolicValue unknown_value (int size);
