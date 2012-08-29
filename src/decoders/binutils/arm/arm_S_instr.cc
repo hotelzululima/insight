@@ -55,15 +55,15 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 
   } else if (is_H_suffix) {
     Expr* half_reg = TernaryApp::create (BV_OP_EXTRACT, reg, 
-					 Constant::create(0),
-					 Constant::create(16));
+					 Constant::create(0, 0, BV_DEFAULT_SIZE),
+					 Constant::create(16, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, half_reg,
         data.next_ma, guard);
   } else if (is_B_suffix) {
 
     Expr* byte_reg = TernaryApp::create (BV_OP_EXTRACT, reg, 
-					 Constant::create(0),
-					 Constant::create(8));
+					 Constant::create(0, 0, BV_DEFAULT_SIZE),
+					 Constant::create(8, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, byte_reg,
         data.next_ma, guard);
   } else {
@@ -106,8 +106,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 
   } else if (is_H_suffix) {
     Expr* half_reg = 
-      TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0),
-        Constant::create(16));
+      TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0, 0, BV_DEFAULT_SIZE),
+        Constant::create(16, 0, BV_DEFAULT_SIZE));
 
     if (is_NOT_suffix) {
       data.mc->add_assignment(data.start_ma, (LValue*) mem, half_reg);
@@ -122,8 +122,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 
   } else if (is_B_suffix) {
     Expr* byte_reg = 
-      TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0),
-			  Constant::create(8));
+      TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0, 0, BV_DEFAULT_SIZE),
+			  Constant::create(8, 0, BV_DEFAULT_SIZE));
 
     if (is_NOT_suffix) {
       data.mc->add_assignment(data.start_ma, (LValue*) mem, byte_reg);
@@ -180,8 +180,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
   } else if (is_H_suffix) {
 
     Expr* half_reg = 
-      TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0),
-			  Constant::create(16));
+      TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0, 0, BV_DEFAULT_SIZE),
+			  Constant::create(16, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, half_reg);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
@@ -191,8 +191,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 
   } else if (is_B_suffix) {
     Expr* byte_reg = TernaryApp::create (BV_OP_EXTRACT, reg, 
-					 Constant::create(0),
-					 Constant::create(8));
+					 Constant::create(0, 0, BV_DEFAULT_SIZE),
+					 Constant::create(8, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, byte_reg);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
@@ -241,29 +241,29 @@ arm_translate<ARM_TOKEN(SUB8)> (arm::parser_data &data,
   Expr* second_operand = op3;
   Expr* first_operand_1 = 
     TernaryApp::create (BV_OP_EXTRACT, first_operand,
-			Constant::create(0), Constant::create(8));
+			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_2 = 
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-			Constant::create(8), Constant::create(8));
+			Constant::create(8, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_3 = 
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-			Constant::create(16), Constant::create(8));
+			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_4 = 
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-			Constant::create(24), Constant::create(8));
+			Constant::create(24, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
 
   Expr* second_operand_1 = 
     TernaryApp::create (BV_OP_EXTRACT, second_operand,
-			Constant::create(0), Constant::create(8));
+			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_2 = 
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-			Constant::create(8), Constant::create(8));
+			Constant::create(8, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_3 = 
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-			Constant::create(16), Constant::create(8));
+			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_4 = 
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-			Constant::create(24), Constant::create(8));
+			Constant::create(24, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
 
   Expr* add_result_1 =
       BinaryApp::create (BV_OP_SUB, first_operand_1, second_operand_1);
@@ -304,17 +304,17 @@ arm_translate<ARM_TOKEN(SUB16)> (arm::parser_data &data,
   Expr* second_operand = op3;
   Expr* first_operand_1 = 
     TernaryApp::create (BV_OP_EXTRACT, first_operand,
-			Constant::create(0), Constant::create(16));
+			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_2 = 
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-			Constant::create(16), Constant::create(16));
+			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
 
   Expr* second_operand_1 = 
     TernaryApp::create (BV_OP_EXTRACT, second_operand,
-			Constant::create(0), Constant::create(16));
+			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_2 = 
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-			Constant::create(16), Constant::create(16));
+			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
 
   Expr* add_result_1 =
       BinaryApp::create (BV_OP_SUB, first_operand_1, second_operand_1);

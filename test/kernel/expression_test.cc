@@ -130,7 +130,7 @@ ATF_TEST_CASE_BODY (check_tautologies)
 
   F = s_parse_expr ("(AND X X){0;1}");
   ATF_REQUIRE (F != NULL);
-  Expr *G = s_parse_expr ("X");
+  Expr *G = s_parse_expr ("X{0;1}");
   ATF_REQUIRE (G != NULL);
   CHK_EQUIV (F, G);
   F->deref ();

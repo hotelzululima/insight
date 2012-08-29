@@ -79,22 +79,22 @@ arm_translate<ARM_TOKEN(ADD8)> (arm::parser_data &data,
   Expr* first_operand = op2;
   Expr* second_operand = op3;
   Expr* first_operand_1 = TernaryApp::create (BV_OP_EXTRACT, first_operand,
-      Constant::create(0), Constant::create(8));
+      Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_2 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-      Constant::create(8), Constant::create(8));
+      Constant::create(8, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_3 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-      Constant::create(16), Constant::create(8));
+      Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_4 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-      Constant::create(24), Constant::create(8));
+      Constant::create(24, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
 
   Expr* second_operand_1 = TernaryApp::create (BV_OP_EXTRACT, second_operand,
-      Constant::create(0), Constant::create(8));
+      Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_2 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-      Constant::create(8), Constant::create(8));
+      Constant::create(8, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_3 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-      Constant::create(16), Constant::create(8));
+      Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_4 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-      Constant::create(24), Constant::create(8));
+      Constant::create(24, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
 
   Expr* add_result_1 =
       BinaryApp::create (BV_OP_ADD, first_operand_1, second_operand_1);
@@ -134,14 +134,14 @@ arm_translate<ARM_TOKEN(ADD16)> (arm::parser_data &data,
   Expr* first_operand = op2;
   Expr* second_operand = op3;
   Expr* first_operand_1 = TernaryApp::create (BV_OP_EXTRACT, first_operand,
-      Constant::create(0), Constant::create(16));
+      Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
   Expr* first_operand_2 = TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
-      Constant::create(16), Constant::create(16));
+      Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
 
   Expr* second_operand_1 = TernaryApp::create (BV_OP_EXTRACT, second_operand,
-      Constant::create(0), Constant::create(16));
+      Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
   Expr* second_operand_2 = TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
-      Constant::create(16), Constant::create(16));
+      Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
 
   Expr* add_result_1 =
       BinaryApp::create (BV_OP_ADD, first_operand_1, second_operand_1);

@@ -403,7 +403,7 @@ MicrocodeNode *xml_parse_assign(xmlNodePtr node)
 		    "xml_parse_assign:: expecting an expression as second child");
 
   StaticArrow *arr =
-    new StaticArrow(origin, target, new Assignment(lv, e), Constant::create (1));
+    new StaticArrow(origin, target, new Assignment(lv, e), Constant::True ());
 
   return new MicrocodeNode(origin, arr);
 }
@@ -460,7 +460,7 @@ MicrocodeNode *xml_parse_jump(xmlNodePtr node)
   if (xml_has_attribute(node, "next"))
     {
       MicrocodeAddress target = extract_microcode_address_attribute(node, "next");
-      return new MicrocodeNode(origin, new StaticArrow(origin, target, new Skip(), Constant::create (1)));
+      return new MicrocodeNode(origin, new StaticArrow(origin, target, new Skip(), Constant::True ()));
     }
 
   else   // dynamic jump
@@ -474,7 +474,7 @@ MicrocodeNode *xml_parse_jump(xmlNodePtr node)
 	XML_PARSE_ERROR(node, "xml_parse_jump:: dynamic jump expects an expression as child");
 
       return new MicrocodeNode(origin,
-			       new DynamicArrow(origin, e, new Skip(), Constant::create (1)));
+			       new DynamicArrow(origin, e, new Skip(), Constant::True ()));
     }
 }
 

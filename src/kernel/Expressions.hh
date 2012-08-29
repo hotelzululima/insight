@@ -304,31 +304,13 @@ protected:
 
 public:
 
-  static inline Constant *True () { return create (1, 0, 1); }
-  static inline Constant *False () { return create (0, 0, 1); }
+  static inline Constant *True () { return one (1); }
+  static inline Constant *False () { return zero (1); }
 
-  static inline Constant *zero (int size = BV_DEFAULT_SIZE) { 
-    return create (0, 0, size); 
-  }
-  static inline Constant *one (int size = BV_DEFAULT_SIZE) { 
-    return create (1, 0, size); 
-  }
-  /* compute 2^{n-1}-1 */
-  static inline Constant *max_signed (unsigned int n) { 
-    constant_t val = 1;
-    val <<= n - 1;
-    val--;
-    return create (val);
-  }
-  static inline Constant *max_unsigned (unsigned int n) { 
-    constant_t val = 1;
-    val <<= n;
-    val--;
-    return create (val);
-  }
+  static inline Constant *zero (int size) { return create (0, 0, size); }
+  static inline Constant *one (int size) { return create (1, 0, size); }
 
-  static Constant *create (constant_t v, int bv_offset = 0, 
-			   int bv_size = BV_DEFAULT_SIZE);
+  static Constant *create (constant_t v, int bv_offset, int bv_size);
 
   constant_t get_val() const;
   constant_t get_not_truncated_value() const;

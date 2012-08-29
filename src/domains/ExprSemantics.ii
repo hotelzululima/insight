@@ -63,5 +63,5 @@ Value
 expr_semantics_extract_eval (Value v, int off, int size)
 {
   assert (v.get_size () >= size);
-  return ExprSem::BV_OP_RSH_U_eval (v, Value (BV_DEFAULT_SIZE, off), 0, size);
+  return ExprSem::BV_OP_RSH_U_eval (v, Value (v.get_size (), off), 0, size);
 }

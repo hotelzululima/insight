@@ -460,7 +460,7 @@ shifted_register:
 |
 	register TOK_COMMA TOK_RRX{
 		//XXX: change this -> RRX
-		$$ = BinaryApp::create (BV_OP_ROR, $1, Constant::create(1));
+		$$ = BinaryApp::create (BV_OP_ROR, $1, Constant::one (BV_DEFAULT_SIZE));
 	}	
   
 |
@@ -485,7 +485,7 @@ shifted_register:
 
 flexOffset:
 	TOK_SHARP integer{
-		$$ = Constant::create($2);
+	  $$ = Constant::create($2, 0, BV_DEFAULT_SIZE);
 	}
 |
 	shifted_register{
@@ -710,7 +710,7 @@ register_list:
 ;
 
 immediate:
-  TOK_SHARP integer { $$ = Constant::create($2); }
+TOK_SHARP integer { $$ = Constant::create($2, 0, BV_DEFAULT_SIZE); }
 ;
 
 

@@ -95,43 +95,43 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
 
   if (cond_code == "eq") {
     z_flag = (RegisterExpr*) get_register("z");
-    return BinaryApp::create (BV_OP_NEQ, z_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_NEQ, z_flag, Constant::zero (1));
 
   } else if (cond_code == "ne") {
     z_flag = (RegisterExpr*) get_register("z");
-    return BinaryApp::create (BV_OP_EQ, z_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_EQ, z_flag, Constant::zero (1));
   } else if (cond_code == "cs" || cond_code == "hs") {
     c_flag = (RegisterExpr*) get_register("c");
-    return BinaryApp::create (BV_OP_NEQ, c_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_NEQ, c_flag, Constant::zero (1));
   } else if (cond_code == "cc" || cond_code == "lo") {
     c_flag = (RegisterExpr*) get_register("c");
-    return BinaryApp::create (BV_OP_EQ, c_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_EQ, c_flag, Constant::zero (1));
   } else if (cond_code == "mi") {
     n_flag = (RegisterExpr*) get_register("n");
-    return BinaryApp::create (BV_OP_NEQ, n_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_NEQ, n_flag, Constant::zero (1));
   } else if (cond_code == "pl") {
     n_flag = (RegisterExpr*) get_register("n");
-    BinaryApp::create (BV_OP_EQ, n_flag, Constant::create(0));
+    BinaryApp::create (BV_OP_EQ, n_flag, Constant::zero (1));
   } else if (cond_code == "vs") {
     v_flag = (RegisterExpr*) get_register("v");
-    return BinaryApp::create (BV_OP_NEQ, v_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_NEQ, v_flag, Constant::zero (1));
   } else if (cond_code == "vc") {
     v_flag = (RegisterExpr*) get_register("v");
-    return BinaryApp::create (BV_OP_EQ, v_flag, Constant::create(0));
+    return BinaryApp::create (BV_OP_EQ, v_flag, Constant::zero (1));
   } else if (cond_code == "hi") {
     c_flag = (RegisterExpr*) get_register("c");
-    Expr* c_set = BinaryApp::create (BV_OP_NEQ, c_flag, Constant::create(0));
+    Expr* c_set = BinaryApp::create (BV_OP_NEQ, c_flag, Constant::zero (1));
 
     z_flag = (RegisterExpr*) get_register("z");
-    Expr* z_clear = BinaryApp::create (BV_OP_EQ, z_flag, Constant::create(0));
+    Expr* z_clear = BinaryApp::create (BV_OP_EQ, z_flag, Constant::zero (1));
 
     return Expr::createAnd (c_set, z_clear);
   } else if (cond_code == "ls") {
     c_flag = (RegisterExpr*) get_register("c");
-    Expr* c_clear = BinaryApp::create (BV_OP_EQ, c_flag, Constant::create(0));
+    Expr* c_clear = BinaryApp::create (BV_OP_EQ, c_flag, Constant::zero (1));
 
     z_flag = (RegisterExpr*) get_register("z");
-    Expr* z_set = BinaryApp::create (BV_OP_NEQ, z_flag, Constant::create(0));
+    Expr* z_set = BinaryApp::create (BV_OP_NEQ, z_flag, Constant::zero (1));
 
     return Expr::createOr (c_clear, z_set);
   } else if (cond_code == "ge") {
@@ -148,7 +148,7 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
     return BinaryApp::create (BV_OP_NEQ, n_flag, v_flag);
   } else if (cond_code == "gt") {
     z_flag = (RegisterExpr*) get_register("z");
-    Expr* z_clear = BinaryApp::create (BV_OP_EQ, z_flag, Constant::create(0));
+    Expr* z_clear = BinaryApp::create (BV_OP_EQ, z_flag, Constant::zero (1));
 
     n_flag = (RegisterExpr*) get_register("n");
 
@@ -160,7 +160,7 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
 
   } else if (cond_code == "le") {
     z_flag = (RegisterExpr*) get_register("z");
-    Expr* z_set = BinaryApp::create (BV_OP_NEQ, z_flag, Constant::create(0));
+    Expr* z_set = BinaryApp::create (BV_OP_NEQ, z_flag, Constant::zero (1));
 
     n_flag = (RegisterExpr*) get_register("n");
 
@@ -192,7 +192,8 @@ void update_flags(arm::parser_data &data, Expr* guard, Expr* run_time_result,
     dst = n_flag = (RegisterExpr*) data.get_flag("n");
 
     //result_less_than_zero
-    src = BinaryApp::create (BV_OP_LT_S, run_time_result->ref(), Constant::create(0));
+    src = BinaryApp::create (BV_OP_LT_S, run_time_result->ref(), 
+			     Constant::zero(run_time_result->get_bv_size ()));
 
     if ( ((uword_t) ins) >> N_FLAG_BIT_POSITION )
       data.mc->add_assignment(data.start_ma, dst, src);
@@ -211,7 +212,8 @@ void update_flags(arm::parser_data &data, Expr* guard, Expr* run_time_result,
     dst = z_flag = (RegisterExpr*) data.get_flag("z");
 
     //result_equal_zero
-    src = BinaryApp::create (BV_OP_EQ, run_time_result->ref(), Constant::create(0));
+    src = BinaryApp::create (BV_OP_EQ, run_time_result->ref(), 
+			     Constant::zero(run_time_result->get_bv_size ()));
 
     if ( ((uword_t) ins) >> Z_FLAG_BIT_POSITION )
       data.mc->add_assignment(data.start_ma, dst, src);

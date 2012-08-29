@@ -142,7 +142,8 @@ s_adc_sbb (x86_32::parser_data &data, Expr *dst, Expr *src, BinaryOp op)
   Expr *cf =
     BinaryApp::create (BV_OP_EXTEND_U, data.get_register ("cf"),
 		       Constant::create (src->get_bv_size (), 0, 
-					 BV_DEFAULT_SIZE));
+					 BV_DEFAULT_SIZE), 
+		       0, src->get_bv_size ());
   src = BinaryApp::create (BV_OP_ADD, src, cf, 0, src->get_bv_size ());
 
   s_additive_op (start, data, op, dst, src, &data.next_ma);
@@ -280,6 +281,7 @@ X86_32_TRANSLATE_1_OP(AAD)
   MicrocodeAddress from (data.start_ma);
   LValue *al = data.get_register ("al");
   LValue *ah = data.get_register ("ah");
+  Expr::extract_bit_vector (op1, 0, 8);
   Expr *alvalue = BinaryApp::create (BV_OP_MUL_U, ah->ref (), op1, 0, 8);
 
   alvalue = BinaryApp::create (BV_OP_ADD, al->ref (), alvalue, 0, 8);
@@ -303,8 +305,10 @@ X86_32_TRANSLATE_1_OP(AAM)
   LValue *al = data.get_register ("al");
   LValue *ah = data.get_register ("ah");
 
+  Expr::extract_bit_vector (op1, 0, 8);
+
   data.mc->add_skip (from, from + 1,
-		     BinaryApp::create (BV_OP_NEQ, op1->ref(), 
+		     BinaryApp::create (BV_OP_NEQ, op1->ref (),
 					Constant::zero (8),
 					0, 1));
   from++;

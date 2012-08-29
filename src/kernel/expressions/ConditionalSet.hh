@@ -43,7 +43,7 @@ class ConditionalSet
 {
 public:
 
-  static Variable *EltSymbol ();
+  static Variable *EltSymbol (int size);
 
   static void cs_simplify(Expr **);
   static std::vector<Expr*> cs_possible_values (const Expr * set);

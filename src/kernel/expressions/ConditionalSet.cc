@@ -44,14 +44,14 @@
 using namespace std;
 
 Variable *
-ConditionalSet::EltSymbol ()
+ConditionalSet::EltSymbol (int size)
 {
-  return Variable::create ("elt");
+  return Variable::create ("elt", 0, size);
 }
 
 inline Expr *IsIn (const Expr *elt) 
 {
-  return BinaryApp::createEquality(ConditionalSet::EltSymbol (), elt->ref ());
+  return BinaryApp::createEquality(ConditionalSet::EltSymbol (elt->get_bv_size ()), elt->ref ());
 }
 
 void ConditionalSet::cs_simplify(Expr **set)
@@ -90,7 +90,7 @@ public:
   {
     Variable *X = Variable::create ("X"); 
     Expr * elt_def_pattern = 
-      Expr::createEquality(ConditionalSet::EltSymbol (), X->ref ());
+      Expr::createEquality(ConditionalSet::EltSymbol (X->get_bv_size ()), X->ref ());
     std::list<const Variable *> free_variables; 
 
     free_variables.push_back(X);
@@ -134,7 +134,7 @@ ConditionalSet::cs_flatten (const Expr *set)
 Expr *
 ConditionalSet::cs_contains (const Expr *set, const Expr *elt)
 {
-  Variable *eltsym = ConditionalSet::EltSymbol ();
+  Variable *eltsym = ConditionalSet::EltSymbol (elt->get_bv_size ());
   Expr *new_set = exprutils::replace_variable (set, eltsym, elt);  
   exprutils::simplify_level0 (&new_set);
   eltsym->deref ();

@@ -153,20 +153,20 @@ X86_32_TRANSLATE_PREFIX(REP)
 
 X86_32_TRANSLATE_PREFIX(REPE)
 {
-  s_rep (data, start, start ? NULL : Constant::zero ());
+  s_rep (data, start, start ? NULL : Constant::zero (1));
 }
 
 X86_32_TRANSLATE_PREFIX(REPZ)
 {
-  s_rep (data, start, start ? NULL : Constant::zero ());
+  s_rep (data, start, start ? NULL : Constant::zero (1));
 }
 
 X86_32_TRANSLATE_PREFIX(REPNE)
 {
-  s_rep (data, start, start ? NULL : Constant::one ());
+  s_rep (data, start, start ? NULL : Constant::one (1));
 }
 
 X86_32_TRANSLATE_PREFIX(REPNZ)
 {
-  s_rep (data, start, start ? NULL : Constant::one ());
+  s_rep (data, start, start ? NULL : Constant::one (1));
 }

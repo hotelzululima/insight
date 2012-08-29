@@ -98,7 +98,7 @@ X86_32_TRANSLATE_0_OP(CBW)
 			   data.get_register ("ax"),
 			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("al"),
-					      Constant::create (16)),
+					      Constant::create (16, 0, BV_DEFAULT_SIZE)),
 			   data.next_ma);
 }
 
@@ -258,7 +258,7 @@ X86_32_TRANSLATE_0_OP(CWDE)
 			   data.get_register ("eax"),
 			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("ax"),
-					      Constant::create (32)),
+					      Constant::create (32, 0, BV_DEFAULT_SIZE)),
 			   data.next_ma);
 }
 
@@ -280,7 +280,7 @@ X86_32_TRANSLATE_0_OP(CWD)
 			   data.get_register ("dx"),
 			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("ax"),
-					      Constant::create (32), 16, 16),
+					      Constant::create (32, 0, BV_DEFAULT_SIZE), 16, 16),
 			   data.next_ma);  
 }
 
@@ -290,7 +290,7 @@ X86_32_TRANSLATE_0_OP(CDQ)
 			   data.get_register ("edx"),
 			   BinaryApp::create (BV_OP_EXTEND_S, 
 					      data.get_register ("eax"),
-					      Constant::create (64), 32, 32),
+					      Constant::create (64, 0, BV_DEFAULT_SIZE), 32, 32),
 			   data.next_ma);
 }
 

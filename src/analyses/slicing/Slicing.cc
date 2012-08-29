@@ -169,11 +169,11 @@ crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2,
   Variable *Varg2 = Variable::create ("ARG2");
   Expr *arg2_pattern = arg2->ref ();
   Expr *p = 
-    Expr::createEquality(Variable::create ("TERM_VALUE"), Varg2->ref ());
+    Expr::createEquality(Variable::create ("TERM_VALUE",0, Varg2->get_bv_size ()), Varg2->ref ());
   VarList free_variables; 
   free_variables.push_back(Varg2);
   Expr * v =
-    Expr::createEquality(Variable::create ("TERM_VALUE"),
+    Expr::createEquality(Variable::create ("TERM_VALUE", 0, sz),
 			 BinaryApp::create (op, Varg1->ref (), Varg2->ref (), 
 					    o, sz));
   bottom_up_rewrite_pattern_and_assign (&arg2_pattern, p, free_variables, v );
@@ -181,7 +181,7 @@ crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2,
   v->deref ();
 
   Expr *result = arg1->ref ();
-  p = Expr::createEquality(Variable::create ("TERM_VALUE"), Varg1->ref ());
+  p = Expr::createEquality(Variable::create ("TERM_VALUE", 0, Varg1->get_bv_size ()), Varg1->ref ());
   free_variables.clear(); 
   free_variables.push_back(Varg1);
   bottom_up_rewrite_pattern_and_assign (&result, p, free_variables, 
@@ -400,7 +400,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       // - directly rval anywhere else
 
       Expr *reg_pattern = 
-	Expr::createEquality(ConditionalSet::EltSymbol (), lval->ref ());
+	Expr::createEquality(ConditionalSet::EltSymbol (lval->get_bv_size ()), lval->ref ());
 
       // The variable TMP is used to hide form EltSymbol = lval when one replaces lval by rval.
       Variable *tmp = Variable::create ("TMP");
@@ -424,8 +424,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       // 1. Formally replace all occurencies of "EltSymbol = [x]" for any 
       // expr x by "ELT_ADDR = x" (ELT_ADDR is a new variable)
       Expr *m_pattern = 
-	Expr::createEquality(ConditionalSet::EltSymbol (), 
-			  MemCell::create (X->ref ()));
+	Expr::createEquality(ConditionalSet::EltSymbol (BV_DEFAULT_SIZE), 
+			     MemCell::create (X->ref ()));
       VarList free_variables;
       free_variables.push_back(X);
 
@@ -449,7 +449,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       tmp =
 	Expr::createIfThenElse(Expr::createEquality(((MemCell *) lval)->get_addr()->ref (), X->ref ()),
 			    deps->ref (),  
-			    Expr::createEquality(ConditionalSet::EltSymbol (),
+			    Expr::createEquality(ConditionalSet::EltSymbol (BV_DEFAULT_SIZE),
 						 MemCell::create (X->ref ())));
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues), 
 					    m_pattern, free_variables, tmp);

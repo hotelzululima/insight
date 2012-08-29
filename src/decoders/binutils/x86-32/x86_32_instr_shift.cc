@@ -145,7 +145,7 @@ X86_32_TRANSLATE_2_OP(SHR)
 
 #define translate_shift_one_bit(op) \
 X86_32_TRANSLATE_1_OP(op) \
-{ x86_32_translate<X86_32_TOKEN(op)> (data, Constant::create (1), op1); }
+{ x86_32_translate<X86_32_TOKEN(op)> (data, Constant::one (BV_DEFAULT_SIZE), op1); }
 
 
 translate_shift_one_bit (SAL)

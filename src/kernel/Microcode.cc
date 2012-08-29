@@ -144,7 +144,7 @@ Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end,
   MicrocodeNode *b = get_or_create_node(beg);
 
   if (guard == NULL)
-    guard = Constant::create (1);
+    guard = Constant::True ();
 
   StmtArrow *a = b->add_successor(guard, get_or_create_node(end), new Skip());
   apply_callbacks (a);
@@ -156,7 +156,7 @@ Microcode::add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
   MicrocodeNode *b = get_or_create_node(beg);
 
   if (guard == NULL)
-    guard = Constant::create (1);
+    guard = Constant::True ();
   StmtArrow *a = b->add_successor(guard, get_or_create_node(end),
 				  new Assignment(lvalue, expr));
   apply_callbacks (a);  
@@ -177,7 +177,7 @@ Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) {
   MicrocodeNode *b = get_or_create_node(beg);
 
   if (guard == NULL)
-    guard = Constant::create (1);
+    guard = Constant::True ();
   StmtArrow *a = b->add_successor(guard, target->ref (), new Jump(target));
   apply_callbacks (a); 
 }
