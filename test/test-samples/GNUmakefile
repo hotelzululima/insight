@@ -98,6 +98,7 @@ X86_32_OBJECTS= \
   \
   x86_32-simulator-CF.bin  \
   x86_32-simulator-call.bin  \
+  x86_32-simulator-call-noinit.bin  \
   x86_32-simulator-cbw.bin  \
   x86_32-simulator-cmov.bin  \
   x86_32-simulator-cmps-01.bin  \
