@@ -398,11 +398,9 @@ public:
   static BinaryApp *create (BinaryOp op, Expr *arg1, int arg2);
 
   static BinaryApp *create (BinaryOp op, Expr *arg1, Expr *arg2, 
-			    int bv_offset, int bv_size = BV_DEFAULT_SIZE);
-
-  
+  			    int bv_offset, int bv_size);
   static BinaryApp *create (BinaryOp op, Expr *arg1, int arg2,
-			    int bv_offset, int bv_size = BV_DEFAULT_SIZE);
+  			    int bv_offset, int bv_size);
 
   BinaryOp get_op() const;
   Expr *get_arg1() const;

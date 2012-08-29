@@ -74,12 +74,15 @@ Expr::createNot (Expr *arg1)
 Expr * 
 Expr::createImplies (Expr *A, Expr *B)
 {
+  assert (A->get_bv_size () == B->get_bv_size ());
+
   return createOr (createNot (A), B);
 }
 
 Expr * 
 Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 {
+  assert (A->get_bv_size () == B->get_bv_size ());
   return createOr (createAnd (cond->ref (), A),
 		   createAnd (createNot (cond), B));
 }
@@ -87,19 +90,22 @@ Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 Expr * 
 Expr::createEquality (Expr *A, Expr *B)
 {
+  assert (A->get_bv_size () == B->get_bv_size ());
   return BinaryApp::create (BV_OP_EQ, A, B, 0, 1);
 }
 
 Expr *
-Expr::createAnd (Expr *arg1, Expr *arg2)
+Expr::createAnd (Expr *A, Expr *B)
 {
-  return BinaryApp::create (BV_OP_AND, arg1, arg2, 0, 1);
+  assert (A->get_bv_size () == B->get_bv_size ());
+  return BinaryApp::create (BV_OP_AND, A, B, 0, 1);
 }
 
 Expr *
-Expr::createOr (Expr *arg1, Expr*arg2)
+Expr::createOr (Expr *A, Expr *B)
 {
-  return BinaryApp::create (BV_OP_OR,  arg1, arg2, 0, 1);
+  assert (A->get_bv_size () == B->get_bv_size ());
+  return BinaryApp::create (BV_OP_OR,  A, B, 0, 1);
 }
 
 Option<bool> 
@@ -319,7 +325,9 @@ BinaryApp::BinaryApp(BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset,
 BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2)
 {
-  return BinaryApp::create (op, arg1, arg2, 0);
+  assert ((op == BV_OP_CONCAT || op == BV_OP_EXTEND_S || op == BV_OP_EXTEND_U) 
+	  || arg1->get_bv_size () == arg2->get_bv_size ());
+  return BinaryApp::create (op, arg1, arg2, 0, arg1->get_bv_size ());
 }
 
 BinaryApp *
@@ -336,8 +344,8 @@ BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset,
   return find_or_add (new BinaryApp (op, arg1, arg2, bv_offset, bv_size));
 }
 
-BinaryApp *
-BinaryApp::create (BinaryOp op, Expr *arg1, int arg2, int bv_offset, 
+BinaryApp * 
+BinaryApp::create (BinaryOp op, Expr *arg1, int arg2,  int bv_offset, 
 		   int bv_size)
 {
   return BinaryApp::create (op, arg1, 
