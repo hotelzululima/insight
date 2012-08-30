@@ -115,8 +115,15 @@ public:
 	Constant *c = dynamic_cast<Constant *> (addr);
 	if (c != NULL)
 	  {
+	    int i;
 	    int size = (mc->get_bv_offset() + mc->get_bv_size () - 1) / 8 + 1;
-	    val = ctx->get_memory ()->get (c->get_val (), size, endianness);
+	    for (i = 0; i < size; i++)
+	      if (! ctx->get_memory ()->is_defined (c->get_val () + i))
+		break;
+	    if (i == size)
+	      val = ctx->get_memory ()->get (c->get_val (), size, endianness);
+	    else
+	      val = SymbolicValue::unknown_value (size * 8);
 	  }
 	addr->deref ();
     } 
@@ -260,13 +267,14 @@ SymbolicSimulator::eval (const SymbolicState *ctx, const Expr *e) const
     }
   
   Constant *c = solver->evaluate (f, ctx->get_condition ());
-  f->deref ();
-
   if (c != NULL)
     {
-      result = SymbolicValue (c);
-      c->deref ();
+      f->deref ();
+      f = c;
     }
+
+  result = SymbolicValue (f);
+  f->deref ();
 
   return result;
 }
