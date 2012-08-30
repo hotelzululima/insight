@@ -90,7 +90,7 @@ Constant *
 ExprSolver::evaluate (const Expr *e, const Expr *context) 
   throw (UnexpectedResponseException)
 {
-  BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " / " + 
+  BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " with context " + 
 		   context->to_string ());
 
   Constant *result = NULL;
@@ -102,12 +102,40 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
   if (check_sat (phi, false) == SAT)
     {
       result = get_value_of (var);
-      if (logs::debug_is_on)
+      if (logs::debug_is_on)	
 	logs::debug << *result << std::endl;
+      pop ();
+
+      BEGIN_DBG_BLOCK ("check if value '" + result->to_string () + 
+		       "' is unique");
+
+      push ();      
+      Expr *tmp = BinaryApp::create (BV_OP_NEQ, var->ref (), result->ref (), 
+				     0, 1);
+      tmp = Expr::createAnd (tmp, phi->ref ());
+
+      if (check_sat (tmp, false) != UNSAT)
+	{
+	  if (logs::debug_is_on)
+	    {
+	      Constant *c = get_value_of (var);
+	      logs::debug << "variable may have onother value: " 
+			  << *c << endl;
+	      c->deref ();
+	    }
+	  result->deref ();
+	  result = NULL;
+	}
+      pop ();
+      tmp->deref ();
+      END_DBG_BLOCK ();
+    }
+  else
+    {
+      pop ();
     }
   phi->deref ();
   var->deref ();
-  pop ();
 
   END_DBG_BLOCK ();
 
