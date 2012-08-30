@@ -2,6 +2,7 @@
 .globl main
 
 main:
-	jmp	.+0x4
+	jmp	.+0x6
 	.long	0xdeadbeef
-	add	$10, (.-0x4)
+	mov	(0x2), %eax
+	add	$0xa, %eax

@@ -1,0 +1,15 @@
+			 Build the benchmarks
+			======================
+
+Mixed code
+----------
+gcc -c -m32 -o mixed_code.bin mixed_code.s
+
+Overlapping code
+----------------
+gcc -c -m32 -o overlapping_code.bin overlapping_code.s
+
+Self-modifying code
+-------------------
+gcc -c -m32 -Wl,-zexecstack -o self-modfying_code.bin self-modfying_code.s
+
