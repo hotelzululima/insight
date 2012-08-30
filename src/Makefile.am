@@ -179,6 +179,8 @@ io_sources = \
 	io/expressions/ExprLexer.hh 		\
 	io/expressions/ExprLexer.ll		\
 	io/expressions/ExprParser.yy 		\
+	io/microcode/asm-writer.cc      	\
+	io/microcode/asm-writer.hh      	\
 	io/microcode/MicrocodeLoader.cc 	\
 	io/microcode/MicrocodeLoader.hh 	\
 	io/microcode/xml_microcode_parser.cc	\

@@ -43,6 +43,7 @@
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
+#include <io/microcode/asm-writer.hh>
 
 #include <config.h>
 #include "FloodTraversal.hh"
@@ -105,16 +106,17 @@ usage (int status)
       cout << "Usage: " << prog_name << " [OPTION] EXECFILE..." << endl;
 
       cout << "Rebuild the CFG based on the analysis of the binary." << endl
-	<< endl
-	<< "  -d, --disas TYPE\tselect disassembler type" << endl
-	<< "  -l, --list\t\tlist all disassembler types" << endl
-	<< "  -e, --entrypoint ADDR\tforce entry point" << endl
-	<< "  -f, --format FMT\toutput format mc|dot|xml (default: mc)" << endl
-	<< "  -o, --output FILE\twrite output to FILE" << endl
-	<< "  -h, --help\t\tdisplay this help" << endl
-	<< "  -v, --verbose\t\tincrease verbosity level" << endl
-	<< "  -D, --debug\t\tenable debug traces" << endl
-	<< "  -V, --version\t\tdisplay version and exit" << endl;
+	   << endl
+	   << "  -d, --disas TYPE\tselect disassembler type" << endl
+	   << "  -l, --list\t\tlist all disassembler types" << endl
+	   << "  -e, --entrypoint ADDR\tforce entry point" << endl
+	   << "  -f, --format FMT\toutput format asm|mc|dot|xml (default: mc)" 
+	   << endl
+	   << "  -o, --output FILE\twrite output to FILE" << endl
+	   << "  -h, --help\t\tdisplay this help" << endl
+	   << "  -v, --verbose\t\tincrease verbosity level" << endl
+	   << "  -D, --debug\t\tenable debug traces" << endl
+	   << "  -V, --version\t\tdisplay version and exit" << endl;
     }
 
   exit (status);
@@ -144,7 +146,7 @@ main (int argc, char *argv[])
   int optc;
   string output_filename;
 
-  /* Default output format (_mc_, dot, xml) */
+  /* Default output format (asm, _mc_, dot, xml) */
   string output_format = "mc";
 
   /* Long options struct */
@@ -207,7 +209,8 @@ main (int argc, char *argv[])
 	output_format = string(optarg);
 
 	/* Checking if the format is known */
-	if ((output_format != "mc")  &&
+	if ((output_format != "asm")  &&
+	    (output_format != "mc")  &&
 	    (output_format != "dot") &&
 	    (output_format != "xml"))
 	  {
@@ -359,7 +362,9 @@ main (int argc, char *argv[])
   mc->sort ();
     
   /* Displaying the microcode */
-  if (output_format == "mc")
+  if (output_format == "asm")
+    asm_writer (*output, mc);
+  else if (output_format == "mc")
     *output << mc->pp() << endl;
   else if (output_format == "dot")
     mc->toDot(*output);
