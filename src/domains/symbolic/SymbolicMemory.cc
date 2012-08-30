@@ -60,7 +60,7 @@ SymbolicMemory::get (const ConcreteAddress &a, int size_in_bytes,
 	byte = ci->second.get_Expr ()->ref ();
       else if (base->is_defined (addr))
 	{
-	  ConcreteValue v = base->get (addr, 8, e);
+	  ConcreteValue v = base->get (addr, 1, e);
 	  byte = Constant::create (v.get (), 0, 8);
 	}
 
