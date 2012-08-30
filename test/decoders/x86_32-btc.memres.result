@@ -1,8 +1,8 @@
 **** Decode instruction: btc    %ax,%bx
 [(0x0,0)] @{asm:=btc    %ax,%bx}@ %eflags{0;1} := (RSH_U %ebx{0;16} %eax{0;4}){0;1}
 [(0x0,1)] StaticArrow (0x0,1) Skip << %eflags{0;1} >> --> (0x0,3)StaticArrow (0x0,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x0,2)
-[(0x0,2)] StaticArrow (0x0,2) %ebx{0;16} := (OR %ebx{0;16} (LSH 0x1{0;16} %eax{0;4}){0;16}){0;32}  --> (0x4,0)
-[(0x0,3)] StaticArrow (0x0,3) %ebx{0;16} := (AND %ebx{0;16} (NOT (LSH 0x1{0;16} %eax{0;4}){0;16}){0;16}){0;32}  --> (0x4,0)
+[(0x0,2)] StaticArrow (0x0,2) %ebx{0;16} := (OR %ebx{0;16} (LSH 0x1{0;16} %eax{0;4}){0;16}){0;16}  --> (0x4,0)
+[(0x0,3)] StaticArrow (0x0,3) %ebx{0;16} := (AND %ebx{0;16} (NOT (LSH 0x1{0;16} %eax{0;4}){0;16}){0;16}){0;16}  --> (0x4,0)
 [(0x4,0)] 
 
 **** Decode instruction: btc    %eax,%ebx
@@ -29,8 +29,8 @@
 **** Decode instruction: btc    $0x13,%ax
 [(0x16,0)] @{asm:=btc    $0x13,%ax}@ %eflags{0;1} := (RSH_U %eax{0;16} 0x3{0;4}){0;1}
 [(0x16,1)] StaticArrow (0x16,1) Skip << %eflags{0;1} >> --> (0x16,3)StaticArrow (0x16,1) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x16,2)
-[(0x16,2)] StaticArrow (0x16,2) %eax{0;16} := (OR %eax{0;16} (LSH 0x1{0;16} 0x3{0;4}){0;16}){0;32}  --> (0x1B,0)
-[(0x16,3)] StaticArrow (0x16,3) %eax{0;16} := (AND %eax{0;16} (NOT (LSH 0x1{0;16} 0x3{0;4}){0;16}){0;16}){0;32}  --> (0x1B,0)
+[(0x16,2)] StaticArrow (0x16,2) %eax{0;16} := (OR %eax{0;16} (LSH 0x1{0;16} 0x3{0;4}){0;16}){0;16}  --> (0x1B,0)
+[(0x16,3)] StaticArrow (0x16,3) %eax{0;16} := (AND %eax{0;16} (NOT (LSH 0x1{0;16} 0x3{0;4}){0;16}){0;16}){0;16}  --> (0x1B,0)
 [(0x1B,0)] 
 
 **** Decode instruction: btc    $0x13,%eax

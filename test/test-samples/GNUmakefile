@@ -165,6 +165,8 @@ X86_32_OBJECTS= \
   x86_32-simulator-xchg.bin  \
   \
   x86_32-cfgrecovery-01.bin \
+  x86_32-cfgrecovery-02.bin \
+  x86_32-cfgrecovery-03.bin \
   \
   ${dummy}
 

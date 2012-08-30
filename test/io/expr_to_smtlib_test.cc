@@ -41,63 +41,63 @@
 
 using namespace std;
 
-#define ALL_X86_CC							\
-  X86_32_CC (NP,  "(NOT %pf)",						\
-	     "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)")		\
-  X86_32_CC (A,   "(NOT (OR %cf %zf){0;1})",				\
-	     "(not (= (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)) #b1))") \
-  X86_32_CC (AE,  "(NOT %cf)",						\
-	     "(not (= ((_ extract 0 0 ) eflags) #b1))")			\
-  X86_32_CC (B,   "%cf",						\
-	     "(= ((_ extract 0 0 ) eflags) #b1)")			\
-  X86_32_CC (BE,  "(OR %cf %zf){0;1}",					\
-	     "(= (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)) #b1)") \
-  X86_32_CC (E,   "%zf",						\
-	     "(= ((_ extract 6 6 ) eflags) #b1)")			\
-  X86_32_CC (G,   "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})",		\
-	     "(not (= (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)) #b1))") \
-  X86_32_CC (GE,  "(NOT (XOR %sf %of){0;1})",				\
-	     "(not (= (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) #b1))") \
-  X86_32_CC (L,   "(XOR %sf %of){0;1}",					\
-	     "(= (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) #b1)") \
-  X86_32_CC (LE,  "(OR (XOR %sf %of){0;1} %zf){0;1}",			\
-	     "(= (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)) #b1)") \
-  X86_32_CC (NA,  "(OR %cf %zf){0;1}",					\
-	     "(= (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)) #b1)") \
-  X86_32_CC (NAE, "%cf",						\
-	     "(= ((_ extract 0 0 ) eflags) #b1)")			\
-  X86_32_CC (NB,  "(NOT %cf)",						\
-	     "(not (= ((_ extract 0 0 ) eflags) #b1))")			\
-  X86_32_CC (NBE, "(NOT (OR %cf %zf){0;1})",				\
-	     "(not (= (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)) #b1))") \
-  X86_32_CC (NE,  "(NOT %zf)",						\
-	     "(= (bvnot ((_ extract 6 6 ) eflags)) #b1)")		\
-  X86_32_CC (NG,  "(OR (XOR %sf %of){0;1} %zf){0;1}",			\
-	     "(= (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)) #b1)") \
-  X86_32_CC (NGE, "(XOR %sf %of){0;1}",					\
-	     "(= (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) #b1)") \
-  X86_32_CC (NL,  "(NOT (XOR %sf %of){0;1})",				\
-	     "(not (= (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) #b1))") \
-  X86_32_CC (NLE, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})",		\
-	     "(not (= (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)) #b1))") \
-  X86_32_CC (NO,  "(NOT %of)",						\
-	     "(= (bvnot ((_ extract 11 11 ) eflags)) #b1)")		\
-  X86_32_CC (NS,  "(NOT %sf)",						\
-	     "(= (bvnot ((_ extract 7 7 ) eflags)) #b1)")		\
-  X86_32_CC (NZ,  "(NOT %zf)",						\
-	     "(= (bvnot ((_ extract 6 6 ) eflags)) #b1)")		\
-  X86_32_CC (O,   "%of",						\
-	     "(= ((_ extract 11 11 ) eflags) #b1)")			\
-  X86_32_CC (P,   "%pf",						\
-	     "(= ((_ extract 2 2 ) eflags) #b1)")			\
-  X86_32_CC (PE,  "%pf",						\
-	     "(= ((_ extract 2 2 ) eflags) #b1)")			\
-  X86_32_CC (PO,  "(NOT %pf)",						\
-	     "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)")		\
-  X86_32_CC (S,   "%sf",						\
-	     "(= ((_ extract 7 7 ) eflags) #b1)")			\
-  X86_32_CC (Z,   "%zf",						\
-	     "(= ((_ extract 6 6 ) eflags) #b1)")
+#define  ALL_X86_CC \
+  X86_32_CC (NP, "(NOT %pf)", \
+             "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)") \
+  X86_32_CC (A, "(NOT (OR %cf %zf){0;1})", \
+             "(= (bvnot (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags))) #b1)") \
+  X86_32_CC (AE, "(NOT %cf)", \
+             "(= (bvnot ((_ extract 0 0 ) eflags)) #b1)") \
+  X86_32_CC (B, "%cf", \
+             "(= ((_ extract 0 0 ) eflags) #b1)") \
+  X86_32_CC (BE, "(OR %cf %zf){0;1}", \
+             "(= (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)) #b1)") \
+  X86_32_CC (E, "%zf", \
+             "(= ((_ extract 6 6 ) eflags) #b1)") \
+  X86_32_CC (G, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})", \
+             "(= (bvnot (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags))) #b1)") \
+  X86_32_CC (GE, "(NOT (XOR %sf %of){0;1})", \
+             "(= (bvnot (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags))) #b1)") \
+  X86_32_CC (L, "(XOR %sf %of){0;1}", \
+             "(= (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) #b1)") \
+  X86_32_CC (LE, "(OR (XOR %sf %of){0;1} %zf){0;1}", \
+             "(= (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)) #b1)") \
+  X86_32_CC (NA, "(OR %cf %zf){0;1}", \
+             "(= (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags)) #b1)") \
+  X86_32_CC (NAE, "%cf", \
+             "(= ((_ extract 0 0 ) eflags) #b1)") \
+  X86_32_CC (NB, "(NOT %cf)", \
+             "(= (bvnot ((_ extract 0 0 ) eflags)) #b1)") \
+  X86_32_CC (NBE, "(NOT (OR %cf %zf){0;1})", \
+             "(= (bvnot (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags))) #b1)") \
+  X86_32_CC (NE, "(NOT %zf)", \
+             "(= (bvnot ((_ extract 6 6 ) eflags)) #b1)") \
+  X86_32_CC (NG, "(OR (XOR %sf %of){0;1} %zf){0;1}", \
+             "(= (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags)) #b1)") \
+  X86_32_CC (NGE, "(XOR %sf %of){0;1}", \
+             "(= (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) #b1)") \
+  X86_32_CC (NL, "(NOT (XOR %sf %of){0;1})", \
+             "(= (bvnot (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags))) #b1)") \
+  X86_32_CC (NLE, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})", \
+             "(= (bvnot (bvor (bvxor ((_ extract 7 7 ) eflags) ((_ extract 11 11 ) eflags)) ((_ extract 6 6 ) eflags))) #b1)") \
+  X86_32_CC (NO, "(NOT %of)", \
+             "(= (bvnot ((_ extract 11 11 ) eflags)) #b1)") \
+  X86_32_CC (NS, "(NOT %sf)", \
+             "(= (bvnot ((_ extract 7 7 ) eflags)) #b1)") \
+  X86_32_CC (NZ, "(NOT %zf)", \
+             "(= (bvnot ((_ extract 6 6 ) eflags)) #b1)") \
+  X86_32_CC (O, "%of", \
+             "(= ((_ extract 11 11 ) eflags) #b1)") \
+  X86_32_CC (P, "%pf", \
+             "(= ((_ extract 2 2 ) eflags) #b1)") \
+  X86_32_CC (PE, "%pf", \
+             "(= ((_ extract 2 2 ) eflags) #b1)") \
+  X86_32_CC (PO, "(NOT %pf)", \
+             "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)") \
+  X86_32_CC (S, "%sf", \
+             "(= ((_ extract 7 7 ) eflags) #b1)") \
+  X86_32_CC (Z, "%zf", \
+             "(= ((_ extract 6 6 ) eflags) #b1)") 
 
 #define X86_32_CC(id, e, expout) \
 ATF_TEST_CASE(smtlib_ ## id) \
@@ -131,7 +131,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   ATF_REQUIRE (e != NULL);
   ostringstream oss;
 
-  smtlib_writer (oss, e, "memory", 32, true);
+  smtlib_writer (oss, e, "memory", 32, x86_32->endianness, true);
   
   ATF_REQUIRE_EQ (oss.str (), expectedout);
   e->deref ();
@@ -154,11 +154,12 @@ ATF_INIT_TEST_CASES(tcs)
 #else
 
 static void 
-gen_string (const string &e, const MicrocodeArchitecture &ma)
+gen_string (const string &id, const string &e, const MicrocodeArchitecture &ma)
 {					      
   Expr *ex = expr_parser (e, &ma);            
   ostringstream oss;				
-  smtlib_writer (oss, ex, "memory", 32);
+  smtlib_writer (oss, ex, "memory", 32, ma.get_reference_arch ()->endianness,
+		 true);
   string smte = oss.str ();			
   string::size_type i = smte.find ('\n'); 
   while (i != string::npos)			
@@ -166,12 +167,13 @@ gen_string (const string &e, const MicrocodeArchitecture &ma)
       string s = smte.replace (i, 1, "\\n");	
       smte = s;					
       i = smte.find ('\n');			
-    } 
-  logs::display << *ex << "-->" << smte << endl;
+    }   
+  logs::display << "  X86_32_CC (" << id << ", \"" << e << "\", \\" << endl
+		<< "             \"" << smte << "\") \\" << endl;
   ex->deref ();					
 }
 
-#define X86_32_CC(id, e, expout) gen_string (e, ma);
+#define X86_32_CC(id, e, expout) gen_string (# id, e, ma);
 
 int 
 main()
@@ -184,6 +186,7 @@ main()
   const Architecture *x86_32 = 
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
+  logs::display << "#define  ALL_X86_CC \\" << endl;
   ALL_X86_CC 
   insight::terminate ();
 

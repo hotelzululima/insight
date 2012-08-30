@@ -517,22 +517,28 @@ MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
 %.fld.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${CFGRECOVERY} ${CFGR_FLD_FLAGS}  $< > $@ 2>&1
+	@echo "generate $@"
+	@${CFGRECOVERY} ${CFGR_FLD_FLAGS}  $< > $@ 2>&1
 
 %.lsw.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${CFGRECOVERY} ${CFGR_LSW_FLAGS}  $< > $@ 2>&1
+	@echo "generate $@"
+	@${CFGRECOVERY} ${CFGR_LSW_FLAGS}  $< > $@ 2>&1
 
 %.rt.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${CFGRECOVERY} ${CFGR_RT_FLAGS}  $< > $@ 2>&1
+	@echo "generate $@"
+	@${CFGRECOVERY} ${CFGR_RT_FLAGS}  $< > $@ 2>&1
 
 %.fld.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_FLD_FLAGS} $< > $@ 2>&1
+	@echo "generate $@"
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_FLD_FLAGS} $< > $@ 2>&1
 
 %.lsw.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_LSW_FLAGS} $< > $@ 2>&1
+	@echo "generate $@"
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_LSW_FLAGS} $< > $@ 2>&1
 
 %.rt.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
-	 @${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} $< > $@ 2>&1
+	@echo "generate $@"
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} $< > $@ 2>&1
 
 check-diff : ${BASE_TESTS}
 	@ > check-diff

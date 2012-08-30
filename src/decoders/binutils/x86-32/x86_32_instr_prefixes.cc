@@ -102,8 +102,8 @@ s_start_rep (x86_32::parser_data &data)
 
   const char *regname = data.addr16 ? "cx" : "ecx";
   LValue *counter = data.get_register (regname);
-  Expr *stopcond = BinaryApp::create (BV_OP_EQ, counter, 
-				      Constant::zero (counter->get_bv_size ()));
+  Expr *zero = Constant::zero (counter->get_bv_size ());
+  Expr *stopcond = BinaryApp::createEquality (counter, zero);
   data.has_prefix = true;
   x86_32_if_then_else (data.start_ma, data, stopcond,
 		       data.next_ma, data.start_ma + 1);
@@ -117,8 +117,8 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
   const char *regname = data.addr16 ? "cx" : "ecx";
   LValue *counter = data.get_register (regname);
   int csize = counter->get_bv_size ();
-  Expr *stopcond = BinaryApp::create (BV_OP_EQ, counter->ref (), 
-				      Constant::zero (csize));
+  Expr *stopcond = BinaryApp::createEquality (counter->ref (), 
+					      Constant::zero (csize));
 
   data.mc->add_assignment (start, counter, 
 			   BinaryApp::create (BV_OP_SUB, counter->ref (),
@@ -127,7 +127,7 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
 
   if (cond)    
     {
-      cond = BinaryApp::create (BV_OP_EQ, data.get_register ("zf"), cond);
+      cond = BinaryApp::createEquality (data.get_register ("zf"), cond);
       stopcond = BinaryApp::create (BV_OP_OR, stopcond, cond);
     }
 

@@ -105,9 +105,7 @@ s_check_tautology (const string &, const string &expr, ExprSolver::Result res)
 
   ExprSolver *s = ExprSolver::create_default_solver (&ma);
 
-  s->push ();
-  ATF_REQUIRE_EQ (s->check_sat (e), res); 
-  s->pop ();
+  ATF_REQUIRE_EQ (s->check_sat (e, true), res); 
   e->deref ();
 
   insight::terminate ();
