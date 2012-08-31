@@ -337,8 +337,8 @@ x86_32_compute_ZF (MicrocodeAddress &from, x86_32::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to)
 {
   Expr *v = 
-    BinaryApp::create (BV_OP_EQ, value->ref (), 
-		       Constant::zero (value->get_bv_size ()), 0, 1);
+    BinaryApp::createEquality (value->ref (), 
+			       Constant::zero (value->get_bv_size ()));
   x86_32_assign_ZF (from, data, v, to);
 }
 

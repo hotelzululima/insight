@@ -77,6 +77,7 @@ X86_32_OBJECTS= \
   x86_32-simulator-03.bin \
   x86_32-simulator-04.bin \
   x86_32-simulator-05.bin \
+  x86_32-simulator-06.bin \
   \
   x86_32-simulator-aaa.bin  \
   x86_32-simulator-aad.bin  \

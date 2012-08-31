@@ -17,7 +17,7 @@
 [(0x17,4)] StaticArrow (0x17,4) %eflags{7;1} := %eax{15;1}  --> (0x18,0)
 [(0x18,0)] @{asm:=popf   }@ %eflags{0;32} := [%esp{0;32}]{0;32}
 [(0x18,1)] StaticArrow (0x18,1) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x19,0)
-[(0x19,0)] @{asm:=lahf   }@ StaticArrow (0x19,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x1A,0)
+[(0x19,0)] @{asm:=lahf   }@ StaticArrow (0x19,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x1A,0)
 [(0x1A,0)] @{asm:=cmp    $0x53,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x53{0;8}){0;9}
 [(0x1A,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x1A,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}
@@ -42,7 +42,7 @@
 [(0x2A,4)] StaticArrow (0x2A,4) %eflags{7;1} := %eax{15;1}  --> (0x2B,0)
 [(0x2B,0)] @{asm:=popfw  }@ %eflags{0;16} := [%esp{0;32}]{0;16}
 [(0x2B,1)] StaticArrow (0x2B,1) %esp{0;32} := (ADD %esp{0;32} 0x2{0;32}){0;32}  --> (0x2D,0)
-[(0x2D,0)] @{asm:=lahf   }@ StaticArrow (0x2D,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x2E,0)
+[(0x2D,0)] @{asm:=lahf   }@ StaticArrow (0x2D,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x2E,0)
 [(0x2E,0)] @{asm:=cmp    $0x53,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x53{0;8}){0;9}
 [(0x2E,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x2E,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}

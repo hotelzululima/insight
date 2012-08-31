@@ -62,7 +62,7 @@ s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
   Expr *stopcond = TernaryApp::create (BV_OP_EXTRACT, src->ref (), 
 				       temp->ref (), 
 				       Constant::one (1), 0, 1);
-  stopcond = BinaryApp::create (BV_OP_EQ, stopcond, Constant::zero (1), 0, 1);
+  stopcond = BinaryApp::createEquality (stopcond, Constant::zero (1));
 
   data.mc->add_skip (start_while, start_while + 1, stopcond->ref ());
   BinaryOp op = forward ? BV_OP_ADD : BV_OP_SUB;
@@ -73,16 +73,17 @@ s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
 					      dst_size));
   data.mc->add_skip (from, start_while);
   from++;
-  data.mc->add_skip (start_while, from, Expr::createNot (stopcond));
+  data.mc->add_skip (start_while, from, Expr::createLNot (stopcond));
   data.mc->add_assignment (from, (LValue *) dst->ref (), temp->ref (), 
 			   data.next_ma);
 
   /*
    * create branches
    */
-  Expr *cond = BinaryApp::create(BV_OP_EQ, src->ref (), 
-				 Constant::zero (src->get_bv_size ()), 0, 1);
-  data.mc->add_skip (data.start_ma, else_part, Expr::createNot (cond));
+  Expr *cond = BinaryApp::createEquality(src->ref (), 
+					 Constant::zero (src->get_bv_size ()));
+  
+  data.mc->add_skip (data.start_ma, else_part, Expr::createLNot (cond));
   data.mc->add_skip (data.start_ma, if_part, cond->ref ());
 
   temp->deref ();
@@ -115,7 +116,10 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
   MicrocodeAddress *to = (chg == BT_NO_CHG) ? &data.next_ma : NULL;
   int mask  = bbsize == 32 ? 6 : 4;
 
-  bitoffset = op1->extract_bit_vector (0, mask);
+  bitoffset = 
+    Expr::createExtend (BV_OP_EXTEND_U, op1->extract_bit_vector (0, mask),
+			op2->get_bv_size ());
+				 
   op1->deref ();
 
   x86_32_assign_CF (from, data, 

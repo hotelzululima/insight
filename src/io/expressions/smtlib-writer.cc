@@ -273,12 +273,12 @@ public:
 	  }
 	e->get_arg2 ()->acceptVisitor (this);
 	if (extend && e->get_bv_size () > e->get_arg2 ()->get_bv_size ())
-	  out << ") ";
+	  out << ")";
 	out << ")";
 	if (extract)
 	  out << ")";
 	if (ite)
-	  out << " #b1 #b0) ";
+	  out << " #b1 #b0)";
 	break;
 
       case BV_OP_ROR: op_str = "rotate_right"; goto output_binary_2;
@@ -293,9 +293,9 @@ public:
 	  word_t val = c->get_val ();
 	  if (op == BV_OP_EXTEND_U || op == BV_OP_EXTEND_S)
 	    val = c->get_val () - e->get_arg1 ()->get_bv_size ();
-	  out << "((_ " << op_str << " " << val << ") ";
+	  out << "((_ " << op_str << " " << dec << val << ") ";
 	  e->get_arg1 ()->acceptVisitor (this);
-	  out << ") ";
+	  out << ")";
 	}
 	break;
 
@@ -313,10 +313,11 @@ public:
     if (offset == NULL || size == NULL)
       throw SMTLibUnsupportedExpression (e->to_string ());
 
-    out << "((_ extract " << (offset->get_val () + size->get_val () - 1) << " " 
+    out << "((_ extract " 
+	<< dec << (offset->get_val () + size->get_val () - 1) << " " 
 	<< offset->get_val () << ") ";
     e->get_arg1 ()->acceptVisitor (this);
-    out << ") ";    	
+    out << ")";    	
   }
 
   virtual void visit (const MemCell *e) {
@@ -328,7 +329,7 @@ public:
 	int extend = addrsize - e->get_addr ()->get_bv_size ();
 	out << "(select " << memvar << " ";
 	if (extend > 0)
-	  out << "((_ zero_extend " << extend << ") ";
+	  out << "((_ zero_extend " << dec << extend << ") ";
 	e->get_addr ()->acceptVisitor (this);
 	if (extend > 0)
 	  out << ")";

@@ -204,7 +204,7 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
       
       conditional_rewrite_memref_aux (addr, value, &arg1);
       conditional_rewrite_memref_aux (addr, value, &arg2);
-      Expr *tmp = BinaryApp::createAnd ((Expr *) arg1, (Expr *) arg2);
+      Expr *tmp = BinaryApp::createLAnd ((Expr *) arg1, (Expr *) arg2);
       bool modified = (tmp != *phi);
       (*phi)->deref ();
       *phi = tmp;
@@ -219,7 +219,7 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
       
       conditional_rewrite_memref_aux (addr, value, &arg1);
       conditional_rewrite_memref_aux (addr, value, &arg2);
-      Expr *tmp = BinaryApp::createOr ((Expr *) arg1, (Expr *) arg2);
+      Expr *tmp = BinaryApp::createLOr ((Expr *) arg1, (Expr *) arg2);
       bool modified = (tmp != *phi);
       (*phi)->deref ();
       *phi = tmp;
@@ -233,7 +233,7 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
       if (conditional_rewrite_memref_aux(addr, value, &neg))
         {
 	  (*phi)->deref ();
-	  *phi = Expr::createNot (neg);
+	  *phi = Expr::createLNot (neg);
 
           return true;
         }
@@ -362,8 +362,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       if (!cond->eval_level0 ()) 
 	{
     	  Expr *new_lvalues = 
-	    BinaryApp::createAnd (cond->ref (), 
-					new_context->the_lvalues->ref ());
+	    BinaryApp::createLAnd (cond->ref (), 
+				   new_context->the_lvalues->ref ());
     	  new_context->the_lvalues->deref ();
           new_context->the_lvalues = new_lvalues;
         }
@@ -464,8 +464,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
   if (DataDependency::ConsiderJumpCond() && !DataDependency::OnlySimpleSets() && !cond->eval_level0())
     {
       Expr *new_lvalues = 
-	BinaryApp::createAnd (cond->ref (), 
-				    new_context->the_lvalues->ref ());
+	BinaryApp::createLAnd (cond->ref (), new_context->the_lvalues->ref ());
       new_context->the_lvalues->deref ();
       new_context->the_lvalues = new_lvalues;
     }

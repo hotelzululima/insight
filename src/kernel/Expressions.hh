@@ -113,11 +113,11 @@ public:
   virtual size_t hash () const;
   virtual bool equal (const Expr *F) const = 0;
 
-  static Expr *createNot (Expr *arg);
+  static Expr *createLNot (Expr *arg);
 
-  static Expr *createAnd (Expr *arg1, Expr *arg2);
+  static Expr *createLAnd (Expr *arg1, Expr *arg2);
 
-  static Expr *createOr (Expr *arg1, Expr *arg2);
+  static Expr *createLOr (Expr *arg1, Expr *arg2);
 
   /*! \brief construct the expr A ==> B.
    *  Caution A and B are not copied */
@@ -130,6 +130,10 @@ public:
   /*! \brief construct the expr, actually the expression (EQ A B).
    *  Caution A and B are not copied */
   static Expr *createEquality (Expr *A, Expr *B);
+  static Expr *createDisequality (Expr *A, Expr *B);
+
+  static Expr *createExtend (BinaryOp op, Expr *A, int newsize);
+  static Expr *createExtract (Expr *A, int offset, int size);
 
   /*! \brief the size of the bit vector. */
   int get_bv_size() const;

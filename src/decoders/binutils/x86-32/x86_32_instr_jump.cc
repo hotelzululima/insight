@@ -76,16 +76,16 @@ X86_32_TRANSLATE_1_OP(JC)
 X86_32_TRANSLATE_1_OP(JCXZ)
 {
   s_jcc (data.start_ma, data, op1, 
-	 BinaryApp::create (BV_OP_EQ, data.get_register ("cx"), 
-			    Constant::zero (16), 0, 1),
+	 BinaryApp::createEquality (data.get_register ("cx"), 
+				    Constant::zero (16)),
 	 &data.next_ma); 
 }
 
 X86_32_TRANSLATE_1_OP(JECXZ)
 {
   s_jcc (data.start_ma, data, op1, 
-	 BinaryApp::create (BV_OP_EQ, data.get_register ("ecx"), 
-			    Constant::zero (32), 0, 1),
+	 BinaryApp::createEquality (data.get_register ("ecx"), 
+				    Constant::zero (32)),
 	 &data.next_ma); 
 }
 

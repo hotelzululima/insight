@@ -96,11 +96,9 @@ X86_32_TRANSLATE_0_OP(CBW)
 {
   data.mc->add_assignment (data.start_ma,
 			   data.get_register ("ax"),
-			   BinaryApp::create (BV_OP_EXTEND_S, 
-					      data.get_register ("al"),
-					      Constant::create (16, 0, 
-								BV_DEFAULT_SIZE),
-					      0, 16),
+			   Expr::createExtend (BV_OP_EXTEND_S,
+					       data.get_register ("al"),
+					       16),
 			   data.next_ma);
 }
 
@@ -234,7 +232,7 @@ X86_32_TRANSLATE_2_OP(CMPXCHG)
   data.mc->add_assignment (from, (LValue *) eax->ref (), dst->ref (), 
 			   data.next_ma);
   
-  Expr *cond = BinaryApp::create (BV_OP_EQ, eax->ref (), dst->ref (), 0, 1);
+  Expr *cond = BinaryApp::createEquality (eax->ref (), dst->ref ());
   data.mc->add_skip (data.start_ma, elseaddr,
 		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
   data.mc->add_skip (data.start_ma, ifaddr, cond->ref ());
@@ -258,9 +256,9 @@ X86_32_TRANSLATE_0_OP(CWDE)
 {
   data.mc->add_assignment (data.start_ma,
 			   data.get_register ("eax"),
-			   BinaryApp::create (BV_OP_EXTEND_S, 
-					      data.get_register ("ax"),
-					      Constant::create (32, 0, BV_DEFAULT_SIZE), 0, 32),
+			   Expr::createExtend (BV_OP_EXTEND_S,
+					       data.get_register ("ax"),
+					       32),
 			   data.next_ma);
 }
 
@@ -278,21 +276,19 @@ X86_32_TRANSLATE_0_OP(CPUID)
 
 X86_32_TRANSLATE_0_OP(CWD)
 {
-  data.mc->add_assignment (data.start_ma,
-			   data.get_register ("dx"),
-			   BinaryApp::create (BV_OP_EXTEND_S, 
-					      data.get_register ("ax"),
-					      Constant::create (32, 0, BV_DEFAULT_SIZE), 16, 16),
-			   data.next_ma);  
+  Expr *tmp = 
+    Expr::createExtend (BV_OP_EXTEND_S, data.get_register ("ax"), 32);
+  tmp = Expr::createExtract (tmp, 16, 16);
+  data.mc->add_assignment (data.start_ma, data.get_register ("dx"), tmp, 
+			   data.next_ma);
 }
 
 X86_32_TRANSLATE_0_OP(CDQ)
 {
-  data.mc->add_assignment (data.start_ma,
-			   data.get_register ("edx"),
-			   BinaryApp::create (BV_OP_EXTEND_S, 
-					      data.get_register ("eax"),
-					      Constant::create (64, 0, BV_DEFAULT_SIZE), 32, 32),
+  Expr *tmp = 
+    Expr::createExtend (BV_OP_EXTEND_S, data.get_register ("eax"), 64);
+  tmp = Expr::createExtract (tmp, 32, 32);
+  data.mc->add_assignment (data.start_ma, data.get_register ("edx"), tmp, 
 			   data.next_ma);
 }
 
@@ -395,23 +391,17 @@ X86_32_TRANSLATE_2_OP(POPCNT)
 
   if (src->get_bv_size () > dst->get_bv_size ())
     Expr::extract_bit_vector (src, 0, dst->get_bv_size ());
-
+  int srcsize = src->get_bv_size ();
   Expr *c = 
-    BinaryApp::create (BV_OP_EXTEND_U, 
-		       src->extract_bit_vector (0, 1),
-		       Constant::create (dst->get_bv_size (), 
-					 0, BV_DEFAULT_SIZE),
-		       0, dst->get_bv_size ());
+    Expr::createExtend (BV_OP_EXTEND_U, src->extract_bit_vector (0, 1), 
+			dst->get_bv_size ());
 
   data.mc->add_assignment (from, (LValue *) dst->ref (), c);
   for (int i = 1; i < dst->get_bv_size (); i++)
     {
       Expr *aux = 
-	BinaryApp::create (BV_OP_EXTEND_U, 
-			   src->extract_bit_vector (i, 1),
-			   Constant::create (dst->get_bv_size (), 
-					     0, BV_DEFAULT_SIZE),
-			   0, dst->get_bv_size ());
+	Expr::createExtend (BV_OP_EXTEND_U, src->extract_bit_vector (i, 1),
+			    dst->get_bv_size ());
       data.mc->add_assignment (from, (LValue *) dst->ref (), 
 			       BinaryApp::create (BV_OP_ADD, dst->ref (), 
 						  aux, 0, dst->get_bv_size ()));
@@ -421,9 +411,8 @@ X86_32_TRANSLATE_2_OP(POPCNT)
   
   x86_32_reset_flags (from, data, reset);
   x86_32_assign_ZF (from, data, 
-		    BinaryApp::create (BV_OP_EQ, src->ref (), 
-				       Constant::zero (src->get_bv_size ()), 
-				       0, 1), 
+		    Expr::createEquality (src->ref (), 
+					  Constant::zero (srcsize)), 
 		    &data.next_ma);
   dst->deref ();
   src->deref ();

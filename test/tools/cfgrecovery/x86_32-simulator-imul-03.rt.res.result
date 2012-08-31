@@ -4,7 +4,7 @@
 [(0x11,0)] @{asm:=mov    $0x1111,%bx}@ StaticArrow (0x11,0) %ebx{0;16} := 0x1111{0;16}  --> (0x15,0)
 [(0x15,0)] @{asm:=imul   $0x1111,%bx,%cx}@ %tmpr0_32{0;32} := (MUL_S %ebx{0;16} 0x1111{0;16}){0;32}
 [(0x15,1)] %ecx{0;16} := %tmpr0_32{0;16}
-[(0x15,2)] StaticArrow (0x15,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16} >> --> (0x15,3)StaticArrow (0x15,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16}){0;1} >> --> (0x15,5)
+[(0x15,2)] StaticArrow (0x15,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1} >> --> (0x15,3)StaticArrow (0x15,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1}){0;1} >> --> (0x15,5)
 [(0x15,3)] %eflags{0;1} := 0x1{0;1}
 [(0x15,4)] StaticArrow (0x15,4) %eflags{11;1} := 0x1{0;1}  --> (0x1A,0)
 [(0x15,5)] %eflags{0;1} := 0x0{0;1}
@@ -23,7 +23,7 @@
 [(0x2A,0)] @{asm:=mov    $0x1234,%bx}@ StaticArrow (0x2A,0) %ebx{0;16} := 0x1234{0;16}  --> (0x2E,0)
 [(0x2E,0)] @{asm:=imul   $0x3,%bx,%cx}@ %tmpr0_32{0;32} := (MUL_S %ebx{0;16} 0x3{0;16}){0;32}
 [(0x2E,1)] %ecx{0;16} := %tmpr0_32{0;16}
-[(0x2E,2)] StaticArrow (0x2E,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16} >> --> (0x2E,3)StaticArrow (0x2E,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16}){0;1} >> --> (0x2E,5)
+[(0x2E,2)] StaticArrow (0x2E,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1} >> --> (0x2E,3)StaticArrow (0x2E,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1}){0;1} >> --> (0x2E,5)
 [(0x2E,3)] %eflags{0;1} := 0x1{0;1}
 [(0x2E,4)] StaticArrow (0x2E,4) %eflags{11;1} := 0x1{0;1}  --> (0x32,0)
 [(0x2E,5)] %eflags{0;1} := 0x0{0;1}
@@ -42,7 +42,7 @@
 [(0x42,0)] @{asm:=mov    %cx,%bx}@ StaticArrow (0x42,0) %ebx{0;16} := %ecx{0;16}  --> (0x45,0)
 [(0x45,0)] @{asm:=imul   $0xfd,%bx,%cx}@ %tmpr0_32{0;32} := (MUL_S %ebx{0;16} 0xFFFD{0;16}){0;32}
 [(0x45,1)] %ecx{0;16} := %tmpr0_32{0;16}
-[(0x45,2)] StaticArrow (0x45,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16} >> --> (0x45,3)StaticArrow (0x45,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16}){0;1} >> --> (0x45,5)
+[(0x45,2)] StaticArrow (0x45,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1} >> --> (0x45,3)StaticArrow (0x45,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1}){0;1} >> --> (0x45,5)
 [(0x45,3)] %eflags{0;1} := 0x1{0;1}
 [(0x45,4)] StaticArrow (0x45,4) %eflags{11;1} := 0x1{0;1}  --> (0x4A,0)
 [(0x45,5)] %eflags{0;1} := 0x0{0;1}
@@ -61,7 +61,7 @@
 [(0x5A,0)] @{asm:=mov    $0xf234,%bx}@ StaticArrow (0x5A,0) %ebx{0;16} := 0xF234{0;16}  --> (0x5E,0)
 [(0x5E,0)] @{asm:=imul   $0xfd,%bx,%cx}@ %tmpr0_32{0;32} := (MUL_S %ebx{0;16} 0xFFFD{0;16}){0;32}
 [(0x5E,1)] %ecx{0;16} := %tmpr0_32{0;16}
-[(0x5E,2)] StaticArrow (0x5E,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16} >> --> (0x5E,3)StaticArrow (0x5E,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;16}){0;1} >> --> (0x5E,5)
+[(0x5E,2)] StaticArrow (0x5E,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1} >> --> (0x5E,3)StaticArrow (0x5E,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1}){0;1} >> --> (0x5E,5)
 [(0x5E,3)] %eflags{0;1} := 0x1{0;1}
 [(0x5E,4)] StaticArrow (0x5E,4) %eflags{11;1} := 0x1{0;1}  --> (0x63,0)
 [(0x5E,5)] %eflags{0;1} := 0x0{0;1}
@@ -80,7 +80,7 @@
 [(0x73,0)] @{asm:=mov    $0x11111111,%ebx}@ StaticArrow (0x73,0) %ebx{0;32} := 0x11111111{0;32}  --> (0x78,0)
 [(0x78,0)] @{asm:=imul   $0x11111111,%ebx,%ecx}@ %tmpr0_64{0;64} := (MUL_S %ebx{0;32} 0x11111111{0;32}){0;64}
 [(0x78,1)] %ecx{0;32} := %tmpr0_64{0;32}
-[(0x78,2)] StaticArrow (0x78,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32} >> --> (0x78,3)StaticArrow (0x78,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32}){0;1} >> --> (0x78,5)
+[(0x78,2)] StaticArrow (0x78,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1} >> --> (0x78,3)StaticArrow (0x78,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1}){0;1} >> --> (0x78,5)
 [(0x78,3)] %eflags{0;1} := 0x1{0;1}
 [(0x78,4)] StaticArrow (0x78,4) %eflags{11;1} := 0x1{0;1}  --> (0x7E,0)
 [(0x78,5)] %eflags{0;1} := 0x0{0;1}
@@ -99,7 +99,7 @@
 [(0x8F,0)] @{asm:=mov    $0x12345678,%ebx}@ StaticArrow (0x8F,0) %ebx{0;32} := 0x12345678{0;32}  --> (0x94,0)
 [(0x94,0)] @{asm:=imul   $0x3,%ebx,%ecx}@ %tmpr0_64{0;64} := (MUL_S %ebx{0;32} 0x3{0;32}){0;64}
 [(0x94,1)] %ecx{0;32} := %tmpr0_64{0;32}
-[(0x94,2)] StaticArrow (0x94,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32} >> --> (0x94,3)StaticArrow (0x94,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32}){0;1} >> --> (0x94,5)
+[(0x94,2)] StaticArrow (0x94,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1} >> --> (0x94,3)StaticArrow (0x94,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1}){0;1} >> --> (0x94,5)
 [(0x94,3)] %eflags{0;1} := 0x1{0;1}
 [(0x94,4)] StaticArrow (0x94,4) %eflags{11;1} := 0x1{0;1}  --> (0x97,0)
 [(0x94,5)] %eflags{0;1} := 0x0{0;1}
@@ -118,7 +118,7 @@
 [(0xA8,0)] @{asm:=mov    %ecx,%ebx}@ StaticArrow (0xA8,0) %ebx{0;32} := %ecx{0;32}  --> (0xAA,0)
 [(0xAA,0)] @{asm:=imul   $0xfffffffd,%ebx,%ecx}@ %tmpr0_64{0;64} := (MUL_S %ebx{0;32} 0xFFFFFFFD{0;32}){0;64}
 [(0xAA,1)] %ecx{0;32} := %tmpr0_64{0;32}
-[(0xAA,2)] StaticArrow (0xAA,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32} >> --> (0xAA,3)StaticArrow (0xAA,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32}){0;1} >> --> (0xAA,5)
+[(0xAA,2)] StaticArrow (0xAA,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1} >> --> (0xAA,3)StaticArrow (0xAA,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1}){0;1} >> --> (0xAA,5)
 [(0xAA,3)] %eflags{0;1} := 0x1{0;1}
 [(0xAA,4)] StaticArrow (0xAA,4) %eflags{11;1} := 0x1{0;1}  --> (0xAD,0)
 [(0xAA,5)] %eflags{0;1} := 0x0{0;1}
@@ -137,7 +137,7 @@
 [(0xBE,0)] @{asm:=mov    $0xfffffffd,%ebx}@ StaticArrow (0xBE,0) %ebx{0;32} := 0xFFFFFFFD{0;32}  --> (0xC3,0)
 [(0xC3,0)] @{asm:=imul   $0xf2345678,%ebx,%ecx}@ %tmpr0_64{0;64} := (MUL_S %ebx{0;32} 0xF2345678{0;32}){0;64}
 [(0xC3,1)] %ecx{0;32} := %tmpr0_64{0;32}
-[(0xC3,2)] StaticArrow (0xC3,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32} >> --> (0xC3,3)StaticArrow (0xC3,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;32}){0;1} >> --> (0xC3,5)
+[(0xC3,2)] StaticArrow (0xC3,2) Skip << (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1} >> --> (0xC3,3)StaticArrow (0xC3,2) Skip << (NOT (NEQ 0x0{0;32} %tmpr0_64{32;32}){0;1}){0;1} >> --> (0xC3,5)
 [(0xC3,3)] %eflags{0;1} := 0x1{0;1}
 [(0xC3,4)] StaticArrow (0xC3,4) %eflags{11;1} := 0x1{0;1}  --> (0xC9,0)
 [(0xC3,5)] %eflags{0;1} := 0x0{0;1}

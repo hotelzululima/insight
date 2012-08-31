@@ -55,32 +55,32 @@
 
 **** Decode instruction: push   %cs
 [(0x2B,0)] @{asm:=push   %cs}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2B,1)] StaticArrow (0x2B,1) [%esp{0;32}]{0;32} := (EXTEND_U %cs{0;16} 0x20{0;16}){0;32}  --> (0x2C,0)
+[(0x2B,1)] StaticArrow (0x2B,1) [%esp{0;32}]{0;32} := (EXTEND_U %cs{0;16} 0x20{0;32}){0;32}  --> (0x2C,0)
 [(0x2C,0)] 
 
 **** Decode instruction: push   %ss
 [(0x2C,0)] @{asm:=push   %ss}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2C,1)] StaticArrow (0x2C,1) [%esp{0;32}]{0;32} := (EXTEND_U %ss{0;16} 0x20{0;16}){0;32}  --> (0x2D,0)
+[(0x2C,1)] StaticArrow (0x2C,1) [%esp{0;32}]{0;32} := (EXTEND_U %ss{0;16} 0x20{0;32}){0;32}  --> (0x2D,0)
 [(0x2D,0)] 
 
 **** Decode instruction: push   %ds
 [(0x2D,0)] @{asm:=push   %ds}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2D,1)] StaticArrow (0x2D,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;16}){0;32}  --> (0x2E,0)
+[(0x2D,1)] StaticArrow (0x2D,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;32}){0;32}  --> (0x2E,0)
 [(0x2E,0)] 
 
 **** Decode instruction: push   %ds
 [(0x2E,0)] @{asm:=push   %ds}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2E,1)] StaticArrow (0x2E,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;16}){0;32}  --> (0x2F,0)
+[(0x2E,1)] StaticArrow (0x2E,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;32}){0;32}  --> (0x2F,0)
 [(0x2F,0)] 
 
 **** Decode instruction: push   %fs
 [(0x2F,0)] @{asm:=push   %fs}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2F,1)] StaticArrow (0x2F,1) [%esp{0;32}]{0;32} := (EXTEND_U %fs{0;16} 0x20{0;16}){0;32}  --> (0x31,0)
+[(0x2F,1)] StaticArrow (0x2F,1) [%esp{0;32}]{0;32} := (EXTEND_U %fs{0;16} 0x20{0;32}){0;32}  --> (0x31,0)
 [(0x31,0)] 
 
 **** Decode instruction: push   %gs
 [(0x31,0)] @{asm:=push   %gs}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x31,1)] StaticArrow (0x31,1) [%esp{0;32}]{0;32} := (EXTEND_U %gs{0;16} 0x20{0;16}){0;32}  --> (0x33,0)
+[(0x31,1)] StaticArrow (0x31,1) [%esp{0;32}]{0;32} := (EXTEND_U %gs{0;16} 0x20{0;32}){0;32}  --> (0x33,0)
 [(0x33,0)] 
 
 **** Decode instruction: pushw  %cs

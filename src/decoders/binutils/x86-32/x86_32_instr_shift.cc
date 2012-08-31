@@ -75,8 +75,8 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
 		       start_while + 1, from);
 
   x86_32_if_then_else (from, data, 
-		       BinaryApp::create (BV_OP_EQ, mshift->ref (),
-					  Constant::one (8), 0, 1),
+		       BinaryApp::createEquality (mshift->ref (),
+						  Constant::one (8)),
 		       from + 1, from + 2);
   from++;
   Expr *ofval;
@@ -89,8 +89,8 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
     ofval = tempDest->extract_bit_vector (cfindex, 1);
 
   x86_32_if_then_else (from, data, 
-		       BinaryApp::create (BV_OP_EQ, mshift->ref (),
-					  Constant::zero (8), 0, 1),
+		       BinaryApp::createEquality (mshift->ref (),
+						  Constant::zero (8)),
 		       data.next_ma, from + 1);
   from++;
   x86_32_assign_OF (from, data, ofval);
@@ -295,7 +295,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
   int dsz = dst->get_bv_size ();
   int csz = count->get_bv_size ();
   Expr *counteq1 = 
-    BinaryApp::create (BV_OP_EQ, count->ref (), Constant::one (csz), 0, 1);
+    BinaryApp::createEquality (count->ref (), Constant::one (csz));
 
   /*
    * computation of OF flag for RCR case
@@ -351,9 +351,8 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
       newdst = BinaryApp::create (BV_OP_MUL_U, dst->ref (), 
 				  Constant::create (2, 0, dsz), 0, dsz);
       Expr *cf = rotate_carry ? data.get_flag ("cf") : tempCF->ref ();
-      Expr *aux = 
-	BinaryApp::create (BV_OP_EXTEND_U, cf, 
-			   Constant::create (dsz, 0, BV_DEFAULT_SIZE), 0, dsz);
+      Expr *aux = Expr::createExtend (BV_OP_EXTEND_U, cf, dsz);
+
       newdst = BinaryApp::create (BV_OP_ADD, newdst, aux, 0, dsz);
     }
   else
@@ -361,9 +360,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
       newdst = BinaryApp::create (BV_OP_DIV_U, dst->ref (), 
 				  Constant::create (2, 0, dsz), 0, dsz);
       Expr *cf = rotate_carry ? data.get_flag ("cf") : tempCF->ref ();
-      Expr *aux = 
-	BinaryApp::create (BV_OP_EXTEND_U, cf, 
-			   Constant::create (dsz, 0, BV_DEFAULT_SIZE), 0, dsz);
+      Expr *aux = Expr::createExtend (BV_OP_EXTEND_U, cf, dsz);
       aux = BinaryApp::create (BV_OP_MUL_U, aux,
 			       Constant::create (1 << (dsz - 1), 0, dsz));
 

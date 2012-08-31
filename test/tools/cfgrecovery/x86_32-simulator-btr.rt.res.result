@@ -2,8 +2,8 @@
 [(0x7,0)] @{asm:=mov    $0x0,%cx}@ StaticArrow (0x7,0) %ecx{0;16} := 0x0{0;16}  --> (0xB,0)
 [(0xB,0)] @{asm:=mov    $0xffff,%ax}@ StaticArrow (0xB,0) %eax{0;16} := 0xFFFF{0;16}  --> (0xF,0)
 [(0xF,0)] @{asm:=clc    }@ StaticArrow (0xF,0) %eflags{0;1} := 0x0{0;1}  --> (0x10,0)
-[(0x10,0)] @{asm:=btr    %cx,%ax}@ %eflags{0;1} := (RSH_U %eax{0;16} %ecx{0;4}){0;1}
-[(0x10,1)] StaticArrow (0x10,1) %eax{0;16} := (AND %eax{0;16} (NOT (LSH 0x1{0;16} %ecx{0;4}){0;16}){0;16}){0;16}  --> (0x14,0)
+[(0x10,0)] @{asm:=btr    %cx,%ax}@ %eflags{0;1} := (RSH_U %eax{0;16} (EXTEND_U %ecx{0;4} 0x10{0;32}){0;16}){0;1}
+[(0x10,1)] StaticArrow (0x10,1) %eax{0;16} := (AND %eax{0;16} (NOT (LSH 0x1{0;16} (EXTEND_U %ecx{0;4} 0x10{0;32}){0;16}){0;16}){0;16}){0;16}  --> (0x14,0)
 [(0x14,0)] @{asm:=jae    0x6666}@ StaticArrow (0x14,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x14,0) Skip << %eflags{0;1} >> --> (0x1A,0)
 [(0x1A,0)] @{asm:=inc    %cx}@ %tmpr0_17{0;17} := (ADD %ecx{0;16} 0x1{0;16}){0;17}
 [(0x1A,1)] %eflags{0;1} := %tmpr0_17{16;1}

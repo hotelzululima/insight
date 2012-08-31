@@ -140,10 +140,8 @@ s_adc_sbb (x86_32::parser_data &data, Expr *dst, Expr *src, BinaryOp op)
   MicrocodeAddress start (data.start_ma);
  
   Expr *cf =
-    BinaryApp::create (BV_OP_EXTEND_U, data.get_register ("cf"),
-		       Constant::create (src->get_bv_size (), 0, 
-					 BV_DEFAULT_SIZE), 
-		       0, src->get_bv_size ());
+    Expr::createExtend (BV_OP_EXTEND_U, data.get_register ("cf"),
+			src->get_bv_size ());
   src = BinaryApp::create (BV_OP_ADD, src, cf, 0, src->get_bv_size ());
 
   s_additive_op (start, data, op, dst, src, &data.next_ma);
@@ -347,7 +345,7 @@ s_daadas (x86_32::parser_data &data, bool add)
 
   Expr *cond1 = expr_parser ("(OR "
 			     "(GT_U (AND %al 0xF{0;8}){0;8} 0x9{0;8}){0;1} "
-			     "(EQ %af 1){0;1}"
+			     "(EQ %af 1{0;1}){0;1}"
 			     "){0;1}", data.arch);
   assert (cond1 != NULL);
   Expr *cond2 = BinaryApp::create (BV_OP_OR,
@@ -356,10 +354,8 @@ s_daadas (x86_32::parser_data &data, bool add)
 						      Constant::create (0x99, 
 									0, 8),
 						      0, 1),
-				   BinaryApp::create (BV_OP_EQ, 
-						      old_CF->ref (),
-						      Constant::one (1),
-						      0, 1));
+				   BinaryApp::createEquality (old_CF->ref (),
+							      Constant::one (1)));
 
   LValue *tmpr2 = data.get_tmp_register (TMPREG(2), 9);
   BinaryOp op = add ? BV_OP_ADD : BV_OP_SUB;
@@ -513,41 +509,40 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
     }
 
   data.mc->add_skip (from, from + 1, 
-		     BinaryApp::create (BV_OP_NEQ, src->ref (), 
-					Constant::zero (srcsize), 0, 1));
+		     BinaryApp::createDisequality (src->ref (), 
+						   Constant::zero (srcsize)));
   from++;
+  Expr *src2 = 
+    BinaryApp::createExtend (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S, 
+			     src->ref (), 2 * srcsize);
+
   data.mc->add_assignment (from, (LValue *) temp->ref (),
 			   BinaryApp::create (udiv ? BV_OP_DIV_U : BV_OP_DIV_S, 
-					      op->ref (), src->ref (), 0, 
+					      op->ref (), 
+					      src2->ref (), 0, 
 					      temp->get_bv_size ()));
 
-  Expr *aux = BinaryApp::create (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S,
-				 Constant::create (max, 0, srcsize), 
-				 Constant::create (2 * srcsize, 0, 
-						   BV_DEFAULT_SIZE),
-				 0, 2 * srcsize);
+  Expr *aux = BinaryApp::createExtend (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S, 
+				       Constant::create (max, 0, srcsize), 
+				       2 * srcsize);
     
   Expr *cond = 
     BinaryApp::create (udiv ? BV_OP_GT_U : BV_OP_GT_S, temp->ref (), aux, 0, 1);
   if (! udiv)
     {
-      aux = BinaryApp::create (udiv ? BV_OP_EXTEND_U : BV_OP_EXTEND_S,
-			       Constant::create (min, 0, srcsize), 
-			       Constant::create (2 * srcsize, 0, 
-						 BV_DEFAULT_SIZE),
-			       0, 2 * srcsize);
-    
+      aux = BinaryApp::createExtend (BV_OP_EXTEND_S, 
+				     Constant::create (min, 0, srcsize), 
+				     2 * srcsize), 
       cond = 
-	BinaryApp::create (BV_OP_OR, cond, 
-			   BinaryApp::create (udiv ? BV_OP_LT_U : BV_OP_LT_S, 
-					      temp->ref (), aux, 0, 1), 
-			   0, 1);
+	BinaryApp::createLOr (cond, 
+			      BinaryApp::create (BV_OP_LT_S, 
+						 temp->ref (), aux, 0, 1));
     }
   x86_32_if_then_else (from, data, cond, data.next_ma, from + 1);
   from++;
   data.mc->add_assignment (from, (LValue *) temp2->ref (),
 			   BinaryApp::create (BV_OP_MODULO, op->ref (), 
-					      src->ref (), 
+					      src2->ref (), 
 					      0, srcsize));
 
   data.mc->add_assignment (from, data.get_register (Qname), 
@@ -560,6 +555,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
   temp->deref ();
   temp2->deref ();
   src->deref ();
+  src2->deref ();
 }
 
 X86_32_TRANSLATE_1_OP(DIV)
@@ -623,8 +619,8 @@ X86_32_TRANSLATE_1_OP(IMUL)
 						  data.get_register ("al"),
 						  src, 0, 16));
 
-      cond = BinaryApp::create (BV_OP_EQ, data.get_register ("ah"), 
-				Constant::zero (8), 0, 1);
+      cond = BinaryApp::createEquality (data.get_register ("ah"), 
+					Constant::zero (8));
     }
   else if (srcsz == 16)
     {
@@ -642,12 +638,9 @@ X86_32_TRANSLATE_1_OP(IMUL)
 			       data.get_register ("ax"),
 			       tmpr->extract_bit_vector (0, 16));
       Expr *tmp = 
-	BinaryApp::create (BV_OP_EXTEND_S,
-			   data.get_register ("ax"),
-			   Constant::create (32, 0, BV_DEFAULT_SIZE),
-			   16, 16);
-
-      cond = BinaryApp::create (BV_OP_EQ, tmp, data.get_register ("dx"), 0, 1);
+	Expr::createExtend (BV_OP_EXTEND_S, data.get_register ("ax"), 32);
+      tmp = Expr::createExtract (tmp, 16, 16);
+      cond = BinaryApp::createEquality (tmp, data.get_register ("dx"));
     }
   else
     {
@@ -663,8 +656,8 @@ X86_32_TRANSLATE_1_OP(IMUL)
       data.mc->add_assignment (from, data.get_register ("eax"), 
 			       tmpr->extract_bit_vector (0, 32));
 
-      cond = BinaryApp::create (BV_OP_EQ, data.get_register ("edx"), 
-				Constant::zero (32), 0, 1);
+      cond = BinaryApp::createEquality (data.get_register ("edx"), 
+					Constant::zero (32));
     }
 
   x86_32_if_then_else (from, data, cond, from + 1, from + 3);
@@ -697,10 +690,10 @@ X86_32_TRANSLATE_2_OP(IMUL)
 			   (LValue *) dst->ref (), 
 			   temp->extract_bit_vector (0, dstsz));
 
+  Expr *aux = temp->extract_bit_vector (dstsz, dstsz);
   x86_32_if_then_else (from, data,
-		       BinaryApp::create (BV_OP_NEQ, Constant::zero (dstsz),
-					  temp->extract_bit_vector (dstsz, 
-								    dstsz)),
+		       BinaryApp::createDisequality (Constant::zero (dstsz),
+						     aux),
 		       from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::one (1));
@@ -749,10 +742,10 @@ X86_32_TRANSLATE_3_OP(IMUL)
 			   (LValue *) dst->ref (), 
 			   temp->extract_bit_vector (0, dstsz));
 
+  Expr *aux = temp->extract_bit_vector (dstsz, dstsz);
   x86_32_if_then_else (from, data,
-		       BinaryApp::create (BV_OP_NEQ, Constant::zero (dstsz),
-					  temp->extract_bit_vector (dstsz, 
-								    dstsz)),
+		       BinaryApp::createDisequality (Constant::zero (dstsz),
+						     aux),
 		       from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::one (1));
@@ -863,8 +856,9 @@ X86_32_TRANSLATE_1_OP(MUL)
   data.mc->add_assignment (from, (LValue *) upper->ref (), 
 			   temp->extract_bit_vector (lower->get_bv_size (),
 						     upper->get_bv_size ()));
-  Expr *cond = BinaryApp::create (BV_OP_EQ, upper->ref (),
-				  Constant::zero (upper->get_bv_size ()), 0, 1);
+  Expr *cond = 
+    BinaryApp::createEquality (upper->ref (),
+			       Constant::zero (upper->get_bv_size ()));
   x86_32_if_then_else (from, data, cond, from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::zero (1));

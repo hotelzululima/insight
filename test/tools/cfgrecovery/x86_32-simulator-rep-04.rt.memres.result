@@ -11,8 +11,8 @@
 [(0x17,0)] @{asm:=rep stos %ax,%es:(%edi)}@ StaticArrow (0x17,0) Skip << (EQ %ecx{0;32} 0x0{0;32}){0;1} >> --> (0x1A,0)StaticArrow (0x17,0) Skip << (NOT (EQ %ecx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0x17,1)
 [(0x17,1)] [%edi{0;32}]{0;16} := %eax{0;16}
 [(0x17,2)] StaticArrow (0x17,2) Skip << %eflags{10;1} >> --> (0x17,3)StaticArrow (0x17,2) Skip << (NOT %eflags{10;1}){0;1} >> --> (0x17,4)
-[(0x17,3)] StaticArrow (0x17,3) %edi{0;32} := (SUB %edi{0;32} 0x2{0;16}){0;32}  --> (0x17,5)
-[(0x17,4)] %edi{0;32} := (ADD %edi{0;32} 0x2{0;16}){0;32}
+[(0x17,3)] StaticArrow (0x17,3) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x17,5)
+[(0x17,4)] %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}
 [(0x17,5)] %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
 [(0x17,6)] StaticArrow (0x17,6) Skip << (EQ %ecx{0;32} 0x0{0;32}){0;1} >> --> (0x1A,0)StaticArrow (0x17,6) Skip << (NOT (EQ %ecx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0x17,0)
 [(0x1A,0)] @{asm:=movw   $0xaa0,0x1106}@ StaticArrow (0x1A,0) [0x1106{0;32}]{0;16} := 0xAA0{0;16}  --> (0x23,0)

@@ -156,7 +156,7 @@ bool ConditionalSet::cs_conditional_add(Expr *cond, Expr **set, Expr *elt)
 {
   if (!ConditionalSet::cs_compute_contains(*set, elt))
     {
-      Expr *tmp = Expr::createOr (Expr::createImplies (cond, IsIn(elt)), *set);
+      Expr *tmp = Expr::createLOr (Expr::createImplies (cond, IsIn(elt)), *set);
       *set = tmp;
       exprutils::simplify_level0(set);
       return true;
@@ -175,7 +175,7 @@ ConditionalSet::cs_conditional_union(Expr *cond, Expr **set1,
   if (!(included->eval_level0()))
     {
       included->deref ();
-      *set1 = Expr::createOr (Expr::createImplies (cond, set2), *set1);
+      *set1 = Expr::createLOr (Expr::createImplies (cond, set2), *set1);
       exprutils::simplify_level0 (set1);
 
       return true;
@@ -191,7 +191,7 @@ bool
 ConditionalSet::cs_remove(Expr **set, const Expr *elt)
 {
   bool was_in = cs_compute_contains (*set, elt);
-  *set = Expr::createAnd (*set, Expr::createNot (IsIn (elt)));
+  *set = Expr::createLAnd (*set, Expr::createLNot (IsIn (elt)));
   exprutils::simplify_level0 (set);
 
   return was_in;
@@ -204,7 +204,7 @@ ConditionalSet::cs_add(Expr **set, const Expr *elt)
 
   if (! result)
     {
-      *set = Expr::createOr (IsIn (elt), *set);
+      *set = Expr::createLOr (IsIn (elt), *set);
       exprutils::simplify_level0 (set);
     }
 
@@ -223,7 +223,7 @@ ConditionalSet::cs_union(Expr **set1, const Expr *set2)
 
       if (! included->eval_level0 ())
 	{
-	  *set1 = Expr::createOr (set2->ref (), *set1);
+	  *set1 = Expr::createLOr (set2->ref (), *set1);
 	  exprutils::simplify_level0(set1);
 	  result = true;
 	}

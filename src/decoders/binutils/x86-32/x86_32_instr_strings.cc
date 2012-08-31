@@ -167,7 +167,7 @@ X86_32_TRANSLATE_2_OP(STOS)
   Expr *src = op1->ref ();
   Expr *dst = MemCell::create (edi->ref (), 0, src->get_bv_size ());
   Expr *inc = 
-    Constant::create (src->get_bv_size ()  / 8, 0, dst->get_bv_size ());
+    Constant::create (src->get_bv_size ()  / 8, 0, edi->get_bv_size ());
   MicrocodeAddress from (data.start_ma);
   MicrocodeAddress next = data.has_prefix ? from + 4 : data.next_ma;
 

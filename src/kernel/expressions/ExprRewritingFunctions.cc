@@ -88,7 +88,7 @@ Expr *
 cancel_lnot_not (const Expr *phi) 
 {
   Expr *pattern = 
-    Expr::createNot (UnaryApp::create (BV_OP_NOT, Variable::create ("X")));
+    Expr::createLNot (UnaryApp::create (BV_OP_NOT, Variable::create ("X")));
   Expr *result = exprutils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
@@ -179,10 +179,10 @@ and_and_rule (const Expr *phi)
   // (arg1.1 and  arg1.2) and  arg2 --> arg1.1 and  (arg1.2 and  arg2)
   if (arg1 != NULL) 
     {
-      result = BinaryApp::createAnd (arg1->get_arg2 ()->ref (), 
-					   conj->get_arg2 ()->ref ());
-      result = BinaryApp::createAnd (arg1->get_arg1 ()->ref (), 
-					   result);
+      result = BinaryApp::createLAnd (arg1->get_arg2 ()->ref (), 
+				      conj->get_arg2 ()->ref ());
+      result = BinaryApp::createLAnd (arg1->get_arg1 ()->ref (), 
+				      result);
     }
 
   return result;
@@ -205,10 +205,10 @@ or_or_rule (const Expr *phi)
   // (arg1.1 or  arg1.2) or  arg2 --> arg1.1 or  (arg1.2 or  arg2)
   if (arg1 != NULL) 
     {
-      result = BinaryApp::createOr (arg1->get_arg2 ()->ref (), 
-					   disj->get_arg2 ()->ref ());
-      result = BinaryApp::createOr (arg1->get_arg1 ()->ref (), 
-					   result);
+      result = BinaryApp::createLOr (arg1->get_arg2 ()->ref (), 
+				     disj->get_arg2 ()->ref ());
+      result = BinaryApp::createLOr (arg1->get_arg1 ()->ref (), 
+				     result);
     }
 
   return result;
@@ -231,13 +231,13 @@ not_decrease (const Expr *phi)
     {
       BinaryApp *ba = (BinaryApp *) arg;
 
-      Expr *arg1 = UnaryApp::createNot (ba->get_arg1 ()->ref ());
-      Expr *arg2 = UnaryApp::createNot (ba->get_arg2 ()->ref ());
+      Expr *arg1 = UnaryApp::createLNot (ba->get_arg1 ()->ref ());
+      Expr *arg2 = UnaryApp::createLNot (ba->get_arg2 ()->ref ());
 
       if (ba->get_op() == BV_OP_OR)
-	result = BinaryApp::createOr (arg1, arg2);
+	result = BinaryApp::createLOr (arg1, arg2);
       else
-	result = BinaryApp::createAnd (arg1, arg2);
+	result = BinaryApp::createLAnd (arg1, arg2);
     }
 
   return result;
@@ -280,9 +280,9 @@ disjunctive_normal_form_rule (const Expr *phi)
 
   if (disj != NULL)
     {
-      Expr *c1 = Expr::createAnd (disj->get_arg1 ()->ref (), other->ref ());
-      Expr *c2 = Expr::createAnd (disj->get_arg2 ()->ref (), other->ref ());
-      result = Expr::createOr (c1, c2);
+      Expr *c1 = Expr::createLAnd (disj->get_arg1 ()->ref (), other->ref ());
+      Expr *c2 = Expr::createLAnd (disj->get_arg2 ()->ref (), other->ref ());
+      result = Expr::createLOr (c1, c2);
     }
 
   return result;

@@ -9,7 +9,7 @@
 [(0x9,6)] %eflags{4;1} := %ecx{4;1}
 [(0x9,7)] StaticArrow (0x9,7) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{0;1}){0;1} %ecx{1;1}){0;1} %ecx{2;1}){0;1} %ecx{3;1}){0;1} %ecx{4;1}){0;1} %ecx{5;1}){0;1} %ecx{6;1}){0;1} %ecx{7;1}){0;1}  --> (0xC,0)
 [(0xC,0)] @{asm:=jae    0x6666}@ StaticArrow (0xC,0) Skip << (NOT %eflags{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xC,0) Skip << %eflags{0;1} >> --> (0x12,0)
-[(0x12,0)] @{asm:=lahf   }@ StaticArrow (0x12,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x13,0)
+[(0x12,0)] @{asm:=lahf   }@ StaticArrow (0x12,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x13,0)
 [(0x13,0)] @{asm:=cmp    $0x3,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x3{0;8}){0;9}
 [(0x13,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x13,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}
@@ -35,7 +35,7 @@
 [(0x25,6)] %eflags{4;1} := %ecx{4;1}
 [(0x25,7)] StaticArrow (0x25,7) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{0;1}){0;1} %ecx{1;1}){0;1} %ecx{2;1}){0;1} %ecx{3;1}){0;1} %ecx{4;1}){0;1} %ecx{5;1}){0;1} %ecx{6;1}){0;1} %ecx{7;1}){0;1}  --> (0x27,0)
 [(0x27,0)] @{asm:=jnp    0x6666}@ StaticArrow (0x27,0) Skip << (NOT %eflags{2;1}){0;1} >> --> (0x6666,0)StaticArrow (0x27,0) Skip << %eflags{2;1} >> --> (0x2D,0)
-[(0x2D,0)] @{asm:=lahf   }@ StaticArrow (0x2D,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x2E,0)
+[(0x2D,0)] @{asm:=lahf   }@ StaticArrow (0x2D,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x2E,0)
 [(0x2E,0)] @{asm:=cmp    $0x6,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x6{0;8}){0;9}
 [(0x2E,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x2E,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}
@@ -60,7 +60,7 @@
 [(0x40,5)] %eflags{6;1} := (EQ %ecx{0;8} 0x0{0;8}){0;1}
 [(0x40,6)] %eflags{4;1} := %ecx{4;1}
 [(0x40,7)] StaticArrow (0x40,7) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{0;1}){0;1} %ecx{1;1}){0;1} %ecx{2;1}){0;1} %ecx{3;1}){0;1} %ecx{4;1}){0;1} %ecx{5;1}){0;1} %ecx{6;1}){0;1} %ecx{7;1}){0;1}  --> (0x43,0)
-[(0x43,0)] @{asm:=lahf   }@ StaticArrow (0x43,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x44,0)
+[(0x43,0)] @{asm:=lahf   }@ StaticArrow (0x43,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x44,0)
 [(0x44,0)] @{asm:=cmp    $0x12,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x12{0;8}){0;9}
 [(0x44,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x44,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}
@@ -86,7 +86,7 @@
 [(0x56,6)] %eflags{4;1} := %ecx{4;1}
 [(0x56,7)] StaticArrow (0x56,7) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{0;1}){0;1} %ecx{1;1}){0;1} %ecx{2;1}){0;1} %ecx{3;1}){0;1} %ecx{4;1}){0;1} %ecx{5;1}){0;1} %ecx{6;1}){0;1} %ecx{7;1}){0;1}  --> (0x59,0)
 [(0x59,0)] @{asm:=jne    0x6666}@ StaticArrow (0x59,0) Skip << (NOT %eflags{6;1}){0;1} >> --> (0x6666,0)StaticArrow (0x59,0) Skip << %eflags{6;1} >> --> (0x5F,0)
-[(0x5F,0)] @{asm:=lahf   }@ StaticArrow (0x5F,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x60,0)
+[(0x5F,0)] @{asm:=lahf   }@ StaticArrow (0x5F,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x60,0)
 [(0x60,0)] @{asm:=cmp    $0x47,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x47{0;8}){0;9}
 [(0x60,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x60,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x0{0;1}){0;1}){0;1}
@@ -104,7 +104,7 @@
 [(0x69,6)] %eflags{4;1} := %ecx{4;1}
 [(0x69,7)] StaticArrow (0x69,7) %eflags{2;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %ecx{0;1}){0;1} %ecx{1;1}){0;1} %ecx{2;1}){0;1} %ecx{3;1}){0;1} %ecx{4;1}){0;1} %ecx{5;1}){0;1} %ecx{6;1}){0;1} %ecx{7;1}){0;1}  --> (0x6C,0)
 [(0x6C,0)] @{asm:=jns    0x6666}@ StaticArrow (0x6C,0) Skip << (NOT %eflags{7;1}){0;1} >> --> (0x6666,0)StaticArrow (0x6C,0) Skip << %eflags{7;1} >> --> (0x72,0)
-[(0x72,0)] @{asm:=lahf   }@ StaticArrow (0x72,0) %eax{8;8} := (OR (OR (OR (OR (OR %eflags{0;1} 0x2{0;8}){0;8} (LSH %eflags{2;1} 0x2{0;32}){0;8}){0;8} (LSH %eflags{4;1} 0x4{0;32}){0;8}){0;8} (LSH %eflags{6;1} 0x6{0;32}){0;8}){0;8} (LSH %eflags{7;1} 0x7{0;32}){0;8}){0;8}  --> (0x73,0)
+[(0x72,0)] @{asm:=lahf   }@ StaticArrow (0x72,0) %eax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %eflags{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %eflags{2;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{4;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{6;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %eflags{7;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x73,0)
 [(0x73,0)] @{asm:=cmp    $0x82,%ah}@ %tmpr0_9{0;9} := (SUB %eax{8;8} 0x82{0;8}){0;9}
 [(0x73,1)] %eflags{0;1} := %tmpr0_9{8;1}
 [(0x73,2)] %eflags{11;1} := (AND (XOR %eax{15;1} %tmpr0_9{7;1}){0;1} (XOR %eax{15;1} 0x1{0;1}){0;1}){0;1}

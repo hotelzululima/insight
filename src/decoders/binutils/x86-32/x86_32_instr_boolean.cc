@@ -134,8 +134,11 @@ X86_32_TRANSLATE_1_OP(NOTL)
 X86_32_TRANSLATE_2_OP(TEST)
 {
   MicrocodeAddress start = data.start_ma;
+  x86_32_set_operands_size (op1, op2);
   LValue *r0 = data.get_tmp_register (TMPREG(0), op1->get_bv_size ());
 
+
+    
   data.mc->add_assignment (start, r0, 
 			   BinaryApp::create (BV_OP_AND, op1, op2, 0,
 					      op1->get_bv_size ()));

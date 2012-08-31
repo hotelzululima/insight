@@ -134,19 +134,18 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
       for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
 	   mcel != (*subset).first.end(); mcel++) 
 	{
-	  Expr *c = BinaryApp::create (BV_OP_EQ, mc->get_addr()->ref (),
-				       (*mcel)->get_addr()->ref ());
-	  hyp = BinaryApp::createAnd (c, hyp);
+	  Expr *c = BinaryApp::createEquality (mc->get_addr()->ref (),
+					       (*mcel)->get_addr()->ref ());
+	  hyp = BinaryApp::createLAnd (c, hyp);
 	}
 
       for (MemCellContainer::iterator mcel = (*subset).second.begin(); 
 	   mcel != (*subset).second.end(); mcel++) 
 	{
 	  Expr *c = 
-	    Expr::createNot (BinaryApp::create(BV_OP_EQ,
-					       mc->get_addr()->ref (),
-					       (*mcel)->get_addr()->ref ()));
-	  hyp = Expr::createAnd (c, hyp);
+	    Expr::createDisequality (mc->get_addr()->ref (),
+				     (*mcel)->get_addr()->ref ());
+	  hyp = Expr::createLAnd (c, hyp);
 	}
 
       // Replace all the terms pointed by elements of subset by the right 
@@ -156,7 +155,7 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
 	   mcel != (*subset).first.end(); mcel++)
 	replace_subterm (psi, *mcel, (Expr *) assmt->get_rval());
 
-      phi = Expr::createAnd (Expr::createImplies (hyp, psi), phi);
+      phi = Expr::createLAnd (Expr::createImplies (hyp, psi), phi);
     }
 
   simplify_level0 ((Expr **) &phi);

@@ -172,9 +172,7 @@ X86_32_TRANSLATE_2_OP (CMOVNC)
 static void 
 s_movx (x86_32::parser_data &data, Expr *op1, Expr *op2, BinaryOp op, int size)
 {
-  Expr *val = BinaryApp::create (op, op1, 
-				 Constant::create (size, 0, BV_DEFAULT_SIZE),
-				 0, size);
+  Expr *val = BinaryApp::createExtend (op, op1, size);
   assert (op2->get_bv_size () == size);
 
   x86_32_translate<X86_32_TOKEN(MOV)> (data, val, op2);

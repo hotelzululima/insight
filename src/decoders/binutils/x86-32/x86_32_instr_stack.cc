@@ -237,8 +237,7 @@ x86_32_push (MicrocodeAddress &start, x86_32::parser_data &data, Expr *op,
       if (operand_size == 16)
 	temp = op->ref ();
       else
-	temp = BinaryApp::create (BV_OP_EXTEND_U, op->ref (), operand_size, 0, 
-				  operand_size);
+	temp = Expr::createExtend (BV_OP_EXTEND_U, op->ref (), operand_size);
     }
   else if (op->is_Constant ())
     {

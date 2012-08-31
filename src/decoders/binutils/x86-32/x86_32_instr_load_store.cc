@@ -34,30 +34,31 @@ using namespace std;
 static Expr *
 s_flag_at_position (x86_32::parser_data &data, const char *flagname, int pos)
 {
-  Expr *flag = BinaryApp::create (BV_OP_LSH, data.get_flag (flagname),
-				  Constant::create (pos, 0, BV_DEFAULT_SIZE),
+  Expr *flag = BinaryApp::create (BV_OP_LSH, 
+				  Expr::createExtend (BV_OP_EXTEND_U,
+						      data.get_flag (flagname),
+						      8),
+				  Constant::create (pos, 0, 8),
 				  0, 8);
   return flag;
 }
 
 X86_32_TRANSLATE_0_OP(LAHF)
 {
-  Expr *alvalue = BinaryApp::create (BV_OP_OR, data.get_flag ("cf"),
-				     Constant::create (2, 0, 8),
-				     0, 8);
+  Expr *alvalue = 
+    BinaryApp::create (BV_OP_OR, 
+		       Expr::createExtend (BV_OP_EXTEND_U, 
+					   data.get_flag ("cf"), 8), 
+		       Constant::create (2, 0, 8));
 
   alvalue = BinaryApp::create (BV_OP_OR, alvalue,
-			       s_flag_at_position (data, "pf", 2),
-			       0, 8);
+			       s_flag_at_position (data, "pf", 2));
   alvalue = BinaryApp::create (BV_OP_OR, alvalue,
-			       s_flag_at_position (data, "af", 4),
-			       0, 8);
+			       s_flag_at_position (data, "af", 4));
   alvalue = BinaryApp::create (BV_OP_OR, alvalue,
-			       s_flag_at_position (data, "zf", 6),
-			       0, 8);
+			       s_flag_at_position (data, "zf", 6));
   alvalue = BinaryApp::create (BV_OP_OR, alvalue,
-			       s_flag_at_position (data, "sf", 7),
-			       0, 8);
+			       s_flag_at_position (data, "sf", 7));
 
   data.mc->add_assignment (data.start_ma, data.get_register ("ah"), alvalue,
 			   data.next_ma);

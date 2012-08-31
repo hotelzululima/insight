@@ -95,8 +95,8 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 
   Constant *result = NULL;
   Variable *var = Variable::create ("_unk", 0, e->get_bv_size ());
-  Expr *phi = Expr::createAnd (Expr::createEquality (var->ref (), e->ref ()),
-			       context->ref ( ));
+  Expr *phi = Expr::createLAnd (Expr::createEquality (var->ref (), e->ref ()),
+				context->ref ( ));
 
   push ();
   if (check_sat (phi, false) == SAT)
@@ -110,9 +110,8 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 		       "' is unique");
 
       push ();      
-      Expr *tmp = BinaryApp::create (BV_OP_NEQ, var->ref (), result->ref (), 
-				     0, 1);
-      tmp = Expr::createAnd (tmp, phi->ref ());
+      Expr *tmp = BinaryApp::createDisequality (var->ref (), result->ref ());
+      tmp = Expr::createLAnd (tmp, phi->ref ());
 
       if (check_sat (tmp, false) != UNSAT)
 	{

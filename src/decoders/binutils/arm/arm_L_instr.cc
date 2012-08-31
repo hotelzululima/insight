@@ -55,8 +55,8 @@ template<> void arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
   } else if (is_H_suffix) {
     Expr* half_mem = TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0, 0, BV_DEFAULT_SIZE),
         Constant::create(16, 0, BV_DEFAULT_SIZE));
-    Expr *half_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, half_mem,
-        Constant::create(32, 0, BV_DEFAULT_SIZE));
+    Expr *half_mem_zero_extend = 
+      Expr::createExtend (BV_OP_EXTEND_U, half_mem, 32);
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, half_mem_zero_extend,
         data.next_ma, guard);
@@ -65,8 +65,8 @@ template<> void arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
     Expr* byte_mem = TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0, 0, BV_DEFAULT_SIZE),
         Constant::create(8, 0, BV_DEFAULT_SIZE));
 
-    Expr *byte_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, byte_mem,
-        Constant::create(32, 0, BV_DEFAULT_SIZE));
+    Expr *byte_mem_zero_extend = 
+      Expr::createExtend (BV_OP_EXTEND_U, byte_mem, 32);
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, byte_mem_zero_extend,
         data.next_ma, guard);
@@ -111,8 +111,8 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
     Expr* half_mem = 
       TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0, 0, BV_DEFAULT_SIZE),
         Constant::create(16, 0, BV_DEFAULT_SIZE));
-    Expr *half_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, half_mem,
-        Constant::create(32, 0, BV_DEFAULT_SIZE));
+    Expr *half_mem_zero_extend = 
+      Expr::createExtend (BV_OP_EXTEND_U, half_mem, 32);
 
     if (is_NOT_suffix) {
       data.mc->add_assignment(data.start_ma, (LValue*) reg,
@@ -130,8 +130,8 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
     Expr* byte_mem = 
       TernaryApp::create (BV_OP_EXTRACT, mem, Constant::create(0, 0, BV_DEFAULT_SIZE),
 			  Constant::create(8, 0, BV_DEFAULT_SIZE));
-    Expr *byte_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, byte_mem,
-						    Constant::create(32, 0, BV_DEFAULT_SIZE));
+    Expr *byte_mem_zero_extend = 
+      Expr::createExtend (BV_OP_EXTEND_U, byte_mem, 32);
 
     if (is_NOT_suffix) {
       data.mc->add_assignment(data.start_ma, (LValue*) reg,
@@ -191,8 +191,8 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
     Expr* half_mem = TernaryApp::create (BV_OP_EXTRACT, mem, 
 					 Constant::create(0, 0, BV_DEFAULT_SIZE),
         Constant::create(16, 0, BV_DEFAULT_SIZE));
-    Expr *half_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, half_mem,
-        Constant::create(32, 0, BV_DEFAULT_SIZE));
+    Expr *half_mem_zero_extend = 
+      Expr::createExtend (BV_OP_EXTEND_U, half_mem, 32);
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, half_mem_zero_extend);
 
@@ -205,8 +205,8 @@ arm_translate<ARM_TOKEN(LDR)> (arm::parser_data &data,
     Expr* byte_mem = TernaryApp::create (BV_OP_EXTRACT, mem, 
 					 Constant::create(0, 0, BV_DEFAULT_SIZE),
 					 Constant::create(8, 0, BV_DEFAULT_SIZE));
-    Expr *byte_mem_zero_extend = BinaryApp::create (BV_OP_EXTEND_U, byte_mem,
-        Constant::create(32, 0, BV_DEFAULT_SIZE));
+    Expr *byte_mem_zero_extend = 
+      Expr::createExtend (BV_OP_EXTEND_U, byte_mem, 32);
 
     data.mc->add_assignment(data.start_ma, (LValue*) reg, byte_mem_zero_extend);
 

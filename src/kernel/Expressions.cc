@@ -65,7 +65,7 @@ Expr::~Expr()
 }
 
 Expr *
-Expr::createNot (Expr *arg1)
+Expr::createLNot (Expr *arg1)
 {
   return UnaryApp::create (BV_OP_NOT, (Expr *) arg1, 0, 1);
 }
@@ -76,15 +76,15 @@ Expr::createImplies (Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
 
-  return createOr (createNot (A), B);
+  return createLOr (createLNot (A), B);
 }
 
 Expr * 
 Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
-  return createOr (createAnd (cond->ref (), A),
-		   createAnd (createNot (cond), B));
+  return createLOr (createLAnd (cond->ref (), A),
+		    createLAnd (createLNot (cond), B));
 }
 
 Expr * 
@@ -94,18 +94,46 @@ Expr::createEquality (Expr *A, Expr *B)
   return BinaryApp::create (BV_OP_EQ, A, B, 0, 1);
 }
 
+Expr * 
+Expr::createDisequality (Expr *A, Expr *B)
+{
+  assert (A->get_bv_size () == B->get_bv_size ());
+  return BinaryApp::create (BV_OP_NEQ, A, B, 0, 1);
+}
+
 Expr *
-Expr::createAnd (Expr *A, Expr *B)
+Expr::createLAnd (Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
   return BinaryApp::create (BV_OP_AND, A, B, 0, 1);
 }
 
 Expr *
-Expr::createOr (Expr *A, Expr *B)
+Expr::createLOr (Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
   return BinaryApp::create (BV_OP_OR,  A, B, 0, 1);
+}
+
+Expr * 
+Expr::createExtend (BinaryOp op, Expr *A, int newsize)
+{
+  assert (A->get_bv_size () <= newsize);
+  assert (op == BV_OP_EXTEND_S || op == BV_OP_EXTEND_U);
+  return BinaryApp::create (op, A, 
+			    Constant::create (newsize, 0, BV_DEFAULT_SIZE),
+			    0, newsize);
+}
+
+Expr *
+Expr::createExtract (Expr *A, int offset, int size)
+{
+  assert (offset + size - 1 < A->get_bv_size ());
+  return TernaryApp::create (BV_OP_EXTRACT, 
+			     A, 
+			     Constant::create (offset, 0, BV_DEFAULT_SIZE),
+			     Constant::create (size, 0, BV_DEFAULT_SIZE),
+			     0, size);
 }
 
 Option<bool> 
@@ -326,7 +354,7 @@ BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2)
 {
   assert (!(op == BV_OP_CONCAT || op == BV_OP_EXTEND_S || 
-	    op == BV_OP_EXTEND_U));
+	    op == BV_OP_EXTEND_U || op == BV_OP_EQ  || op == BV_OP_NEQ ));
   assert (arg1->get_bv_size () == arg2->get_bv_size ());
   return BinaryApp::create (op, arg1, arg2, 0, arg1->get_bv_size ());
 }
@@ -342,6 +370,11 @@ BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset, 
 		   int bv_size)
 {
+  assert ((op == BV_OP_CONCAT || op == BV_OP_EXTEND_S || 
+	   op == BV_OP_EXTEND_U || op == BV_OP_EQ  || op == BV_OP_NEQ ) ||
+	  
+	  arg1->get_bv_size () == arg2->get_bv_size ());
+
   return find_or_add (new BinaryApp (op, arg1, arg2, bv_offset, bv_size));
 }
 

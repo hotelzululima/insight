@@ -125,7 +125,7 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
     z_flag = (RegisterExpr*) get_register("z");
     Expr* z_clear = BinaryApp::create (BV_OP_EQ, z_flag, Constant::zero (1));
 
-    return Expr::createAnd (c_set, z_clear);
+    return Expr::createLAnd (c_set, z_clear);
   } else if (cond_code == "ls") {
     c_flag = (RegisterExpr*) get_register("c");
     Expr* c_clear = BinaryApp::create (BV_OP_EQ, c_flag, Constant::zero (1));
@@ -133,7 +133,7 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
     z_flag = (RegisterExpr*) get_register("z");
     Expr* z_set = BinaryApp::create (BV_OP_NEQ, z_flag, Constant::zero (1));
 
-    return Expr::createOr (c_clear, z_set);
+    return Expr::createLOr (c_clear, z_set);
   } else if (cond_code == "ge") {
     n_flag = (RegisterExpr*) get_register("n");
 
@@ -156,7 +156,7 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
 
     Expr* n_v_the_same = BinaryApp::create (BV_OP_EQ, n_flag, v_flag);
 
-    return Expr::createAnd (z_clear, n_v_the_same);
+    return Expr::createLAnd (z_clear, n_v_the_same);
 
   } else if (cond_code == "le") {
     z_flag = (RegisterExpr*) get_register("z");
@@ -168,7 +168,7 @@ Expr* arm::parser_data::arm_compute_cond_expr(string cond_code)
 
     Expr* n_v_different = BinaryApp::create (BV_OP_NEQ, n_flag, v_flag);
 
-    return Expr::createOr (z_set, n_v_different);
+    return Expr::createLOr (z_set, n_v_different);
 
   } else if (cond_code == "al") {
     return NULL; //NULL means unconditional
@@ -263,7 +263,7 @@ void update_flags(arm::parser_data &data, Expr* guard, Expr* run_time_result,
     Expr* leq_minimum_negative_number = BinaryApp::create (BV_OP_LEQ_S,
         run_time_result->ref(), minimum_negative_number);
 
-    src = Expr::createOr (geq_positive_number, leq_minimum_negative_number);
+    src = Expr::createLOr (geq_positive_number, leq_minimum_negative_number);
 
     if ( ((uword_t) ins) >> V_FLAG_BIT_POSITION )
       data.mc->add_assignment(data.start_ma, dst, src);
