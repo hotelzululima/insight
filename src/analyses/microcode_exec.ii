@@ -414,7 +414,7 @@ step(const Arrow &pa)
   //! Now one can delete the arrow.
   delete_pending_arrow(pp, arr);
 
-  std::cout << "----- STEPPING { " << arr->get_origin().pp()
+  std::cout << "----- STEPPING { " << arr->get_origin()
             << " - Statement : "
             << arr->get_stmt()->pp() << " ==> " << new_pp.pp() << " } ----- "
             << std::endl << std::endl;

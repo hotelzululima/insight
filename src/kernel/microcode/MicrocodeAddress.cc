@@ -119,13 +119,10 @@ MicrocodeAddress MicrocodeAddress::null_addr()
   return MicrocodeAddress(NULL_ADDRESS);
 }
 
-std::string MicrocodeAddress::pp() const
+void 
+MicrocodeAddress::output_text (std::ostream &out) const
 {
-  std::ostringstream oss;
-  char tmp[20];
-  sprintf(tmp, "0x%X", global);
-  oss << "(" << tmp << "," << local << ")";
-  return oss.str();
+  out << "(0x" << uppercase << hex << global << "," << dec << local << ")";
 }
 
 MicrocodeAddress MicrocodeAddress::operator++ (int) 
@@ -140,10 +137,4 @@ MicrocodeAddress MicrocodeAddress::operator++ (int)
 MicrocodeAddress operator +(const MicrocodeAddress &a, int loffset)
 {
   return MicrocodeAddress (a, 0, loffset);
-}
-
-ostream &operator<< (ostream &o, const MicrocodeAddress &ae)
-{
-  o << ae.pp();
-  return o;
 }

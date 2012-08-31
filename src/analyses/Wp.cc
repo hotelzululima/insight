@@ -218,7 +218,8 @@ public:
             MicrocodeAddress start = current_path_get_last_annotation().getValue();
             MicrocodeAddress final = current_path_get_target();
             MCPath path = current_path_extract(start, final);
-            cout << "SEGMENT" << start.pp() << "-" << final.pp() << ":\n" << path.pp() << endl;
+            cout << "SEGMENT" << start << "-" << final << ":\n" 
+		 << path.pp() << endl;
             segments.push_back(path);
             cout << segments.size() << endl;
           }
@@ -241,7 +242,7 @@ public:
   {
     MicrocodeAddress final = current_path_get_target();
     MCPath path = current_path_extract(final, final);
-    cout << "LOOP " << final.pp() << "-" << final.pp() << ":\n" << path.pp() << endl;
+    cout << "LOOP " << final << "-" << final << ":\n" << path.pp() << endl;
     segments.push_back(path);
     bool found_invariant = false;
     for (MCPath_iterator arr = path.begin(); arr != path.end(); arr++)
@@ -293,7 +294,7 @@ public:
         }
     }
     logs::warning << "current_path_extract: cannot find bounds" << endl;
-    cout << start.pp() << "-" << end.pp() << endl;
+    cout << start << "-" << end << endl;
     return subpath;
   };
 };

@@ -625,13 +625,13 @@ bool DataDependency::InverseStep()
       logs::debug << logs::separator << endl
 		 << "Running backward arrow < " << the_arrow->pp() << " >" 
 		 << endl
-		 << "New context at pp " << the_arrow->get_origin().pp() 
+		 << "New context at pp " << the_arrow->get_origin()
 		 << " :" << endl
 		 << "\t" 
 		 <<  (*(new_context->get_watched_lvalues()))->to_string () 
 		 << endl
 		 << "Maximum dependencies at pp " 
-		 << the_arrow->get_origin().pp()  << " : ";
+		 << the_arrow->get_origin()  << " : ";
       
       std::vector<Expr*> upper_set =
 	ConditionalSet::cs_possible_values((*(new_context->get_watched_lvalues())));
@@ -734,7 +734,7 @@ DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
 
       for (int n=0; n<(int) nodes->size(); n++) 
 	{
-	  logs::debug << (*nodes)[n]->get_loc().pp() << " <== ";
+	  logs::debug << (*nodes)[n]->get_loc() << " <== ";
 	  std::vector<Expr*> deps = 
 	    invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
 	  print_expressions(& deps, 2);

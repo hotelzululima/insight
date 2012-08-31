@@ -143,7 +143,7 @@ string MicrocodeNode::pp() const
 {
   ostringstream oss;
 
-  oss << "[" << loc.pp() << "] ";
+  oss << "[" << loc << "] ";
 
   /* Annotation */
   if (is_annotated ()) 
@@ -314,7 +314,7 @@ s_arrow_to_string(string kind,
   ostringstream oss;
   string cond;
 
-  oss << kind <<  " " << origin.pp() << " " << stmt->pp() << " ";
+  oss << kind <<  " " << origin << " " << stmt->pp() << " ";
   if (condition)
     {
       if (condition->is_Constant())
@@ -404,7 +404,8 @@ void StaticArrow::set_tgt(MicrocodeNode * n) {
 
 string StaticArrow::pp() const 
 {
-  return s_arrow_to_string("StaticArrow", origin, stmt, condition) + target.pp();
+  return (s_arrow_to_string("StaticArrow", origin, stmt, condition) + 
+	  target.to_string ());
 }
 
 Option<StaticArrow*>

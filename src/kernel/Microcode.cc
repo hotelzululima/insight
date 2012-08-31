@@ -229,8 +229,7 @@ Microcode::output_text(ostream & out) const
 {
   vector<MicrocodeNode *>::const_iterator stmt = this->get_nodes()->begin();
   for (; stmt != this->get_nodes()->end(); stmt++)
-    out << "(" << (*stmt)->get_loc().pp()
-        << ", " << (*stmt)->pp() << ")" << endl;
+    out << "(" << (*stmt)->get_loc() << ", " << (*stmt)->pp() << ")" << endl;
 }
 
 

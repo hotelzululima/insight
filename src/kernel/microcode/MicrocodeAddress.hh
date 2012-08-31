@@ -44,7 +44,7 @@
  * splitted into several microinstructions each it localized at
  * (0xdeadbeef, 0), (0xdeadbeef, 1), (0xdeadbeef, 2), and so on. */
 
-class MicrocodeAddress {
+class MicrocodeAddress : public Object {
 private:
   address_t global;
   address_t local;
@@ -63,7 +63,7 @@ public:
   address_t getLocal() const;
 
   MicrocodeAddress operator++ (int);
-  virtual std::string pp() const ;
+  virtual void output_text (std::ostream &out) const ;
 
   std::size_t hashcode () const;
   bool equals(const MicrocodeAddress &other) const;
@@ -76,7 +76,5 @@ private:
 };
 
 MicrocodeAddress operator +(const MicrocodeAddress &a, int loffset);
-
-std::ostream &operator<< (std::ostream &o, const MicrocodeAddress &ae);
 
 #endif /* KERNEL_MICROCODE_MICROCODE_ADDRESS_HH */
