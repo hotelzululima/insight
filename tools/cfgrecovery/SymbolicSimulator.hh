@@ -57,7 +57,7 @@ public:
   virtual const Microcode *get_program () const;
 
 private:
-  Option<SymbolicValue> eval (const SymbolicState *ctx, const Expr *e) const;
+  SymbolicValue eval (const SymbolicState *ctx, const Expr *e) const;
 
   void exec (SymbolicState *ctxt, const Statement *st, 
 	     const MicrocodeAddress &tgt) const;
@@ -67,6 +67,7 @@ private:
 
   Option<bool> to_bool (const SymbolicState *ctx, const Expr *e) const;
   ContextPair split (const SymbolicState *ctx, const Expr *cond) const;
+  SymbolicValue simplify (const SymbolicState *ctx, const Expr *e) const;
 
   const ConcreteMemory *base;  
   Decoder *decoder;

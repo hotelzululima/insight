@@ -249,10 +249,10 @@ SymbolicSimulator::step (const SymbolicState *ctx, const StmtArrow *arrow)
   return result;
 }
 
-Option<SymbolicValue>
+SymbolicValue
 SymbolicSimulator::eval (const SymbolicState *ctx, const Expr *e) const
 {
-  Option<SymbolicValue> result;
+  SymbolicValue result;
   RewriteWithAssignedValues r (ctx, arch->endianness);
   Expr *f = e->ref ();
 
@@ -302,16 +302,16 @@ SymbolicSimulator::exec (SymbolicState *ctxt, const Statement *st,
       assert (cell->get_bv_offset () == 0);
       assert (cell->get_bv_size () == assign->get_rval()->get_bv_size ());
       
-      ConcreteAddress a (eval (ctxt, cell->get_addr ()).getValue ());
-      SymbolicValue v (assign->get_rval());
-      v.simplify ();
+      ConcreteAddress a (eval (ctxt, cell->get_addr ()));
+      SymbolicValue v (simplify (ctxt, assign->get_rval()));
+
       memory->put (a, v, arch->endianness);
     }
   else if (assign->get_lval()->is_RegisterExpr())
     {
       RegisterExpr *reg = (RegisterExpr *) assign->get_lval();
       const RegisterDesc *rdesc = reg->get_descriptor();
-      SymbolicValue v (eval (ctxt, assign->get_rval ()).getValue ());
+      SymbolicValue v (simplify (ctxt, assign->get_rval ()));
       SymbolicValue regval;
       
       if (v.get_size () != rdesc->get_register_size ())
@@ -335,7 +335,7 @@ SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e) const
 {
   Option<bool> result;
   RewriteWithAssignedValues r (ctx, arch->endianness);
-  Expr *f = Expr::createNot (e->ref ());
+  Expr *f = Expr::createLNot (e->ref ());
   f->acceptVisitor (r);
   f->deref ();
   f = r.get_result ();
@@ -364,7 +364,7 @@ SymbolicSimulator::split (const SymbolicState *ctx, const Expr *cond) const
   else
     {      
       Expr *e2 = Expr::createImplies (ctx->get_condition ()->ref (), 
-				      Expr::createNot (cond->ref ()));
+				      Expr::createLNot (cond->ref ()));
       result.first = ctx->clone ();
       result.first->set_condition (e1);
       result.second = ctx->clone ();
@@ -372,4 +372,15 @@ SymbolicSimulator::split (const SymbolicState *ctx, const Expr *cond) const
     }
   
   return result;
+}
+
+SymbolicValue 
+SymbolicSimulator::simplify (const SymbolicState *ctx, const Expr *e) const
+{
+  SymbolicValue res = eval (ctx, e);
+
+  if (! res.get_Expr ()->is_Constant ())
+    res.simplify ();
+
+  return res;
 }
