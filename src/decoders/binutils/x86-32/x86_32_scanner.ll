@@ -103,6 +103,7 @@ optype    [bswlqt]
   yylloc->step();
 %}
 
+"(bad)"            { return token::TOK_BAD; }
 "cs"               { return token::TOK_CS; }
 "fs"               { return token::TOK_FS; }
 "ss"               { return token::TOK_SS; }

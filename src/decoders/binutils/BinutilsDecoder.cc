@@ -212,6 +212,7 @@ BinutilsDecoder::~BinutilsDecoder()
 
 ConcreteAddress
 BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
+  throw (Decoder::Exception)
 {
   assert(memory->is_defined(address));
   ConcreteAddress result = this->next(address);

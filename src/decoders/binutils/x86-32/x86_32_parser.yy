@@ -150,6 +150,7 @@ using namespace x86_32;
 
 %token <intValue>     TOK_INTEGER    "integer value (INTEGER)"
 
+%token  TOK_BAD              "(bad)"
 %token  TOK_CS               "CS"
 %token  TOK_FS               "FS"
 %token  TOK_SS               "SS"
@@ -1021,7 +1022,8 @@ integer :
 ;
 
 instruction: 
-  TOK_CS  { x86_32_translate<X86_32_TOKEN(CS)> (data); }
+  TOK_BAD { x86_32_translate<X86_32_TOKEN(BAD)> (data); }
+| TOK_CS  { x86_32_translate<X86_32_TOKEN(CS)> (data); }
 | TOK_CS { x86_32_translate<X86_32_TOKEN(CS)> (data, true); } instruction { x86_32_translate<X86_32_TOKEN(CS)> (data, false); }
 | TOK_FS  { x86_32_translate<X86_32_TOKEN(FS)> (data); }
 | TOK_FS { x86_32_translate<X86_32_TOKEN(FS)> (data, true); } instruction { x86_32_translate<X86_32_TOKEN(FS)> (data, false); }

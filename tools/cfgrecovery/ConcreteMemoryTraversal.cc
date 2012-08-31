@@ -97,24 +97,34 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
   mc->add_arrow_creation_callback (&cb);
   add_to_todo_list (entrypoint);
 
-  while (! todo.empty ())
+  try
     {
-      ConcreteAddress addr = take_from_to_todo_list ();
-
-      if (! mem->is_defined (addr) || ! can_visit (addr))
-	continue;
-
-      visited.insert (addr.get_address ());
-
-      ConcreteAddress next = decoder->decode (mc, addr);
-      MicrocodeAddress ma (addr.get_address ());
-      MicrocodeNode *node = mc->get_node (ma);
-      while (! cb.arrows.empty ())
+      while (! todo.empty ())
 	{
-	  StmtArrow *a = cb.arrows.front ();
-	  treat_new_arrow (mc, node, a, next);
-	  cb.arrows.pop_front ();
-        }      
+	  ConcreteAddress addr = take_from_to_todo_list ();
+	  
+	  if (! mem->is_defined (addr) || ! can_visit (addr))
+	    continue;
+	  
+	  visited.insert (addr.get_address ());
+	  
+	  ConcreteAddress next = decoder->decode (mc, addr);
+	  MicrocodeAddress ma (addr.get_address ());
+	  MicrocodeNode *node = mc->get_node (ma);
+	  while (! cb.arrows.empty ())
+	    {
+	      StmtArrow *a = cb.arrows.front ();
+	      treat_new_arrow (mc, node, a, next);
+	      cb.arrows.pop_front ();
+	    }      
+	}
+    }
+  catch (Decoder::Exception &e)
+    {
+      if (verbosity > 0)
+	logs::warning << "Disassembler terminates on following exception:" 
+		      << endl
+		      << e.what () << endl;
     }
 
   mc->remove_arrow_creation_callback (&cb);

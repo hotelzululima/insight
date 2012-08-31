@@ -57,32 +57,37 @@ class Decoder : public Object
 {
 public:
 
+  class Exception : public std::runtime_error {
+  public:
+    Exception (const std::string &msg) : std::runtime_error(msg) {} 
+  };
+
   /*********************** Decoder Exceptions **************************/
   /** \brief Exception thrown when the mnemonics is not recognized by
    *  the decoder */
-  class UnknownMnemonic : public std::runtime_error
+  class UnknownMnemonic : public Exception
   {
   public:
-    UnknownMnemonic(const std::string &instr) :
-      std::runtime_error("'" + instr + "' : Unknown mnemonic") {}
+    UnknownMnemonic(const std::string &instr) : 
+      Exception  ("'" + instr + "' : Unknown mnemonic") {}
   };
 
   /** \brief Exception thrown when the mnemonics does not match the
    *  needed operands */
-  class InconsistentInstruction : public std::runtime_error
+  class InconsistentInstruction : public Exception
   {
   public:
     InconsistentInstruction(const std::string &instr) :
-      std::runtime_error("'" + instr + "' : Inconsistent instruction") {}
+      Exception ("'" + instr + "' : Inconsistent instruction") {}
   };
 
   /** \brief Exception thrown when the decoder encounter an unexpected
    *  problem */
-  class DecoderUnexpectedError : public std::runtime_error
+  class DecoderUnexpectedError : public Exception
   {
   public:
     DecoderUnexpectedError(const std::string error) :
-      std::runtime_error("'" + error + "' : Unexpected error") { }
+      Exception ("'" + error + "' : Unexpected error") { }
   };
 
   virtual ~Decoder();
@@ -94,7 +99,8 @@ public:
    *   decoded instruction.
    */
   virtual ConcreteAddress decode(Microcode *mc,
-				 const ConcreteAddress &addr) = 0;
+				 const ConcreteAddress &addr) 
+    throw (Exception) = 0;
 
   /* Returns the address immediately after instruction at 'addr'
    * without translating it into Microcode */

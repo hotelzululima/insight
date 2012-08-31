@@ -44,20 +44,29 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	    {
 	      s->output_text (logs::debug);
 
-	      SymbolicSimulator::ArrowSet arrows = symsim.get_arrows (s);
-	      SymbolicSimulator::ArrowSet::const_iterator a = arrows.begin (); 
-      
-	      for (; a != arrows.end (); a++)
+	      try
 		{
-		  BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
-		  SymbolicSimulator::ContextPair cp = symsim.step (s, *a);
-		  if (cp.first != NULL)
-		    todo.push_back (cp.first);
-		  if (cp.second != NULL)
-		    todo.push_back (cp.second);
-		  if (cp.first == NULL && cp.second == NULL)
-		    logs::debug << "no new context" << endl;
-		  END_DBG_BLOCK ();
+		  SymbolicSimulator::ArrowSet arrows = symsim.get_arrows (s);
+		  SymbolicSimulator::ArrowSet::const_iterator a = 
+		    arrows.begin (); 
+      
+		  for (; a != arrows.end (); a++)
+		    {
+		      BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
+		      SymbolicSimulator::ContextPair cp = symsim.step (s, *a);
+		      if (cp.first != NULL)
+			todo.push_back (cp.first);
+		      if (cp.second != NULL)
+			todo.push_back (cp.second);
+		      if (cp.first == NULL && cp.second == NULL)
+			logs::debug << "no new context" << endl;
+		      END_DBG_BLOCK ();
+		    }
+		}
+	      catch (Decoder::Exception &e)
+		{
+		  if (verbosity > 0)
+		    logs::warning << e.what () << endl;
 		}
 	    }
 	}

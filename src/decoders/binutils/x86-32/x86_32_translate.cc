@@ -381,3 +381,9 @@ x86_32_if_then_else (MicrocodeAddress start, x86_32::parser_data &data,
   data.mc->add_skip (start, elseaddr, 
 		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
 }
+
+X86_32_TRANSLATE_0_OP(BAD)
+{
+  throw Decoder::UnknownMnemonic ("not an opcode at " 
+				  + data.start_ma.to_string ());
+}

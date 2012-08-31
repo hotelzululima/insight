@@ -33,6 +33,7 @@
 
 # include "x86_32_translate.hh"
 
+X86_32_TRANSLATE_0_OP(BAD); // x86_32_translate.cc
 // X86_32_TRANSLATE_0_OP(CS);
 
 // X86_32_TRANSLATE_PREFIX(CS);

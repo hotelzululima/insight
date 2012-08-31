@@ -59,7 +59,8 @@ public:
 
   /* Returns the microcode and the address of the next instruction */
   virtual ConcreteAddress decode(Microcode *mc,
-				 const ConcreteAddress &addr);
+				 const ConcreteAddress &addr)
+    throw (Exception);
 
   /* Returns the address of the next instruction */
   virtual ConcreteAddress next(const ConcreteAddress &addr);

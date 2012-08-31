@@ -69,6 +69,7 @@ SymbolicSimulator::init (const ConcreteAddress &entrypoint)
 
 SymbolicSimulator::ArrowSet 
 SymbolicSimulator::get_arrows (const SymbolicState *ctx) const
+  throw (Decoder::Exception)
 {
   MicrocodeAddress pp = ctx->get_address ();
   MicrocodeNode *node = get_node (pp);
@@ -145,6 +146,7 @@ public:
 
 MicrocodeNode * 
 SymbolicSimulator::get_node (const MicrocodeAddress &pp) const
+  throw (Decoder::Exception)
 {
   bool is_global = (pp.getLocal () == 0);
   MicrocodeNode *result = NULL;

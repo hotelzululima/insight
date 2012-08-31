@@ -48,11 +48,13 @@ public:
 
   virtual SymbolicState *init (const ConcreteAddress &entrypoint);
   
-  virtual ArrowSet get_arrows (const SymbolicState *ctx) const;
+  virtual ArrowSet get_arrows (const SymbolicState *ctx) const
+    throw (Decoder::Exception);
 
   virtual ContextPair step (const SymbolicState *ctx, const StmtArrow *arrow);
 
-  virtual MicrocodeNode *get_node (const MicrocodeAddress &pp) const;
+  virtual MicrocodeNode *get_node (const MicrocodeAddress &pp) const
+    throw (Decoder::Exception);
 
   virtual const Microcode *get_program () const;
 
