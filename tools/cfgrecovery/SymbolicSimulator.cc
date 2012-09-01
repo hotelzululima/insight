@@ -337,12 +337,24 @@ SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e) const
 {
   Option<bool> result;
   RewriteWithAssignedValues r (ctx, arch->endianness);
-  Expr *f = Expr::createLNot (e->ref ());
+  Expr *f = e->ref ();
   f->acceptVisitor (r);
   f->deref ();
   f = r.get_result ();
 
-  result = (solver->check_sat (f, true) == ExprSolver::UNSAT);
+  ExprSolver::Result sat = solver->check_sat (f, true);
+  if (sat == ExprSolver::SAT)
+    {
+      f = Expr::createLNot (f);
+      sat = solver->check_sat (f, true);
+      if (sat  == ExprSolver::UNSAT)
+	result = true;
+    }
+  else if (sat == ExprSolver::UNSAT)
+    {
+      result = false;
+    }
+
   f->deref ();
 
   return result;
