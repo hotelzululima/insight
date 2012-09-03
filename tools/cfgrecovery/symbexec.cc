@@ -68,6 +68,10 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 		  if (verbosity > 0)
 		    logs::warning << e.what () << endl;
 		}
+	      catch (UndefinedValueException &e) 
+		{
+		  logs::warning << e.what () << endl;
+		}
 	    }
 	}
       delete s;

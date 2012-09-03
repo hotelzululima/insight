@@ -103,7 +103,8 @@ public:
 
 	if (! ctx->get_memory ()->is_defined (rdesc))
 	  {
-	    SymbolicValue unk = SymbolicValue::unknown_value (size);
+	    int regsize = rdesc->get_register_size ();
+	    SymbolicValue unk = SymbolicValue::unknown_value (regsize);
 	    ctx->get_memory ()->put (rdesc, unk);
 	  }
 	val = ctx->get_memory ()->get (rdesc);
@@ -189,7 +190,7 @@ SymbolicSimulator::step (SymbolicState *ctxt, const StaticArrow *sa)
     return;
 
   MicrocodeAddress tgt = sa->get_target ();
-
+  
   exec (ctxt, sa->get_stmt (), tgt);
 }
 
@@ -235,17 +236,28 @@ SymbolicSimulator::step (const SymbolicState *ctx, const StmtArrow *arrow)
       delete result.second;
       result = ContextPair (NULL, NULL);
     }
-  
-  /* determination of the target node */
-  if (arrow->is_static ())
+
+  try
     {
-      step (result.first, (StaticArrow *) arrow);
-      step (result.second, (StaticArrow *) arrow);
+      /* determination of the target node */
+      if (arrow->is_static ())
+	{
+	  step (result.first, (StaticArrow *) arrow);
+	  step (result.second, (StaticArrow *) arrow);
+	}
+      else
+	{
+	  step (result.first, (DynamicArrow *) arrow);
+	  step (result.second, (DynamicArrow *) arrow);
+	}
     }
-  else
+  catch (UndefinedValueException &e)
     {
-      step (result.first, (DynamicArrow *) arrow);
-      step (result.second, (DynamicArrow *) arrow);
+      if (result.first != NULL)
+	delete result.first;
+      if (result.second != NULL)
+	delete result.second;
+      throw;
     }
   
   return result;
