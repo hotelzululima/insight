@@ -188,6 +188,8 @@ bool
 ExprProcessSolver::write_header ()
 {
   return (send_command ("(set-option :print-success true) ") &&
+	  send_command ("(set-option :produce-models true) ") &&
+	  send_command ("(set-option :interactive-mode false) ") &&
 	  send_command ("(set-logic QF_AUFBV) "));
 }
 
