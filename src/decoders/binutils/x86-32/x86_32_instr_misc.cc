@@ -466,3 +466,9 @@ X86_32_TRANSLATE_1_OP (SETNC)
 {
   x86_32_translate<X86_32_TOKEN(SETAE)> (data, op1);
 }
+
+X86_32_TRANSLATE_0_OP(STI)
+{
+  logs::warning << "STI translated in NOP" << endl;
+  x86_32_translate<X86_32_TOKEN (NOP)> (data);
+}

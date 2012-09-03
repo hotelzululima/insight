@@ -497,7 +497,7 @@ X86_32_TRANSLATE_0_OP(STC); // x86_32_instr_load_store.cc
 
 X86_32_TRANSLATE_0_OP(STD); // x86_32_instr_load_store.cc
 
-// X86_32_TRANSLATE_0_OP(STI); 
+X86_32_TRANSLATE_0_OP(STI); // NOP / x86_32_instr_misc.cc
 
 X86_32_TRANSLATE_2_OP(STOS); // x86_32_instr_strings.cc
 
