@@ -93,9 +93,7 @@ X86_32_TRANSLATE_1_OP (JMP)
 {
   MemCell *mc = dynamic_cast<MemCell *> (op1);  
   
-  assert (mc != NULL);
-
-  Expr *addr = mc->get_addr ();
+  Expr *addr = (mc == NULL)  ? op1->ref () : mc->get_addr ()->ref ();
 
   if (addr->is_Constant ())
     {
@@ -106,7 +104,8 @@ X86_32_TRANSLATE_1_OP (JMP)
     {
       data.mc->add_jump (data.start_ma, addr->ref ());
     }
-  mc->deref ();
+  addr->deref ();
+  op1->deref ();
 }
 
 X86_32_TRANSLATE_1_OP (JMPW)

@@ -512,6 +512,7 @@ using namespace x86_32;
 %token  TOK_JPO              "JPO"
 %token  TOK_JS               "JS"
 %token  TOK_JZ               "JZ"
+%token  TOK_LJMP              "LJMP"
 %token  TOK_JMP              "JMP"
 %token  TOK_JMPW             "JMPW"
 %token  TOK_LAHF             "LAHF"
@@ -1484,6 +1485,12 @@ instruction:
 | TOK_JPO operand { x86_32_translate<X86_32_TOKEN(JPO)> (data, $2); }
 | TOK_JS operand { x86_32_translate<X86_32_TOKEN(JS)> (data, $2); }
 | TOK_JZ operand { x86_32_translate<X86_32_TOKEN(JZ)> (data, $2); }
+| TOK_LJMP operand TOK_COMMA operand { 
+  logs::warning << "ignore segment specification in '" << data.instruction
+		<< "'" << endl;
+  x86_32_translate<X86_32_TOKEN(JMP)> (data, $4); 
+  $2->deref ();
+  }
 | TOK_JMP operand { x86_32_translate<X86_32_TOKEN(JMP)> (data, $2); }
 | TOK_JMPW operand { x86_32_translate<X86_32_TOKEN(JMPW)> (data, $2); }
 | TOK_LAHF  { x86_32_translate<X86_32_TOKEN(LAHF)> (data); }

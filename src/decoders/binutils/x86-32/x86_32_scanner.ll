@@ -467,6 +467,7 @@ optype    [bswlqt]
 "jpo"              { return token::TOK_JPO; }
 "js"               { return token::TOK_JS; }
 "jz"               { return token::TOK_JZ; }
+"ljmp"             { return token::TOK_LJMP; }
 "jmp"              { return token::TOK_JMP; }
 "jmpw"             { return token::TOK_JMPW; }
 "lahf"             { return token::TOK_LAHF; }
