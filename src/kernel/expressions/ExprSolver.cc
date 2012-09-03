@@ -118,7 +118,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 	  if (logs::debug_is_on)
 	    {
 	      Constant *c = get_value_of (var);
-	      logs::debug << "variable may have onother value: " 
+	      logs::debug << "variable may have another value: " 
 			  << *c << endl;
 	      c->deref ();
 	    }
