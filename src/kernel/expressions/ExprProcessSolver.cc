@@ -169,19 +169,19 @@ ExprProcessSolver::exec_command (const char *s)
 }
 
 bool 
-ExprProcessSolver::send_command (const char *s)
+ExprProcessSolver::send_command (const char *s, bool allow_unsupported)
 {
   logs::debug << s << endl;
   *out << s << endl;
   out->flush ();
 
-  return read_status ();
+  return read_status (allow_unsupported);
 }
 
 bool 
-ExprProcessSolver::send_command (const std::string &s)
+ExprProcessSolver::send_command (const std::string &s, bool allow_unsupported)
 {
-  return send_command (s.c_str ());
+  return send_command (s.c_str (), allow_unsupported);
 }
 
 bool 
@@ -189,16 +189,16 @@ ExprProcessSolver::write_header ()
 {
   return (send_command ("(set-option :print-success true) ") &&
 	  send_command ("(set-option :produce-models true) ") &&
-	  send_command ("(set-option :interactive-mode false) ") &&
+	  send_command ("(set-option :interactive-mode false) ", true) &&
 	  send_command ("(set-logic QF_AUFBV) "));
 }
 
 bool 
-ExprProcessSolver::read_status ()
+ExprProcessSolver::read_status (bool allow_unsupported)
 {
   string st = get_result ();
 
-  if (st == "success")
+  if (st == "success" || (st == "unsupported" && allow_unsupported))
     return true;
   else if (st == "failure")
     return false;
@@ -291,7 +291,7 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
 {
   list<int> pos;
   string::const_iterator c = line.begin ();
-  enum { RFP, RSP, RE, RSE, RPE, RV, RCP } st = RFP;
+  enum { RFP, RSP, RE, RSE, RPE, RPV, RV, RCP } st = RFP;
   pair<string,string> couple;
   string::size_type i;
 
@@ -353,8 +353,12 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
 	{
 	  if (pos.empty ())
 	    {
-	      if (*c == '#' || isalnum (*c))
-		pos.push_front (i);
+	      if (*c == '#' || *c == '(' || isalnum (*c))
+		{
+		  pos.push_front (i);
+		  if (*c == '(')
+		    st = RPV;
+		}
 	      else if (! isspace (*c))
 		return false;
 	    }
@@ -366,8 +370,24 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
 	      result.push_back (couple);
 	      st = (*c == ')') ? RSP : RCP;
 	    }
-	  else if (*c == '(')
+	  else 
 	    return false;
+	}
+      else if (st == RPV)
+	{
+	  if (*c == '(')
+	    pos.push_front (i);
+	  else if (*c == ')')
+	    {
+	      int spos = pos.front ();
+	      pos.pop_front();
+	      if (pos.empty ())
+		{
+		  couple.second = line.substr (spos, i - spos + 1);
+		  result.push_back (couple);
+		  st = RCP;
+		}
+	    }
 	}
       else if (st == RCP)
 	{
@@ -423,6 +443,15 @@ ExprProcessSolver::get_value_of (const Expr *e)
 	result = Constant::False ();
       else if (value == "true")
 	result = Constant::True ();
+      else if (value.find ("(_ bv") == 0)
+	{
+	  string::size_type spi = value.find (' ', 5);
+	  string val = value.substr (5, spi - 5);
+	  long ival = strtoll (val.c_str (), NULL, 0);
+	  string szstr = value.substr (spi + 1, value.find (')') - spi - 1);
+	  long isz = strtoll (szstr.c_str(), NULL, 0);
+	  result = Constant::create (ival, 0, isz);
+	}
       else
 	throw UnexpectedResponseException ("get_value_of: " + res);
     }

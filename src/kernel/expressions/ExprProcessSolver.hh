@@ -66,9 +66,9 @@ public:
 protected:
   bool init ();
   bool write_header ();
-  bool read_status ();
-  bool send_command (const std::string &s);
-  bool send_command (const char *s);
+  bool read_status (bool allow_unsupported = false);
+  bool send_command (const std::string &s, bool allow_unsupported = false);
+  bool send_command (const char *s, bool allow_unsupported = false);
   std::string exec_command (const std::string &s);
   std::string exec_command (const char *s);
   bool declare_variable (const Expr *e);
