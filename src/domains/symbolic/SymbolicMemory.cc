@@ -96,7 +96,7 @@ SymbolicMemory::get (const ConcreteAddress &a, int size_in_bytes,
     }
 
   if (result == NULL)
-    throw UndefinedValueException (addr.to_string ());
+    throw UndefinedValueException ("at address " + addr.to_string ());
   
   SymbolicValue res (result);
   result->deref ();

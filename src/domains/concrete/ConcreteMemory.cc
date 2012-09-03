@@ -85,7 +85,7 @@ ConcreteMemory::get(const ConcreteAddress &addr,
 	(e == Architecture::LittleEndian ? a + size - i - 1 : a + i);
 
       if (!is_defined(ConcreteAddress(cur)))
-	throw UndefinedValueException(addr.to_string ());
+	throw UndefinedValueException("at address " + addr.to_string ());
 
       res = (res << 8) | memory.find(cur)->second;
     }

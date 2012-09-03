@@ -68,7 +68,7 @@ class UndefinedValueException : public std::runtime_error
 {
 public:
   UndefinedValueException (const std::string &where) :
-    std::runtime_error(": Undefined value at " + where) { }
+    std::runtime_error("Undefined value " + where) { }
 };
 
 #include "Memory.ii"

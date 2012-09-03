@@ -124,11 +124,12 @@ SymbolicValue::simplify ()
 }
 
 SymbolicValue::operator ConcreteAddress () const
+  throw (UndefinedValueException)
 {
   ConcreteAddress result;
   
   if (value == NULL)
-    throw UndefinedValueException ("undefined symbolic location");    
+    throw UndefinedValueException ("NULL symbolic location");    
 
   Expr *tmp = value->ref ();
   exprutils::simplify (&tmp);

@@ -32,8 +32,11 @@
 # define SYMBOLICVALUE_HH
 
 # include <kernel/Value.hh>
+# include <kernel/Memory.hh>
 # include <kernel/Expressions.hh>
 # include <domains/concrete/ConcreteAddress.hh>
+
+class UndefinedValueException;
 
 class SymbolicValue : public Value
 {
@@ -45,7 +48,7 @@ public:
   virtual ~SymbolicValue ();
 
   SymbolicValue &operator= (const SymbolicValue &sv);
-  operator ConcreteAddress () const;
+  operator ConcreteAddress () const throw (UndefinedValueException);
   virtual const Expr *get_Expr () const;
   virtual Option<bool> to_bool () const;
   virtual Option<MicrocodeAddress> to_MicrocodeAddress () const;

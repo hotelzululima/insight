@@ -102,7 +102,7 @@ Value ConcreteAddressMemory<Value>::get(const ConcreteAddress &a, int size,
         return mval->value;
     }
 
-  throw UndefinedValueException (a.to_string ());
+  throw UndefinedValueException ("at address " + a.to_string ());
 }
 
 template <class Value>

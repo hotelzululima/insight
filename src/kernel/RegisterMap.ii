@@ -56,7 +56,7 @@ RegisterMap<Value>::get(const RegisterDesc *r) const
   assert (!r->is_alias());
 
   if (!is_defined(r))
-    throw UndefinedValueException (r->get_label ());
+    throw UndefinedValueException ("for register " + r->get_label ());
 
   return registermap.find(r)->second;
 }
