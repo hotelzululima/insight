@@ -53,12 +53,10 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 		  for (; a != arrows.end (); a++)
 		    {
 		      BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
-		      SymbolicSimulator::ContextPair cp = symsim.step (s, *a);
-		      if (cp.first != NULL)
-			todo.push_back (cp.first);
-		      if (cp.second != NULL)
-			todo.push_back (cp.second);
-		      if (cp.first == NULL && cp.second == NULL)
+		      SymbolicState *c = symsim.step (s, *a);
+		      if (c != NULL)
+			todo.push_back (c);
+		      else
 			logs::debug << "no new context" << endl;
 		      END_DBG_BLOCK ();
 		    }

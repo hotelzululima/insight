@@ -186,8 +186,7 @@ SymbolicSimulator::get_program () const
 void 
 SymbolicSimulator::step (SymbolicState *ctxt, const StaticArrow *sa)
 {
-  if (ctxt == NULL)
-    return;
+  assert (ctxt != NULL);
 
   MicrocodeAddress tgt = sa->get_target ();
   
@@ -197,8 +196,7 @@ SymbolicSimulator::step (SymbolicState *ctxt, const StaticArrow *sa)
 void 
 SymbolicSimulator::step (SymbolicState *&ctxt, const DynamicArrow *da)
 {
-  if (ctxt == NULL)
-    return;
+  assert (ctxt != NULL);
 
   Expr *addr = da->get_target ();
   assert (! da->get_stmt()->is_Assignment ());
@@ -208,11 +206,19 @@ SymbolicSimulator::step (SymbolicState *&ctxt, const DynamicArrow *da)
     {
       const Constant *c = 
 	dynamic_cast<const Constant *> (svaddr.getValue ().get_Expr ());
-      assert (c != NULL);
-      MicrocodeAddress tgt (c->get_val ());
-      ctxt->set_address (tgt);
-      program->add_skip (ctxt->get_address (), tgt, 
-			 ctxt->get_condition ()->ref ());
+
+      if (c != NULL)
+	{
+	  MicrocodeAddress tgt (c->get_val ());
+	  ctxt->set_address (tgt);
+	  program->add_skip (ctxt->get_address (), tgt, 
+			     ctxt->get_condition ()->ref ());
+	}
+      else
+	{
+	  delete ctxt;
+	  ctxt = NULL;
+	}
     }
   else
     {
@@ -221,42 +227,26 @@ SymbolicSimulator::step (SymbolicState *&ctxt, const DynamicArrow *da)
     }
 }
 
-SymbolicSimulator::ContextPair 
+SymbolicState *
 SymbolicSimulator::step (const SymbolicState *ctx, const StmtArrow *arrow)
 {
-  SymbolicSimulator::ContextPair result = 
-    split (ctx, arrow->get_condition ());
+  SymbolicState *result = check_guard (ctx, arrow->get_condition ());
 
-  if (result.first == NULL && result.second == NULL)
+  if (result == NULL)
     return result;
-
-  /* guard is not satisfied by the context; arrow can not be triggered */
-  if (result.first == NULL)
-    {
-      delete result.second;
-      result = ContextPair (NULL, NULL);
-    }
 
   try
     {
       /* determination of the target node */
       if (arrow->is_static ())
-	{
-	  step (result.first, (StaticArrow *) arrow);
-	  step (result.second, (StaticArrow *) arrow);
-	}
+	step (result, (StaticArrow *) arrow);
       else
-	{
-	  step (result.first, (DynamicArrow *) arrow);
-	  step (result.second, (DynamicArrow *) arrow);
-	}
+	step (result, (DynamicArrow *) arrow);
     }
   catch (UndefinedValueException &e)
     {
-      if (result.first != NULL)
-	delete result.first;
-      if (result.second != NULL)
-	delete result.second;
+      if (result != NULL)
+	delete result;
       throw;
     }
   
@@ -372,29 +362,25 @@ SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e) const
   return result;
 }
 
-SymbolicSimulator::ContextPair 
-SymbolicSimulator::split (const SymbolicState *ctx, const Expr *cond) const
+SymbolicState *
+SymbolicSimulator::check_guard (const SymbolicState *ctx, 
+				const Expr *cond) const
 {
-  ContextPair result (NULL, NULL);
-  Expr *e1 = Expr::createImplies (ctx->get_condition ()->ref (), cond->ref ());
-  Option<bool> e1val = to_bool (ctx, e1);
+  SymbolicState *result = NULL;
+  Expr *e = Expr::createLAnd (ctx->get_condition ()->ref (), cond->ref ());
+  Option<bool> eval = to_bool (ctx, e);
 
-  if (e1val.hasValue ())
+  if (eval.hasValue ())
     {
-      if (e1val.getValue ())
-	result.first = ctx->clone ();
-      else
-	result.second = ctx->clone ();
-      e1->deref ();
+      if (eval.getValue ())
+	result = ctx->clone ();
+      e->deref ();
     }
   else
     {      
-      Expr *e2 = Expr::createImplies (ctx->get_condition ()->ref (), 
-				      Expr::createLNot (cond->ref ()));
-      result.first = ctx->clone ();
-      result.first->set_condition (e1);
-      result.second = ctx->clone ();
-      result.second->set_condition (e2);
+      exprutils::simplify_level0 (&e);
+      result = ctx->clone ();
+      result->set_condition (e);
     }
   
   return result;

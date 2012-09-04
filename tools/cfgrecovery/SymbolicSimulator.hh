@@ -39,7 +39,6 @@ class SymbolicSimulator
 {
 public:
   typedef std::list<StmtArrow *> ArrowSet;
-  typedef std::pair<SymbolicState *, SymbolicState *> ContextPair;
 
   SymbolicSimulator (const ConcreteMemory *base, Decoder *dec, 
 		     Microcode *prog);
@@ -51,7 +50,8 @@ public:
   virtual ArrowSet get_arrows (const SymbolicState *ctx) const
     throw (Decoder::Exception);
 
-  virtual ContextPair step (const SymbolicState *ctx, const StmtArrow *arrow);
+  virtual SymbolicState *
+  step (const SymbolicState *ctx, const StmtArrow *arrow);
 
   virtual MicrocodeNode *get_node (const MicrocodeAddress &pp) const
     throw (Decoder::Exception);
@@ -68,7 +68,7 @@ private:
   void step (SymbolicState *&ctxt, const DynamicArrow *d);
 
   Option<bool> to_bool (const SymbolicState *ctx, const Expr *e) const;
-  ContextPair split (const SymbolicState *ctx, const Expr *cond) const;
+  SymbolicState *check_guard (const SymbolicState *ctx, const Expr *cond) const;
   SymbolicValue simplify (const SymbolicState *ctx, const Expr *e) const;
 
   const ConcreteMemory *base;  
