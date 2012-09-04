@@ -87,8 +87,7 @@ syntaxic_equality_rule (const Expr *phi)
 Expr * 
 cancel_lnot_not (const Expr *phi) 
 {
-  Expr *pattern = 
-    Expr::createLNot (UnaryApp::create (BV_OP_NOT, Variable::create ("X")));
+  Expr *pattern = Expr::createLNot (Expr::createLNot (Variable::create ("X")));
   Expr *result = exprutils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 
