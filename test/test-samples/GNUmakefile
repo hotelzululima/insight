@@ -170,6 +170,8 @@ X86_32_OBJECTS= \
   x86_32-cfgrecovery-03.bin \
   x86_32-cfgrecovery-04.bin \
   \
+  x86_32-symsim-01.bin \
+  \
   ${dummy}
 
 OBJECTS=${X86_32_OBJECTS}
