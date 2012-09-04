@@ -370,7 +370,7 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
 	      result.push_back (couple);
 	      st = (*c == ')') ? RSP : RCP;
 	    }
-	  else 
+	  else if (*c == '(')
 	    return false;
 	}
       else if (st == RPV)
