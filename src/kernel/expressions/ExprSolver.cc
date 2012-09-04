@@ -36,21 +36,28 @@
 
 using namespace std;
 
+static const std::string PROP_PREFIX = "kernel.expr.solver";
+
+
 const std::string ExprSolver::DEFAULT_COMMAND_PROP = 
-  "kernel.expr.solver.default.command";
+  PROP_PREFIX + ".default.command";
 
 const std::string ExprSolver::DEFAULT_NB_ARGS_PROP =
-  "kernel.expr.solver.default.nb_args";
+  PROP_PREFIX + ".default.nb_args";
+
+const std::string ExprSolver::DEBUG_TRACES_PROP =
+  PROP_PREFIX + ".debug-traces";
 
 const std::string 
 ExprSolver::DEFAULT_ARG_PROP (int index) 
 {
   ostringstream pref;
-  pref << "solver.default.arg" << index;
+  pref << PROP_PREFIX << ".default.arg" << index;
 
   return pref.str ();
- }
+}
 
+bool ExprSolver::debug_traces = false;
 static string default_solver_command;
 static vector<string> default_solver_args;
 
@@ -63,6 +70,7 @@ ExprSolver::init (const ConfigTable &cfg)
 
   for (int i = 0; i < nb_args; i++)
     default_solver_args.push_back (cfg.get (DEFAULT_ARG_PROP (i)));
+  debug_traces = cfg.get_boolean (DEBUG_TRACES_PROP);
 }
 
 void 
@@ -90,8 +98,9 @@ Constant *
 ExprSolver::evaluate (const Expr *e, const Expr *context) 
   throw (UnexpectedResponseException)
 {
-  BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " with context " + 
-		   context->to_string ());
+  if (debug_traces)    
+    BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " with context " + 
+		     context->to_string ());
 
   Constant *result = NULL;
   Variable *var = Variable::create ("_unk", 0, e->get_bv_size ());
@@ -102,12 +111,13 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
   if (check_sat (phi, false) == SAT)
     {
       result = get_value_of (var);
-      if (logs::debug_is_on)	
+      if (debug_traces)
 	logs::debug << *result << std::endl;
       pop ();
 
-      BEGIN_DBG_BLOCK ("check if value '" + result->to_string () + 
-		       "' is unique");
+      if (debug_traces)
+	BEGIN_DBG_BLOCK ("check if value '" + result->to_string () + 
+			 "' is unique");
 
       push ();      
       Expr *tmp = BinaryApp::createDisequality (var->ref (), result->ref ());
@@ -115,7 +125,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 
       if (check_sat (tmp, false) != UNSAT)
 	{
-	  if (logs::debug_is_on)
+	  if (debug_traces)
 	    {
 	      Constant *c = get_value_of (var);
 	      logs::debug << "variable may have another value: " 
@@ -127,7 +137,8 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 	}
       pop ();
       tmp->deref ();
-      END_DBG_BLOCK ();
+      if (debug_traces)
+	END_DBG_BLOCK ();
     }
   else
     {
@@ -135,8 +146,8 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
     }
   phi->deref ();
   var->deref ();
-
-  END_DBG_BLOCK ();
+  if (debug_traces)
+    END_DBG_BLOCK ();
 
   return result;
 }

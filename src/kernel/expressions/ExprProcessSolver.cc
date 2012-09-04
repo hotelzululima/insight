@@ -103,14 +103,15 @@ ExprSolver::Result
 ExprProcessSolver::check_sat (const Expr *e, bool preserve) 
   throw (UnexpectedResponseException)
 {
-  BEGIN_DBG_BLOCK ("check_sat : " + e->to_string ());
+  if (debug_traces)
+    BEGIN_DBG_BLOCK ("check_sat : " + e->to_string ());
   if (preserve)
     push ();
   ExprSolver::Result result = ExprSolver::UNSAT;
     
   declare_variable (e);
 
-  if (logs::debug_is_on)
+  if (debug_traces)
     {
       logs::debug << "(assert ";
       smtlib_writer (logs::debug, e, MEMORY_VAR, 
@@ -135,13 +136,14 @@ ExprProcessSolver::check_sat (const Expr *e, bool preserve)
 	result = ExprSolver::UNKNOWN;
       else 
 	throw UnexpectedResponseException ("check-sat: " + res);
-      if (logs::debug_is_on)
+      if (debug_traces)
 	logs::debug << res << endl;
     }
   if (preserve)
     pop ();
 
-  END_DBG_BLOCK ();
+  if (debug_traces)
+    END_DBG_BLOCK ();
 
   return result;
 }
@@ -161,7 +163,8 @@ ExprProcessSolver::exec_command (const std::string &s)
 string 
 ExprProcessSolver::exec_command (const char *s)
 {
-  logs::debug << s << endl;
+  if (debug_traces)
+    logs::debug << s << endl;
   *out << s << endl;
   out->flush ();
 
@@ -171,7 +174,8 @@ ExprProcessSolver::exec_command (const char *s)
 bool 
 ExprProcessSolver::send_command (const char *s, bool allow_unsupported)
 {
-  logs::debug << s << endl;
+  if (debug_traces)
+    logs::debug << s << endl;
   *out << s << endl;
   out->flush ();
 

@@ -61,6 +61,7 @@ public:
   static const std::string DEFAULT_COMMAND_PROP;
   static const std::string DEFAULT_NB_ARGS_PROP;
   static const std::string DEFAULT_ARG_PROP (int index);
+  static const std::string DEBUG_TRACES_PROP;
 
   static void init (const ConfigTable &cfg);
   static void terminate ();
@@ -89,6 +90,8 @@ protected:
   ExprSolver (const MicrocodeArchitecture *mca);
 
   const MicrocodeArchitecture *mca;
+
+  static bool debug_traces;
 };
 
 #endif /* ! KERNEL_EXPRESSIONS_EXPRSOLVER_HH */
