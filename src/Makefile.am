@@ -181,6 +181,8 @@ io_sources = \
 	io/expressions/ExprParser.yy 		\
 	io/microcode/asm-writer.cc      	\
 	io/microcode/asm-writer.hh      	\
+	io/microcode/dot-writer.cc      	\
+	io/microcode/dot-writer.hh      	\
 	io/microcode/MicrocodeLoader.cc 	\
 	io/microcode/MicrocodeLoader.hh 	\
 	io/microcode/xml_microcode_parser.cc	\

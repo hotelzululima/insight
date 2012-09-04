@@ -44,6 +44,7 @@
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
 #include <io/microcode/asm-writer.hh>
+#include <io/microcode/dot-writer.hh>
 
 #include <config.h>
 #include "FloodTraversal.hh"
@@ -110,7 +111,7 @@ usage (int status)
 	   << "  -d, --disas TYPE\tselect disassembler type" << endl
 	   << "  -l, --list\t\tlist all disassembler types" << endl
 	   << "  -e, --entrypoint ADDR\tforce entry point" << endl
-	   << "  -f, --format FMT\toutput format asm|mc|dot|xml (default: mc)" 
+	   << "  -f, --format FMT\toutput format asm|mc|dot|asm-dot|xml (default: mc)" 
 	   << endl
 	   << "  -o, --output FILE\twrite output to FILE" << endl
 	   << "  -h, --help\t\tdisplay this help" << endl
@@ -146,7 +147,7 @@ main (int argc, char *argv[])
   int optc;
   string output_filename;
 
-  /* Default output format (asm, _mc_, dot, xml) */
+  /* Default output format (asm, _mc_, dot, asm-dot, xml) */
   string output_format = "mc";
 
   /* Long options struct */
@@ -212,6 +213,7 @@ main (int argc, char *argv[])
 	if ((output_format != "asm")  &&
 	    (output_format != "mc")  &&
 	    (output_format != "dot") &&
+	    (output_format != "asm-dot") &&
 	    (output_format != "xml"))
 	  {
 	    cerr << prog_name
@@ -366,8 +368,8 @@ main (int argc, char *argv[])
     asm_writer (*output, mc);
   else if (output_format == "mc")
     *output << mc->pp() << endl;
-  else if (output_format == "dot")
-    mc->toDot(*output);
+  else if (output_format == "dot" || output_format == "asm-dot")
+    dot_writer (cout, mc, (output_format == "asm-dot"));
   else if (output_format == "xml")
     {
       *output << xml_of_microcode(mc);
