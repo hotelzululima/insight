@@ -67,7 +67,8 @@ private:
   void step (SymbolicState *ctxt, const StaticArrow *sa);
   void step (SymbolicState *&ctxt, const DynamicArrow *d);
 
-  Option<bool> to_bool (const SymbolicState *ctx, const Expr *e) const;
+  Option<bool> to_bool (const SymbolicState *ctx, const Expr *e, 
+			Expr **symbval = NULL) const;
   SymbolicState *check_guard (const SymbolicState *ctx, const Expr *cond) const;
   SymbolicValue simplify (const SymbolicState *ctx, const Expr *e) const;
 

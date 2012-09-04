@@ -210,9 +210,9 @@ SymbolicSimulator::step (SymbolicState *&ctxt, const DynamicArrow *da)
       if (c != NULL)
 	{
 	  MicrocodeAddress tgt (c->get_val ());
-	  ctxt->set_address (tgt);
 	  program->add_skip (ctxt->get_address (), tgt, 
 			     ctxt->get_condition ()->ref ());
+	  ctxt->set_address (tgt);
 	}
       else
 	{
@@ -335,7 +335,8 @@ SymbolicSimulator::exec (SymbolicState *ctxt, const Statement *st,
 }
 
 Option<bool> 
-SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e) const
+SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e,
+			    Expr **symbval) const
 {
   Option<bool> result;
   RewriteWithAssignedValues r (ctx, arch->endianness);
@@ -357,7 +358,10 @@ SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e) const
       result = false;
     }
 
-  f->deref ();
+  if (! result.hasValue () && symbval != NULL)
+    *symbval = f;
+  else
+    f->deref ();
 
   return result;
 }
@@ -368,21 +372,24 @@ SymbolicSimulator::check_guard (const SymbolicState *ctx,
 {
   SymbolicState *result = NULL;
   Expr *e = Expr::createLAnd (ctx->get_condition ()->ref (), cond->ref ());
-  Option<bool> eval = to_bool (ctx, e);
+  Expr *val = NULL;
+  Option<bool> eval = to_bool (ctx, e, &val);
 
   if (eval.hasValue ())
     {
+      assert (val == NULL);
       if (eval.getValue ())
 	result = ctx->clone ();
-      e->deref ();
     }
   else
     {      
-      exprutils::simplify_level0 (&e);
+      assert (val != NULL);
+      exprutils::simplify_level0 (&val);
       result = ctx->clone ();
-      result->set_condition (e);
+      result->set_condition (val);
     }
-  
+  e->deref ();
+
   return result;
 }
 
