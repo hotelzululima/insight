@@ -43,12 +43,16 @@ public:
   virtual SymbolicState *clone () const;
 
   virtual SymbolicMemory *get_memory () const;
+
   virtual const Expr *get_condition () const;
   virtual void set_condition (Expr *cond);
   virtual MicrocodeAddress get_address () const;
   virtual void set_address (const MicrocodeAddress &ma);
 
   virtual void output_text (std::ostream &out) const;
+
+  virtual bool equals (const SymbolicState &s) const;
+  virtual std::size_t hashcode () const;
 
 private:
   MicrocodeAddress address;

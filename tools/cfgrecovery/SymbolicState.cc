@@ -32,7 +32,7 @@
 
 SymbolicState::SymbolicState (const MicrocodeAddress &ma, 
 			      SymbolicMemory *mem, Expr *cond) 
-  : address (ma), memory (mem), condition (cond)
+  : address (ma), memory (mem), condition (cond) 
 {
 }
 
@@ -88,4 +88,22 @@ SymbolicState::output_text (std::ostream &out) const
   out << std::endl
       << "Reachability condition: " << std::endl
       << *condition << std::endl;
+}
+
+bool 
+SymbolicState::equals (const SymbolicState &s) const
+{  
+  return (address.equals (s.address) && condition == s.condition &&
+	  memory->equals (*(s.memory)));
+}
+
+std::size_t 
+SymbolicState::hashcode () const
+{
+  std::size_t result = (19 * address.getGlobal () + 
+			17 * address.getLocal () +
+			133 * memory->hashcode () +
+			1977 * (uintptr_t) condition);
+
+  return result;
 }
