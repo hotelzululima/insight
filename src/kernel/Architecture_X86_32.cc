@@ -54,8 +54,6 @@ Architecture_X86_32::Architecture_X86_32() : Architecture()
   add_register("gs", 16);
   add_register("ss", 16);
 
-  add_register("eflags", 32);
-
   /* Setting alias registers */
   add_register_alias("ax", "eax", 16, 0);
   add_register_alias("al", "eax", 8, 0);
@@ -79,6 +77,8 @@ Architecture_X86_32::Architecture_X86_32() : Architecture()
   add_register_alias("si", "esi", 16, 0);
   add_register_alias("di", "edi", 16, 0);
 
+#ifdef X86_32_USE_EFLAGS
+  add_register("eflags", 32);
   add_register_alias("cf", "eflags", 1, 0);
   add_register_alias("pf", "eflags", 1, 2);
   add_register_alias("af", "eflags", 1, 4);
@@ -96,4 +96,23 @@ Architecture_X86_32::Architecture_X86_32() : Architecture()
   add_register_alias("vif", "eflags", 1, 19);
   add_register_alias("vip", "eflags", 1, 20);
   add_register_alias("id", "eflags", 1, 21);
+#else
+  add_register("cf", 1);
+  add_register("pf", 1);
+  add_register("af", 1);
+  add_register("zf", 1);
+  add_register("sf", 1);
+  add_register("tf", 1);
+  add_register("if", 1);
+  add_register("df", 1);
+  add_register("of", 1);
+  add_register("iopl", 2);
+  add_register("nt", 1);
+  add_register("rf", 1);
+  add_register("vm", 1);
+  add_register("ac", 1);
+  add_register("vif", 1);
+  add_register("vip", 1);
+  add_register("id", 1);
+#endif
 }

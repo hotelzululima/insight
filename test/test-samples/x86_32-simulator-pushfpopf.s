@@ -2,6 +2,8 @@
 	.include "x86_32-simulator-header.s"
 	
 start:
+	pushl	$0x0
+	popf
 	mov	$0x53, %ah
 	sahf
 	pushf

@@ -1,5 +1,6 @@
 	.include "x86_32-simulator-header.s"
 start:
+	cld
 	movl	$0x12345678, 0x11111
 	movl	$0x12345678, 0x22222
 	mov	$0x11111, %esi

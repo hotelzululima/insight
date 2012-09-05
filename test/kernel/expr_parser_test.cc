@@ -40,6 +40,7 @@
 
 using namespace std;
 
+#ifdef X86_32_USE_EFLAGS
 #define ALL_X86_CC							\
   X86_32_CC (NP,  "(NOT %pf)",						\
 	     "(NOT %eflags{2;1}){0;1}")					\
@@ -101,6 +102,69 @@ using namespace std;
 	     "%eflags{7;1}")						\
   X86_32_CC (Z,   "%zf",						\
 	     "%eflags{6;1}")
+#else
+#define ALL_X86_CC							\
+  X86_32_CC (NP,  "(NOT %pf)",						\
+	     "(NOT %pf{0;1}){0;1}")					\
+  X86_32_CC (A,   "(NOT (OR %cf %zf){0;1})",				\
+	     "(NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}")		\
+  X86_32_CC (AE,  "(NOT %cf)",						\
+	     "(NOT %cf{0;1}){0;1}")					\
+  X86_32_CC (B,   "%cf",						\
+	     "%cf{0;1}")						\
+  X86_32_CC (BE,  "(OR %cf %zf){0;1}",					\
+	     "(OR %cf{0;1} %zf{0;1}){0;1}")			\
+  X86_32_CC (E,   "%zf",						\
+	     "%zf{0;1}")						\
+  X86_32_CC (G,   "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})",		\
+	     "(NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} "		\
+	     "%zf{0;1}){0;1}){0;1}")				\
+  X86_32_CC (GE,  "(NOT (XOR %sf %of){0;1})",				\
+	     "(NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}")	\
+  X86_32_CC (L,   "(XOR %sf %of){0;1}",					\
+	     "(XOR %sf{0;1} %of{0;1}){0;1}")			\
+  X86_32_CC (LE,  "(OR (XOR %sf %of){0;1} %zf){0;1}",			\
+	     "(OR (XOR %sf{0;1} %of{0;1}){0;1} "		\
+	     "%zf{0;1}){0;1}")					\
+  X86_32_CC (NA,  "(OR %cf %zf){0;1}",					\
+	     "(OR %cf{0;1} %zf{0;1}){0;1}")			\
+  X86_32_CC (NAE, "%cf",						\
+	     "%cf{0;1}")						\
+  X86_32_CC (NB,  "(NOT %cf)",						\
+	     "(NOT %cf{0;1}){0;1}")					\
+  X86_32_CC (NBE, "(NOT (OR %cf %zf){0;1})",				\
+	     "(NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}")		\
+  X86_32_CC (NE,  "(NOT %zf)",						\
+	     "(NOT %zf{0;1}){0;1}")					\
+  X86_32_CC (NG,  "(OR (XOR %sf %of){0;1} %zf){0;1}",			\
+	     "(OR (XOR %sf{0;1} %of{0;1}){0;1} "		\
+	     "%zf{0;1}){0;1}")					\
+  X86_32_CC (NGE, "(XOR %sf %of){0;1}",					\
+	     "(XOR %sf{0;1} %of{0;1}){0;1}")			\
+  X86_32_CC (NL,  "(NOT (XOR %sf %of){0;1})",				\
+	     "(NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}")	\
+  X86_32_CC (NLE, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})",		\
+	     "(NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} "		\
+	     "%zf{0;1}){0;1}){0;1}")				\
+  X86_32_CC (NO,  "(NOT %of)",						\
+	     "(NOT %of{0;1}){0;1}")				\
+  X86_32_CC (NS,  "(NOT %sf)",						\
+	     "(NOT %sf{0;1}){0;1}")					\
+  X86_32_CC (NZ,  "(NOT %zf)",						\
+	     "(NOT %zf{0;1}){0;1}")					\
+  X86_32_CC (O,   "%of",						\
+	     "%of{0;1}")						\
+  X86_32_CC (P,   "%pf",						\
+	     "%pf{0;1}")						\
+  X86_32_CC (PE,  "%pf",						\
+	     "%pf{0;1}")						\
+  X86_32_CC (PO,  "(NOT %pf)",						\
+	     "(NOT %pf{0;1}){0;1}")					\
+  X86_32_CC (S,   "%sf",						\
+	     "%sf{0;1}")						\
+  X86_32_CC (Z,   "%zf",						\
+	     "%zf{0;1}")
+#endif
 
 #define X86_32_CC(id, e, expout) \
 ATF_TEST_CASE(expr_parser_for_cc_ ## id) \

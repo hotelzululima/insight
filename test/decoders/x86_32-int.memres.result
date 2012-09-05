@@ -7,6 +7,6 @@
 [(0x3,0)] 
 
 **** Decode instruction: into   
-[(0x3,0)] @{asm:=into   }@ StaticArrow (0x3,0) Skip << (NOT %eflags{11;1}){0;1} >> --> (0x4,0)
+[(0x3,0)] @{asm:=into   }@ StaticArrow (0x3,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x4,0)
 [(0x4,0)] 
 

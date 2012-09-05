@@ -4,6 +4,7 @@
 	.set	string_addr2, 0xAAAA
 	
 start:
+	cld
 	mov	$0x0, %ah
 	sahf	# to initialize DF 
 	movl	$0x12345678, string_addr1

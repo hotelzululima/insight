@@ -2,7 +2,7 @@
 	.include "x86_32-simulator-header.s"
 	
 start:
-	
+	cld
 	mov	$0x1111, %edi
 	mov	$0xA00A, %ax
 	mov	$0x8, %cx

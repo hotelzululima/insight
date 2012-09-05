@@ -41,6 +41,7 @@
 
 using namespace std;
 
+#ifdef X86_32_USE_EFLAGS
 #define  ALL_X86_CC \
   X86_32_CC (NP, "(NOT %pf)", \
              "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)") \
@@ -98,6 +99,65 @@ using namespace std;
              "(= ((_ extract 7 7 ) eflags) #b1)") \
   X86_32_CC (Z, "%zf", \
              "(= ((_ extract 6 6 ) eflags) #b1)") 
+#else
+#define  ALL_X86_CC \
+  X86_32_CC (NP, "(NOT %pf)", \
+             "(= (bvnot pf) #b1)") \
+  X86_32_CC (A, "(NOT (OR %cf %zf){0;1})", \
+             "(= (bvnot (bvor cf zf)) #b1)") \
+  X86_32_CC (AE, "(NOT %cf)", \
+             "(= (bvnot cf) #b1)") \
+  X86_32_CC (B, "%cf", \
+             "(= cf #b1)") \
+  X86_32_CC (BE, "(OR %cf %zf){0;1}", \
+             "(= (bvor cf zf) #b1)") \
+  X86_32_CC (E, "%zf", \
+             "(= zf #b1)") \
+  X86_32_CC (G, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})", \
+             "(= (bvnot (bvor (bvxor sf of) zf)) #b1)") \
+  X86_32_CC (GE, "(NOT (XOR %sf %of){0;1})", \
+             "(= (bvnot (bvxor sf of)) #b1)") \
+  X86_32_CC (L, "(XOR %sf %of){0;1}", \
+             "(= (bvxor sf of) #b1)") \
+  X86_32_CC (LE, "(OR (XOR %sf %of){0;1} %zf){0;1}", \
+             "(= (bvor (bvxor sf of) zf) #b1)") \
+  X86_32_CC (NA, "(OR %cf %zf){0;1}", \
+             "(= (bvor cf zf) #b1)") \
+  X86_32_CC (NAE, "%cf", \
+             "(= cf #b1)") \
+  X86_32_CC (NB, "(NOT %cf)", \
+             "(= (bvnot cf) #b1)") \
+  X86_32_CC (NBE, "(NOT (OR %cf %zf){0;1})", \
+             "(= (bvnot (bvor cf zf)) #b1)") \
+  X86_32_CC (NE, "(NOT %zf)", \
+             "(= (bvnot zf) #b1)") \
+  X86_32_CC (NG, "(OR (XOR %sf %of){0;1} %zf){0;1}", \
+             "(= (bvor (bvxor sf of) zf) #b1)") \
+  X86_32_CC (NGE, "(XOR %sf %of){0;1}", \
+             "(= (bvxor sf of) #b1)") \
+  X86_32_CC (NL, "(NOT (XOR %sf %of){0;1})", \
+             "(= (bvnot (bvxor sf of)) #b1)") \
+  X86_32_CC (NLE, "(NOT (OR (XOR %sf %of){0;1} %zf){0;1})", \
+             "(= (bvnot (bvor (bvxor sf of) zf)) #b1)") \
+  X86_32_CC (NO, "(NOT %of)", \
+             "(= (bvnot of) #b1)") \
+  X86_32_CC (NS, "(NOT %sf)", \
+             "(= (bvnot sf) #b1)") \
+  X86_32_CC (NZ, "(NOT %zf)", \
+             "(= (bvnot zf) #b1)") \
+  X86_32_CC (O, "%of", \
+             "(= of #b1)") \
+  X86_32_CC (P, "%pf", \
+             "(= pf #b1)") \
+  X86_32_CC (PE, "%pf", \
+             "(= pf #b1)") \
+  X86_32_CC (PO, "(NOT %pf)", \
+             "(= (bvnot pf) #b1)") \
+  X86_32_CC (S, "%sf", \
+             "(= sf #b1)") \
+  X86_32_CC (Z, "%zf", \
+             "(= zf #b1)") 
+#endif
 
 #define X86_32_CC(id, e, expout) \
 ATF_TEST_CASE(smtlib_ ## id) \

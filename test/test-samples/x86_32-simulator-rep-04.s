@@ -4,6 +4,7 @@
 	.set 	AREASIZE, 12
 	.set 	DIFFPOS, 3
 start:
+	cld
 	mov	$AREA, %edi
 	mov	$0x1234, %ax
 	mov	$AREASIZE, %cx

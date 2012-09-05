@@ -284,12 +284,49 @@ X86_32_TRANSLATE_1_OP(PUSHL)
 X86_32_TRANSLATE_0_OP(POPF)
 {
   MicrocodeAddress from (data.start_ma);
+#ifdef X86_32_USE_EFLAGS
   Expr *eflags = data.get_register ("eflags");
-  
+#else
+  Expr *eflags = data.get_tmp_register (TMPREG (0), 32);
+#endif  
   if (data.data16)
     Expr::extract_bit_vector (eflags, 0, 16);
   
-  x86_32_pop (from, data, (LValue *) eflags, &data.next_ma);
+#ifdef X86_32_USE_EFLAGS
+  x86_32_pop (from, data, (LValue *) eflags->ref (), &data.next_ma);
+#else
+  x86_32_pop (from, data, (LValue *) eflags->ref ());
+
+  const char *flags[] = { "cf", "pf", "af", "zf", "sf", "tf", "if", 
+			  "df", "of", "iopl", "nt", "rf", "vm", "ac", "vif",
+			  "vip", "id" };
+  int nb_flags = sizeof (flags)/ sizeof (flags[0]);
+  int size_offset[] = { 1, 0, 1, 2, 1, 4, 1, 6, 1, 7, 1, 8, 1, 9, 1, 10,
+			1, 11, 2, 12, 1, 14, 1, 16, 1, 17, 1, 18, 1, 19,
+			1, 20, 1, 21 };
+  int i;
+  if (data.data16)
+    nb_flags = 11;
+  
+  for (i = 0; i < nb_flags - 1; i++)
+    {
+      int size = size_offset[2 * i];
+      int offset = size_offset[2 * i + 1];
+      
+      data.mc->add_assignment (from, 
+			       data.get_register (flags[i]),
+			       Expr::createExtract (eflags->ref (), offset,
+						    size));
+    }
+  int size = size_offset[2 * i];
+  int offset = size_offset[2 * i + 1];
+  data.mc->add_assignment (from, 
+			   data.get_register (flags[i]),
+			   Expr::createExtract (eflags->ref (), offset,
+						size),
+			   &data.next_ma);
+#endif
+  eflags->deref ();
 }
 
 X86_32_TRANSLATE_0_OP(POPFW)
@@ -300,8 +337,24 @@ X86_32_TRANSLATE_0_OP(POPFW)
 
 X86_32_TRANSLATE_0_OP(PUSHF)
 {
+  MicrocodeAddress from (data.start_ma);  
+#ifdef X86_32_USE_EFLAGS
   Expr *eflags = data.get_register ("eflags");
-  MicrocodeAddress from (data.start_ma);
+#else
+  const char *flags[] = { "cf", 0, "pf", 0, "af", 0, "zf", "sf", "tf", "if", 
+			  "df", "of", "iopl", "nt", 0, "rf", "vm", "ac", "vif",
+			  "vip", "id" };
+
+  Expr *eflags = data.get_register ("cf");
+
+  for (size_t i = 1; i < sizeof (flags) / sizeof (flags[0]); i++)
+    {
+      Expr *aux = flags[i] 
+	? (Expr *) data.get_register (flags[i]) : (Expr *) Constant::zero (1);
+      eflags = BinaryApp::createConcat (aux, eflags);
+    }
+  eflags = Expr::createExtend (BV_OP_EXTEND_U, eflags, 32); 
+#endif
 
   if (data.data16)
     Expr::extract_bit_vector (eflags, 0, 16);
@@ -313,7 +366,6 @@ X86_32_TRANSLATE_0_OP(PUSHF)
 				     0, eflags->get_bv_size ());
       eflags = tmp;
     }
-
   x86_32_push (from, data, eflags, &data.next_ma);
 }
 

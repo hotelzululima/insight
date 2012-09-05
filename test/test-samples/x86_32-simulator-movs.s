@@ -6,6 +6,7 @@
 	.set	dword_dst_addr, 0x999999
 	
 start:
+	cld
 	stc	#to initialize eflags
 	mov	$src_addr, %esi
 	mov	$byte_dst_addr, %edi
