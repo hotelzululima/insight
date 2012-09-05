@@ -136,6 +136,13 @@ Expr::createExtract (Expr *A, int offset, int size)
 			     0, size);
 }
 
+Expr *
+Expr::createConcat (Expr *A, Expr *B)
+{
+  return BinaryApp::create (BV_OP_CONCAT, A, B, 0, 
+			    A->get_bv_size () + B->get_bv_size ());
+}
+
 Option<bool> 
 Expr::try_eval_level0() const
 {

@@ -134,6 +134,7 @@ public:
 
   static Expr *createExtend (BinaryOp op, Expr *A, int newsize);
   static Expr *createExtract (Expr *A, int offset, int size);
+  static Expr *createConcat (Expr *A, Expr *B);
 
   /*! \brief the size of the bit vector. */
   int get_bv_size() const;
