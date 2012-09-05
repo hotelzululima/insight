@@ -10,7 +10,9 @@ using namespace std::tr1;
 using namespace std;
 
 typedef unordered_set<MicrocodeAddress, HashFunctor<MicrocodeAddress>, 
-		      EqualsFunctor<MicrocodeAddress> > StateBag;
+		      EqualsFunctor<MicrocodeAddress> > AddrBag;
+typedef unordered_set<SymbolicState *, HashPtrFunctor<SymbolicState>, 
+		      EqualsPtrFunctor<SymbolicState> > StateBag;
 
 Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
@@ -31,9 +33,11 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 
       MicrocodeAddress ma (s->get_address ());
 
-      if (visited.find (ma) == visited.end ())
+      //      if (visited.find (ma) == visited.end ())
+      if (visited.find (s) == visited.end ())
 	{
-	  visited.insert (ma);
+	  //	  visited.insert (ma);
+	  visited.insert (s);
 
 	  if (ma.getLocal () == 0 && ! memory->is_defined (ma.getGlobal ()))
 	    {
@@ -72,8 +76,14 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 		}
 	    }
 	}
-      delete s;
+      else
+	{
+	  delete s;
+	}
     }
+  for (StateBag::iterator i = visited.begin (); i != visited.end (); i++)
+    delete *i;
+
   END_DBG_BLOCK ();
 
   return result;
