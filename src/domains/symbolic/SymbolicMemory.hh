@@ -70,6 +70,9 @@ public:
 
   virtual void output_text (std::ostream &out) const;
 
+  virtual bool equals (const SymbolicMemory &mem) const;
+  virtual std::size_t hashcode () const;
+
 private:
   const ConcreteMemory *base;
   MemoryMap memory;

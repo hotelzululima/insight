@@ -202,3 +202,58 @@ SymbolicMemory::output_text (std::ostream &out) const
   out << "Registers: " << std::endl;
   RegisterMap<SymbolicValue>::output_text (out);  
 }
+
+bool 
+SymbolicMemory::equals (const SymbolicMemory &mem) const
+{
+  if (memory.size () != mem.memory.size ())
+    return false;
+
+  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) 
+    {
+      if (! mem.is_defined (i->first) || 
+	  ! (mem.get (i->first, 8, Architecture::LittleEndian) == i->second))
+	return false;
+    }
+
+  for (MemoryMap::const_iterator i = mem.memory.begin (); 
+       i != mem.memory.end (); i++) 
+    {
+      if (! is_defined (i->first) || 
+	  ! (get (i->first, 8, Architecture::LittleEndian) == i->second))
+	return false;
+    }
+
+  for (RegisterMap<SymbolicValue>::const_reg_iterator i = regs_begin ();
+       i != regs_end (); i++) {
+    if (! mem.is_defined (i->first) || ! (mem.get (i->first) == i->second))
+      return false;
+  }
+
+  for (RegisterMap<SymbolicValue>::const_reg_iterator i = mem.regs_begin ();
+       i != mem.regs_end (); i++) {
+    if (! is_defined (i->first) || ! (get (i->first) == i->second))
+      return false;
+  }
+
+  return false;
+}
+
+std::size_t 
+SymbolicMemory::hashcode () const
+{
+  std::size_t result = 0;
+  
+  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) {
+    result = ((result << 3) + 19 * i->first +
+	      177 * (intptr_t) i->second.get_Expr ());
+  }
+
+  for (RegisterMap<SymbolicValue>::const_reg_iterator i = regs_begin ();
+       i != regs_end (); i++) {
+    result = ((result << 3) + 19 * (intptr_t) i->first +
+	      177 * (intptr_t) i->second.get_Expr ());
+  }
+
+  return result;
+}
