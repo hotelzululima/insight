@@ -59,4 +59,21 @@ struct HashFunctor
   }
 };
 
+template <class T>
+struct EqualsPtrFunctor
+{
+    bool operator() (const T *a, const T *b) const {
+	return a->equals(*b);
+    }
+};
+
+template <class T>
+struct HashPtrFunctor
+{
+  std::size_t operator() (const T *a) const {
+    return a->hashcode ();
+  }
+};
+
+
 #endif /* UTILS_MAP_HELPERS_HH_ */
