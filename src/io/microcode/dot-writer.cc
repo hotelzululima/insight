@@ -92,16 +92,16 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only)
       if (ma.getLocal () != 0)
 	continue;
 
-      if (n->has_annotation (AsmAnnotation::ID))
-	pp = ((AsmAnnotation *) 
-	      n->get_annotation (AsmAnnotation::ID))->get_value ();
-      else
-	pp = n->pp ();
-
-
       out << "cfg_" << ma.getGlobal () << "_" << ma.getLocal ()
-	  << "[shape=box,style=filled,color=oldlace,label=\"" << pp << "\"];\n";
+	  << "[shape=box,style=filled,color=oldlace,label=\"";
 
+      if (n->has_annotation (AsmAnnotation::ID))
+	out << setw(8) << hex << ma.getGlobal () << ": " 
+	    << *n->get_annotation (AsmAnnotation::ID);
+      else
+	out << n->pp ();
+
+      out << "\"];\n";
       vector<MicrocodeNode *> succs = s_successor_instructions (mc, n);
 
       for (vector<MicrocodeNode *>::const_iterator s = succs.begin (); 
