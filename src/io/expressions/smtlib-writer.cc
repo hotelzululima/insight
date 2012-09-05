@@ -321,9 +321,7 @@ public:
   }
 
   virtual void visit (const MemCell *e) {
-    assert (e->get_bv_size () >= 8 && e->get_bv_size () % 8 == 0);
-    
-    if (e->get_bv_size () == 8)
+    if (e->get_bv_size () == 8 && e->get_bv_offset () == 0)
       {
 	// to be fixed !!!
 	int extend = addrsize - e->get_addr ()->get_bv_size ();
@@ -338,7 +336,14 @@ public:
     else
       {
 	int nb_bytes = e->get_bv_size () / 8;
-	Expr *bv = e->extract_bit_vector (0, 8);
+	if (e->get_bv_size () % 8 != 0)
+	  nb_bytes++;	
+	Expr *bv;
+
+	if (e->get_bv_size () < 8)
+	  bv = MemCell::create (e->get_addr ()->ref (), 0, 8);
+	else
+	  bv = e->extract_bit_vector (0, 8);
 
 	for (int i = 1; i < nb_bytes; i++)
 	  {
@@ -359,6 +364,7 @@ public:
 				     0, 8 * (i + 1));
 	    bv = tmp;
 	  }
+	bv = Expr::createExtract (bv, e->get_bv_offset (), e->get_bv_size ());
 	bv->acceptVisitor (this);
 	bv->deref ();
       }
