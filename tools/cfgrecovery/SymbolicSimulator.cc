@@ -210,8 +210,10 @@ SymbolicSimulator::step (SymbolicState *&ctxt, const DynamicArrow *da)
       if (c != NULL)
 	{
 	  MicrocodeAddress tgt (c->get_val ());
-	  program->add_skip (ctxt->get_address (), tgt, 
-			     ctxt->get_condition ()->ref ());
+	  Expr *guard = 
+	    Expr::createLAnd (ctxt->get_condition ()->ref (), 
+			      Expr::createEquality (addr->ref (), c->ref ()));
+	  program->add_skip (ctxt->get_address (), tgt, guard);
 	  ctxt->set_address (tgt);
 	}
       else
