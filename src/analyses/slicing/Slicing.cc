@@ -425,7 +425,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
       // expr x by "ELT_ADDR = x" (ELT_ADDR is a new variable)
       Expr *m_pattern = 
 	Expr::createEquality(ConditionalSet::EltSymbol (BV_DEFAULT_SIZE), 
-			     MemCell::create (X->ref ()));
+			     MemCell::create (X->ref (), lval->get_bv_offset (),
+					      lval->get_bv_size ()));
       VarList free_variables;
       free_variables.push_back(X);
 
@@ -450,7 +451,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
 	Expr::createIfThenElse(Expr::createEquality(((MemCell *) lval)->get_addr()->ref (), X->ref ()),
 			    deps->ref (),  
 			    Expr::createEquality(ConditionalSet::EltSymbol (BV_DEFAULT_SIZE),
-						 MemCell::create (X->ref ())));
+						 MemCell::create (X->ref (),
+								  lval->get_bv_offset (), lval->get_bv_size ())));
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues), 
 					    m_pattern, free_variables, tmp);
       tmp->deref ();

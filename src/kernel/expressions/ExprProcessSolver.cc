@@ -115,14 +115,13 @@ ExprProcessSolver::check_sat (const Expr *e, bool preserve)
     {
       logs::debug << "(assert ";
       smtlib_writer (logs::debug, e, MEMORY_VAR, 
-		     8 * mca->get_reference_arch ()->address_range, 
-		     mca->get_reference_arch ()->endianness, true);
+		     mca->get_address_size (), 
+		     mca->get_endian (), true);
       logs::debug << ") " << endl;
     }
   *out << "(assert ";  
-  smtlib_writer (*out, e, MEMORY_VAR, 
-		 8 * mca->get_reference_arch ()->address_range, 
-		 mca->get_reference_arch ()->endianness, true);
+  smtlib_writer (*out, e, MEMORY_VAR, mca->get_address_size (), 
+		 mca->get_endian (), true);
   *out << ") " << endl;
 
   if (read_status ())
@@ -214,12 +213,11 @@ bool
 ExprProcessSolver::declare_variable (const Expr *e)
 {
   typedef unordered_set<const Expr *> ExprSet;
-  const Architecture *arch = mca->get_reference_arch ();
   {
     ostringstream oss;
 
     oss << "(declare-fun " << MEMORY_VAR << " () (Array "
-       << "(_ BitVec " << (8 * arch->address_range) << " ) "
+	<< "(_ BitVec " << mca->get_address_size () << " ) "
        << "(_ BitVec 8 ) "
 	<< ")) ";
     if (! send_command (oss.str ()))      
@@ -415,9 +413,8 @@ ExprProcessSolver::get_value_of (const Expr *e)
   Constant *result = NULL;
   ostringstream oss;
   oss << "(get-value (";
-  smtlib_writer (oss, e, MEMORY_VAR, 
-		 8 * mca->get_reference_arch ()->address_range, 
-		 mca->get_reference_arch ()->endianness, false);
+  smtlib_writer (oss, e, MEMORY_VAR, mca->get_address_size (), 
+		 mca->get_endian (), false);
   oss << "))";
 
   string res = exec_command (oss.str ());

@@ -32,7 +32,9 @@
 #include "MicrocodeArchitecture.hh"
 
 MicrocodeArchitecture::MicrocodeArchitecture (const Architecture *arch) 
-  : Architecture (), reference_arch (arch)
+  : Architecture (arch->get_proc (), arch->get_endian (), 
+		  arch->get_word_size (), arch->get_address_size ()),
+    reference_arch (arch)
 {
 }
 

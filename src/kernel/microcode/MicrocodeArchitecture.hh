@@ -50,6 +50,11 @@ public :
 
   const RegisterSpecs *get_tmp_registers() const;
 
+  using Architecture::get_proc;
+  using Architecture::get_endian;
+  using Architecture::get_word_size;
+  using Architecture::get_address_size;
+
 private:
   const Architecture *reference_arch;
 };

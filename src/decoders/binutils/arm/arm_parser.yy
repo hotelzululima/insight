@@ -418,13 +418,14 @@ memory_reference:
 
 zero_offset:
   TOK_LVUONG register TOK_RVUONG{
-		$$ = MemCell::create($2);
+    $$ = MemCell::create($2, 0, data.arch->get_word_size ());
 	}
 ;
 
 preIndexed_offset:
   TOK_LVUONG register TOK_COMMA flexOffset TOK_RVUONG{
-		$$ = MemCell::create( BinaryApp::create (BV_OP_ADD, $2, $4));
+    $$ = MemCell::create( BinaryApp::create (BV_OP_ADD, $2, $4), 0,
+			  data.arch->get_word_size ());
 	} 
 ;  
 

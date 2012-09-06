@@ -191,7 +191,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   ATF_REQUIRE (e != NULL);
   ostringstream oss;
 
-  smtlib_writer (oss, e, "memory", 32, x86_32->endianness, true);
+  smtlib_writer (oss, e, "memory", 32, x86_32->get_endian (), true);
   
   ATF_REQUIRE_EQ (oss.str (), expectedout);
   e->deref ();
@@ -218,8 +218,7 @@ gen_string (const string &id, const string &e, const MicrocodeArchitecture &ma)
 {					      
   Expr *ex = expr_parser (e, &ma);            
   ostringstream oss;				
-  smtlib_writer (oss, ex, "memory", 32, ma.get_reference_arch ()->endianness,
-		 true);
+  smtlib_writer (oss, ex, "memory", 32, ma.get_endian (),true);
   string smte = oss.str ();			
   string::size_type i = smte.find ('\n'); 
   while (i != string::npos)			

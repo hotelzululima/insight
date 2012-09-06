@@ -46,7 +46,7 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
   if (is_D_suffix) {
     MemCell *dst1 = (MemCell *) mem;
     Expr* address = dst1->get_addr();
-    MemCell* dst2 = MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4));
+    MemCell* dst2 = MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4), dst1->get_bv_offset (), dst1->get_bv_size ());
 
     LValue* reg2 = data.get_adjacent_register (reg);
 
@@ -88,7 +88,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
     MemCell *dst1 = (MemCell *) mem;
     Expr* address = dst1->get_addr();
     MemCell* dst2 = 
-      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4));
+      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4), 
+		      dst1->get_bv_offset (), dst1->get_bv_size ());
 
     LValue* reg2 = data.get_adjacent_register (reg);
 
@@ -166,7 +167,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
     MemCell *dst1 = (MemCell *) mem;
     Expr* address = dst1->get_addr();
     MemCell* dst2 = 
-      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4));
+      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4), 
+		      dst1->get_bv_offset (), dst1->get_bv_size ());
 
     LValue* reg2 = data.get_adjacent_register (reg);
 

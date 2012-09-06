@@ -537,10 +537,10 @@ protected:
   virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
 
 public:
-  static MemCell *create (Expr *addr, Tag tag, int bv_offset = 0, 
-			  int bv_size = BV_DEFAULT_SIZE);
-  static MemCell *create (Expr *addr, int bv_offset = 0, 
-			  int bv_size = BV_DEFAULT_SIZE);
+  static MemCell *create (Expr *addr, Tag tag, int bv_offset, 
+			  int bv_size);
+  static MemCell *create (Expr *addr, int bv_offset, 
+			  int bv_size);
 
   /*! \brief The tag define the address space in which is defined the
       memory cell. */

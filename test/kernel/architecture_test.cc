@@ -45,7 +45,7 @@ ATF_TEST_CASE_HEAD(architecture_x86_32)
 static void
 s_check_x86_32 (const Architecture * arch_x86_32)
 {
-  ATF_REQUIRE_EQ(arch_x86_32->processor, Architecture::X86_32);
+  ATF_REQUIRE_EQ(arch_x86_32->get_proc (), Architecture::X86_32);
 
   /* Check if 'eax' register is here */
   ATF_REQUIRE(arch_x86_32->get_register("eax") != NULL);
@@ -75,13 +75,13 @@ ATF_TEST_CASE_BODY(architecture_x86_32)
   const Architecture * arch_x86_32 =
     Architecture::getArchitecture(Architecture::X86_32,
 				  Architecture::LittleEndian);
-  ATF_REQUIRE_EQ(arch_x86_32->endianness, Architecture::LittleEndian);
+  ATF_REQUIRE_EQ(arch_x86_32->get_endian (), Architecture::LittleEndian);
 
   s_check_x86_32 (arch_x86_32);
 
   /* Check short initialization (x86-32) */
   arch_x86_32 = Architecture::getArchitecture(Architecture::X86_32);
-  ATF_REQUIRE_EQ(arch_x86_32->endianness, Architecture::LittleEndian);
+  ATF_REQUIRE_EQ(arch_x86_32->get_endian (), Architecture::LittleEndian);
 
   s_check_x86_32 (arch_x86_32);
   insight::terminate ();
@@ -105,8 +105,8 @@ ATF_TEST_CASE_BODY(architecture_arm)
   const Architecture * arch_arm =
     Architecture::getArchitecture(Architecture::ARM,
 				  Architecture::LittleEndian);
-  ATF_REQUIRE_EQ(arch_arm->processor, Architecture::ARM);
-  ATF_REQUIRE_EQ(arch_arm->endianness, Architecture::LittleEndian);
+  ATF_REQUIRE_EQ(arch_arm->get_proc (), Architecture::ARM);
+  ATF_REQUIRE_EQ(arch_arm->get_endian (), Architecture::LittleEndian);
 
   /* Check if 'r0' register is here */
   ATF_REQUIRE(arch_arm->get_register("r0") != NULL);

@@ -959,8 +959,12 @@ operand:
 | register TOK_LPAR integer TOK_RPAR  
   { throw std::runtime_error ("unsupported register"); } 
 | memory_reference { $$ = $1; }
-| TOK_STAR memory_reference { $$ = MemCell::create ($2); }
-| TOK_STAR register { $$ = MemCell::create ($2); }
+| TOK_STAR memory_reference { 
+  $$ = MemCell::create ($2, 0, data.arch->get_word_size ()); 
+}
+| TOK_STAR register { 
+  $$ = MemCell::create ($2, 0, data.arch->get_word_size ()); 
+  }
 ;
 
 memory_reference:

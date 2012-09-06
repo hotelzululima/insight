@@ -62,6 +62,8 @@ typedef uint32_t address_t;
  *  XXX should be much less used. */
 #define BV_DEFAULT_SIZE 32
 
+typedef int size_in_bits_t;
+
 /** \brief Store the description of a register.
  *
  *  Store the description of a register. It contains the name of the
@@ -76,9 +78,9 @@ public:
   virtual void output_text(std::ostream &) const;
 
   virtual int get_index () const;
-  virtual int get_register_size () const;
-  virtual int get_window_size () const;
-  virtual int get_window_offset () const;
+  virtual size_in_bits_t get_register_size () const;
+  virtual size_in_bits_t get_window_size () const;
+  virtual size_in_bits_t get_window_offset () const;
   virtual const std::string &get_label () const;
   virtual int hashcode () const;
   virtual bool is_alias () const;
@@ -92,9 +94,9 @@ public:
 private:
   int index;
   std::string label;
-  int register_size;
-  int window_offset;
-  int window_size;
+  size_in_bits_t register_size;
+  size_in_bits_t window_offset;
+  size_in_bits_t window_size;
 };
 
 /** \brief Data structure used to encode the registers. */
@@ -170,18 +172,21 @@ public:
    *  can handle one unique endianness (eg. x86). */
   static const Architecture *getArchitecture (const Architecture::processor_t);
   
-  /******************** Architecture Fields ***********************/
-  /** \brief Processor type */
-  processor_t processor;
+  inline processor_t get_proc () const { 
+    return processor;
+  }
 
-  /** \brief Endianness of the architecture. */
-  endianness_t endianness;
+  inline endianness_t get_endian () const { 
+    return endianness;
+  }
 
-  /** \brief Size of a memory word. */
-  int word_size;
+  inline size_in_bits_t get_word_size () const { 
+    return word_size;
+  }
 
-  /** \brief Address range of the memory. */
-  int address_range;
+  inline size_in_bits_t get_address_size () const { 
+    return address_size;
+  }
 
   /** \brief Returns true if label is the name of a known register */
   bool has_register(const std::string &label) const;
@@ -193,7 +198,8 @@ public:
   const RegisterSpecs *get_registers() const;
 
 protected:
-  Architecture ();
+  /* @pre wsize > 0, wsize % 8 == 0, asize > 0, asize % 8 == 0 */
+  Architecture (processor_t proc, endianness_t endian, int wsize, int asize);
 
   /** \brief Add the specification of a register in the list. */
   void add_register (const std::string &name, int regsize);
@@ -214,6 +220,19 @@ protected:
    *  array, a size and an offset.
    */
   RegisterSpecs * registerspecs;
+
+private:
+  /** \brief Processor type */
+  processor_t processor;
+
+  /** \brief Endianness of the architecture. */
+  endianness_t endianness;
+
+  /** \brief Size of a memory word. */
+  size_in_bits_t word_size;
+
+  /** \brief Address range of the memory. */
+  size_in_bits_t address_size;
 };
 
 #endif /* KERNEL_ARCHITECTURE_HH */

@@ -136,7 +136,7 @@ s_simulate (const char *filename)
 
     SymbolicValue check_exception = 
       last_context->memory->get (exception_handling_addr, 1, 
-				 arch.get_reference_arch ()->endianness);
+				 arch.get_endian ());
 
     if (! check_exception.to_bool().getValue ())
       {

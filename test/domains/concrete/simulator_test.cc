@@ -128,7 +128,7 @@ s_simulate (const char *filename)
   
   ConcreteValue check_exception = 
     last_context->memory->get (exception_handling_addr, 1, 
-			       arch.get_reference_arch ()->endianness);
+			       arch.get_endian ());
 
   if (! check_exception.get ())
     {

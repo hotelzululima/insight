@@ -106,12 +106,10 @@ void delete_bfd(bfd* abfd)
 
 /* --------------- */
 
-BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *mcarch, 
+BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch, 
 				 ConcreteMemory *mem)
-  : Decoder(mcarch, mem)
+  : Decoder(arch, mem)
 {
-  const Architecture *arch = mcarch->get_reference_arch ();
-
   /* Initializing BFD framework */
   bfd_init();
   bfd_set_default_target("elf32-i386");
@@ -128,17 +126,17 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *mcarch,
 			(fprintf_ftype) s_binutils_sprintf);
 
   /* Setting endianness */
-  if (arch->endianness == Architecture::BigEndian)
+  if (arch->get_endian () == Architecture::BigEndian)
     this->info->display_endian = this->info->endian = BFD_ENDIAN_BIG;
 
-  else if (arch->endianness == Architecture::LittleEndian)
+  else if (arch->get_endian () == Architecture::LittleEndian)
     this->info->display_endian = this->info->endian = BFD_ENDIAN_LITTLE;
 
   else
     this->info->display_endian = this->info->endian = BFD_ENDIAN_UNKNOWN;
 
   /* Setting architecture */
-  switch (arch->processor)
+  switch (arch->get_proc ())
     {
     case Architecture::X86_32:
       /* Checking support and setting the disassembler for x86-32 */

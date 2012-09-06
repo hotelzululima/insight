@@ -31,11 +31,8 @@
 #include "Architecture_ARM.hh"
 
 Architecture_ARM::Architecture_ARM (endianness_t endianness)
-  : Architecture()
+  : Architecture (ARM, endianness, 32, 32)
 {
-  this->processor = ARM;
-  this->endianness = endianness;
-
   /* Setting regular registers */
   add_register ("r0", 32);
   add_register ("r1", 32);

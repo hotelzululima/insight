@@ -30,11 +30,9 @@
 
 #include "Architecture_X86_32.hh"
 
-Architecture_X86_32::Architecture_X86_32() : Architecture()
+Architecture_X86_32::Architecture_X86_32() : 
+  Architecture (X86_32, LittleEndian, 32, 32)
 {
-  this->  processor = X86_32;
-  this->endianness = LittleEndian;
-
   /* Setting regular registers */
   add_register("eax", 32);
   add_register("ebx", 32);

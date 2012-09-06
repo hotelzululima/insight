@@ -329,8 +329,8 @@ MemCell *memcell_of_xml(xmlNodePtr node)
   // TODO: endianness
 
   Expr *addr = expr_of_xml(node->children);
-  MemCell *m = MemCell::create (addr, string(tag),  
-			   xml_get_int_attribute(node, "size"));
+  MemCell *m = MemCell::create (addr, string(tag), 0, 
+				xml_get_int_attribute(node, "size"));
   return m;
 }
 

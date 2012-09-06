@@ -583,14 +583,13 @@ struct CmpConcreteAddress {
 
 /* This is disabled until the decoder is imported */
 Microcode *
-Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem, 
+Build_Microcode (MicrocodeArchitecture *arch, ConcreteMemory *mem, 
 		 const ConcreteAddress &start)
 {
-  const Architecture *arch = mcarch->get_reference_arch ();
   assert (mem->is_defined(start));
   set<ConcreteAddress, CmpConcreteAddress> visited;
   set<ConcreteAddress, CmpConcreteAddress> tovisit;
-  Decoder *decoder = DecoderFactory::get_Decoder(mcarch, mem);
+  Decoder *decoder = DecoderFactory::get_Decoder(arch, mem);
   Microcode *mc = new Microcode ();
   MCArrowCreate newarrows;
   mc->add_arrow_creation_callback (&newarrows);
@@ -628,8 +627,8 @@ Build_Microcode (MicrocodeArchitecture *mcarch, ConcreteMemory *mem,
 		      if (mem->is_defined(a))
 			{
 			  ConcreteValue val = 
-			    mem->get (a, arch->address_range, 
-				      arch->endianness);
+			    mem->get (a, arch->get_address_size (), 
+				      arch->get_endian ());
 			  tgt = MicrocodeAddress (val.get ());
 			  tgt_is_defined = true;
 			}

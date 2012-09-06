@@ -259,7 +259,7 @@ SymbolicValue
 SymbolicSimulator::eval (const SymbolicState *ctx, const Expr *e) const
 {
   SymbolicValue result;
-  RewriteWithAssignedValues r (ctx, arch->endianness);
+  RewriteWithAssignedValues r (ctx, arch->get_endian ());
   Expr *f = e->ref ();
 
   for (;;)
@@ -311,7 +311,7 @@ SymbolicSimulator::exec (SymbolicState *ctxt, const Statement *st,
       ConcreteAddress a (eval (ctxt, cell->get_addr ()));
       SymbolicValue v (simplify (ctxt, assign->get_rval()));
 
-      memory->put (a, v, arch->endianness);
+      memory->put (a, v, arch->get_endian ());
     }
   else if (assign->get_lval()->is_RegisterExpr())
     {
@@ -341,7 +341,7 @@ SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e,
 			    Expr **symbval) const
 {
   Option<bool> result;
-  RewriteWithAssignedValues r (ctx, arch->endianness);
+  RewriteWithAssignedValues r (ctx, arch->get_endian ());
   Expr *f = e->ref ();
   f->acceptVisitor (r);
   f->deref ();

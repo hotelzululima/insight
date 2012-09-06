@@ -93,8 +93,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 
   /* Checking if the architecture has been properly detected */
   const Architecture * x86_32_arch = loader->get_architecture();
-  ATF_REQUIRE_EQ(x86_32_arch->processor, Architecture::X86_32);
-  ATF_REQUIRE_EQ(x86_32_arch->endianness, Architecture::LittleEndian);
+  ATF_REQUIRE_EQ(x86_32_arch->get_proc (), Architecture::X86_32);
+  ATF_REQUIRE_EQ(x86_32_arch->get_endian (), Architecture::LittleEndian);
 
   /* Checking the entrypoint */
   ConcreteAddress entrypoint = ConcreteAddress(0x804927c);
@@ -134,8 +134,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 
   /* Checking if the architecture has been properly detected */
   const Architecture * x86_32_arch = loader->get_architecture();
-  ATF_REQUIRE_EQ(x86_32_arch->processor, Architecture::ARM);
-  ATF_REQUIRE_EQ(x86_32_arch->endianness, Architecture::LittleEndian);
+  ATF_REQUIRE_EQ(x86_32_arch->get_proc (), Architecture::ARM);
+  ATF_REQUIRE_EQ(x86_32_arch->get_endian (), Architecture::LittleEndian);
 
   /* Checking the entrypoint */
   ConcreteAddress entrypoint = ConcreteAddress(0x93a4);

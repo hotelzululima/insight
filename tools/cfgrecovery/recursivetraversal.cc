@@ -109,7 +109,8 @@ protected:
 		    const Architecture *arch = 
 		      decoder->get_arch ()->get_reference_arch ();
 		    ConcreteValue val = 
-		      mem->get (a, arch->address_range, arch->endianness);
+		      mem->get (a, arch->get_address_size (), 
+				arch->get_endian ());
 		    ctgt = ConcreteAddress (val.get ());
 		    ctgt_is_defined = true;
 		  }

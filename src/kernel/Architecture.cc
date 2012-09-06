@@ -151,11 +151,13 @@ Architecture::get_registers() const
   return registerspecs;
 }
 
-Architecture::Architecture()
+Architecture::Architecture (processor_t proc, endianness_t endian, int wsize, 
+			    int asize) 
+  : registerspecs (new RegisterSpecs ()), processor (proc), 
+    endianness (endian), word_size (wsize), address_size (asize)
 {
-  word_size = sizeof (word_t);
-  address_range = sizeof(address_t);
-  registerspecs = new RegisterSpecs ();
+  assert (wsize > 0 && wsize % 8 == 0);
+  assert (asize > 0 && asize % 8 == 0);
 }
 
 Architecture::~Architecture()
