@@ -335,19 +335,16 @@ public:
       }
     else
       {
-	int nb_bytes = e->get_bv_size () / 8;
+	int nb_bytes = (e->get_bv_offset () + e->get_bv_size ()) / 8;
 	if (e->get_bv_size () % 8 != 0)
 	  nb_bytes++;	
-	Expr *bv;
-
-	if (e->get_bv_size () < 8)
-	  bv = MemCell::create (e->get_addr ()->ref (), 0, 8);
-	else
-	  bv = e->extract_bit_vector (0, 8);
+	Expr *addr = e->get_addr ()->ref ();
+	Expr *bv = MemCell::create (addr->ref (), 0, 8);
 
 	for (int i = 1; i < nb_bytes; i++)
 	  {
-	    Expr *byte = e->extract_bit_vector (8 * i, 8);
+	    Expr *a = BinaryApp::create (BV_OP_ADD, addr->ref (), i);
+	    Expr *byte = MemCell::create (a, 0, 8);
 	    Expr *tmp;
 	    Expr *aux[2];
 	    if (endian == Architecture::LittleEndian)
@@ -364,6 +361,7 @@ public:
 				     0, 8 * (i + 1));
 	    bv = tmp;
 	  }
+	addr->deref ();
 	bv = Expr::createExtract (bv, e->get_bv_offset (), e->get_bv_size ());
 	bv->acceptVisitor (this);
 	bv->deref ();
