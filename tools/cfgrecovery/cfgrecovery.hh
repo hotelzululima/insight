@@ -33,6 +33,7 @@
 
 #include <fstream>
 #include <string>
+#include <utils/ConfigTable.hh>
 
 #define CFG_RECOVERY_VERSION    "0.1.0"
 
@@ -43,5 +44,8 @@ const std::string prog_name = "cfgrecovery";  /* program name  */
 extern int verbosity;	                       /* verbosity level */
 extern std::ostream * output;                  /* output stream */
 extern std::ofstream output_file;              /* output file */
+
+extern const ConfigTable *CFGRECOVERY_CONFIG;
+const std::string CFGRECOVERY_CONFIG_FILENAME = ".cfgrecoveryrc";
 
 #endif /* CFGRECOVERY_HH */

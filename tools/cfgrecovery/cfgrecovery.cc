@@ -60,6 +60,8 @@ using namespace std;
 int verbosity = 0;	           /* verbosity level */
 ostream * output;                  /* output stream */
 ofstream output_file;              /* output file */
+static ConfigTable CONFIG;
+const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
 
 struct disassembler {
   const char *name;
@@ -74,9 +76,8 @@ struct disassembler {
   { "linear", "linear sweep", linearsweep },
   { "predicate", "path predicate validation", NULL },
   { "recursive", "recursive traversal", recursivetraversal },
-#if HAVE_Z3_SOLVER
-  { "symsim", "symbolic traversal", symbexec },
-#endif
+  { "symsim", "symbolic traversal (require a SMT solver supporting QF_AUFBV.", 
+    symbexec },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };
@@ -108,6 +109,8 @@ usage (int status)
 
       cout << "Rebuild the CFG based on the analysis of the binary." << endl
 	   << endl
+	   << "  -c, --config FILE\t specify configuration filename (default " 
+	   << CFGRECOVERY_CONFIG_FILENAME << ")" << endl
 	   << "  -d, --disas TYPE\tselect disassembler type" << endl
 	   << "  -l, --list\t\tlist all disassembler types" << endl
 	   << "  -e, --entrypoint ADDR\tforce entry point" << endl
@@ -146,6 +149,7 @@ main (int argc, char *argv[])
   /* Various option values */
   int optc;
   string output_filename;
+  string config_filename = CFGRECOVERY_CONFIG_FILENAME;
 
   /* Default output format (asm, _mc_, dot, asm-dot, xml) */
   string output_format = "mc";
@@ -153,6 +157,7 @@ main (int argc, char *argv[])
   /* Long options struct */
   struct option const
     long_opts[] = {
+    {"config", required_argument, NULL, 'c'},
     {"disas", required_argument, NULL, 'd'},
     {"list", no_argument, NULL, 'l'},
     {"entrypoint", required_argument, NULL, 'e'},
@@ -174,12 +179,27 @@ main (int argc, char *argv[])
 
   /* Setting debug trace */
   bool enable_debug = false;
-
   /* Parsing options */
   while ((optc =
 	  getopt_long (argc, argv, "ld:e:f:o:hDvV", long_opts, NULL)) != -1)
     switch (optc)
       {
+      case 'c':		/* Config file name */
+	{
+	  fstream f (optarg, fstream::in);
+	  if (f.is_open ())
+	    {
+	      config_filename = string(optarg);
+	      f.close();
+	    }
+	  else
+	    {
+	      cerr << "warning: can't open configuration file '" 
+		   << optarg << "'." << endl;
+	    }
+	}
+	break;
+
       case 'd':		/* Select disassembly type */
 	disassembler = optarg;
 	break;
@@ -279,22 +299,32 @@ main (int argc, char *argv[])
   string execfile_name = argv[optind];
 
   /* Starting insight and initializing the needed objects */
-  ConfigTable config; 
-  config.set (logs::STDIO_ENABLED_PROP, true);
-  config.set (logs::DEBUG_ENABLED_PROP, enable_debug);
+  
+  CONFIG.set (logs::STDIO_ENABLED_PROP, true);
+  CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
+  CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
   if (enable_debug)
     {
-      config.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
-      config.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+      CONFIG.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
+      CONFIG.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
     }
 #if HAVE_Z3_SOLVER
-  config.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
-  config.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
-  config.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
-  config.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
+  CONFIG.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
+  CONFIG.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
+  CONFIG.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
+  CONFIG.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
 #endif
 
-  insight::init (config);
+  {
+    fstream f (config_filename.c_str (), fstream::in);
+    if (f.is_open ())
+      {
+	CONFIG.load (f);
+	f.close();
+      }
+  }
+
+  insight::init (CONFIG);
 
   /* Getting the loader */
   BinaryLoader * loader;
