@@ -44,6 +44,8 @@ class SymbolicMemory
     public RegisterMap<SymbolicValue>
 {
   typedef std::tr1::unordered_map<address_t, SymbolicValue> MemoryMap;
+  address_t minaddr;
+  address_t maxaddr;
 
 public:
   SymbolicMemory (const ConcreteMemory *base);
@@ -72,6 +74,9 @@ public:
 
   virtual bool equals (const SymbolicMemory &mem) const;
   virtual std::size_t hashcode () const;
+
+
+  void get_address_range (address_t &min, address_t &max) const; 
 
 private:
   const ConcreteMemory *base;

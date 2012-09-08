@@ -35,6 +35,7 @@ SymbolicMemory::SymbolicMemory (const ConcreteMemory *base)
   : Memory<ConcreteAddress, SymbolicValue> (), RegisterMap<SymbolicValue> (),
     base (base), memory ()
 {
+  base->get_address_range (minaddr, maxaddr);
 }
 
 SymbolicMemory::~SymbolicMemory()
@@ -139,6 +140,11 @@ SymbolicMemory::put (const ConcreteAddress &a, const SymbolicValue &v,
       memory[addr] = SymbolicValue (tmp);
       tmp->deref ();
     }
+
+  if (addr < minaddr)
+    minaddr = addr;
+  if (maxaddr < addr)
+    maxaddr = addr;
 }
 
 bool 
@@ -209,34 +215,42 @@ SymbolicMemory::equals (const SymbolicMemory &mem) const
   if (memory.size () != mem.memory.size ())
     return false;
 
-  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) 
+  try 
     {
-      if (! mem.is_defined (i->first) || 
-	  ! (mem.get (i->first, 8, Architecture::LittleEndian) == i->second))
-	return false;
-    }
+      for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); 
+	   i++) 
+	{
+	  if (! mem.is_defined (i->first) || 
+	      ! (mem.get (i->first, 1, 
+			  Architecture::LittleEndian) == i->second))
+	    return false;
+	}
 
-  for (MemoryMap::const_iterator i = mem.memory.begin (); 
-       i != mem.memory.end (); i++) 
+      for (MemoryMap::const_iterator i = mem.memory.begin (); 
+	   i != mem.memory.end (); i++) 
+	{
+	  if (! is_defined (i->first) || 
+	      ! (get (i->first, 1, Architecture::LittleEndian) == i->second))
+	    return false;
+	}
+
+      for (RegisterMap<SymbolicValue>::const_reg_iterator i = regs_begin ();
+	   i != regs_end (); i++) {
+	if (! mem.is_defined (i->first) || ! (mem.get (i->first) == i->second))
+	  return false;
+      }
+
+      for (RegisterMap<SymbolicValue>::const_reg_iterator i = mem.regs_begin ();
+	   i != mem.regs_end (); i++) {
+	if (! is_defined (i->first) || ! (get (i->first) == i->second))
+	  return false;
+      }
+    } 
+  catch (UndefinedValueException&)
     {
-      if (! is_defined (i->first) || 
-	  ! (get (i->first, 8, Architecture::LittleEndian) == i->second))
-	return false;
+      return false;
     }
-
-  for (RegisterMap<SymbolicValue>::const_reg_iterator i = regs_begin ();
-       i != regs_end (); i++) {
-    if (! mem.is_defined (i->first) || ! (mem.get (i->first) == i->second))
-      return false;
-  }
-
-  for (RegisterMap<SymbolicValue>::const_reg_iterator i = mem.regs_begin ();
-       i != mem.regs_end (); i++) {
-    if (! is_defined (i->first) || ! (get (i->first) == i->second))
-      return false;
-  }
-
-  return false;
+  return true;
 }
 
 std::size_t 
@@ -256,4 +270,11 @@ SymbolicMemory::hashcode () const
   }
 
   return result;
+}
+
+void 
+SymbolicMemory::get_address_range (address_t &min, address_t &max) const
+{
+  min = minaddr;
+  max = maxaddr;
 }

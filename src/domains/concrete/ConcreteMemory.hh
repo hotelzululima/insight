@@ -58,7 +58,8 @@ class ConcreteMemory : public Memory<ConcreteAddress, ConcreteValue>,
 
   /** \brief The actual storage into memory. */
   MemoryMap memory;
-
+  address_t minaddr;
+  address_t maxaddr;
 public:
   /***************************************************************************/
   /* Constructors                                                            */
@@ -113,6 +114,7 @@ public:
   /* Utils                                                                   */
   /***************************************************************************/
   void output_text(std::ostream &) const;
+  void get_address_range (address_t &min, address_t &max) const; 
 };
 
 #endif /* DOMAINS_CONCRETE_CONCRETEMEMORY_HH */

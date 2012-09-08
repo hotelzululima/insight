@@ -55,8 +55,10 @@ typedef word_t constant_t;
 /** \brief Type to store memory addresses. */
 typedef uint32_t address_t;
 
+
 /** \brief XXX This define should probably be nuked, don't use */
 #define NULL_ADDRESS ((address_t) 0)
+#define MAX_ADDRESS ((address_t) 0xFFFFFFFF)
 
 /** \brief Default size of a data bit vector (32 bits).
  *  XXX should be much less used. */

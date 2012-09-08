@@ -51,7 +51,7 @@ using namespace std;
 
 ConcreteMemory::ConcreteMemory() :
   Memory<ConcreteAddress, ConcreteValue>(), RegisterMap<ConcreteValue>(),
-  memory()
+  memory(), minaddr (MAX_ADDRESS), maxaddr (NULL_ADDRESS)
 {
 }
 
@@ -115,6 +115,11 @@ ConcreteMemory::put(const ConcreteAddress &addr,
       memory[cur] = v & 0xff;
       v >>= 8;
     }
+
+  if (a < minaddr)
+    minaddr = a;
+  if (maxaddr < a)
+    maxaddr = a;
 }
 
 bool
@@ -183,4 +188,11 @@ ConcreteMemory::output_text(ostream &os) const
 	 << nouppercase << iter->second
 	 << dec << endl;
     }
+}
+
+void 
+ConcreteMemory::get_address_range (address_t &min, address_t &max) const
+{
+  min = minaddr;
+  max = maxaddr;
 }
