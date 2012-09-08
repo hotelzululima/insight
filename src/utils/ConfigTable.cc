@@ -182,22 +182,26 @@ ConfigTable::load (std::istream &in)
     {
       string line;
 
-      if (getline (in, line) && ! line.empty ())
-	{
-	  string::size_type i = line.find ('=');
-	  if (i == string::npos)
-	    {
-	      cerr << "warning: bad configuration line '" << line << "'." 
-		   << endl;
-	      continue;
-	    }
-	  string name = line.substr (0, i - 1);
-	  remove_useless_whitespaces (name);
-	  string value = line.substr (i + 1, string::npos);
-	  remove_useless_whitespaces (value);
+      if (!getline (in, line) || line.empty ())
+	continue;
+      remove_useless_whitespaces (line);
+      if (line[0] == '#')
+	continue;
 
-	  set (name, value);
-	}      
+      string::size_type i = line.find ('=');
+      if (i == string::npos)
+	{
+	  cerr << "warning: bad configuration line '" << line << "'." 
+	       << endl;
+	  continue;
+	}
+
+      string name = line.substr (0, i - 1);
+      remove_useless_whitespaces (name);
+      string value = line.substr (i + 1, string::npos);
+      remove_useless_whitespaces (value);
+	  
+      set (name, value);
     }
 }
 
