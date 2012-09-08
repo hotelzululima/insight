@@ -56,6 +56,11 @@ public:
   virtual Result check_sat (const Expr *e, bool preserve)
     throw (UnexpectedResponseException);
 
+  virtual Result check_sat ()
+    throw (UnexpectedResponseException);
+  virtual void add_assertion (const Expr *e)
+    throw (UnexpectedResponseException);
+
   virtual void push () 
     throw (UnexpectedResponseException);
   virtual void pop () 

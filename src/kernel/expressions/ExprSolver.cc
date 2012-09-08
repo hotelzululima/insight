@@ -98,11 +98,39 @@ Constant *
 ExprSolver::evaluate (const Expr *e, const Expr *context) 
   throw (UnexpectedResponseException)
 {
+  std::vector<constant_t> *values = evaluate (e, context, 2);
+  Constant *result = NULL;
+  if (values->size () == 2)
+    {
+      if (debug_traces)
+	{
+	  logs::debug << "variable may have two values: " << endl
+		      << values->at (0) << endl
+		      << "and " << endl
+		      << values->at (1) << endl;
+	}
+    }
+  else if (values->size () == 1)
+    {
+      result = Constant::create (values->at (0), 0, e->get_bv_size ());
+    }
+
+  delete values;
+
+  return result;
+}
+
+std::vector<constant_t> *
+ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values) 
+  throw (UnexpectedResponseException)
+{
+  std::vector<constant_t> *result = new std::vector<constant_t> ();
+  if (nb_values == 0)   
+    return result;
+
   if (debug_traces)    
     BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " with context " + 
 		     context->to_string ());
-
-  Constant *result = NULL;
   
   Variable *var = Variable::create ("_unk", e->get_bv_size ());
   Expr *phi = Expr::createLAnd (Expr::createEquality (var->ref (), e->ref ()),
@@ -111,41 +139,27 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
   push ();
   if (check_sat (phi, false) == SAT)
     {
-      result = get_value_of (var);
-      if (debug_traces)
-	logs::debug << *result << std::endl;
-      pop ();
-
-      if (debug_traces)
-	BEGIN_DBG_BLOCK ("check if value '" + result->to_string () + 
-			 "' is unique");
-
-      push ();      
-      Expr *tmp = BinaryApp::createDisequality (var->ref (), result->ref ());
-      tmp = Expr::createLAnd (tmp, phi->ref ());
-
-      if (check_sat (tmp, false) != UNSAT)
+      phi->deref ();
+      while (nb_values > 0 && check_sat () == SAT)
 	{
+	  Constant *c = get_value_of (var);
 	  if (debug_traces)
-	    {
-	      Constant *c = get_value_of (var);
-	      logs::debug << "variable may have another value: " 
-			  << *c << endl;
-	      c->deref ();
-	    }
-	  result->deref ();
-	  result = NULL;
+	    logs::debug << "value = " << *c << std::endl;
+
+	  result->push_back (c->get_val ());
+	  Expr *nc = Expr::createDisequality (var->ref (), c->ref ());
+	  add_assertion (nc);	   
+	  nc->deref ();
+	  c->deref ();
+	  nb_values--;
 	}
-      pop ();
-      tmp->deref ();
-      if (debug_traces)
-	END_DBG_BLOCK ();
     }
   else
     {
-      pop ();
+      phi->deref ();
     }
-  phi->deref ();
+
+  pop ();
   var->deref ();
   if (debug_traces)
     END_DBG_BLOCK ();

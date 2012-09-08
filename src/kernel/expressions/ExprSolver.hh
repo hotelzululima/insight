@@ -32,6 +32,7 @@
 # define KERNEL_EXPRESSIONS_EXPRSOLVER_HH
 
 # include <stdexcept>
+# include <vector>
 # include <kernel/Expressions.hh>
 # include <utils/ConfigTable.hh>
 
@@ -73,10 +74,20 @@ public:
  
   virtual ~ExprSolver ();
 
+  virtual void add_assertion (const Expr *e)
+    throw (UnexpectedResponseException) = 0;
+
   virtual Result check_sat (const Expr *e, bool preserve) 
     throw (UnexpectedResponseException) = 0;
 
+  virtual Result check_sat ()
+    throw (UnexpectedResponseException) = 0;
+
   virtual Constant *evaluate (const Expr *e, const Expr *context) 
+    throw (UnexpectedResponseException);
+
+  virtual std::vector<constant_t> * 
+  evaluate (const Expr *e, const Expr *context, int nb_values) 
     throw (UnexpectedResponseException);
 
   virtual void push () 

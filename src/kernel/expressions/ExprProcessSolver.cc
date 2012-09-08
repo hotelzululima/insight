@@ -107,7 +107,7 @@ ExprProcessSolver::check_sat (const Expr *e, bool preserve)
     BEGIN_DBG_BLOCK ("check_sat : " + e->to_string ());
   if (preserve)
     push ();
-  ExprSolver::Result result = ExprSolver::UNSAT;
+  ExprSolver::Result result = ExprSolver::UNKNOWN;
     
   declare_variable (e);
 
@@ -143,6 +143,48 @@ ExprProcessSolver::check_sat (const Expr *e, bool preserve)
 
   if (debug_traces)
     END_DBG_BLOCK ();
+
+  return result;
+}
+
+void 
+ExprProcessSolver::add_assertion (const Expr *e)
+  throw (UnexpectedResponseException) 
+{
+  if (debug_traces)
+    {
+      logs::debug << "(assert ";
+      smtlib_writer (logs::debug, e, MEMORY_VAR, 
+		     mca->get_address_size (), 
+		     mca->get_endian (), true);
+      logs::debug << ") " << endl;
+    }
+
+  *out << "(assert ";  
+  smtlib_writer (*out, e, MEMORY_VAR, mca->get_address_size (), 
+		 mca->get_endian (), true);
+  *out << ") " << endl;
+
+  if (! read_status ())
+    throw UnexpectedResponseException ("error while adding assertion" + 
+				       e->to_string ());
+}
+
+ExprSolver::Result 
+ExprProcessSolver::check_sat ()
+  throw (UnexpectedResponseException)
+{
+  ExprSolver::Result result = UNKNOWN;
+
+  string res = exec_command ("(check-sat)");
+  if (res == "sat") 
+    result = ExprSolver::SAT;
+  else if (res == "unsat") 
+    result = ExprSolver::UNSAT;
+  else if (res == "unknown") 
+    result = ExprSolver::UNKNOWN;
+  else 
+    throw UnexpectedResponseException ("check-sat: " + res);
 
   return result;
 }
