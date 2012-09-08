@@ -85,6 +85,23 @@ syntaxic_equality_rule (const Expr *phi)
 }
 
 Expr * 
+zero_shift_rule (const Expr *phi)
+{
+  const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
+  Expr *result = NULL;
+
+  if (ba != NULL && (ba->get_op () == BV_OP_RSH_U || 
+		     ba->get_op () == BV_OP_RSH_S ||
+		     ba->get_op () == BV_OP_LSH)
+      && ba->get_arg2 ()->is_Constant ()
+      && ((Constant *) ba->get_arg2 ())->get_val () == 0)
+    result = ba->get_arg1 ()->extract_bit_vector (ba->get_bv_offset (),
+						  ba->get_bv_size ());
+
+  return result;
+}
+
+Expr * 
 cancel_lnot_not (const Expr *phi) 
 {
   Expr *pattern = 
@@ -175,9 +192,10 @@ and_and_rule (const Expr *phi)
     return NULL;
 
   BinaryApp *arg1 = dynamic_cast <BinaryApp *> (conj->get_arg1 ());
-  
+  assert (arg1 != NULL);  
   // (arg1.1 and  arg1.2) and  arg2 --> arg1.1 and  (arg1.2 and  arg2)
-  if (arg1 != NULL) 
+  if (arg1->get_arg1 ()->get_bv_size () == conj->get_arg2 ()->get_bv_size () &&
+      arg1->get_arg2 ()->get_bv_size () == conj->get_arg2 ()->get_bv_size ())
     {
       result = BinaryApp::createLAnd (arg1->get_arg2 ()->ref (), 
 				      conj->get_arg2 ()->ref ());
@@ -201,10 +219,12 @@ or_or_rule (const Expr *phi)
     return NULL;
 
   BinaryApp *arg1 = dynamic_cast <BinaryApp *> (disj->get_arg1 ());
-  
+  assert (arg1 != NULL);  
   // (arg1.1 or  arg1.2) or  arg2 --> arg1.1 or  (arg1.2 or  arg2)
-  if (arg1 != NULL) 
-    {
+
+  if (arg1->get_arg1 ()->get_bv_size () == disj->get_arg2 ()->get_bv_size () &&
+      arg1->get_arg2 ()->get_bv_size () == disj->get_arg2 ()->get_bv_size ())
+    {      
       result = BinaryApp::createLOr (arg1->get_arg2 ()->ref (), 
 				     disj->get_arg2 ()->ref ());
       result = BinaryApp::createLOr (arg1->get_arg1 ()->ref (), 
@@ -539,6 +559,7 @@ simplify_formula (const Expr *phi)
     phi_and_not_phi_rule, 
     and_and_rule,
     or_or_rule,
+    
     NULL 
   };
 
@@ -557,7 +578,8 @@ simplify_expr (const Expr *phi)
     compute_constants, 
     void_operations, 
     bit_field_computation, 
-    binary_operations_simplification, 
+    binary_operations_simplification,     
+    zero_shift_rule, 
     NULL 
   };
 

@@ -40,7 +40,10 @@ rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func,
   
 extern Expr * 
 syntaxic_equality_rule (const Expr *phi);
-  
+
+extern Expr * 
+zero_shift_rule (const Expr *phi);
+
 extern Expr * 
 not_operator_on_constant (const Expr *phi);
   
