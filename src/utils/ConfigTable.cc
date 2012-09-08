@@ -182,7 +182,7 @@ ConfigTable::load (std::istream &in)
     {
       string line;
 
-      if (getline (in, line))
+      if (getline (in, line) && ! line.empty ())
 	{
 	  string::size_type i = line.find ('=');
 	  if (i == string::npos)
