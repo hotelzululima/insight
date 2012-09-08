@@ -171,7 +171,7 @@ constant :
 
 variable : 
   TOK_STRING 
-  { $$ = Variable::create (*($1)); delete $1; }
+  { $$ = Variable::create (*($1), BV_DEFAULT_SIZE); delete $1; }
 ;
 
 lvalue:

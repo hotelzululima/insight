@@ -239,8 +239,9 @@ Expr::extract_with_bit_vector_size_of (Expr *&e, const Expr *other)
 
 /*****************************************************************************/
 
-Variable::Variable(const std::string &id, int bv_offset, int bv_size) 
-  : Expr (bv_offset, bv_size), id(id) 
+Variable::Variable(const std::string &id, size_in_bits_t size, 
+		   int bv_offset, int bv_size) 
+  : Expr (bv_offset, bv_size), id(id), size (size) 
 {
 }
 
@@ -249,9 +250,15 @@ Variable::~Variable()
 }
 
 Variable * 
-Variable::create (const std::string &id, int bv_offset, int bv_size)
+Variable::create (const std::string &id, size_in_bits_t size)
 {
-  return find_or_add (new Variable (id, bv_offset, bv_size));
+  return find_or_add (new Variable (id, size, 0, size));
+}
+
+size_in_bits_t 
+Variable::get_size () const 
+{ 
+  return size;
 }
 
 std::string 
@@ -263,7 +270,7 @@ Variable::get_id() const
 Expr * 
 Variable::change_bit_vector (int new_bv_offset, int new_bv_size) const 
 {
-  return Variable::create (id, new_bv_offset, new_bv_size);
+  return Expr::createExtract (this->ref (), new_bv_offset, new_bv_size);
 }
 
 /*****************************************************************************/
@@ -927,7 +934,7 @@ bool Variable::equal (const Expr *F) const
 {
   const Variable *e = s_check_bv<Variable> (this, F);
 
-  return (e != NULL && id == e->id);
+  return (e != NULL && id == e->id && size == e->size);
 }
 
 bool Constant::equal (const Expr *F) const
@@ -990,7 +997,8 @@ Expr::hash () const
 size_t 
 Variable::hash () const 
 { 
-  return 13 * this->Expr::hash() + 51 * std::tr1::hash<string>()(id);
+  return (13 * this->Expr::hash() + 51 * std::tr1::hash<string>()(id) + 
+	  73 * size);
 }
 
 size_t 

@@ -46,7 +46,7 @@ using namespace std;
 Variable *
 ConditionalSet::EltSymbol (int size)
 {
-  return Variable::create ("elt", 0, size);
+  return Variable::create ("elt", size);
 }
 
 inline Expr *IsIn (const Expr *elt) 
@@ -88,7 +88,7 @@ public:
 
   void apply (const Expr *e) 
   {
-    Variable *X = Variable::create ("X"); 
+    Variable *X = Variable::create ("X", BV_DEFAULT_SIZE); 
     Expr * elt_def_pattern = 
       Expr::createEquality(ConditionalSet::EltSymbol (X->get_bv_size ()), X->ref ());
     std::list<const Variable *> free_variables; 

@@ -158,7 +158,7 @@ SymbolicValue::unknown_value (int size)
   static int vid = 0;
   std::ostringstream oss;
   oss <<  "unkval_" << vid++;
-  Expr *var = Variable::create (oss.str (), 0, size);
+  Expr *var = Variable::create (oss.str (), size);
   
   SymbolicValue result (var);
   var->deref ();

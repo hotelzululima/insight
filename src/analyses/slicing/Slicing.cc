@@ -147,10 +147,11 @@ crm_apply_bin_op(BinaryOp op, const Expr *A, const Expr *B, int o, int sz);
  * and propagate the replacement all along the terms. */
 bool conditional_rewrite_memref(const Expr *addr, const Expr *value, Expr **phi)
 {
-  Variable *X = Variable::create ("X");
+  Variable *X = Variable::create ("X", BV_DEFAULT_SIZE);
   bool modified = conditional_rewrite_memref_aux(addr, value, phi);
   Expr * m_pattern = 
-    Expr::createEquality(Variable::create ("TERM_VALUE"), (Expr *) X->ref ());
+    Expr::createEquality(Variable::create ("TERM_VALUE", X->get_size ()), 
+			 (Expr *) X->ref ());
 
   VarList free_variables; 
   free_variables.push_back(X);
@@ -165,15 +166,16 @@ static Expr *
 crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2, 
 		 int o, int sz)
 {
-  Variable *Varg1 = Variable::create ("ARG1");
-  Variable *Varg2 = Variable::create ("ARG2");
+  Variable *Varg1 = Variable::create ("ARG1", BV_DEFAULT_SIZE);
+  Variable *Varg2 = Variable::create ("ARG2", BV_DEFAULT_SIZE);
   Expr *arg2_pattern = arg2->ref ();
   Expr *p = 
-    Expr::createEquality(Variable::create ("TERM_VALUE",0, Varg2->get_bv_size ()), Varg2->ref ());
+    Expr::createEquality(Variable::create ("TERM_VALUE",Varg2->get_bv_size ()),
+			 Varg2->ref ());
   VarList free_variables; 
   free_variables.push_back(Varg2);
   Expr * v =
-    Expr::createEquality(Variable::create ("TERM_VALUE", 0, sz),
+    Expr::createEquality(Variable::create ("TERM_VALUE", sz),
 			 BinaryApp::create (op, Varg1->ref (), Varg2->ref (), 
 					    o, sz));
   bottom_up_rewrite_pattern_and_assign (&arg2_pattern, p, free_variables, v );
@@ -181,7 +183,9 @@ crm_apply_bin_op(BinaryOp op, const Expr *arg1, const Expr *arg2,
   v->deref ();
 
   Expr *result = arg1->ref ();
-  p = Expr::createEquality(Variable::create ("TERM_VALUE", 0, Varg1->get_bv_size ()), Varg1->ref ());
+  p = Expr::createEquality(Variable::create ("TERM_VALUE", 
+					     Varg1->get_bv_size ()), 
+			   Varg1->ref ());
   free_variables.clear(); 
   free_variables.push_back(Varg1);
   bottom_up_rewrite_pattern_and_assign (&result, p, free_variables, 
@@ -269,7 +273,7 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
   if ((*phi)->is_MemCell())
     {
       MemCell *mc = (MemCell *)(*phi);
-      Expr *tv = Variable::create ("TERM_VALUE");
+      Expr *tv = Variable::create ("TERM_VALUE", BV_DEFAULT_SIZE);
 	
       *phi = 
 	Expr::createIfThenElse(Expr::createEquality (addr->ref (), 
@@ -286,8 +290,8 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
   if ((*phi)->is_UnaryApp())
     {
       UnaryApp *ua = (UnaryApp *) *phi;
-      Variable *tv = Variable::create ("TERM_VALUE");
-      Variable *ARG = Variable::create ("ARG");
+      Variable *tv = Variable::create ("TERM_VALUE", BV_DEFAULT_SIZE);
+      Variable *ARG = Variable::create ("ARG", BV_DEFAULT_SIZE);
       Expr *arg1 = ua->get_arg1()->ref ();
       bool arg1_modified = 
 	conditional_rewrite_memref_aux(addr, value, &arg1);
@@ -336,7 +340,7 @@ bool conditional_rewrite_memref_aux(const Expr *addr, const Expr *value,
 
 
   Expr * phi_sav = *phi;
-  *phi = Expr::createEquality(Variable::create ("TERM_VALUE"), 
+  *phi = Expr::createEquality(Variable::create ("TERM_VALUE", BV_DEFAULT_SIZE), 
 			      (Expr *) (*phi)->ref ());
   phi_sav->deref ();
   
@@ -403,7 +407,7 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
 	Expr::createEquality(ConditionalSet::EltSymbol (lval->get_bv_size ()), lval->ref ());
 
       // The variable TMP is used to hide form EltSymbol = lval when one replaces lval by rval.
-      Variable *tmp = Variable::create ("TMP");
+      Variable *tmp = Variable::create ("TMP", BV_DEFAULT_SIZE);
       bottom_up_rewrite_pattern_and_assign (&(new_context->the_lvalues),
 					    reg_pattern, VarList (), tmp);
       reg_pattern->deref ();
@@ -419,8 +423,8 @@ DataDependencyLocalContext::run_backward (StaticArrow *arr)
 
   if (lval->is_MemCell())
     {
-      Variable *elt_addr = Variable::create ("ELT_ADDR");
-      Variable *X = Variable::create ("X");
+      Variable *elt_addr = Variable::create ("ELT_ADDR", BV_DEFAULT_SIZE);
+      Variable *X = Variable::create ("X", BV_DEFAULT_SIZE);
       // 1. Formally replace all occurencies of "EltSymbol = [x]" for any 
       // expr x by "ELT_ADDR = x" (ELT_ADDR is a new variable)
       Expr *m_pattern = 

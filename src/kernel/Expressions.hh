@@ -265,8 +265,10 @@ class Variable : public Expr {
 private:
   /*! A Variable is defined by a string identifier */
   std::string id;
+  size_in_bits_t size;
 
-  Variable(const std::string &id, int bv_offset, int bv_size);
+  Variable(const std::string &id, size_in_bits_t size, 
+	   int bv_offset, int bv_size);
 
   virtual ~Variable();
 
@@ -274,9 +276,9 @@ protected:
   virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
 
 public:
-  static Variable *create (const std::string &id, int bv_offset = 0, 
-			   int bv_size = BV_DEFAULT_SIZE);
+  static Variable *create (const std::string &id, size_in_bits_t size);
 
+  size_in_bits_t get_size () const;
   std::string get_id() const;
 
 
