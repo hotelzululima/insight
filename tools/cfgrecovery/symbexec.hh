@@ -33,6 +33,10 @@
 
 #include "cfgrecovery.hh"
 
+extern const std::string SYMSIM_X86_32_INIT_ESP_PROP;
+extern const std::string SYMSIM_NB_VISITS_PER_ADDRESS;
+extern const std::string SYMSIM_DEBUG_SHOW_STATES;
+
 extern Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	  Decoder *decoder);

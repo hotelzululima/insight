@@ -27,7 +27,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
+#include <kernel/expressions/exprutils.hh>
 #include "SymbolicState.hh"
 
 SymbolicState::SymbolicState (const MicrocodeAddress &ma, 
@@ -64,6 +64,7 @@ void
 SymbolicState::set_condition (Expr *cond)
 {
   condition->deref ();
+  exprutils::simplify_level0 (&cond);
   condition = cond;
 }
 

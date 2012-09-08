@@ -184,71 +184,68 @@ SymbolicSimulator::get_program () const
 }
 
 void 
-SymbolicSimulator::step (SymbolicState *ctxt, const StaticArrow *sa)
+SymbolicSimulator::step (SymbolicState *ctxt, const StaticArrow *sa,
+			 std::vector<SymbolicState *> *new_states)
 {
   assert (ctxt != NULL);
 
   MicrocodeAddress tgt = sa->get_target ();
   
   exec (ctxt, sa->get_stmt (), tgt);
+  new_states->push_back (ctxt);
 }
 
 void 
-SymbolicSimulator::step (SymbolicState *&ctxt, const DynamicArrow *da)
+SymbolicSimulator::step (SymbolicState *ctxt, const DynamicArrow *da,
+			 std::vector<SymbolicState *> *new_states)
 {
   assert (ctxt != NULL);
 
   Expr *addr = da->get_target ();
   assert (! da->get_stmt()->is_Assignment ());
 
-  Option<SymbolicValue> svaddr = eval (ctxt, addr);
-  if (svaddr.hasValue ())
-    {
-      const Constant *c = 
-	dynamic_cast<const Constant *> (svaddr.getValue ().get_Expr ());
 
-      if (c != NULL)
-	{
-	  MicrocodeAddress tgt (c->get_val ());
-	  Expr *guard = 
-	    Expr::createLAnd (ctxt->get_condition ()->ref (), 
-			      Expr::createEquality (addr->ref (), c->ref ()));
-	  program->add_skip (ctxt->get_address (), tgt, guard);
-	  ctxt->set_address (tgt);
-	}
-      else
-	{
-	  delete ctxt;
-	  ctxt = NULL;
-	}
-    }
-  else
+  std::vector<address_t> *targets = eval_to_addresses (ctxt, addr);
+  for (size_t i = 0; i < targets->size (); i++)
     {
-      delete ctxt;
-      ctxt = NULL;
+      MicrocodeAddress tgt (targets->at(i));
+      Constant *caddr = 
+	Constant::create (targets->at (i), 0, addr->get_bv_size ());
+      Expr *guard = 
+	Expr::createLAnd (ctxt->get_condition ()->ref (), 
+			  Expr::createEquality (addr->ref (), caddr));
+      program->add_skip (ctxt->get_address (), tgt, guard);
+      SymbolicState *new_state = ctxt->clone ();
+      new_state->set_address (tgt);
+      new_states->push_back (new_state);
     }
+  delete ctxt;      
+  delete targets;
 }
 
-SymbolicState *
+std::vector<SymbolicState *> *
 SymbolicSimulator::step (const SymbolicState *ctx, const StmtArrow *arrow)
 {
-  SymbolicState *result = check_guard (ctx, arrow->get_condition ());
+  std::vector<SymbolicState *> *result = new std::vector<SymbolicState *>();
+  SymbolicState *s = check_guard (ctx, arrow->get_condition ());
 
-  if (result == NULL)
+  if (s == NULL)
     return result;
 
   try
     {
       /* determination of the target node */
       if (arrow->is_static ())
-	step (result, (StaticArrow *) arrow);
+	step (s, (StaticArrow *) arrow, result);
       else
-	step (result, (DynamicArrow *) arrow);
+	step (s, (DynamicArrow *) arrow, result);
     }
   catch (UndefinedValueException &e)
     {
-      if (result != NULL)
-	delete result;
+      delete s;
+      for (size_t i = 0; i < result->size (); i++)
+	delete result->at(i);
+      delete result;
       throw;
     }
   
@@ -283,6 +280,65 @@ SymbolicSimulator::eval (const SymbolicState *ctx, const Expr *e) const
   f->deref ();
 
   return result;
+}
+
+static Expr *
+s_expr_in_range (const Expr *e, address_t min, address_t max)
+{
+  Expr *in1 = BinaryApp::create (BV_OP_LEQ_U, 
+				 Constant::create (min, 0, e->get_bv_size ()),
+				 e->ref (), 0, 1);
+  Expr *in2 = BinaryApp::create (BV_OP_LEQ_U, 
+				 e->ref (),
+				 Constant::create (max, 0, e->get_bv_size ()),
+				 0, 1);
+  return Expr::createLAnd (in1, in2);
+}
+
+std::vector<address_t> * 
+SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx, 
+				      const Expr *e) const
+{
+  std::vector<address_t> *result = new std::vector<address_t> ();
+  RewriteWithAssignedValues r (ctx, arch->get_endian ());
+  Expr *f = e->ref ();
+
+  for (;;)
+    {
+      f->acceptVisitor (r);
+      Expr *aux = r.get_result ();
+      f->deref ();
+      if (aux == f)
+	break;
+      f = aux;
+    }
+  address_t range[2];
+  ctx->get_memory ()->get_address_range (range[0], range[1]);
+  Expr *cond = Expr::createLAnd (s_expr_in_range (e, range[0], range[1]),
+				 ctx->get_condition ()->ref ());
+  
+  for (;;)
+    {
+      cond->acceptVisitor (r);
+      Expr *aux = r.get_result ();
+      cond->deref ();
+      if (aux == cond)
+	break;
+      cond = aux;
+    }
+
+  std::vector<constant_t> *tmp = 
+    solver->evaluate (f, cond, range[1] - range[0] + 1);
+  for (size_t i = 0; i < tmp->size (); i++)
+    result->push_back (tmp->at (i));
+  delete tmp;
+
+  f->deref ();
+  cond->deref ();
+
+  assert (result != NULL);
+
+  return result;  
 }
 
 void

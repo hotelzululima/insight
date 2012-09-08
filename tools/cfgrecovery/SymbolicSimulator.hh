@@ -50,7 +50,7 @@ public:
   virtual ArrowSet get_arrows (const SymbolicState *ctx) const
     throw (Decoder::Exception);
 
-  virtual SymbolicState *
+  virtual std::vector<SymbolicState *> *
   step (const SymbolicState *ctx, const StmtArrow *arrow);
 
   virtual MicrocodeNode *get_node (const MicrocodeAddress &pp) const
@@ -60,12 +60,16 @@ public:
 
 private:
   SymbolicValue eval (const SymbolicState *ctx, const Expr *e) const;
+  std::vector<address_t> * 
+  eval_to_addresses (const SymbolicState *ctx, const Expr *e) const;
 
   void exec (SymbolicState *ctxt, const Statement *st, 
 	     const MicrocodeAddress &tgt) const;
 
-  void step (SymbolicState *ctxt, const StaticArrow *sa);
-  void step (SymbolicState *&ctxt, const DynamicArrow *d);
+  void step (SymbolicState *ctxt, const StaticArrow *sa,
+	     std::vector<SymbolicState *> *new_states);
+  void step (SymbolicState *ctxt, const DynamicArrow *d, 
+	     std::vector<SymbolicState *> *new_states);
 
   Option<bool> to_bool (const SymbolicState *ctx, const Expr *e, 
 			Expr **symbval = NULL) const;
