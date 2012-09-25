@@ -1,3 +1,17 @@
+Major changes in version 0.2:
+
+* Added the tool 'cfgrecovery' with linear sweep, flood traversal,
+  recursive traversal, symbolic traversal and prepared for others.
+
+* Added support for Z3 SMT-solver.
+
+* Added translation from Formula to SMTLib syntax.
+
+* A lot of cleaning and refactoring (mainly in 'formula' and
+  'input/output' modules).
+
+* Bug fixing (memory leaks, improved efficiency, ...).
+
 Major changes in version 0.1:
 
 * First public release.
