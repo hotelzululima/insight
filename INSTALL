@@ -3,7 +3,6 @@
 
 Basic Build and Install
 ========================
-
 The insight framework needs a UNIX-like environment to build and work
 properly. It relies on a small number of widely used libraries and
 tools, and here is the list of dependencies if you downloaded the
@@ -24,7 +23,6 @@ error messages that will help you to get through.
 
 MacOS X Build and Install
 ==========================
-
 Under MacOS X, you will need to install UNIX packages either by hand
 or by using MacPorts, Fink, or similar package systems. We tested and
 use insight with MacPorts (http://www.macports.org/).
@@ -58,7 +56,6 @@ Possibly unusual configure flags are available:
 
 Building in a separate directory
 =================================
-
 If you want to build the project outside of the source directory, just
 create a fresh directory (eg. 'build/'), cd into it and type:
 <path_to_srcdir>/configure <suitable_options>
@@ -69,9 +66,9 @@ keeping built files apart from the source files.
 We recommend this way of building as it leaves the source directory
 clean.
 
+
 Using more binutils file formats/architectures
 ===============================================
-
 On most operating system distributions the binutils package comes only
 with the minimum needed processor architectures and binary formats. In
 fact, the binutils can do much more than that and can deal with a lot
@@ -106,9 +103,9 @@ when invoking 'configure' within insight. E.g.:
 
 ./configure CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib
 
+
 Developer Build and Install
 ============================
-
 Developers are, of course, more than welcome in this project and
 feature requests, development questions and patches will be looked at
 and commented upon by the Insight team (see the README file for more
@@ -134,9 +131,21 @@ and you will be able to generate all the autoconf stuff with:
 
 You can then proceed with the usual 'configure' step.
 
+
+Generate the Doxygen documentation
+==================================
+Insight comes with a Doxygen API documentation. We chose to not build
+it by default to spare time and space. Yet, building the HTML API
+documentation can be done as follow (in the following we assume that
+the build is in the 'build' directory):
+
+1) Go to build/doc
+2) Type: make api
+3) Documentation will appear in build/doc/api/html/
+
+
 Test Framework (ATF/Kyua)
 =========================
-
 We use ATF (Automated Test Framework) together with the Kyua runner in
 order to test the framework. At the moment, we require a recent
 version of Kyua which is not available as a package on most

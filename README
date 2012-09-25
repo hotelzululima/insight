@@ -18,7 +18,6 @@ working on tools which will be released later under the same license.
 
 Users Information
 ==================
-
 For further information on the contents of this distribution file,
 we refer you to the following other documents:
 
@@ -34,7 +33,6 @@ https://insight.labri.fr/
 
 Developer Information
 ======================
-
 Developpers are, of course, more than welcome in this project and
 feature requests, development questions and patches will be looked at
 and commented by the Insight team.
@@ -47,3 +45,19 @@ In order to report a bug, or request a new feature, please use our
 issue tracker at https://insight.labri.fr/trac/newticket
 
 To contact the development team, send an e-mail to insight@labri.fr
+
+
+Debugging with libtools
+========================
+The autotools and libtools are producing shell scripts in place of
+executable files when building the software. Thus, using debug tools
+such as 'gdb' or 'valgrind' is quite tedious because you have to find
+your way to the real executable file and properly set the library
+path.
+
+Fortunately, there is a quick and safe way to work around these dirty
+hacks. You just have to use the 'libtool' command as shown here:
+
+$ libtool --mode=execute gdb cfgrecovery
+$ libtool --mode=execute valgrind cfgrecovery
+
