@@ -139,14 +139,30 @@ Microcode::get_or_create_node(MicrocodeAddress addr) {
 /*****************************************************************************/
 
 void
-Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end,
-        Expr *guard) {
+Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard) 
+{
   MicrocodeNode *b = get_or_create_node(beg);
 
   if (guard == NULL)
     guard = Constant::True ();
 
-  StmtArrow *a = b->add_successor(guard, get_or_create_node(end), new Skip());
+  MicrocodeNode_iterate_successors (*b, succ)
+    {
+      if ((*succ)->is_dynamic ())
+	continue;
+
+      Expr *cond = (*succ)->get_condition ();
+      MicrocodeAddress tgt = ((StaticArrow *) *succ)->get_target ();
+
+      if (cond == guard && tgt.equals (end))
+	{
+	  guard->deref ();
+	  return;
+	}
+    }
+
+  StmtArrow *a = b->add_successor (guard, get_or_create_node(end), 
+				       new Skip());
   apply_callbacks (a);
 }
 
