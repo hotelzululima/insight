@@ -113,6 +113,11 @@ s_start_rep (x86_32::parser_data &data)
 static void
 s_end_rep (x86_32::parser_data &data, Expr *cond)
 {
+  if (! data.has_prefix)
+    {
+      cond->deref ();
+      return;
+    }
   MicrocodeAddress start (data.start_ma);
   const char *regname = data.addr16 ? "cx" : "ecx";
   LValue *counter = data.get_register (regname);

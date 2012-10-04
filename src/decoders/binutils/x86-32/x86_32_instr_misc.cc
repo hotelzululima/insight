@@ -442,7 +442,7 @@ s_set_cc (x86_32::parser_data &data, Expr *cond, Expr *dst)
 		       data.start_ma + 1, data.start_ma + 2);
   data.mc->add_assignment (data.start_ma + 1, (LValue *) dst->ref (),
 			   Constant::one (8), data.next_ma);
-  data.mc->add_assignment (data.start_ma + 1, (LValue *) dst->ref (),
+  data.mc->add_assignment (data.start_ma + 2, (LValue *) dst->ref (),
 			   Constant::zero (8), data.next_ma);
   dst->deref ();
 }

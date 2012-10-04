@@ -71,5 +71,7 @@ X86_32_TRANSLATE_0_OP (RET)
   start_node->add_annotation (CallRetAnnotation::ID,
 			      CallRetAnnotation::create_ret ());
   data.mc->add_jump (start, tmpr0->ref ());
+  if (data.has_prefix)
+    data.has_prefix = false;
 }
 

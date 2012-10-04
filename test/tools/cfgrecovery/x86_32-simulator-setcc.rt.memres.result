@@ -7,8 +7,8 @@
 [(0x9,4)] StaticArrow (0x9,4) %sf{0;1} := %eax{15;1}  --> (0xA,0)
 [(0xA,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xA,0) %ebx{0;8} := 0x0{0;8}  --> (0xC,0)
 [(0xC,0)] @{asm:=setb   %bl}@ StaticArrow (0xC,0) Skip << %cf{0;1} >> --> (0xC,1)StaticArrow (0xC,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0xC,2)
-[(0xC,1)] StaticArrow (0xC,1) %ebx{0;8} := 0x1{0;8}  --> (0xF,0)StaticArrow (0xC,1) %ebx{0;8} := 0x0{0;8}  --> (0xF,0)
-[(0xC,2)] 
+[(0xC,1)] StaticArrow (0xC,1) %ebx{0;8} := 0x1{0;8}  --> (0xF,0)
+[(0xC,2)] StaticArrow (0xC,2) %ebx{0;8} := 0x0{0;8}  --> (0xF,0)
 [(0xF,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xF,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xF,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -25,8 +25,8 @@
 [(0x1A,4)] StaticArrow (0x1A,4) %sf{0;1} := %eax{15;1}  --> (0x1B,0)
 [(0x1B,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x1B,0) %ebx{0;8} := 0x0{0;8}  --> (0x1D,0)
 [(0x1D,0)] @{asm:=setb   %bl}@ StaticArrow (0x1D,0) Skip << %cf{0;1} >> --> (0x1D,1)StaticArrow (0x1D,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x1D,2)
-[(0x1D,1)] StaticArrow (0x1D,1) %ebx{0;8} := 0x1{0;8}  --> (0x20,0)StaticArrow (0x1D,1) %ebx{0;8} := 0x0{0;8}  --> (0x20,0)
-[(0x1D,2)] 
+[(0x1D,1)] StaticArrow (0x1D,1) %ebx{0;8} := 0x1{0;8}  --> (0x20,0)
+[(0x1D,2)] StaticArrow (0x1D,2) %ebx{0;8} := 0x0{0;8}  --> (0x20,0)
 [(0x20,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x20,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x20,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -43,8 +43,8 @@
 [(0x2B,4)] StaticArrow (0x2B,4) %sf{0;1} := %eax{15;1}  --> (0x2C,0)
 [(0x2C,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x2C,0) %ebx{0;8} := 0x0{0;8}  --> (0x2E,0)
 [(0x2E,0)] @{asm:=setae  %bl}@ StaticArrow (0x2E,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x2E,1)StaticArrow (0x2E,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x2E,2)
-[(0x2E,1)] StaticArrow (0x2E,1) %ebx{0;8} := 0x1{0;8}  --> (0x31,0)StaticArrow (0x2E,1) %ebx{0;8} := 0x0{0;8}  --> (0x31,0)
-[(0x2E,2)] 
+[(0x2E,1)] StaticArrow (0x2E,1) %ebx{0;8} := 0x1{0;8}  --> (0x31,0)
+[(0x2E,2)] StaticArrow (0x2E,2) %ebx{0;8} := 0x0{0;8}  --> (0x31,0)
 [(0x31,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x31,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x31,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -61,8 +61,8 @@
 [(0x3C,4)] StaticArrow (0x3C,4) %sf{0;1} := %eax{15;1}  --> (0x3D,0)
 [(0x3D,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x3D,0) %ebx{0;8} := 0x0{0;8}  --> (0x3F,0)
 [(0x3F,0)] @{asm:=setae  %bl}@ StaticArrow (0x3F,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x3F,1)StaticArrow (0x3F,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x3F,2)
-[(0x3F,1)] StaticArrow (0x3F,1) %ebx{0;8} := 0x1{0;8}  --> (0x42,0)StaticArrow (0x3F,1) %ebx{0;8} := 0x0{0;8}  --> (0x42,0)
-[(0x3F,2)] 
+[(0x3F,1)] StaticArrow (0x3F,1) %ebx{0;8} := 0x1{0;8}  --> (0x42,0)
+[(0x3F,2)] StaticArrow (0x3F,2) %ebx{0;8} := 0x0{0;8}  --> (0x42,0)
 [(0x42,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x42,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x42,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -79,8 +79,8 @@
 [(0x4D,4)] StaticArrow (0x4D,4) %sf{0;1} := %eax{15;1}  --> (0x4E,0)
 [(0x4E,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x4E,0) %ebx{0;8} := 0x0{0;8}  --> (0x50,0)
 [(0x50,0)] @{asm:=sete   %bl}@ StaticArrow (0x50,0) Skip << %zf{0;1} >> --> (0x50,1)StaticArrow (0x50,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x50,2)
-[(0x50,1)] StaticArrow (0x50,1) %ebx{0;8} := 0x1{0;8}  --> (0x53,0)StaticArrow (0x50,1) %ebx{0;8} := 0x0{0;8}  --> (0x53,0)
-[(0x50,2)] 
+[(0x50,1)] StaticArrow (0x50,1) %ebx{0;8} := 0x1{0;8}  --> (0x53,0)
+[(0x50,2)] StaticArrow (0x50,2) %ebx{0;8} := 0x0{0;8}  --> (0x53,0)
 [(0x53,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x53,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x53,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -97,8 +97,8 @@
 [(0x5E,4)] StaticArrow (0x5E,4) %sf{0;1} := %eax{15;1}  --> (0x5F,0)
 [(0x5F,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x5F,0) %ebx{0;8} := 0x0{0;8}  --> (0x61,0)
 [(0x61,0)] @{asm:=sete   %bl}@ StaticArrow (0x61,0) Skip << %zf{0;1} >> --> (0x61,1)StaticArrow (0x61,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x61,2)
-[(0x61,1)] StaticArrow (0x61,1) %ebx{0;8} := 0x1{0;8}  --> (0x64,0)StaticArrow (0x61,1) %ebx{0;8} := 0x0{0;8}  --> (0x64,0)
-[(0x61,2)] 
+[(0x61,1)] StaticArrow (0x61,1) %ebx{0;8} := 0x1{0;8}  --> (0x64,0)
+[(0x61,2)] StaticArrow (0x61,2) %ebx{0;8} := 0x0{0;8}  --> (0x64,0)
 [(0x64,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x64,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x64,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -115,8 +115,8 @@
 [(0x6F,4)] StaticArrow (0x6F,4) %sf{0;1} := %eax{15;1}  --> (0x70,0)
 [(0x70,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x70,0) %ebx{0;8} := 0x0{0;8}  --> (0x72,0)
 [(0x72,0)] @{asm:=setne  %bl}@ StaticArrow (0x72,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x72,1)StaticArrow (0x72,0) Skip << (NOT (NOT %zf{0;1}){0;1}){0;1} >> --> (0x72,2)
-[(0x72,1)] StaticArrow (0x72,1) %ebx{0;8} := 0x1{0;8}  --> (0x75,0)StaticArrow (0x72,1) %ebx{0;8} := 0x0{0;8}  --> (0x75,0)
-[(0x72,2)] 
+[(0x72,1)] StaticArrow (0x72,1) %ebx{0;8} := 0x1{0;8}  --> (0x75,0)
+[(0x72,2)] StaticArrow (0x72,2) %ebx{0;8} := 0x0{0;8}  --> (0x75,0)
 [(0x75,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x75,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x75,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -133,8 +133,8 @@
 [(0x80,4)] StaticArrow (0x80,4) %sf{0;1} := %eax{15;1}  --> (0x81,0)
 [(0x81,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x81,0) %ebx{0;8} := 0x0{0;8}  --> (0x83,0)
 [(0x83,0)] @{asm:=setne  %bl}@ StaticArrow (0x83,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x83,1)StaticArrow (0x83,0) Skip << (NOT (NOT %zf{0;1}){0;1}){0;1} >> --> (0x83,2)
-[(0x83,1)] StaticArrow (0x83,1) %ebx{0;8} := 0x1{0;8}  --> (0x86,0)StaticArrow (0x83,1) %ebx{0;8} := 0x0{0;8}  --> (0x86,0)
-[(0x83,2)] 
+[(0x83,1)] StaticArrow (0x83,1) %ebx{0;8} := 0x1{0;8}  --> (0x86,0)
+[(0x83,2)] StaticArrow (0x83,2) %ebx{0;8} := 0x0{0;8}  --> (0x86,0)
 [(0x86,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x86,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x86,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -151,8 +151,8 @@
 [(0x91,4)] StaticArrow (0x91,4) %sf{0;1} := %eax{15;1}  --> (0x92,0)
 [(0x92,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x92,0) %ebx{0;8} := 0x0{0;8}  --> (0x94,0)
 [(0x94,0)] @{asm:=setbe  %bl}@ StaticArrow (0x94,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0x94,1)StaticArrow (0x94,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x94,2)
-[(0x94,1)] StaticArrow (0x94,1) %ebx{0;8} := 0x1{0;8}  --> (0x97,0)StaticArrow (0x94,1) %ebx{0;8} := 0x0{0;8}  --> (0x97,0)
-[(0x94,2)] 
+[(0x94,1)] StaticArrow (0x94,1) %ebx{0;8} := 0x1{0;8}  --> (0x97,0)
+[(0x94,2)] StaticArrow (0x94,2) %ebx{0;8} := 0x0{0;8}  --> (0x97,0)
 [(0x97,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x97,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x97,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -169,8 +169,8 @@
 [(0xA2,4)] StaticArrow (0xA2,4) %sf{0;1} := %eax{15;1}  --> (0xA3,0)
 [(0xA3,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xA3,0) %ebx{0;8} := 0x0{0;8}  --> (0xA5,0)
 [(0xA5,0)] @{asm:=setbe  %bl}@ StaticArrow (0xA5,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0xA5,1)StaticArrow (0xA5,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xA5,2)
-[(0xA5,1)] StaticArrow (0xA5,1) %ebx{0;8} := 0x1{0;8}  --> (0xA8,0)StaticArrow (0xA5,1) %ebx{0;8} := 0x0{0;8}  --> (0xA8,0)
-[(0xA5,2)] 
+[(0xA5,1)] StaticArrow (0xA5,1) %ebx{0;8} := 0x1{0;8}  --> (0xA8,0)
+[(0xA5,2)] StaticArrow (0xA5,2) %ebx{0;8} := 0x0{0;8}  --> (0xA8,0)
 [(0xA8,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xA8,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xA8,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -187,8 +187,8 @@
 [(0xB3,4)] StaticArrow (0xB3,4) %sf{0;1} := %eax{15;1}  --> (0xB4,0)
 [(0xB4,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xB4,0) %ebx{0;8} := 0x0{0;8}  --> (0xB6,0)
 [(0xB6,0)] @{asm:=setbe  %bl}@ StaticArrow (0xB6,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0xB6,1)StaticArrow (0xB6,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xB6,2)
-[(0xB6,1)] StaticArrow (0xB6,1) %ebx{0;8} := 0x1{0;8}  --> (0xB9,0)StaticArrow (0xB6,1) %ebx{0;8} := 0x0{0;8}  --> (0xB9,0)
-[(0xB6,2)] 
+[(0xB6,1)] StaticArrow (0xB6,1) %ebx{0;8} := 0x1{0;8}  --> (0xB9,0)
+[(0xB6,2)] StaticArrow (0xB6,2) %ebx{0;8} := 0x0{0;8}  --> (0xB9,0)
 [(0xB9,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xB9,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xB9,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -205,8 +205,8 @@
 [(0xC4,4)] StaticArrow (0xC4,4) %sf{0;1} := %eax{15;1}  --> (0xC5,0)
 [(0xC5,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xC5,0) %ebx{0;8} := 0x0{0;8}  --> (0xC7,0)
 [(0xC7,0)] @{asm:=setbe  %bl}@ StaticArrow (0xC7,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0xC7,1)StaticArrow (0xC7,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xC7,2)
-[(0xC7,1)] StaticArrow (0xC7,1) %ebx{0;8} := 0x1{0;8}  --> (0xCA,0)StaticArrow (0xC7,1) %ebx{0;8} := 0x0{0;8}  --> (0xCA,0)
-[(0xC7,2)] 
+[(0xC7,1)] StaticArrow (0xC7,1) %ebx{0;8} := 0x1{0;8}  --> (0xCA,0)
+[(0xC7,2)] StaticArrow (0xC7,2) %ebx{0;8} := 0x0{0;8}  --> (0xCA,0)
 [(0xCA,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xCA,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xCA,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -223,8 +223,8 @@
 [(0xD5,4)] StaticArrow (0xD5,4) %sf{0;1} := %eax{15;1}  --> (0xD6,0)
 [(0xD6,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xD6,0) %ebx{0;8} := 0x0{0;8}  --> (0xD8,0)
 [(0xD8,0)] @{asm:=seta   %bl}@ StaticArrow (0xD8,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xD8,1)StaticArrow (0xD8,0) Skip << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0xD8,2)
-[(0xD8,1)] StaticArrow (0xD8,1) %ebx{0;8} := 0x1{0;8}  --> (0xDB,0)StaticArrow (0xD8,1) %ebx{0;8} := 0x0{0;8}  --> (0xDB,0)
-[(0xD8,2)] 
+[(0xD8,1)] StaticArrow (0xD8,1) %ebx{0;8} := 0x1{0;8}  --> (0xDB,0)
+[(0xD8,2)] StaticArrow (0xD8,2) %ebx{0;8} := 0x0{0;8}  --> (0xDB,0)
 [(0xDB,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xDB,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xDB,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -241,8 +241,8 @@
 [(0xE6,4)] StaticArrow (0xE6,4) %sf{0;1} := %eax{15;1}  --> (0xE7,0)
 [(0xE7,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xE7,0) %ebx{0;8} := 0x0{0;8}  --> (0xE9,0)
 [(0xE9,0)] @{asm:=seta   %bl}@ StaticArrow (0xE9,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xE9,1)StaticArrow (0xE9,0) Skip << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0xE9,2)
-[(0xE9,1)] StaticArrow (0xE9,1) %ebx{0;8} := 0x1{0;8}  --> (0xEC,0)StaticArrow (0xE9,1) %ebx{0;8} := 0x0{0;8}  --> (0xEC,0)
-[(0xE9,2)] 
+[(0xE9,1)] StaticArrow (0xE9,1) %ebx{0;8} := 0x1{0;8}  --> (0xEC,0)
+[(0xE9,2)] StaticArrow (0xE9,2) %ebx{0;8} := 0x0{0;8}  --> (0xEC,0)
 [(0xEC,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xEC,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xEC,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -259,8 +259,8 @@
 [(0xF7,4)] StaticArrow (0xF7,4) %sf{0;1} := %eax{15;1}  --> (0xF8,0)
 [(0xF8,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0xF8,0) %ebx{0;8} := 0x0{0;8}  --> (0xFA,0)
 [(0xFA,0)] @{asm:=sets   %bl}@ StaticArrow (0xFA,0) Skip << %sf{0;1} >> --> (0xFA,1)StaticArrow (0xFA,0) Skip << (NOT %sf{0;1}){0;1} >> --> (0xFA,2)
-[(0xFA,1)] StaticArrow (0xFA,1) %ebx{0;8} := 0x1{0;8}  --> (0xFD,0)StaticArrow (0xFA,1) %ebx{0;8} := 0x0{0;8}  --> (0xFD,0)
-[(0xFA,2)] 
+[(0xFA,1)] StaticArrow (0xFA,1) %ebx{0;8} := 0x1{0;8}  --> (0xFD,0)
+[(0xFA,2)] StaticArrow (0xFA,2) %ebx{0;8} := 0x0{0;8}  --> (0xFD,0)
 [(0xFD,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0xFD,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0xFD,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -277,8 +277,8 @@
 [(0x108,4)] StaticArrow (0x108,4) %sf{0;1} := %eax{15;1}  --> (0x109,0)
 [(0x109,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x109,0) %ebx{0;8} := 0x0{0;8}  --> (0x10B,0)
 [(0x10B,0)] @{asm:=setns  %bl}@ StaticArrow (0x10B,0) Skip << (NOT %sf{0;1}){0;1} >> --> (0x10B,1)StaticArrow (0x10B,0) Skip << (NOT (NOT %sf{0;1}){0;1}){0;1} >> --> (0x10B,2)
-[(0x10B,1)] StaticArrow (0x10B,1) %ebx{0;8} := 0x1{0;8}  --> (0x10E,0)StaticArrow (0x10B,1) %ebx{0;8} := 0x0{0;8}  --> (0x10E,0)
-[(0x10B,2)] 
+[(0x10B,1)] StaticArrow (0x10B,1) %ebx{0;8} := 0x1{0;8}  --> (0x10E,0)
+[(0x10B,2)] StaticArrow (0x10B,2) %ebx{0;8} := 0x0{0;8}  --> (0x10E,0)
 [(0x10E,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x10E,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x10E,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -295,8 +295,8 @@
 [(0x119,4)] StaticArrow (0x119,4) %sf{0;1} := %eax{15;1}  --> (0x11A,0)
 [(0x11A,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x11A,0) %ebx{0;8} := 0x0{0;8}  --> (0x11C,0)
 [(0x11C,0)] @{asm:=setp   %bl}@ StaticArrow (0x11C,0) Skip << %pf{0;1} >> --> (0x11C,1)StaticArrow (0x11C,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x11C,2)
-[(0x11C,1)] StaticArrow (0x11C,1) %ebx{0;8} := 0x1{0;8}  --> (0x11F,0)StaticArrow (0x11C,1) %ebx{0;8} := 0x0{0;8}  --> (0x11F,0)
-[(0x11C,2)] 
+[(0x11C,1)] StaticArrow (0x11C,1) %ebx{0;8} := 0x1{0;8}  --> (0x11F,0)
+[(0x11C,2)] StaticArrow (0x11C,2) %ebx{0;8} := 0x0{0;8}  --> (0x11F,0)
 [(0x11F,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x11F,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x11F,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -313,8 +313,8 @@
 [(0x12A,4)] StaticArrow (0x12A,4) %sf{0;1} := %eax{15;1}  --> (0x12B,0)
 [(0x12B,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x12B,0) %ebx{0;8} := 0x0{0;8}  --> (0x12D,0)
 [(0x12D,0)] @{asm:=setnp  %bl}@ StaticArrow (0x12D,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x12D,1)StaticArrow (0x12D,0) Skip << (NOT (NOT %pf{0;1}){0;1}){0;1} >> --> (0x12D,2)
-[(0x12D,1)] StaticArrow (0x12D,1) %ebx{0;8} := 0x1{0;8}  --> (0x130,0)StaticArrow (0x12D,1) %ebx{0;8} := 0x0{0;8}  --> (0x130,0)
-[(0x12D,2)] 
+[(0x12D,1)] StaticArrow (0x12D,1) %ebx{0;8} := 0x1{0;8}  --> (0x130,0)
+[(0x12D,2)] StaticArrow (0x12D,2) %ebx{0;8} := 0x0{0;8}  --> (0x130,0)
 [(0x130,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x130,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x130,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -331,8 +331,8 @@
 [(0x13B,4)] StaticArrow (0x13B,4) %sf{0;1} := %eax{15;1}  --> (0x13C,0)
 [(0x13C,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x13C,0) %ebx{0;8} := 0x0{0;8}  --> (0x13E,0)
 [(0x13E,0)] @{asm:=setp   %bl}@ StaticArrow (0x13E,0) Skip << %pf{0;1} >> --> (0x13E,1)StaticArrow (0x13E,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x13E,2)
-[(0x13E,1)] StaticArrow (0x13E,1) %ebx{0;8} := 0x1{0;8}  --> (0x141,0)StaticArrow (0x13E,1) %ebx{0;8} := 0x0{0;8}  --> (0x141,0)
-[(0x13E,2)] 
+[(0x13E,1)] StaticArrow (0x13E,1) %ebx{0;8} := 0x1{0;8}  --> (0x141,0)
+[(0x13E,2)] StaticArrow (0x13E,2) %ebx{0;8} := 0x0{0;8}  --> (0x141,0)
 [(0x141,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x141,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x141,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}
@@ -349,8 +349,8 @@
 [(0x14C,4)] StaticArrow (0x14C,4) %sf{0;1} := %eax{15;1}  --> (0x14D,0)
 [(0x14D,0)] @{asm:=mov    $0x0,%bl}@ StaticArrow (0x14D,0) %ebx{0;8} := 0x0{0;8}  --> (0x14F,0)
 [(0x14F,0)] @{asm:=setnp  %bl}@ StaticArrow (0x14F,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x14F,1)StaticArrow (0x14F,0) Skip << (NOT (NOT %pf{0;1}){0;1}){0;1} >> --> (0x14F,2)
-[(0x14F,1)] StaticArrow (0x14F,1) %ebx{0;8} := 0x1{0;8}  --> (0x152,0)StaticArrow (0x14F,1) %ebx{0;8} := 0x0{0;8}  --> (0x152,0)
-[(0x14F,2)] 
+[(0x14F,1)] StaticArrow (0x14F,1) %ebx{0;8} := 0x1{0;8}  --> (0x152,0)
+[(0x14F,2)] StaticArrow (0x14F,2) %ebx{0;8} := 0x0{0;8}  --> (0x152,0)
 [(0x152,0)] @{asm:=cmp    $0x1,%bl}@ %tmpr0_9{0;9} := (SUB %ebx{0;8} 0x1{0;8}){0;9}
 [(0x152,1)] %cf{0;1} := %tmpr0_9{8;1}
 [(0x152,2)] %of{0;1} := (AND (XOR %ebx{7;1} %tmpr0_9{7;1}){0;1} (XOR %ebx{7;1} 0x0{0;1}){0;1}){0;1}

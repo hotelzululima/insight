@@ -87,6 +87,12 @@ X86_32_TRANSLATE_2_OP(LEA)
   else 
     src = op1->ref ();
 	
+  if (src->is_MemCell ())
+    {
+      Expr *addr = ((MemCell *) src)->get_addr ()->ref ();
+      src->deref ();
+      src = addr;
+    }
   data.mc->add_assignment (data.start_ma, dst, src, &data.next_ma);
   op1->deref ();
 }
