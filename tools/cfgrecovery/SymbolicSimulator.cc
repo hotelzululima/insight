@@ -327,8 +327,16 @@ SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx,
       cond = aux;
     }
 
+#if 0
   std::vector<constant_t> *tmp = 
     solver->evaluate (f, cond, range[1] - range[0] + 1);
+#else
+  std::vector<constant_t> *tmp = 
+    solver->evaluate (f, cond, 2);
+
+  if (tmp->size () > 1)
+    tmp->clear ();
+#endif
   for (size_t i = 0; i < tmp->size (); i++)
     result->push_back (tmp->at (i));
   delete tmp;
