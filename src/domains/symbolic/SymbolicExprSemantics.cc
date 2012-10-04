@@ -109,7 +109,27 @@ BIN_OP_DEF(BV_OP_EXTEND_U)
 UN_OP_DEF(BV_OP_NEG)
 UN_OP_DEF(BV_OP_NOT)
 
-TER_OP_DEF(BV_OP_EXTRACT)
+template<> SymbolicValue						
+SymbolicExprSemantics::BV_OP_EXTRACT_eval (SymbolicValue v1, SymbolicValue v2, 
+					   SymbolicValue v3, 
+					   int offset, int size) 
+{ 
+  const Constant *off = dynamic_cast<const Constant *> (v2.get_Expr ());
+  const Constant *sz = dynamic_cast<const Constant *> (v3.get_Expr ());
+
+  assert (off != NULL && sz != NULL);
+
+  Expr *tmp = Expr::createExtract (v1.get_Expr ()->ref (), off->get_val (),
+				   sz->get_val ());
+  if (offset != 0 || size != sz->get_val ())
+    tmp = Expr::createExtract (tmp, offset, size);
+
+  exprutils::simplify (&tmp); 				
+  SymbolicValue result (tmp); 
+  tmp->deref (); 
+
+  return result; 
+} 
 
 template<> SymbolicValue
 SymbolicExprSemantics::extract_eval(SymbolicValue v,  int off, int size) 
