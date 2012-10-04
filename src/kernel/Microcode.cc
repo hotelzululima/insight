@@ -643,7 +643,7 @@ Build_Microcode (MicrocodeArchitecture *arch, ConcreteMemory *mem,
 		      if (mem->is_defined(a))
 			{
 			  ConcreteValue val = 
-			    mem->get (a, arch->get_address_size (), 
+			    mem->get (a, arch->get_address_size () / 8, 
 				      arch->get_endian ());
 			  tgt = MicrocodeAddress (val.get ());
 			  tgt_is_defined = true;

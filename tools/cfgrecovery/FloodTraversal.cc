@@ -70,12 +70,21 @@ FloodTraversal::treat_new_arrow (Microcode *,
       if (mc != NULL && mc->get_addr ()->is_Constant ())
 	{
 	  Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());
-	  ConcreteAddress a (cst->get_val());
-	  
-	  if (mem->is_defined(a))
+	  word_t addr = cst->get_val();
+	  bool isdef = true;
+
+	  for (int i = 0; i < arch->get_address_size () / 8 && isdef; i++)
+	    {	      
+	      ConcreteAddress a (addr + i);
+	      isdef = mem->is_defined(a);
+	    }
+
+	  if (isdef)
 	    {
+	      ConcreteAddress a (addr);
 	      ConcreteValue val = 
-		mem->get (a, arch->get_address_size (), arch->get_endian ());
+		mem->get (a, arch->get_address_size () / 8, 
+			  arch->get_endian ());
 	      tgt = MicrocodeAddress (val.get ());
 	      tgt_is_defined = true;
 	    }

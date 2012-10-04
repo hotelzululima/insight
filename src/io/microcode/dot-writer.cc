@@ -109,9 +109,9 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	  if (fun.hasValue ())
 	    {
 	      string s = fun.getValue ();
-	      rgb = 0x314159;
+	      rgb = 0;
 	      for (string::size_type i = 0; i < s.length (); i++)
-		rgb = 1917 * s[i] + (rgb << 3);
+		rgb = 0x3141596 * s[i] + (rgb << 3);
 	      rgb &= 0x00FFFFFF;
 	      symbols[s] = rgb;
 	    }
