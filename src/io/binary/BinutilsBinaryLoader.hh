@@ -73,11 +73,13 @@ public:
 
   ConcreteMemory * get_memory() const;
   Option<ConcreteAddress> get_symbol_value(const std::string) const;
+  Option<std::string> get_symbol_name (const address_t a) const;
 
   /* BinutilsBinaryLoader specific fields and methods */
 protected:
   bfd *abfd;
   std::tr1::unordered_map<std::string, ConcreteAddress> symbols;
+  std::tr1::unordered_map<address_t,std::string> symbols_addresses;
   std::string get_BFD_format() const;
   const Architecture *get_BFD_architecture() const;
 

@@ -57,6 +57,12 @@ BinaryLoader::get_symbol_value(const std::string) const {
   return Option<ConcreteAddress>();
 }
 
+Option<std::string> 
+BinaryLoader::get_symbol_name (const address_t) const
+{
+  return Option<string>();
+}
+
 static string flags_to_string(list<string> flags)
 {
   stringstream ss;

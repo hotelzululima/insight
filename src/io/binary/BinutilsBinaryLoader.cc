@@ -160,6 +160,8 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
     for (long i = 0; i < nsyms; i++) {
       symbols[string(bfd_asymbol_name(syms[i]))] =
 	ConcreteAddress(bfd_asymbol_value(syms[i]));
+      symbols_addresses[bfd_asymbol_value(syms[i])] = 
+	string(bfd_asymbol_name(syms[i]));
     }
 
     delete syms;
@@ -231,4 +233,17 @@ BinutilsBinaryLoader::get_symbol_value(const std::string s) const {
   return it == symbols.end()?
     Option<ConcreteAddress>() :
     Option<ConcreteAddress>(it->second);
+}
+
+Option<string> 
+BinutilsBinaryLoader::get_symbol_name (const address_t a) const
+{
+  tr1::unordered_map<address_t, string>::const_iterator it;
+  Option<string> result;
+
+  it = symbols_addresses.find (a);
+  if (it != symbols_addresses.end ()) 
+    result = Option<string>(it->second);
+
+  return result;
 }

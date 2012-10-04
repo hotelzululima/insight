@@ -29,7 +29,7 @@
  */
 
 #ifndef IO_BINARYLOADER_HH
-#define IO__BINARYLOADER_HH
+#define IO_BINARYLOADER_HH
 
 #include <string>
 #include <stdexcept>
@@ -126,6 +126,7 @@ public:
   ConcreteAddress get_entrypoint() const;
 
   virtual Option<ConcreteAddress> get_symbol_value(const std::string) const;
+  virtual Option<std::string> get_symbol_name (const address_t a) const;
 
   virtual ConcreteMemory * get_memory() const = 0;
 
