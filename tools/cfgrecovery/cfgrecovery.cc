@@ -76,7 +76,7 @@ struct disassembler {
   { "linear", "linear sweep", linearsweep },
   { "predicate", "path predicate validation", NULL },
   { "recursive", "recursive traversal", recursivetraversal },
-  { "symsim", "symbolic traversal (require a SMT solver supporting QF_AUFBV.", 
+  { "symsim", "symbolic traversal (require a SMT solver supporting QF_AUFBV).", 
     symbexec },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
@@ -181,7 +181,7 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "ld:e:f:o:hDvV", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "ld:e:f:o:hDvVc:", long_opts, NULL)) != -1)
     switch (optc)
       {
       case 'c':		/* Config file name */
