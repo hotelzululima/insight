@@ -31,6 +31,7 @@
 #include <set>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <cstdlib>
 #include "dot-writer.hh"
 
 using namespace std;
@@ -72,7 +73,9 @@ s_successor_instructions (const Microcode *mc, const MicrocodeNode *node)
 
 
 void 
-dot_writer (std::ostream &out, const Microcode *mc, bool asm_only)
+dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
+	    const std::string &graphlabel, 
+	    ConcreteAddress *entrypoint, BinaryLoader *loader)
 {
   if (! asm_only)
     {
@@ -80,7 +83,14 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only)
       return;
     }
 
-  out << "digraph G { \n";
+  map<string,int> symbols;
+  int rgb = 0xfdf5e6;
+
+  out << "digraph G { " << endl
+      << " splines=ortho; " << endl;
+
+  if (! graphlabel.empty ())
+    out << " label=\"" << graphlabel << "\"; " << endl;
   std::vector<MicrocodeNode *>* ns = mc->get_nodes();
   for (typename std::vector<MicrocodeNode *>::iterator it = ns->begin(); 
        it != ns->end(); ++it)
@@ -92,16 +102,39 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only)
       if (ma.getLocal () != 0)
 	continue;
 
-      out << "cfg_" << ma.getGlobal () << "_" << ma.getLocal ()
-	  << "[shape=box,style=filled,color=oldlace,label=\"";
+      if (loader )
+	{
+	  Option<string> fun = loader->get_symbol_name (ma.getGlobal ());
 
+	  if (fun.hasValue ())
+	    {
+	      string s = fun.getValue ();
+	      rgb = 0x314159;
+	      for (string::size_type i = 0; i < s.length (); i++)
+		rgb = 1917 * s[i] + (rgb << 3);
+	      rgb &= 0x00FFFFFF;
+	      symbols[s] = rgb;
+	    }
+	}
+
+      out << "cfg_" << std::hex << ma.getGlobal () << "_" << ma.getLocal ()
+	  << "[shape=box,style=filled,fillcolor=\"#" 
+	  << std::hex << rgb << "\",label=\"";
+      
       if (n->has_annotation (AsmAnnotation::ID))
 	out << setw(8) << hex << ma.getGlobal () << ": " 
 	    << *n->get_annotation (AsmAnnotation::ID);
       else
 	out << n->pp ();
 
-      out << "\"];\n";
+      out << "\"";
+
+      if (entrypoint && ma.getGlobal() == entrypoint->get_address ())
+	out << ",color=red,peripheries=2";
+      else
+	out << ",color=\"#" << std::hex << rgb << "\"";
+      out << "];\n";
+
       vector<MicrocodeNode *> succs = s_successor_instructions (mc, n);
 
       for (vector<MicrocodeNode *>::const_iterator s = succs.begin (); 
@@ -110,14 +143,33 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only)
 	  MicrocodeAddress tgt = (*s)->get_loc ();
 	  assert (tgt.getLocal () == 0);
 
-	  out << "cfg_" << ma.getGlobal () << "_" << ma.getLocal () 
+	  out << "cfg_" << std::hex << ma.getGlobal () << "_" << ma.getLocal () 
 	      << " -> "
-	      << "cfg_" << tgt.getGlobal () << "_" << tgt.getLocal () 
+	      << "cfg_" << std::hex << tgt.getGlobal () << "_" 
+	      << tgt.getLocal () 
 	      << "; " << endl;
 	}
-
     }
 
+  out << " subgraph cluster_legend { " << endl
+      << "  label=\"Symbols\"; " << endl;
+  int k = 0;
+  for (map<string,int>::const_iterator i = symbols.begin (); 
+       i != symbols.end (); i++, k++)
+    {      
+      out << " sym_" << k << "[label=\"" << i->first << "\","
+	  << "shape=box,style=filled,color=\"#" << std::hex << i->second 
+	  << "\"]; " << endl;
+    }
+  out << " }; " << endl;
+  k = 0;
+  for (map<string,int>::const_iterator i = symbols.begin (); 
+       i != symbols.end (); i++, k++)
+    {
+      out << "sym_" << k << " -> cfg_" << std::hex 
+	  << loader->get_symbol_value (i->first).getValue ().get_address () 
+	  << "_0; " << endl;
+    }
   out << "}; " << std::endl;
   out.flush (); 
 }

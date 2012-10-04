@@ -31,10 +31,14 @@
 #ifndef DOT_WRITER_HH
 # define DOT_WRITER_HH
 
+# include <map>
 # include <iostream>
 # include <kernel/Microcode.hh>
+# include <io/binary/BinaryLoader.hh>
 
 extern void 
-dot_writer (std::ostream &out, const Microcode *mc, bool asm_only);
+dot_writer (std::ostream &out, const Microcode *mc, bool asm_only, 
+	    const std::string &graphlabel = std::string (), 
+	    ConcreteAddress *entrypoint = NULL, BinaryLoader *loader = NULL);
 
 #endif /* ! DOT_WRITER_HH */

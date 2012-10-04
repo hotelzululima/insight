@@ -399,7 +399,10 @@ main (int argc, char *argv[])
   else if (output_format == "mc")
     *output << mc->pp() << endl;
   else if (output_format == "dot" || output_format == "asm-dot")
-    dot_writer (cout, mc, (output_format == "asm-dot"));
+    {
+      int asmonly = (output_format == "asm-dot");
+      dot_writer (cout, mc, asmonly, execfile_name, entrypoint, loader);
+    }
   else if (output_format == "xml")
     {
       *output << xml_of_microcode(mc);
