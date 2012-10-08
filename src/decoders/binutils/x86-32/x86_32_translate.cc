@@ -285,7 +285,7 @@ x86_32_compute_PF (MicrocodeAddress &from, x86_32::parser_data &data,
 
   for (i = 0; i < 8; i++)
     cond = BinaryApp::create (BV_OP_XOR, cond, 
-			      value->extract_bit_vector (i, 1), 
+			      Expr::createExtract (value->ref (), i, 1),
 			      0, 1);
   data.mc->add_assignment (from, data.get_flag ("pf"), cond, to);  
 }

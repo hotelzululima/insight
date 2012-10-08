@@ -286,6 +286,12 @@ public:
       case BV_OP_EXTEND_U: op_str = "zero_extend"; goto output_binary_2;
       case BV_OP_EXTEND_S: op_str = "sign_extend"; goto output_binary_2;
       output_binary_2:
+	if (extract)
+	  {
+	    out << "(";
+	    extract_bv_window (e);
+	  }
+
 	{
 	  Constant *c = dynamic_cast <Constant *> (e->get_arg2 ());
 	  if (c == NULL)
@@ -297,6 +303,9 @@ public:
 	  e->get_arg1 ()->acceptVisitor (this);
 	  out << ")";
 	}
+
+	if (extract)
+	  out << ")";
 	break;
 
       case BV_OP_POW:

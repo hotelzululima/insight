@@ -152,8 +152,13 @@ x86_32_cmpgen (MicrocodeAddress &from, x86_32::parser_data &data,
   LValue *tmpr0 = data.get_tmp_register (TMPREG(0), dst->get_bv_size () + 1);
 
   data.mc->add_assignment (from, (LValue *) tmpr0->ref (), 
-			   BinaryApp::create (BV_OP_SUB, dst->ref (), src, 0, 
-					      tmpr0->get_bv_size ()));
+			   BinaryApp::create (BV_OP_SUB, 
+					      Expr::createExtend (BV_OP_EXTEND_U,
+								  dst->ref (),
+								  tmpr0->get_bv_size ()),
+					      Expr::createExtend (BV_OP_EXTEND_U, src,
+								  tmpr0->get_bv_size ())));
+
   x86_32_assign_CF (from, data, 
 		    tmpr0->extract_bit_vector (dst->get_bv_size (), 1), 
 		    NULL);
