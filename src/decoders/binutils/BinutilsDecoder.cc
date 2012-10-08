@@ -371,7 +371,13 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
    * Anyway, it seems to work as it is now... dodgy, but working...
    * I'm crossing my fingers ! */
   for (unsigned int i = 0; i < length; i++)
-    myaddr[i] = memory->get(memaddr + i, 1, Architecture::LittleEndian).get();
+    {
+      if (memory->is_defined (memaddr + i))
+	myaddr[i] = memory->get(memaddr + i, 1, 
+				Architecture::LittleEndian).get();
+      else
+	throw Decoder::DecoderUnexpectedError("Out of bound memory address");
+    }
 
   /* The original code was this one */
   //  memcpy(myaddr, info->buffer + octets, length);
