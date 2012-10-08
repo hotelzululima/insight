@@ -84,6 +84,8 @@ private:
 
   class StateSpace;
   class StateSpace *states;
+
+  Expr *regexpr (const char *s);
 };
 
 #endif /* SYMBOLICSIMULATOR_HH */

@@ -20,6 +20,10 @@ const std::string SYMSIM_NB_VISITS_PER_ADDRESS =
   "disas.symsim.nb-visits-per-address";
 const std::string SYMSIM_DEBUG_SHOW_STATES =
   "disas.symsim.debug.show-states";
+const std::string SYMSIM_DYNAMIC_JUMP_THRESHOLD =
+  "disas.symsim.dynamic-jump-threshold";
+const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY =
+  "disas.symsim.map-dynamic-jump-to-memory";
 
 Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
@@ -35,7 +39,8 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
   bool show_states = 
     CFGRECOVERY_CONFIG->get_boolean (SYMSIM_DEBUG_SHOW_STATES, false);
 
-  if (CFGRECOVERY_CONFIG->has (SYMSIM_X86_32_INIT_ESP_PROP))
+  if (decoder->get_arch ()->get_proc () == Architecture::X86_32 && 
+      CFGRECOVERY_CONFIG->has (SYMSIM_X86_32_INIT_ESP_PROP))
     {
       long valesp = 
 	CFGRECOVERY_CONFIG->get_integer (SYMSIM_X86_32_INIT_ESP_PROP);
@@ -113,6 +118,7 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 		    {
 		      BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
 		      vector<SymbolicState *> *newstates = symsim.step (s, *a);
+
 		      if (newstates->empty ())
 			logs::debug << "no new context" << endl;
 		      else

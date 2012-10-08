@@ -33,6 +33,7 @@
 #include <kernel/expressions/ExprSolver.hh>
 #include <kernel/expressions/ExprRewritingRule.hh>
 #include <domains/symbolic/SymbolicExprSemantics.hh>
+#include "symbexec.hh"
 #include "SymbolicSimulator.hh"
 
 using namespace std::tr1;
@@ -122,10 +123,16 @@ public:
 	    for (i = 0; i < size; i++)
 	      if (! ctx->get_memory ()->is_defined (c->get_val () + i))
 		break;
+
 	    if (i == size)
 	      val = ctx->get_memory ()->get (c->get_val (), size, endianness);
 	    else
-	      val = SymbolicValue::unknown_value (size * 8);
+	      {
+		SymbolicValue v = SymbolicValue::unknown_value (size * 8);
+		ctx->get_memory ()->put (ConcreteAddress (c->get_val ()), v,
+					 endianness);
+		val = v;
+	      }
 	  }
 	addr->deref ();
     } 
@@ -217,6 +224,21 @@ SymbolicSimulator::step (SymbolicState *ctxt, const DynamicArrow *da,
       program->add_skip (ctxt->get_address (), tgt, guard);
       SymbolicState *new_state = ctxt->clone ();
       new_state->set_address (tgt);
+
+      RewriteWithAssignedValues r (new_state, arch->get_endian ());
+      Expr *f = guard->ref ();
+
+      for (;;)
+	{
+	  f->acceptVisitor (r);
+	  Expr *aux = r.get_result ();
+	  f->deref ();
+	  if (aux == f)
+	    break;
+	  f = aux;
+	}
+
+      new_state->set_condition (f);
       new_states->push_back (new_state);
     }
   delete ctxt;      
@@ -295,6 +317,10 @@ s_expr_in_range (const Expr *e, address_t min, address_t max)
   return Expr::createLAnd (in1, in2);
 }
 
+Expr *
+SymbolicSimulator::regexpr (const char *s) 
+  { return RegisterExpr::create (decoder->get_arch ()->get_register (s)); }
+
 std::vector<address_t> * 
 SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx, 
 				      const Expr *e) const
@@ -327,16 +353,19 @@ SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx,
       cond = aux;
     }
 
-#if 0
-  std::vector<constant_t> *tmp = 
-    solver->evaluate (f, cond, range[1] - range[0] + 1);
-#else
-  std::vector<constant_t> *tmp = 
-    solver->evaluate (f, cond, 2);
+  std::vector<constant_t> *tmp;
+  size_t th = CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
 
-  if (tmp->size () > 1)
+  if (CFGRECOVERY_CONFIG->get_integer (SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY))
+    tmp = solver->evaluate (f, cond, range[1] - range[0] + 1);
+  else 
+    {
+      tmp = solver->evaluate (f, cond, th + 1);
+    }
+
+  if (th > 0 && tmp->size () > th)
     tmp->clear ();
-#endif
+
   for (size_t i = 0; i < tmp->size (); i++)
     result->push_back (tmp->at (i));
   delete tmp;
@@ -414,10 +443,11 @@ SymbolicSimulator::to_bool (const SymbolicState *ctx, const Expr *e,
   ExprSolver::Result sat = solver->check_sat (f, true);
   if (sat == ExprSolver::SAT)
     {
-      f = Expr::createLNot (f);
-      sat = solver->check_sat (f, true);
+      Expr *tmp = Expr::createLNot (f->ref ());
+      sat = solver->check_sat (tmp, true);
       if (sat  == ExprSolver::UNSAT)
 	result = true;
+      tmp->deref ();
     }
   else if (sat == ExprSolver::UNSAT)
     {

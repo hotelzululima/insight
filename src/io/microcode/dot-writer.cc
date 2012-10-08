@@ -83,6 +83,11 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
       return;
     }
 
+  static int primes[] = { 5483, 10967, 21933, 43867,  87731, 175459, 350919, 
+			  701833, 1403667, 2807333 , 5614667, 11229331, 
+			  16777253 };
+  static int nb_primes = sizeof (primes) / sizeof (primes[0]);
+
   map<string,int> symbols;
   int rgb = 0xfdf5e6;
 
@@ -110,8 +115,14 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	    {
 	      string s = fun.getValue ();
 	      rgb = 0;
+	      int k;
 	      for (string::size_type i = 0; i < s.length (); i++)
-		rgb = 0x3141596 * s[i] + (rgb << 3);
+		{
+		  rgb = primes[k] * s[i] + (rgb << 3);
+		  k = (k+1) % nb_primes;
+		}
+	      int b = rgb & 0xFF000000;
+	      rgb ^= (b >> 8)|(b>> 16)|(b>>24);
 	      rgb &= 0x00FFFFFF;
 	      symbols[s] = rgb;
 	    }
@@ -119,7 +130,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 
       out << "cfg_" << std::hex << ma.getGlobal () << "_" << ma.getLocal ()
 	  << "[shape=box,style=filled,fillcolor=\"#" 
-	  << std::hex << rgb << "\",label=\"";
+	  << hex << rgb << "\",label=\"";
       
       if (n->has_annotation (AsmAnnotation::ID))
 	out << setw(8) << hex << ma.getGlobal () << ": " 
@@ -132,16 +143,23 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
       if (entrypoint && ma.getGlobal() == entrypoint->get_address ())
 	out << ",color=red,peripheries=2";
       else
-	out << ",color=\"#" << std::hex << rgb << "\"";
+	out << ",color=\"#" << hex << rgb << "\"";
       out << "];\n";
 
       vector<MicrocodeNode *> succs = s_successor_instructions (mc, n);
+
+      set<MicrocodeAddress,LessThanFunctor<MicrocodeAddress> > targets;
 
       for (vector<MicrocodeNode *>::const_iterator s = succs.begin (); 
 	   s != succs.end (); s++)
 	{
 	  MicrocodeAddress tgt = (*s)->get_loc ();
+
+	  if (targets.find (tgt) != targets.end ())
+	    continue;
+
 	  assert (tgt.getLocal () == 0);
+	  targets.insert (tgt);
 
 	  out << "cfg_" << std::hex << ma.getGlobal () << "_" << ma.getLocal () 
 	      << " -> "

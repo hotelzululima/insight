@@ -31,11 +31,15 @@
 #ifndef SYMBEXEC_HH
 # define SYMBEXEC_HH
 
-#include "cfgrecovery.hh"
+# include <kernel/Microcode.hh>
+# include <decoders/Decoder.hh>
+# include "cfgrecovery.hh"
 
 extern const std::string SYMSIM_X86_32_INIT_ESP_PROP;
 extern const std::string SYMSIM_NB_VISITS_PER_ADDRESS;
 extern const std::string SYMSIM_DEBUG_SHOW_STATES;
+extern const std::string SYMSIM_DYNAMIC_JUMP_THRESHOLD;
+extern const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY;
 
 extern Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
