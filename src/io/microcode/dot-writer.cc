@@ -115,7 +115,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	    {
 	      string s = fun.getValue ();
 	      rgb = 0;
-	      int k;
+	      int k = 0;
 	      for (string::size_type i = 0; i < s.length (); i++)
 		{
 		  rgb = primes[k] * s[i] + (rgb << 3);
