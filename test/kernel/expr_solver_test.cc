@@ -91,9 +91,7 @@ s_check_tautology (const string &, const string &expr, ExprSolver::Result res)
   cfg.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   cfg.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
-  cfg.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
-  cfg.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
-  cfg.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
+  cfg.set (ExprSolver::DEFAULT_ARGS_PROP, "-smt2 -in");
 
   insight::init (cfg);
   const Architecture *x86_32 = 
@@ -122,9 +120,7 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
   cfg.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
   
   cfg.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
-  cfg.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
-  cfg.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
-  cfg.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
+  cfg.set (ExprSolver::DEFAULT_ARGS_PROP, "-smt2 -in");
 
   insight::init (cfg);
   const Architecture *x86_32 = 

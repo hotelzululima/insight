@@ -7,7 +7,7 @@
 [(0xC,4)] %sf{0;1} := %eax{31;1}
 [(0xC,5)] %zf{0;1} := (EQ %eax{0;32} 0x0{0;32}){0;1}
 [(0xC,6)] %af{0;1} := %eax{4;1}
-[(0xC,7)] StaticArrow (0xC,7) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} %eax{0;1}){0;1} %eax{1;1}){0;1} %eax{2;1}){0;1} %eax{3;1}){0;1} %eax{4;1}){0;1} %eax{5;1}){0;1} %eax{6;1}){0;1} %eax{7;1}){0;1}  --> (0x11,0)
+[(0xC,7)] StaticArrow (0xC,7) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %eax{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x11,0)
 [(0x11,0)] @{asm:=jo     0x1000}@ StaticArrow (0x11,0) Skip << %of{0;1} >> --> (0x1000,0)StaticArrow (0x11,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x17,0)
 [(0x17,0)] @{asm:=jmp    0x6666}@ StaticArrow (0x17,0) Skip  --> (0x6666,0)
 [(0x1000,0)] @{asm:=jmp    0x1111}@ StaticArrow (0x1000,0) Skip  --> (0x1111,0)
