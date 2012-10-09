@@ -42,8 +42,8 @@ static const std::string PROP_PREFIX = "kernel.expr.solver";
 const std::string ExprSolver::DEFAULT_COMMAND_PROP = 
   PROP_PREFIX + ".default.command";
 
-const std::string ExprSolver::DEFAULT_NB_ARGS_PROP =
-  PROP_PREFIX + ".default.nb_args";
+const std::string ExprSolver::DEFAULT_ARGS_PROP =
+  PROP_PREFIX + ".default.args";
 
 const std::string ExprSolver::DEBUG_TRACES_PROP =
   PROP_PREFIX + ".debug-traces";
@@ -65,11 +65,25 @@ void
 ExprSolver::init (const ConfigTable &cfg)
 {
   default_solver_command = cfg.get (DEFAULT_COMMAND_PROP);
+  string args = cfg.get (DEFAULT_ARGS_PROP);
 
-  int nb_args = cfg.get_integer (DEFAULT_NB_ARGS_PROP);
+  while (!args.empty ())
+    {
+      string::size_type p = args.find (' ');
 
-  for (int i = 0; i < nb_args; i++)
-    default_solver_args.push_back (cfg.get (DEFAULT_ARG_PROP (i)));
+      if (p == string::npos)
+	{
+	  default_solver_args.push_back (args);
+	  break;
+	}
+
+      string tmp = args.substr (0, p );
+      if (! tmp.empty ())
+	default_solver_args.push_back (tmp);
+    
+      args = args.substr (p + 1, string::npos);
+    }
+
   debug_traces = cfg.get_boolean (DEBUG_TRACES_PROP);
 }
 
@@ -82,6 +96,8 @@ ExprSolver *
 ExprSolver::create_default_solver (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
 {  
+  if (default_solver_command == "")
+    throw UnknownSolverException (DEFAULT_COMMAND_PROP + " is not set.");
   return ExprProcessSolver::create (mca, default_solver_command,
 				    default_solver_args);
 }

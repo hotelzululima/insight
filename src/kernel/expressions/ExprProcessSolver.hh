@@ -69,9 +69,9 @@ public:
     throw (UnexpectedResponseException);
 
 protected:
-  bool init ();
-  bool write_header ();
-  bool read_status (bool allow_unsupported = false);
+  bool init () throw (UnexpectedResponseException);
+  bool write_header () throw (UnexpectedResponseException);
+  bool read_status (bool allow_unsupported = false) throw (UnexpectedResponseException);
   bool send_command (const std::string &s, bool allow_unsupported = false);
   bool send_command (const char *s, bool allow_unsupported = false);
   std::string exec_command (const std::string &s);

@@ -81,10 +81,19 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca,
       ostream *o = new ostream (new file_buffer (pipestreams[1], 
 						 std::ios_base::out));      
       result = new ExprProcessSolver (mca, cmd, i, o);
-      if (! result->init ())
+      try
+	{
+	  if (! result->init ())
+	    {
+	      delete (result);
+	      result = NULL;
+	    }
+	}
+      catch (UnexpectedResponseException &e)
 	{
 	  delete (result);
 	  result = NULL;
+	  throw;
 	}
     }
 
@@ -189,8 +198,8 @@ ExprProcessSolver::check_sat ()
   return result;
 }
 
-bool 
-ExprProcessSolver::init ()
+bool
+ExprProcessSolver::init () throw (UnexpectedResponseException)
 {
   return write_header ();
 }
@@ -229,8 +238,9 @@ ExprProcessSolver::send_command (const std::string &s, bool allow_unsupported)
   return send_command (s.c_str (), allow_unsupported);
 }
 
-bool 
+bool
 ExprProcessSolver::write_header ()
+  throw (UnexpectedResponseException)
 {
   return (send_command ("(set-option :print-success true) ") &&
 	  send_command ("(set-option :produce-models true) ") &&
@@ -240,6 +250,7 @@ ExprProcessSolver::write_header ()
 
 bool 
 ExprProcessSolver::read_status (bool allow_unsupported)
+  throw (UnexpectedResponseException)
 {
   string st = get_result ();
 

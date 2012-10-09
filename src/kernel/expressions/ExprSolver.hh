@@ -60,7 +60,7 @@ public:
   };
 
   static const std::string DEFAULT_COMMAND_PROP;
-  static const std::string DEFAULT_NB_ARGS_PROP;
+  static const std::string DEFAULT_ARGS_PROP;
   static const std::string DEFAULT_ARG_PROP (int index);
   static const std::string DEBUG_TRACES_PROP;
 

@@ -308,21 +308,13 @@ main (int argc, char *argv[])
       CONFIG.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
       CONFIG.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
     }
-#if HAVE_Z3_SOLVER
-  CONFIG.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
-  CONFIG.set (ExprSolver::DEFAULT_NB_ARGS_PROP, 2);
-  CONFIG.set (ExprSolver::DEFAULT_ARG_PROP (0), "-smt2");
-  CONFIG.set (ExprSolver::DEFAULT_ARG_PROP (1), "-in");
-#endif
 
-  {
-    fstream f (config_filename.c_str (), fstream::in);
-    if (f.is_open ())
-      {
-	CONFIG.load (f);
-	f.close();
-      }
-  }
+  fstream f (config_filename.c_str (), fstream::in);
+  if (f.is_open ())
+    {
+      CONFIG.load (f);
+      f.close();
+    }
 
   insight::init (CONFIG);
 
