@@ -396,7 +396,7 @@ main (int argc, char *argv[])
   else if (output_format == "dot" || output_format == "asm-dot")
     {
       int asmonly = (output_format == "asm-dot");
-      dot_writer (cout, mc, asmonly, execfile_name, entrypoint, loader);
+      dot_writer (*output, mc, asmonly, execfile_name, entrypoint, loader);
     }
   else if (output_format == "xml")
     {
