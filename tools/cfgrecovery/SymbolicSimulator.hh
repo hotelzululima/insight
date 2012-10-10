@@ -78,6 +78,7 @@ private:
 
   const ConcreteMemory *base;  
   Decoder *decoder;
+
   class ExprSolver *solver;
   Microcode *program;
   const Architecture *arch;

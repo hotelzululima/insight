@@ -1,5 +1,6 @@
 #include <domains/common/ConcreteAddressMemory.hh>
 #include <kernel/Expressions.hh>
+#include <kernel/expressions/ExprSolver.hh>
 #include "SymbolicSimulator.hh"
 #include "symbexec.hh"
 #include <utils/map-helpers.hh>
@@ -29,10 +30,22 @@ Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	  Decoder *decoder)
 {
+  SymbolicSimulator *symsim = NULL;
   Microcode *result = new Microcode ();
-  SymbolicSimulator symsim (memory, decoder, result);
+  try
+    {
+      symsim = new SymbolicSimulator (memory, decoder, result);
+    }
+  catch (ExprSolver::SolverException &e)
+    {
+      logs::error << e.what () << endl;
+      delete result;
+
+      return NULL;
+    }
+
   list< SymbolicState *> todo;
-  SymbolicState *s = symsim.init (*entrypoint);
+  SymbolicState *s = symsim->init (*entrypoint);
   StateBag visited;
   CellCounterSet ccs;
 
@@ -110,14 +123,14 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 
 	      try
 		{
-		  SymbolicSimulator::ArrowSet arrows = symsim.get_arrows (s);
+		  SymbolicSimulator::ArrowSet arrows = symsim->get_arrows (s);
 		  SymbolicSimulator::ArrowSet::const_iterator a = 
 		    arrows.begin (); 
       
 		  for (; a != arrows.end (); a++)
 		    {
 		      BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
-		      vector<SymbolicState *> *newstates = symsim.step (s, *a);
+		      vector<SymbolicState *> *newstates = symsim->step (s, *a);
 
 		      if (newstates->empty ())
 			logs::debug << "no new context" << endl;
@@ -150,6 +163,8 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
     delete *i;
 
   END_DBG_BLOCK ();
+
+  delete symsim;
 
   return result;
 }
