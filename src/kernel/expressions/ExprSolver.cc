@@ -156,7 +156,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values)
   if (check_sat (phi, false) == SAT)
     {
       phi->deref ();
-      while (nb_values > 0 && check_sat () == SAT)
+      while (nb_values != 0 && check_sat () == SAT)
 	{
 	  Constant *c = get_value_of (var);
 	  if (debug_traces)

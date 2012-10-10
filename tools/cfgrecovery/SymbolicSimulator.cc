@@ -338,11 +338,14 @@ SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx,
 	break;
       f = aux;
     }
+
   address_t range[2];
   ctx->get_memory ()->get_address_range (range[0], range[1]);
-  Expr *cond = Expr::createLAnd (s_expr_in_range (e, range[0], range[1]),
-				 ctx->get_condition ()->ref ());
-  
+  Expr *cond = ctx->get_condition ()->ref ();
+      
+  if (CFGRECOVERY_CONFIG->get_boolean (SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY))
+    cond = Expr::createLAnd (s_expr_in_range (e, range[0], range[1]), cond);
+      
   for (;;)
     {
       cond->acceptVisitor (r);
@@ -353,17 +356,11 @@ SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx,
       cond = aux;
     }
 
-  std::vector<constant_t> *tmp;
-  size_t th = CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
+  int th = CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
 
-  if (CFGRECOVERY_CONFIG->get_integer (SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY))
-    tmp = solver->evaluate (f, cond, range[1] - range[0] + 1);
-  else 
-    {
-      tmp = solver->evaluate (f, cond, th + 1);
-    }
+  std::vector<constant_t> *tmp = solver->evaluate (f, cond, th);
 
-  if (th > 0 && tmp->size () > th)
+  if (th >= 0 && (int)tmp->size () > th)
     tmp->clear ();
 
   for (size_t i = 0; i < tmp->size (); i++)
