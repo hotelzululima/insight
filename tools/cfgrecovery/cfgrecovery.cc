@@ -383,8 +383,11 @@ main (int argc, char *argv[])
 
   mc = dis->process(entrypoint, memory, decoder);
 
+  if (mc == NULL)
+    exit (EXIT_FAILURE);
+
   mc->sort ();
-    
+  
   /* Displaying the microcode */
   if (output_format == "asm")
     asm_writer (*output, mc);
