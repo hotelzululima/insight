@@ -6,6 +6,10 @@ AC_CONFIG_AUX_DIR([autotools-files])
 AC_CONFIG_MACRO_DIR([autotools-files/m4])
 AC_CONFIG_HEADERS([src/config.h])
 
+# Otherwise the default may include -O2
+CFLAGS=
+CXXFLAGS=
+
 dnl Customize the src/config.h
 AH_TOP([/* Defining a robust NORETURN attribute */
 #if (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 5))
