@@ -6,3 +6,4 @@ main:
 	.long	0xdeadbeef
 	mov	(0x2), %eax
 	add	$0xa, %eax
+	ret

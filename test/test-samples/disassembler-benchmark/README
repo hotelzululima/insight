@@ -3,13 +3,26 @@
 
 Mixed code
 ----------
-gcc -c -m32 -o mixed_code.bin mixed_code.s
+gcc -nostdlib -m32 -o mixed_code.bin mixed_code.s
+
+objcopy --set-start 0x080480b8 mixed_code.bin
+objcopy --remove-section=.note.gnu.build-id mixed_code.bin
+objcopy --remove-section=.note.gnu.gold-version mixed_code.bin
+
 
 Overlapping code
 ----------------
-gcc -c -m32 -o overlapping_code.bin overlapping_code.s
+gcc -nostdlib -m32 -o overlapping_code.bin overlapping_code.s
+
+objcopy --set-start 0x080480b8 overlapping_code.bin
+objcopy --remove-section=.note.gnu.build-id overlapping_code.bin
+objcopy --remove-section=.note.gnu.gold-version overlapping_code.bin
 
 Self-modifying code
 -------------------
-gcc -c -m32 -Wl,-zexecstack -o self-modfying_code.bin self-modfying_code.s
+gcc -nostdlib -m32 -Wl,-zexecstack \
+    -o self-modfying_code.bin self-modfying_code.s
 
+objcopy --set-start 0x080480d8 self-modfying_code
+objcopy --remove-section=.note.gnu.build-id self-modfying_code
+objcopy --remove-section=.note.gnu.gold-version self-modfying_code
