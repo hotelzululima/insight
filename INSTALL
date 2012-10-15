@@ -67,6 +67,21 @@ We recommend this way of building as it leaves the source directory
 clean.
 
 
+Installing external SMT solvers (Z3/MathSAT 5)
+===============================================
+
+Insight requires also either Z3 or MathSAT 5 to be installed on your
+system to be fully operational. You can get them at the following URLs:
+
+- MathSAT 5
+  * Project : http://mathsat.fbk.eu/
+  * Download: http://mathsat.fbk.eu/download.html
+
+- Z3
+  * Project : http://research.microsoft.com/en-us/um/redmond/projects/z3/
+  * Source code: http://z3.codeplex.com/
+
+
 Using more binutils file formats/architectures
 ===============================================
 On most operating system distributions the binutils package comes only
