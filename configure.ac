@@ -1,7 +1,7 @@
 dnl ********************************************************************
 dnl Process this file with autoconf to produce a configure script.
 dnl ********************************************************************
-AC_INIT([insight],[0.2])
+AC_INIT([insight],[0.3])
 AC_CONFIG_AUX_DIR([autotools-files])
 AC_CONFIG_MACRO_DIR([autotools-files/m4])
 AC_CONFIG_HEADERS([src/config.h])
