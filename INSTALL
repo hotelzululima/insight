@@ -1,8 +1,21 @@
 		  Insight Installation Instructions
 		 ===================================
 
-Basic Build and Install
-========================
+Table of contents:
+
+1 - Basic Build and Install
+2 - MacOS X Build and Install
+3 - Building in a separate directory
+4 - Installing external SMT solvers
+5 - Using more binutils file formats/architectures
+6 - Developer Build and Install
+7 - Generate the Doxygen documentation
+8 - Test Framework (ATF/Kyua)
+
+		 -----------------------------------
+
+1 - Basic Build and Install
+===========================
 The insight framework needs a UNIX-like environment to build and work
 properly. It relies on a small number of widely used libraries and
 tools, and here is the list of dependencies if you downloaded the
@@ -21,8 +34,8 @@ In case of error, the 'configure' script should provide some useful
 error messages that will help you to get through.
 
 
-MacOS X Build and Install
-==========================
+2 - MacOS X Build and Install
+============================
 Under MacOS X, you will need to install UNIX packages either by hand
 or by using MacPorts, Fink, or similar package systems. We tested and
 use insight with MacPorts (http://www.macports.org/).
@@ -54,8 +67,8 @@ Possibly unusual configure flags are available:
  --enable-optimize       compile with optimization (default is no)
 
 
-Building in a separate directory
-=================================
+3 - Building in a separate directory
+====================================
 If you want to build the project outside of the source directory, just
 create a fresh directory (eg. 'build/'), cd into it and type:
 <path_to_srcdir>/configure <suitable_options>
@@ -67,11 +80,14 @@ We recommend this way of building as it leaves the source directory
 clean.
 
 
-Installing external SMT solvers (Z3/MathSAT 5)
-===============================================
+4 - Installing external SMT solvers (Z3/MathSAT 5)
+==================================================
 
-Insight requires also either Z3 or MathSAT 5 to be installed on your
-system to be fully operational. You can get them at the following URLs:
+Some algorithms require calls to a SMT Solver. The current implementation
+uses the solver as a separate process and requests/responses are sent through
+pipes. This design makes Insight relatively independant from the installed
+solver; however only Z3 4.1 and MathSAT 5 had been tested. You can get them at 
+the following URLs:
 
 - MathSAT 5
   * Project : http://mathsat.fbk.eu/
@@ -81,9 +97,8 @@ system to be fully operational. You can get them at the following URLs:
   * Project : http://research.microsoft.com/en-us/um/redmond/projects/z3/
   * Source code: http://z3.codeplex.com/
 
-
-Using more binutils file formats/architectures
-===============================================
+5 - Using more binutils file formats/architectures
+==================================================
 On most operating system distributions the binutils package comes only
 with the minimum needed processor architectures and binary formats. In
 fact, the binutils can do much more than that and can deal with a lot
@@ -119,8 +134,8 @@ when invoking 'configure' within insight. E.g.:
 ./configure CPPFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib
 
 
-Developer Build and Install
-============================
+6 - Developer Build and Install
+===============================
 Developers are, of course, more than welcome in this project and
 feature requests, development questions and patches will be looked at
 and commented upon by the Insight team (see the README file for more
@@ -147,8 +162,8 @@ and you will be able to generate all the autoconf stuff with:
 You can then proceed with the usual 'configure' step.
 
 
-Generate the Doxygen documentation
-==================================
+7 - Generate the Doxygen documentation
+======================================
 Insight comes with a Doxygen API documentation. We chose to not build
 it by default to spare time and space. Yet, building the HTML API
 documentation can be done as follow (in the following we assume that
@@ -159,8 +174,8 @@ the build is in the 'build' directory):
 3) Documentation will appear in build/doc/api/html/
 
 
-Test Framework (ATF/Kyua)
-=========================
+8 - Test Framework (ATF/Kyua)
+=============================
 We use ATF (Automated Test Framework) together with the Kyua runner in
 order to test the framework. At the moment, we require a recent
 version of Kyua which is not available as a package on most
