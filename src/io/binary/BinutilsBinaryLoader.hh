@@ -84,6 +84,8 @@ protected:
   std::tr1::unordered_map<address_t,std::string> symbols_addresses;
   std::string get_BFD_format() const;
   const Architecture *get_BFD_architecture() const;
+  void fill_memory_from_sections(ConcreteMemory *) const;
+  int fill_memory_from_ELF_Phdrs(ConcreteMemory *) const;
 
 private:
   void add_section_of (ConcreteMemory *memory, bfd *file) const;

@@ -32,8 +32,12 @@
 
 #include <cstdlib>
 #include <sstream>
+
+#include <unistd.h>
+
 #include <utils/logs.hh>
 #include <domains/concrete/ConcreteMemory.hh>
+
 
 using namespace std;
 
@@ -174,12 +178,8 @@ BinutilsBinaryLoader::~BinutilsBinaryLoader()
   bfd_close(abfd);
 }
 
-ConcreteMemory *
-BinutilsBinaryLoader::get_memory() const
-{
-  ConcreteMemory * memory = new ConcreteMemory ();
-
-  /* Loading all sections in memory */
+void
+BinutilsBinaryLoader::fill_memory_from_sections(ConcreteMemory *memory) const {
   for (struct bfd_section *bfd_section = abfd->sections;
        bfd_section != NULL;
        bfd_section = bfd_section->next)
@@ -221,6 +221,99 @@ BinutilsBinaryLoader::get_memory() const
       /* Cleaning temporary data storage */
       free(data);
     }
+}
+
+
+/*
+ * Ugly hack: this data structure lies in the sources of the binutils,
+ * in include/elf/internal.h However this file is not installed by the
+ * binutils, and the ELF Phdrs copied by bfd_get_elf_phdrs() obey this
+ * structure format.
+ *
+ * We check that the size returned by bfd_get_elf_phdr_upper_bound()
+ * is a multiple of the size of this structure, which is doubly wrong
+ * but should prevent obvious mismatches.
+ */
+struct elf_internal_phdr_from_bfd {
+  unsigned long	p_type;
+  unsigned long	p_flags;
+  bfd_vma p_offset;
+  bfd_vma p_vaddr;
+  bfd_vma p_paddr;
+  bfd_vma p_filesz;
+  bfd_vma p_memsz;
+  bfd_vma p_align;
+};
+
+int
+BinutilsBinaryLoader::fill_memory_from_ELF_Phdrs(ConcreteMemory *memory) const {
+  long phdr_size = bfd_get_elf_phdr_upper_bound(abfd);
+  struct elf_internal_phdr_from_bfd *phdrs;
+  int nphdrs;
+  int r = 0;
+
+  if (phdr_size == -1 ||
+      phdr_size % sizeof (struct elf_internal_phdr_from_bfd) != 0)
+    return -1;
+
+  phdrs = (struct elf_internal_phdr_from_bfd *) malloc(phdr_size);
+  if (phdrs == NULL)
+    return -1;
+
+  nphdrs = bfd_get_elf_phdrs(abfd, phdrs);
+  if (nphdrs == -1)
+    goto fail;
+
+  for (int hdr = 0; hdr < nphdrs; hdr++) {
+    size_t size = phdrs[hdr].p_filesz;
+    unsigned char *data = (unsigned char *) malloc(size);
+    if (data == NULL)
+      goto fail;
+
+    if (bfd_seek(abfd, phdrs[hdr].p_offset, SEEK_SET) == -1) {
+      free(data);
+      goto fail;
+    }
+
+    if (bfd_bread(data, size, abfd) != size) {
+      free(data);
+      goto fail;
+    }
+
+    for (size_t i = 0; i < size; i++) {
+      ConcreteAddress addr(phdrs[hdr].p_vaddr + i);
+      ConcreteValue val(8, data[i]);
+
+      memory->put(addr, val, Architecture::BigEndian);
+    }
+
+    free(data);
+  }
+
+  if (0) {
+  fail:
+    r = -1;
+  }
+
+  free(phdrs);
+  return r;
+}
+
+ConcreteMemory *
+BinutilsBinaryLoader::get_memory() const
+{
+  ConcreteMemory * memory = new ConcreteMemory ();
+
+  /* Prefer reading the ELF Phdr information because it's the authoritative
+     information for ELF executables */
+  if (bfd_get_flavour(abfd) == bfd_target_elf_flavour && abfd->flags & EXEC_P) {
+    if (fill_memory_from_ELF_Phdrs(memory) != -1)
+      return memory;
+    else
+      logs::warning << "Couldn't use ELF Program headers, using sections";
+  }
+
+  fill_memory_from_sections(memory);
 
   return memory;
 }
