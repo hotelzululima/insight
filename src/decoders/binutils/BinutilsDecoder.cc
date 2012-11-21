@@ -66,8 +66,6 @@ static void s_binutils_print_address(bfd_vma, struct disassemble_info *);
 bfd* new_bfd(void)
 {
   bfd *nbfd = new bfd;
-  if (nbfd == NULL)
-    throw (runtime_error("out of memory"));
 
   nbfd->id = 0;
   nbfd->xvec = new bfd_target;
