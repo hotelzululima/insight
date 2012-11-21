@@ -280,9 +280,9 @@ BinutilsBinaryLoader::fill_memory_from_ELF_Phdrs(ConcreteMemory *memory) const {
       goto fail;
     }
 
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < phdrs[hdr].p_memsz; i++) {
       ConcreteAddress addr(phdrs[hdr].p_vaddr + i);
-      ConcreteValue val(8, data[i]);
+      ConcreteValue val(8, i < size? data[i] : 0);
 
       memory->put(addr, val, Architecture::BigEndian);
     }
