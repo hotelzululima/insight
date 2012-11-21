@@ -31,6 +31,8 @@
 #ifndef BINUTILSDECODER_HH
 #define BINUTILSDECODER_HH
 
+#include <config.h>
+
 #include <bfd.h>
 #include <dis-asm.h>
 

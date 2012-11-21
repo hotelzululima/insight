@@ -31,6 +31,8 @@
 #ifndef IO_BINUTILSBINARYLOADER_HH
 #define IO_BINUTILSBINARYLOADER_HH
 
+#include <config.h>
+
 #include <bfd.h>
 
 #include <list>

@@ -28,6 +28,8 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
+
 #include <bfd.h>
 
 #include <list>
