@@ -49,7 +49,8 @@ MicrocodeAddress::MicrocodeAddress(address_t g, address_t l) :
   local(l)
 {}
 
-MicrocodeAddress::MicrocodeAddress(const MicrocodeAddress &addr)
+MicrocodeAddress::MicrocodeAddress(const MicrocodeAddress &addr) 
+  : Object (*this)
 {
   global = addr.global;
   local = addr.local;
