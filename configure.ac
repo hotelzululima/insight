@@ -35,7 +35,7 @@ dnl Checking for standard programs, headers and libraries
 dnl ********************************************************************
 AC_SEARCH_LIBS([strerror],[cposix])
 AC_PROG_CXX
-AM_PROG_CC_STDC
+AC_PROG_CC
 AM_PROG_CC_C_O
 AM_PROG_LIBTOOL
 
@@ -149,12 +149,6 @@ AC_ARG_ENABLE(werror,
 			     [compile with -Werror flag (default is no)]),
               ENABLE_WERROR=$enableval,
               ENABLE_WERROR=no)
-
-dnl we currently enable -Werror when in maintainer mode
-if test x$ENABLE_WERROR = xyes -o x$enable_maintainer_mode = xyes; then
-    CFLAGS="${CFLAGS} -Werror"
-    CXXFLAGS="${CXXFLAGS} -Werror"
-fi
 
 AC_ARG_ENABLE(debug,
               AS_HELP_STRING([--enable-debug],
@@ -281,6 +275,14 @@ dnl Locate repository of binary test-cases
 TEST_SAMPLES_DIR='${abs_top_srcdir}/test/test-samples'
 
 AC_SUBST(TEST_SAMPLES_DIR)
+
+dnl We currently enable -Werror when in maintainer mode
+dnl Enable -Werror only after all others tests to prevent configure to fail
+dnl in test that compile test codes.
+if test x$ENABLE_WERROR = xyes ; then
+   CFLAGS="${CFLAGS} -Werror"
+   CXXFLAGS="${CXXFLAGS} -Werror"
+fi
 
 dnl ********************************************************************
 dnl Writing files
