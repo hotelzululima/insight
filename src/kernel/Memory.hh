@@ -33,7 +33,12 @@
 
 #include <kernel/Architecture.hh>
 
-class UndefinedValueException;
+class UndefinedValueException : public std::runtime_error
+{
+public:
+  UndefinedValueException (const std::string &where) :
+    std::runtime_error("Undefined value " + where) { }
+};
 
 /** \brief Abstract class to represent the memory of a program.
  *
@@ -62,13 +67,6 @@ public:
 
   /** \brief Tells whether a memory cell has been initialized before or not. */
   virtual bool is_defined(const Address &) const = 0;
-};
-
-class UndefinedValueException : public std::runtime_error
-{
-public:
-  UndefinedValueException (const std::string &where) :
-    std::runtime_error("Undefined value " + where) { }
 };
 
 #include "Memory.ii"
