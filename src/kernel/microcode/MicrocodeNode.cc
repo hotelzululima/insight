@@ -460,8 +460,6 @@ StmtArrow * DynamicArrow::clone()
   return new DynamicArrow(*this);
 }
 
-DynamicArrow::~DynamicArrow();
-
 Expr * DynamicArrow::get_target() const
 {
   return target;
