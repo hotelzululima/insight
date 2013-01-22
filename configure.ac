@@ -108,8 +108,8 @@ dnl Option and variable settings
 dnl ********************************************************************
 
 dnl Initial settings of flags variables
-CFLAGS="${CFLAGS} -Wall -Wextra -D_FORTIFY_SOURCE=2"
-CXXFLAGS="${CXXFLAGS} -Wall -Wextra -D_FORTIFY_SOURCE=2"
+CFLAGS="${CFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2"
+CXXFLAGS="${CXXFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2"
 CPPFLAGS="${CPPFLAGS}"
 LDFLAGS="${LDFLAGS}"
 LIBS="${LIBS}"
@@ -295,6 +295,7 @@ AC_CONFIG_FILES([
 	src/Makefile
 	test/Makefile
 	test/Makefile.inc
+	test/bugs/Makefile
 	test/domains/Makefile
 	test/domains/concrete/Makefile
 	test/domains/symbolic/Makefile
