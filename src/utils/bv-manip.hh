@@ -90,11 +90,14 @@ assign_window (word_t dst, int offset, int size, word_t src)
 inline word_t
 extend_signed (word_t val, int current_size)
 {
+  if (current_size == BITS_PER_WORD)
+    return val;
+
   word_t tmpVal = val >> (current_size -1); // retrieve msb
   uword_t max = ~((uword_t)0);
   word_t new_val;
 
-  if (tmpVal && ((word_t) 1)) //If a(n-1) = 1;
+  if ((tmpVal & ((word_t) 1))) //If a(n-1) = 1;
     {
       word_t mask = max << current_size;
       new_val = val | mask;
