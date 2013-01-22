@@ -43,7 +43,7 @@ SymbolicExecContext::~SymbolicExecContext ()
 }
 
 StepResult 
-SymbolicExecContext::step(Arrow pa) 
+SymbolicExecContext::step(const Arrow &pa) 
 {
   return SymbolicAbstractExecContext::step (pa);
 }

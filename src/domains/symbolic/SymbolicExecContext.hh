@@ -47,7 +47,7 @@ public:
   SymbolicExecContext (const ConcreteMemory *base, Decoder *dec);
 
   virtual ~SymbolicExecContext();
-  virtual StepResult step (Arrow pa);
+  virtual StepResult step (const Arrow &pa);
   virtual bool step ();
   virtual MicrocodeNode *get_node (const ConcreteProgramPoint &pp);
 };

@@ -97,7 +97,7 @@ public:
   virtual ~ConcreteExecContext() {
   }
 
-  virtual StepResult step(Arrow pa) {
+  virtual StepResult step(const Arrow &pa) {
     return this->AbstractExecContext<CONCRETE_CLASSES>::step (pa);
   }
 
