@@ -173,6 +173,8 @@ X86_32_OBJECTS= \
   \
   x86_32-symsim-01.bin \
   \
+  x86_32-bug-001.bin \
+  \
   ${dummy}
 
 OBJECTS=${X86_32_OBJECTS}
@@ -181,6 +183,10 @@ all : $(OBJECTS)
 
 
 x86_32-%.bin : x86_32-%.s x86_32-simulator-header.s x86_32-simulator-end.s 
+	@ echo $@
+	@ $(CC) -m32 -march=i686 -c $< -o $@
+
+x86_32-%.bin : x86_32-%.c
 	@ echo $@
 	@ $(CC) -m32 -march=i686 -c $< -o $@
 
