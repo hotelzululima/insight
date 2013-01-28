@@ -44,7 +44,8 @@ public:
   ConcreteMemoryTraversal (const ConcreteMemory *memory, Decoder *decoder);
   virtual ~ConcreteMemoryTraversal ();
 
-  virtual void compute (Microcode *mc, const ConcreteAddress &entrypoint);
+  virtual void compute (Microcode *mc, const ConcreteAddress &entrypoint)
+    throw (Decoder::Exception &);
 
   virtual bool can_visit (const ConcreteAddress &loc) const;
   virtual bool already_visited (const ConcreteAddress &loc) const;

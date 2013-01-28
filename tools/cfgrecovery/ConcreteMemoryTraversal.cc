@@ -88,6 +88,7 @@ ConcreteMemoryTraversal::take_from_to_todo_list ()
 void 
 ConcreteMemoryTraversal::compute (Microcode *mc,
 				  const ConcreteAddress &entrypoint)
+  throw (Decoder::Exception &)
 {
   ArrowCreate cb;
 
@@ -121,11 +122,8 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
     }
   catch (Decoder::Exception &e)
     {
-      if (verbosity > 0)
-	logs::warning << "Disassembler terminates on following exception:" 
-		      << endl
-		      << e.what () << endl;
+      mc->remove_arrow_creation_callback (&cb);
+      throw e;
     }
-
   mc->remove_arrow_creation_callback (&cb);
 }

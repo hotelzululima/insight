@@ -50,8 +50,9 @@ private:
 };
 
 /* Linear sweep disassembly method */
-Microcode * flood_traversal(const ConcreteAddress * entrypoint,
-			    ConcreteMemory * memory,
-			    Decoder * decoder);
+extern Microcode * 
+flood_traversal(const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+		Decoder * decoder) 
+  throw (Decoder::Exception &);
 
 #endif /* CFGRECOVERY_FLOOD_TRAVERSAL_HH */

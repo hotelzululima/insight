@@ -59,6 +59,7 @@ const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY =
 Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	  Decoder *decoder)
+  throw (Decoder::Exception &)
 {
   SymbolicSimulator *symsim = NULL;
   Microcode *result = new Microcode ();
@@ -108,87 +109,103 @@ symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
     }
 
   BEGIN_DBG_BLOCK ("Symbolic Simulation");
-  todo.push_back (s);
-  while (! todo.empty ())
+  try
     {
-      s = todo.back ();
-      todo.pop_back ();     
-
-      if (visited.find (s) != visited.end ())
+      todo.push_back (s);
+      while (! todo.empty ())
 	{
-	  delete s;
-	  continue;
-	}
+	  s = todo.back ();
+	  todo.pop_back ();     
 
-      MicrocodeAddress ma (s->get_address ());
-      if (max_nb_visits > 0 && ma.getLocal() == 0)
-	{
-	  address_t a = ma.getGlobal ();
-
-	  if (ccs.find (a) == ccs.end ())
-	    ccs[a] = 1;
-	  else
+	  if (visited.find (s) != visited.end ())
 	    {
-	      int count = ccs[a];
-	      ccs[a] = count +1;
+	      delete s;
+	      continue;
 	    }
-	  if (ccs[a] > max_nb_visits)
-	    visited.insert (s);
-	}
 
-      if (visited.find (s) == visited.end ())
-	{
-	  visited.insert (s);
-	  assert (visited.find (s) != visited.end ());
-
-	  if (ma.getLocal () == 0 && ! memory->is_defined (ma.getGlobal ()))
+	  MicrocodeAddress ma (s->get_address ());
+	  if (max_nb_visits > 0 && ma.getLocal() == 0)
 	    {
-	      logs::warning << "warning: try to jump to undefined address 0x" 
-			    << hex << ma.getGlobal () << endl;
-	    }
-	  else
-	    {
-	      if (show_states)
-		s->output_text (logs::debug);
+	      address_t a = ma.getGlobal ();
 
-	      try
+	      if (ccs.find (a) == ccs.end ())
+		ccs[a] = 1;
+	      else
 		{
-		  SymbolicSimulator::ArrowSet arrows = symsim->get_arrows (s);
-		  SymbolicSimulator::ArrowSet::const_iterator a = 
-		    arrows.begin (); 
-      
-		  for (; a != arrows.end (); a++)
+		  int count = ccs[a];
+		  ccs[a] = count +1;
+		}
+	      if (ccs[a] > max_nb_visits)
+		visited.insert (s);
+	    }
+
+	  if (visited.find (s) == visited.end ())
+	    {
+	      visited.insert (s);
+	      assert (visited.find (s) != visited.end ());
+
+	      if (ma.getLocal () == 0 && ! memory->is_defined (ma.getGlobal ()))
+		{
+		  logs::warning << "warning: try to jump to undefined "
+				<< "address 0x" 
+				<< hex << ma.getGlobal () << endl;
+		}
+	      else
+		{
+		  if (show_states)
+		    s->output_text (logs::debug);
+
+		  try
 		    {
-		      BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
-		      vector<SymbolicState *> *newstates = symsim->step (s, *a);
-
-		      if (newstates->empty ())
-			logs::debug << "no new context" << endl;
-		      else
+		      SymbolicSimulator::ArrowSet arrows = 
+			symsim->get_arrows (s);
+		      SymbolicSimulator::ArrowSet::const_iterator a = 
+			arrows.begin (); 
+      
+		      for (; a != arrows.end (); a++)
 			{
-			  logs::debug << "context has " << newstates->size ()
-				      << " successors. " << endl;
-			  for (size_t i = 0; i < newstates->size (); i++)
-			    todo.push_back (newstates->at (i));
-			}
-		      delete newstates;
+			  BEGIN_DBG_BLOCK ("trigger " + (*a)->pp ());
+			  vector<SymbolicState *> *newstates = 
+			    symsim->step (s, *a);
 
-		      END_DBG_BLOCK ();
+			  if (newstates->empty ())
+			    logs::debug << "no new context" << endl;
+			  else
+			    {
+			      logs::debug << "context has " 
+					  << newstates->size ()
+					  << " successors. " << endl;
+			      for (size_t i = 0; i < newstates->size (); i++)
+				todo.push_back (newstates->at (i));
+			    }
+			  delete newstates;
+
+			  END_DBG_BLOCK ();
+			}
 		    }
-		}
-	      catch (Decoder::Exception &e)
-		{
-		  if (verbosity > 0)
-		    logs::warning << e.what () << endl;
-		}
-	      catch (UndefinedValueException &e) 
-		{
-		  logs::warning << e.what () << endl;
+		  catch (UndefinedValueException &e) 
+		    {
+		      logs::warning << e.what () << endl;
+		    }
 		}
 	    }
 	}
     }
+  catch (Decoder::Exception &e)
+    {
+      while (! todo.empty ())
+	{
+	  s = todo.back ();
+	  todo.pop_back ();     
+	  delete s;
+	}
+      for (StateBag::iterator i = visited.begin (); i != visited.end (); i++)
+	delete *i;
+      delete symsim;
+      delete result;
+      throw;
 
+    }
   for (StateBag::iterator i = visited.begin (); i != visited.end (); i++)
     delete *i;
 

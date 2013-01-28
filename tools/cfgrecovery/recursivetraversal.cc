@@ -187,14 +187,22 @@ protected:
 
 /* Recursive traversal disassembly method */
 Microcode *
-recursivetraversal (const ConcreteAddress * entrypoint,
-		    ConcreteMemory * memory,
+recursivetraversal (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
 		    Decoder * decoder)
+  throw (Decoder::Exception &)
 {
   Microcode * mc = new Microcode();
   RecursiveTraversal rt (memory, decoder);
 
-  rt.compute (mc, *entrypoint);
+  try 
+    {
+      rt.compute (mc, *entrypoint);
+    } 
+  catch (Decoder::Exception &e) 
+    {
+      delete mc;
+      throw (e);
+    }
 
   return mc;
 }

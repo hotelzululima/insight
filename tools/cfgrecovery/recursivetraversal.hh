@@ -39,8 +39,9 @@
 #include "cfgrecovery.hh"
 
 /* Recursive traversal disassembly method */
-Microcode * recursivetraversal (const ConcreteAddress * entrypoint,
-				ConcreteMemory * memory,
-				Decoder * decoder);
+extern Microcode * 
+recursivetraversal (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+		    Decoder * decoder)
+  throw (Decoder::Exception &);
 
 #endif /* CFGRECOVERY_RECURSIVETRAVERSAL_HH */

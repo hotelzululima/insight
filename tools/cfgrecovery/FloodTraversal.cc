@@ -110,13 +110,22 @@ FloodTraversal::treat_new_arrow (Microcode *,
 
 /* Flood traversal disassembly method */
 Microcode *
-flood_traversal(const ConcreteAddress *entrypoint, ConcreteMemory *memory,
-		Decoder *decoder)
+flood_traversal (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+		 Decoder *decoder)
+  throw (Decoder::Exception &)
 {
   Microcode *mc = new Microcode();
   FloodTraversal lst (true, memory, decoder);
 
-  lst.compute (mc, *entrypoint);
+  try
+    {      
+      lst.compute (mc, *entrypoint);
+    }
+  catch (Decoder::Exception &e)
+    {
+      delete mc;
+      throw (e);
+    }
   
   return mc;
 }

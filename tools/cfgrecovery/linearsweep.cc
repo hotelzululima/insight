@@ -57,14 +57,23 @@ LinearSweepTraversal::treat_new_arrow(Microcode *,
 
 /* Linear sweep disassembly method */
 Microcode *
-linearsweep(const ConcreteAddress *entrypoint,
-	    ConcreteMemory *memory,
-	    Decoder *decoder)
+linearsweep (const ConcreteAddress *entrypoint,ConcreteMemory *memory,
+	     Decoder *decoder)
+  throw (Decoder::Exception &)
 {
   Microcode *mc = new Microcode();
   LinearSweepTraversal lst(memory, decoder);
-
-  lst.compute(mc, *entrypoint);
+  
+  try 
+    {
+      lst.compute (mc, *entrypoint);
+    } 
+  catch (Decoder::Exception &e) 
+    {
+      delete mc;
+      throw e;
+    }
+    
 
   return mc;
 }

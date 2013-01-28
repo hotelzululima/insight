@@ -47,8 +47,9 @@ protected:
 };
 
 /* Linear sweep disassembly method */
-Microcode *linearsweep(const ConcreteAddress * entrypoint,
-		       ConcreteMemory * memory,
-		       Decoder * decoder);
+extern Microcode * 
+linearsweep(const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+	    Decoder * decoder)
+  throw (Decoder::Exception &);
 
 #endif /* CFGRECOVERY_LINEAR_SWEEP_HH */

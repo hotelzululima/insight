@@ -381,7 +381,14 @@ main (int argc, char *argv[])
   if (verbosity > 0)
     cout << "Starting " << dis->desc << " disassembly" << endl;
 
-  mc = dis->process(entrypoint, memory, decoder);
+  try
+    {
+      mc = dis->process(entrypoint, memory, decoder);
+    }
+  catch (Decoder::Exception &e)
+    {
+      cerr << "error: " << e.what () << endl;
+    }
 
   if (mc == NULL)
     exit (EXIT_FAILURE);
