@@ -158,8 +158,8 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
   this->disassembler_fn = disassembler(abfd);
   if (!this->disassembler_fn)
   {
-      /* Shouldn't occur but trying to make it safe anyway */
-        throw Decoder::DecoderUnexpectedError("can't find disassembler function");
+    /* Shouldn't occur but trying to make it safe anyway */
+    throw Decoder::DecoderUnexpectedError("can't find disassembler function");
   }
 
   /* Setting all parameters of the disassembler info struct */
