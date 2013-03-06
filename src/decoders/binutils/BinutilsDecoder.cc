@@ -354,7 +354,7 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
   if (memaddr < info->buffer_vma
       || memaddr - info->buffer_vma > max_addr_offset
       || memaddr - info->buffer_vma + end_addr_offset > max_addr_offset)
-    throw Decoder::DecoderUnexpectedError("Out of bound memory address");
+    throw Decoder::OutOfBounds(memaddr);
 
   ConcreteMemory *memory = (ConcreteMemory *) info->application_data;
 
@@ -372,7 +372,7 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
 	myaddr[i] = memory->get(memaddr + i, 1, 
 				Architecture::LittleEndian).get();
       else
-	throw Decoder::DecoderUnexpectedError("Out of bound memory address");
+	throw Decoder::OutOfBounds(memaddr + i);
     }
 
   /* The original code was this one */

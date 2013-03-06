@@ -69,7 +69,7 @@ public:
   {
   public:
     UnknownMnemonic(const std::string &instr) : 
-      Exception  ("'" + instr + "' : Unknown mnemonic") {}
+      Exception("'" + instr + "' : Unknown mnemonic") {}
   };
 
   /** \brief Exception thrown when the mnemonics does not match the
@@ -78,7 +78,27 @@ public:
   {
   public:
     InconsistentInstruction(const std::string &instr) :
-      Exception ("'" + instr + "' : Inconsistent instruction") {}
+      Exception("'" + instr + "' : Inconsistent instruction") {}
+  };
+
+  /** \brief Exception thrown when the address given to the decoder is
+   *  out of boundaries */
+  class OutOfBounds : public Exception
+  {
+  private:
+    ConcreteAddress addr;
+
+  public:
+    OutOfBounds(ConcreteAddress addr) :
+      Exception("Decoding at 0x" + addr.to_string() + " is out of bounds"),
+      addr(addr) { }
+
+    ~OutOfBounds() throw () {}
+
+    ConcreteAddress get_address() {
+      return addr;
+    }
+
   };
 
   /** \brief Exception thrown when the decoder encounter an unexpected
