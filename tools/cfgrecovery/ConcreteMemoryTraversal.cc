@@ -123,7 +123,7 @@ ConcreteMemoryTraversal::compute (Microcode *mc,
   catch (Decoder::Exception &e)
     {
       mc->remove_arrow_creation_callback (&cb);
-      throw e;
+      throw;
     }
   mc->remove_arrow_creation_callback (&cb);
 }
