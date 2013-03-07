@@ -67,13 +67,15 @@ linearsweep (const ConcreteAddress *entrypoint,ConcreteMemory *memory,
   try 
     {
       lst.compute (mc, *entrypoint);
-    } 
+    }
+  catch (Decoder::OutOfBounds &e)
+    {
+    }
   catch (Decoder::Exception &e) 
     {
       delete mc;
       throw e;
     }
-    
 
   return mc;
 }
