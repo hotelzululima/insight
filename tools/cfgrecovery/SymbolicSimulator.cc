@@ -321,6 +321,69 @@ Expr *
 SymbolicSimulator::regexpr (const char *s) 
   { return RegisterExpr::create (decoder->get_arch ()->get_register (s)); }
 
+void
+s_expand_memcell_indexes_rec (class ExprSolver *solver,
+			      std::vector<const Expr *> *indexes, 
+			      std::vector<Expr *>::size_type current, 
+			      const SymbolicState *ctx, const Expr *e, 
+			      const Expr *cond, const Architecture *arch, 
+			      std::vector<Expr *> *result)
+{
+  if (current < indexes->size ())
+    {
+      int th = CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
+      const Expr *index = indexes->at (current);
+
+      std::vector<constant_t> *tmp = solver->evaluate (index, cond, th);
+
+      if (th >= 0 && (int)tmp->size () > th)
+	tmp->clear ();
+      
+      for (std::vector<constant_t>::size_type i = 0; i < tmp->size (); i++)
+	{
+	  Constant *cst = Constant::create (tmp->at (i), 
+					    index->get_bv_offset (),
+					    index->get_bv_size ());
+	  Expr *ne = exprutils::replace_subterm (e, index, cst);
+	  s_expand_memcell_indexes_rec (solver, indexes, current + 1, ctx, ne,
+					cond, arch, result);
+	  ne->deref ();
+	  cst->deref ();
+	}
+      delete tmp;
+    }
+  else
+    {
+      RewriteWithAssignedValues r (ctx, arch->get_endian ());
+      Expr *f = e->ref ();
+
+      for (;;)
+	{
+	  f->acceptVisitor (r);
+	  Expr *aux = r.get_result ();
+	  f->deref ();
+	  if (aux == f)
+	    break;
+	  f = aux;
+	}
+
+      result->push_back (f);
+    }
+}
+
+std::vector<Expr *> *
+s_expand_memcell_indexes (class ExprSolver *solver, const Architecture *arch, 
+			  const SymbolicState *ctx, const Expr *e,
+			  const Expr *cond)
+{
+  std::vector<Expr *> *result = new std::vector<Expr *>;
+  std::vector<const Expr *> *indexes = exprutils::collect_memcell_indexes (e);
+  s_expand_memcell_indexes_rec (solver, indexes, 0, ctx, e, cond, arch, result);
+  delete (indexes);
+
+  return result;
+}
+
 std::vector<address_t> * 
 SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx, 
 				      const Expr *e) const
@@ -356,16 +419,23 @@ SymbolicSimulator::eval_to_addresses (const SymbolicState *ctx,
       cond = aux;
     }
 
-  int th = CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
+  std::vector<Expr *> *expaddr = 
+    s_expand_memcell_indexes (solver, arch, ctx, f, cond);
+  for (std::vector<Expr *>::size_type i = 0; i < expaddr->size (); i++)
+    {
+      int th = CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
+      Expr *aux = expaddr->at (i);
+      std::vector<constant_t> *tmp = solver->evaluate (aux, cond, th);
+      aux->deref ();
 
-  std::vector<constant_t> *tmp = solver->evaluate (f, cond, th);
-
-  if (th >= 0 && (int)tmp->size () > th)
-    tmp->clear ();
-
-  for (size_t i = 0; i < tmp->size (); i++)
-    result->push_back (tmp->at (i));
-  delete tmp;
+      if (th >= 0 && (int)tmp->size () >= th)
+	tmp->clear ();
+      
+      for (size_t i = 0; i < tmp->size (); i++)
+	result->push_back (tmp->at (i));
+      delete tmp;
+    }
+  delete (expaddr);
 
   f->deref ();
   cond->deref ();
