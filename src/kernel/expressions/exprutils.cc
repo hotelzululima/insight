@@ -28,6 +28,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <cassert>
 #include <kernel/expressions/exprutils.hh>
 
 #include <kernel/expressions/PatternMatching.hh>
@@ -172,6 +173,37 @@ exprutils::extract_v_pattern (std::string var_id, const Expr *phi,
     {
     }
   v->deref ();
+
+  return result;
+}
+
+std::vector<const Expr *> *
+exprutils::collect_memcell_indexes (const Expr *e)
+{
+  typedef typename std::list<const Expr *> ExprList;
+  typedef typename std::vector<const Expr *> ExprVector;
+
+  ExprVector *result = new ExprVector;
+  ExprList todo = collect_subterms_of_type<ExprList, MemCell> (e, true);
+
+  while (! todo.empty ())
+    {
+      const MemCell *mc = dynamic_cast<const MemCell *> (todo.front ());
+      assert (mc != NULL);
+
+      ExprVector *tr = collect_memcell_indexes (mc->get_addr ());
+      if (tr->size () > 0) // index depend on other memcells
+	{
+	  for (ExprVector::size_type i = 0; i < tr->size (); i++)
+	    todo.push_back (tr->at (i));
+	}
+      else
+	{
+	  result->push_back (mc->get_addr ());
+	}
+      delete (tr);
+      todo.pop_front();
+    }
 
   return result;
 }

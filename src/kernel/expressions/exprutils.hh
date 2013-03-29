@@ -91,6 +91,9 @@ namespace exprutils
   extern Expr * 
   extract_v_pattern (std::string var_id, const Expr *phi, 
 		     const Expr *pattern);
+
+  extern std::vector<const Expr *> *
+  collect_memcell_indexes (const Expr *e);
 }
 
 # include <kernel/expressions/exprutils.ii>
