@@ -188,6 +188,6 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	  << loader->get_symbol_value (i->first).getValue ().get_address () 
 	  << "_0; " << endl;
     }
-  out << "}; " << std::endl;
+  out << "} " << std::endl;
   out.flush (); 
 }
