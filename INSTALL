@@ -176,18 +176,14 @@ the build is in the 'build' directory):
 
 8 - Test Framework (ATF/Kyua)
 =============================
-We use ATF (Automated Test Framework) together with the Kyua runner in
-order to test the framework. At the moment, we require a recent
-version of Kyua which is not available as a package on most
-systems. So, the best way to go is to install it directly from their
-stable or development sources.
 
-ATF/Kyua Project home: http://code.google.com/p/kyua/
+We use the ATF/Kyua test framework runner in order to test insight. At
+the moment, Kyua is not available as a package on most systems. So,
+the best way to go is to install it directly from their stable or
+development sources.
+
+Kyua Project home: http://code.google.com/p/kyua/
 ATF/Kyua Documentation: http://code.google.com/p/kyua/wiki/ATF
 ATF/Kyua Blog: http://blog.julipedia.org/
 
 Stable release: http://code.google.com/p/kyua/downloads/list
-
-Development release:
-* ATF: http://code.google.com/p/kyua/source/checkout?repo=atf
-* Kyua: http://code.google.com/p/kyua/source/checkout
