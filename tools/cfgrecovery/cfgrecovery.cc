@@ -69,14 +69,10 @@ struct disassembler {
   Microcode * (*process)(const ConcreteAddress *, ConcreteMemory *, Decoder *);
 } disassemblers[] = {
   /* List must be kept sorted by name */
-  { "dare", "directed automated random exploration", NULL },
   { "flood", "flood traversal", flood_traversal },
-  { "kinder1", "CFG reconstruction by abstract interpretation", NULL },
-  { "kinder2", "alternating CFG reconstruction", NULL },
   { "linear", "linear sweep", linearsweep },
-  { "predicate", "path predicate validation", NULL },
   { "recursive", "recursive traversal", recursivetraversal },
-  { "symsim", "symbolic traversal (require a SMT solver supporting QF_AUFBV).", 
+  { "symsim", "symbolic traversal (require an SMT solver with QF_AUFBV).",
     symbexec },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
