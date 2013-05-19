@@ -185,6 +185,14 @@ else
     AC_DEFINE([HAVE_Z3_SOLVER],[0],[Defined to 1 if Z3 is installed])
 fi
 
+dnl Checking for MathSAT solver
+AC_CHECK_PROG([has_mathsat_solver], [mathsat], [yes], [no])
+if test ${has_mathsat_solver} = "yes"; then
+    AC_DEFINE([HAVE_MATHSAT_SOLVER],[1])
+else
+    AC_DEFINE([HAVE_MATHSAT_SOLVER],[0],[Defined to 1 if MathSAT is installed])
+fi
+
 dnl Checking for binutils (libbfd, libopcodes)
 AC_ARG_WITH([binutils-header],
 	    AS_HELP_STRING(
@@ -337,6 +345,10 @@ Here is the configuration of the package:
 Binutils supported architectures
     x86-32            		: ${x86_32_support}
     arm                 	: ${arm_support}
+
+Detected SMT-solvers
+    MathSAT			: ${has_mathsat_solver}
+    Z3				: ${has_z3_solver}
 
 Optional Features:
     Enable debug mode		: ${ENABLE_DEBUG}
