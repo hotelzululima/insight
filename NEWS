@@ -1,5 +1,14 @@
-Major changes in version 0.3:
+Major changes in version 0.4
+----------------------------
+* Add support for amd64 and sparc (TODO)
 
+* Add ptrace interface in the loaders (TODO)
+
+* Improve cfgrecovery user interface (TODO)
+
+
+Major changes in version 0.3
+----------------------------
 * Add configuration options for specify how symbolic simulator handle
   dynamic jumps.
 
@@ -7,8 +16,9 @@ Major changes in version 0.3:
 
 * Fix bugs in microcode generation for x86_32 decoder.
 
-Major changes in version 0.2:
 
+Major changes in version 0.2
+----------------------------
 * Added the tool 'cfgrecovery' with linear sweep, flood traversal,
   recursive traversal, symbolic traversal and prepared for others.
 
@@ -21,6 +31,7 @@ Major changes in version 0.2:
 
 * Bug fixing (memory leaks, improved efficiency, ...).
 
-Major changes in version 0.1:
 
+Major changes in version 0.1
+----------------------------
 * First public release.
