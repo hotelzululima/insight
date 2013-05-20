@@ -50,6 +50,8 @@ kernel_source = \
 	kernel/Architecture_ARM.hh    	\
 	kernel/Architecture_X86_32.cc 	\
 	kernel/Architecture_X86_32.hh 	\
+	kernel/Architecture_X86_64.cc 	\
+	kernel/Architecture_X86_64.hh 	\
 	kernel/Expressions.cc	 	\
 	kernel/Expressions.hh	 	\
 	kernel/insight.cc	 	\
@@ -225,11 +227,40 @@ io_cleanfiles = \
 	${io_built_sources}
 
 ## decoder module
+arm_decoder= \
+	decoders/binutils/arm/arm_decoder.hh	\
+	decoders/binutils/arm/arm_decoder.cc	\
+        decoders/binutils/arm/arm_parser.yy	\
+        decoders/binutils/arm/arm_scanner.ll	\
+	decoders/binutils/arm/arm_translate.hh  \
+	decoders/binutils/arm/arm_translate.cc  \
+	decoders/binutils/arm/arm_translation_functions.hh \
+	decoders/binutils/arm/arm_A_instr.cc	\
+	decoders/binutils/arm/arm_B_instr.cc	\
+	decoders/binutils/arm/arm_C_instr.cc	\
+	decoders/binutils/arm/arm_E_instr.cc	\
+	decoders/binutils/arm/arm_L_instr.cc	\
+	decoders/binutils/arm/arm_M_instr.cc	\
+	decoders/binutils/arm/arm_N_instr.cc	\
+	decoders/binutils/arm/arm_P_instr.cc	\
+	decoders/binutils/arm/arm_R_instr.cc	\
+	decoders/binutils/arm/arm_S_instr.cc	\
+	decoders/binutils/arm/arm_O_instr.cc	\
+	decoders/binutils/arm/arm_U_instr.cc
+
+BUILT_SOURCES+= \
+	decoders/binutils/arm/stack.hh 	      	\
+	decoders/binutils/arm/location.hh       \
+	decoders/binutils/arm/position.hh       \
+	decoders/binutils/arm/arm_scanner.hh 	\
+	decoders/binutils/arm/arm_scanner.cc 	\
+	decoders/binutils/arm/arm_parser.hh  	\
+	decoders/binutils/arm/arm_parser.cc
+
 x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_cc.def \
 	decoders/binutils/x86-32/x86_32_decoder.hh \
 	decoders/binutils/x86-32/x86_32_decoder.cc \
-	decoders/binutils/x86-32/x86_32_decoder.hh \
         \
 	decoders/binutils/x86-32/x86_32_instr_arithmetics.cc \
 	decoders/binutils/x86-32/x86_32_instr_bits.cc \
@@ -261,35 +292,40 @@ BUILT_SOURCES+= \
 	decoders/binutils/x86-32/x86_32_parser.hh  	\
 	decoders/binutils/x86-32/x86_32_parser.cc 
 
-arm_decoder= \
-	decoders/binutils/arm/arm_decoder.hh	\
-	decoders/binutils/arm/arm_decoder.cc	\
-        decoders/binutils/arm/arm_parser.yy	\
-        decoders/binutils/arm/arm_scanner.ll	\
-	decoders/binutils/arm/arm_translate.hh  \
-	decoders/binutils/arm/arm_translate.cc  \
-	decoders/binutils/arm/arm_translation_functions.hh \
-	decoders/binutils/arm/arm_A_instr.cc	\
-	decoders/binutils/arm/arm_B_instr.cc	\
-	decoders/binutils/arm/arm_C_instr.cc	\
-	decoders/binutils/arm/arm_E_instr.cc	\
-	decoders/binutils/arm/arm_L_instr.cc	\
-	decoders/binutils/arm/arm_M_instr.cc	\
-	decoders/binutils/arm/arm_N_instr.cc	\
-	decoders/binutils/arm/arm_P_instr.cc	\
-	decoders/binutils/arm/arm_R_instr.cc	\
-	decoders/binutils/arm/arm_S_instr.cc	\
-	decoders/binutils/arm/arm_O_instr.cc	\
-	decoders/binutils/arm/arm_U_instr.cc
+x86_64_decoder= \
+	decoders/binutils/x86-64/x86_64_cc.def \
+	decoders/binutils/x86-64/x86_64_decoder.hh \
+	decoders/binutils/x86-64/x86_64_decoder.cc \
+        \
+	decoders/binutils/x86-64/x86_64_instr_arithmetics.cc \
+	decoders/binutils/x86-64/x86_64_instr_bits.cc \
+	decoders/binutils/x86-64/x86_64_instr_boolean.cc \
+	decoders/binutils/x86-64/x86_64_instr_call.cc \
+	decoders/binutils/x86-64/x86_64_instr_interrupts.cc \
+	decoders/binutils/x86-64/x86_64_instr_jump.cc \
+	decoders/binutils/x86-64/x86_64_instr_load_store.cc \
+	decoders/binutils/x86-64/x86_64_instr_loops.cc \
+	decoders/binutils/x86-64/x86_64_instr_misc.cc \
+	decoders/binutils/x86-64/x86_64_instr_mov.cc \
+	decoders/binutils/x86-64/x86_64_instr_prefixes.cc \
+	decoders/binutils/x86-64/x86_64_instr_shift.cc \
+	decoders/binutils/x86-64/x86_64_instr_stack.cc \
+	decoders/binutils/x86-64/x86_64_instr_strings.cc \
+        \
+	decoders/binutils/x86-64/x86_64_translate.cc  \
+	decoders/binutils/x86-64/x86_64_translate.hh  \
+	decoders/binutils/x86-64/x86_64_translation_functions.hh \
+	decoders/binutils/x86-64/x86_64_parser.yy  \
+	decoders/binutils/x86-64/x86_64_scanner.ll
 
 BUILT_SOURCES+= \
-	decoders/binutils/arm/stack.hh 	      	\
-	decoders/binutils/arm/location.hh       \
-	decoders/binutils/arm/position.hh       \
-	decoders/binutils/arm/arm_scanner.hh 	\
-	decoders/binutils/arm/arm_scanner.cc 	\
-	decoders/binutils/arm/arm_parser.hh  	\
-	decoders/binutils/arm/arm_parser.cc 
+	decoders/binutils/x86-64/stack.hh 	      	\
+	decoders/binutils/x86-64/location.hh       	\
+	decoders/binutils/x86-64/position.hh       	\
+	decoders/binutils/x86-64/x86_64_scanner.hh 	\
+	decoders/binutils/x86-64/x86_64_scanner.cc 	\
+	decoders/binutils/x86-64/x86_64_parser.hh  	\
+	decoders/binutils/x86-64/x86_64_parser.cc
 
 decoders_sources = \
 	decoders/Decoder.hh        \
@@ -298,9 +334,27 @@ decoders_sources = \
 	decoders/DecoderFactory.cc \
 	decoders/binutils/BinutilsDecoder.hh \
 	decoders/binutils/BinutilsDecoder.cc \
+        ${arm_decoder}	  \
         ${x86_32_decoder} \
-        ${arm_decoder}
+        ${x86_64_decoder}
 
+
+decoders/binutils/arm/stack.hh	\
+decoders/binutils/arm/location.hh 	\
+decoders/binutils/arm/position.hh 	\
+decoders/binutils/arm/arm_parser.hh 	\
+decoders/binutils/arm/arm_parser.cc:	\
+  decoders/binutils/arm/arm_parser.yy
+	$(YACC) --output=decoders/binutils/arm/arm_parser.cc \
+		${srcdir}/decoders/binutils/arm/arm_parser.yy
+
+decoders/binutils/arm/arm_scanner.hh 	\
+decoders/binutils/arm/arm_scanner.cc : 	\
+       decoders/binutils/arm/arm_scanner.ll	\
+       decoders/binutils/arm/arm_parser.hh
+	$(LEX) --outfile=decoders/binutils/arm/arm_scanner.cc \
+	       --header-file=decoders/binutils/arm/arm_scanner.hh \
+		${srcdir}/decoders/binutils/arm/arm_scanner.ll
 
 decoders/binutils/x86-32/stack.hh		\
 decoders/binutils/x86-32/location.hh 		\
@@ -319,22 +373,22 @@ decoders/binutils/x86-32/x86_32_scanner.cc : 		\
 	       --header-file=decoders/binutils/x86-32/x86_32_scanner.hh \
 		${srcdir}/decoders/binutils/x86-32/x86_32_scanner.ll
 
-decoders/binutils/arm/stack.hh	\
-decoders/binutils/arm/location.hh 	\
-decoders/binutils/arm/position.hh 	\
-decoders/binutils/arm/arm_parser.hh 	\
-decoders/binutils/arm/arm_parser.cc:	\
-  decoders/binutils/arm/arm_parser.yy
-	$(YACC) --output=decoders/binutils/arm/arm_parser.cc \
-		${srcdir}/decoders/binutils/arm/arm_parser.yy
+decoders/binutils/x86-64/stack.hh		\
+decoders/binutils/x86-64/location.hh 		\
+decoders/binutils/x86-64/position.hh 		\
+decoders/binutils/x86-64/x86_64_parser.hh 	\
+decoders/binutils/x86-64/x86_64_parser.cc:	\
+  decoders/binutils/x86-64/x86_64_parser.yy
+	$(YACC) --output=decoders/binutils/x86-64/x86_64_parser.cc \
+		${srcdir}/decoders/binutils/x86-64/x86_64_parser.yy
 
-decoders/binutils/arm/arm_scanner.hh 	\
-decoders/binutils/arm/arm_scanner.cc : 	\
-       decoders/binutils/arm/arm_scanner.ll	\
-       decoders/binutils/arm/arm_parser.hh
-	$(LEX) --outfile=decoders/binutils/arm/arm_scanner.cc \
-	       --header-file=decoders/binutils/arm/arm_scanner.hh \
-		${srcdir}/decoders/binutils/arm/arm_scanner.ll
+decoders/binutils/x86-64/x86_64_scanner.hh 		\
+decoders/binutils/x86-64/x86_64_scanner.cc : 		\
+       decoders/binutils/x86-64/x86_64_scanner.ll 	\
+       decoders/binutils/x86-64/x86_64_parser.hh
+	$(LEX) --outfile=decoders/binutils/x86-64/x86_64_scanner.cc \
+	       --header-file=decoders/binutils/x86-64/x86_64_scanner.hh \
+		${srcdir}/decoders/binutils/x86-64/x86_64_scanner.ll
 
 
 ## libinsight

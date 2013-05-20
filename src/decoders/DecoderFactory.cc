@@ -71,13 +71,6 @@ list<string> *get_BinutilsDecoder_supported_architectures()
 
   list<string> *architectures = new list<string>();
 
-  /* Checking for x86-32 architecture support */
-  /* NOTE: "i386" is the binutils' label for x86-32 */
-  if (bfd_scan_arch("i386") != NULL)
-    architectures->push_back("x86-32");
-  else
-    architectures->push_back("x86-32: warning: support not found in binutils!");
-
   /* Checking for arm architecture support */
   if (bfd_scan_arch("arm") != NULL)
     architectures->push_back("arm");
@@ -85,6 +78,20 @@ list<string> *get_BinutilsDecoder_supported_architectures()
     architectures->push_back("arm: warning support not found in binutils!");
 
   return architectures;
+
+  /* Checking for x86-32 architecture support */
+  /* NOTE: "i386" is the binutils' label for x86-32 */
+  if (bfd_scan_arch("i386") != NULL)
+    architectures->push_back("x86-32");
+  else
+    architectures->push_back("x86-32: warning: support not found in binutils!");
+
+  /* Checking for x86-64 architecture support */
+  /* NOTE: "amd64" is the binutils' label for x86-64 */
+  if (bfd_scan_arch("i386:x86-64") != NULL)
+    architectures->push_back("x86-64");
+  else
+    architectures->push_back("x86-64: warning: support not found in binutils!");
 }
 
 list<string> *DecoderFactory::get_Decoder_supported_architectures()

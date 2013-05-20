@@ -38,8 +38,9 @@
 #include <cassert>
 
 #include <kernel/annotations/AsmAnnotation.hh>
-#include "x86-32/x86_32_decoder.hh"
 #include "arm/arm_decoder.hh"
+#include "x86-32/x86_32_decoder.hh"
+#include "x86-64/x86_64_decoder.hh"
 
 #include "BinutilsDecoder.hh"
 
@@ -134,6 +135,14 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
   /* Setting architecture */
   switch (arch->get_proc ())
     {
+    case Architecture::ARM:
+      /* Checking support and setting the disassembler for arm */
+      if ((abfd->arch_info = bfd_scan_arch("arm"))  == NULL)
+	throw Decoder::DecoderUnexpectedError("arm is not supported on your system");
+      /* Setting the decoder function for arm */
+      this->decoder = &arm_decoder_func;
+      break;
+
     case Architecture::X86_32:
       /* Checking support and setting the disassembler for x86-32 */
       if ((abfd->arch_info = bfd_scan_arch("i386"))  == NULL)
@@ -142,12 +151,12 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
       this->decoder = &x86_32_decoder_func;
       break;
 
-    case Architecture::ARM:
-      /* Checking support and setting the disassembler for arm */
-      if ((abfd->arch_info = bfd_scan_arch("arm"))  == NULL)
-	throw Decoder::DecoderUnexpectedError("arm is not supported on your system");
-      /* Setting the decoder function for arm */
-      this->decoder = &arm_decoder_func;
+    case Architecture::X86_64:
+      /* Checking support and setting the disassembler for x86-64 */
+      if ((abfd->arch_info = bfd_scan_arch("i386:x86-64"))  == NULL)
+	throw Decoder::DecoderUnexpectedError("x86-64 is not supported on your system");
+      /* Setting the decoder function for x86-64 */
+      this->decoder = &x86_64_decoder_func;
       break;
 
     default: /* All other architectures are unsupported yet */

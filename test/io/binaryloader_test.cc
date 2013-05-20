@@ -58,13 +58,30 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 
   insight::init (ct);
 
-  ATF_REQUIRE_THROW(Architecture::UnsupportedArch,
-		    try {
-		      BinutilsBinaryLoader(TEST_SAMPLES_DIR
-					   "echo-linux-amd64");
-		    } catch (BinaryLoader::UnknownBinaryFormat) {
-		      throw Architecture::UnsupportedArch();
-		    });
+  BinaryLoader * loader =
+    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-amd64");
+
+  /* Checking various (non-critical) fields from the loader */
+  ATF_REQUIRE_EQ(loader->get_filename(),
+		 string(TEST_SAMPLES_DIR "echo-linux-amd64"));
+  ATF_REQUIRE_EQ(loader->get_format(), "elf64-x86-64");
+
+  /* Checking if the architecture has been properly detected */
+  const Architecture * x86_64_arch = loader->get_architecture();
+  ATF_REQUIRE_EQ(x86_64_arch->get_proc (), Architecture::X86_64);
+  ATF_REQUIRE_EQ(x86_64_arch->get_endian (), Architecture::LittleEndian);
+
+  /* Checking the entrypoint */
+  ConcreteAddress entrypoint = ConcreteAddress(0x4016f8);
+  ATF_REQUIRE_EQ(loader->get_entrypoint().get_address(),
+		 entrypoint.get_address());
+
+  /* Checking if the memory has been properly loaded */
+  ConcreteMemory * memory = loader->get_memory();
+
+  ATF_REQUIRE(memory->is_defined(entrypoint));
+  ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
+
   insight::terminate ();
 }
 
@@ -81,6 +98,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
   ct.set (logs::DEBUG_ENABLED_PROP, false);
   ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+
   insight::init (ct);
 
   BinaryLoader * loader =
@@ -106,6 +124,7 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 
   ATF_REQUIRE(memory->is_defined(entrypoint));
   ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
+
   insight::terminate ();
 }
 

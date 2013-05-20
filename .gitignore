@@ -65,6 +65,13 @@ src/decoders/binutils/x86-32/x86_32_parser.cc
 src/decoders/binutils/x86-32/x86_32_parser.hh
 src/decoders/binutils/x86-32/x86_32_scanner.cc
 src/decoders/binutils/x86-32/x86_32_scanner.hh
+src/decoders/binutils/x86-64/location.hh
+src/decoders/binutils/x86-64/position.hh
+src/decoders/binutils/x86-64/stack.hh
+src/decoders/binutils/x86-64/x86_64_parser.cc
+src/decoders/binutils/x86-64/x86_64_parser.hh
+src/decoders/binutils/x86-64/x86_64_scanner.cc
+src/decoders/binutils/x86-64/x86_64_scanner.hh
 src/io/expressions/ExprLexer.cc
 src/io/expressions/ExprParser.cc
 src/io/expressions/ExprParser.hh

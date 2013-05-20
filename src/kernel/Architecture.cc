@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -34,6 +34,7 @@
 
 #include <kernel/Architecture_ARM.hh>
 #include <kernel/Architecture_X86_32.hh>
+#include <kernel/Architecture_X86_64.hh>
 
 using namespace std;
 
@@ -220,6 +221,13 @@ Architecture::getArchitecture (const processor_t proc,
 	      break;
 	    }
 	  
+	case Architecture::X86_64:
+	  if (endian == Architecture::LittleEndian)
+	    {
+	      arch = new Architecture_X86_64();
+	      break;
+	    }
+
 	default:
 	  throw UnsupportedArch();
 	}
@@ -237,6 +245,10 @@ Architecture::getArchitecture (const processor_t proc)
   switch (proc)
     {
     case Architecture::X86_32:
+      arch = getArchitecture (proc, LittleEndian);
+      break;
+
+    case Architecture::X86_64:
       arch = getArchitecture (proc, LittleEndian);
       break;
 
