@@ -180,8 +180,8 @@ exprutils::extract_v_pattern (std::string var_id, const Expr *phi,
 std::vector<const Expr *> *
 exprutils::collect_memcell_indexes (const Expr *e)
 {
-  typedef typename std::list<const Expr *> ExprList;
-  typedef typename std::vector<const Expr *> ExprVector;
+  typedef std::list<const Expr *> ExprList;
+  typedef std::vector<const Expr *> ExprVector;
 
   ExprVector *result = new ExprVector;
   ExprList todo = collect_subterms_of_type<ExprList, MemCell> (e, true);
