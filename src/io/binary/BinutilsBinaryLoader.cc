@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -33,6 +33,8 @@
 #include <cstdlib>
 #include <sstream>
 
+#include <regex>
+
 #include <unistd.h>
 
 #include <utils/logs.hh>
@@ -57,17 +59,27 @@ const Architecture * BinutilsBinaryLoader::get_BFD_architecture() const
   string bfd_architecture = bfd_printable_name(abfd);
 
   /* Setting architecture */
-  if (bfd_architecture == "i386")
+
+  if (regex_match (bfd_architecture.begin(),
+		   bfd_architecture.end(),
+		   regex("(.*)(i386:x86-64)(.*)") ))
+    _processor = Architecture::X86_64;
+
+  else if (regex_match (bfd_architecture.begin(),
+		   bfd_architecture.end(),
+		   regex("(.*)(i386)(.*)"),
+		   regex_constants::match_default))
     _processor = Architecture::X86_32;
 
-  else if (bfd_architecture == "arm")
+  else if (regex_match (bfd_architecture.begin(),
+			bfd_architecture.end(),
+			regex("(.*)(arm)(.*)") ))
     _processor = Architecture::ARM;
 
-  else if (bfd_architecture == "sparc")
+  else if (regex_match (bfd_architecture.begin(),
+			bfd_architecture.end(),
+			regex("(.*)(sparc)(.*)") ))
     _processor = Architecture::SPARC;
-
-  else  if (bfd_architecture == "i386:x86-64")
-    _processor = Architecture::X86_64;
 
   else
     _processor = Architecture::Unknown;
@@ -106,6 +118,7 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
     throw BinaryLoader::UnknownBinaryFormat(filename);
 
   /* Fill the BFD structure with the data of the object file */
+  /* TODO: We must be able to extract all object files from an archive */
   if (! bfd_check_format(bfd_file, bfd_object))
     throw BinaryLoader::UnknownBinaryFormat(filename);
 
@@ -216,7 +229,7 @@ BinutilsBinaryLoader::fill_memory_from_sections(ConcreteMemory *memory) const {
 		logs::warning << "address " << current.to_string()
 			     << " is reassigned :"
 			     << v.to_string() << " -> " << val.to_string()
-			     << std::endl;
+			     << endl;
 	    }
           memory->put(current, ConcreteValue(8, *ptr), Architecture::BigEndian);
         }

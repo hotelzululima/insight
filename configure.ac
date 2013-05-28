@@ -109,7 +109,7 @@ dnl ********************************************************************
 
 dnl Initial settings of flags variables
 CFLAGS="${CFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2"
-CXXFLAGS="${CXXFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2"
+CXXFLAGS="${CXXFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2" -std=c++11
 CPPFLAGS="${CPPFLAGS}"
 LDFLAGS="${LDFLAGS}"
 LIBS="${LIBS}"
