@@ -33,8 +33,6 @@
 #include <cstdlib>
 #include <sstream>
 
-#include <regex>
-
 #include <unistd.h>
 
 #include <utils/logs.hh>
@@ -60,25 +58,16 @@ const Architecture * BinutilsBinaryLoader::get_BFD_architecture() const
 
   /* Setting architecture */
 
-  if (regex_match (bfd_architecture.begin(),
-		   bfd_architecture.end(),
-		   regex("(.*)(i386:x86-64)(.*)") ))
+  if (bfd_architecture.find("i386:x86-64") != string::npos)
     _processor = Architecture::X86_64;
 
-  else if (regex_match (bfd_architecture.begin(),
-		   bfd_architecture.end(),
-		   regex("(.*)(i386)(.*)"),
-		   regex_constants::match_default))
+  else if (bfd_architecture.find("i386") != string::npos)
     _processor = Architecture::X86_32;
 
-  else if (regex_match (bfd_architecture.begin(),
-			bfd_architecture.end(),
-			regex("(.*)(arm)(.*)") ))
+  else if (bfd_architecture.find("arm") != string::npos)
     _processor = Architecture::ARM;
 
-  else if (regex_match (bfd_architecture.begin(),
-			bfd_architecture.end(),
-			regex("(.*)(sparc)(.*)") ))
+  else if (bfd_architecture.find("sparc") != string::npos)
     _processor = Architecture::SPARC;
 
   else
