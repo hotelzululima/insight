@@ -128,7 +128,7 @@ public:
     M68K,
     MIPS,
     PowerPC,
-    Sparc,
+    SPARC,
     X86_32,
     X86_64,
     Unknown

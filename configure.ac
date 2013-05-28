@@ -249,22 +249,27 @@ dnl
 dnl Test architectures supported by libbfd
 dnl
 
-dnl Check for x86_32
+dnl Check for x86_32 and x86_64 (they share the same print_insn_*)
 x86_32_support="no"
-AC_CHECK_FUNC([print_insn_i386],
-              [x86_32_support="yes"])
+x86_64_support="no"
+AC_CHECK_FUNC([print_insn_i386], [x86_32_support="yes"])
+AC_CHECK_FUNC([print_insn_i386], [x86_64_support="yes"])
 
 AM_CONDITIONAL([BFD_SUPPORTS_X86_32], [test "${x86_32_support}" = "yes"])
+AM_CONDITIONAL([BFD_SUPPORTS_X86_32], [test "${x86_64_support}" = "yes"])
 
+dnl Check for sparc support
+sparc_support="no"
+AC_CHECK_FUNC([print_insn_sparc], [sparc_support="yes"])
 
-dnl Check for arm
+AM_CONDITIONAL([BFD_SUPPORTS_SPARC], [test "${sparc_support}" = "yes"])
+
+dnl Check for arm support
 arm_big_support="no"
-AC_CHECK_FUNC([print_insn_big_arm],
-              [arm_big_support="yes"])
+AC_CHECK_FUNC([print_insn_big_arm], [arm_big_support="yes"])
 
 arm_little_support="no"
-AC_CHECK_FUNC([print_insn_little_arm],
-              [arm_little_support="yes"])
+AC_CHECK_FUNC([print_insn_little_arm], [arm_little_support="yes"])
 
 arm_support="no"
 if test "${arm_little_support}${arm_big_support}" = "yesyes"; then
@@ -272,6 +277,7 @@ if test "${arm_little_support}${arm_big_support}" = "yesyes"; then
 fi
 
 AM_CONDITIONAL([BFD_SUPPORTS_ARM], [test "${arm_support}" = "yes"])
+
 
 dnl Setting the standard flags (CXXFLAGS, CPPFLAGS, LDFLAGS)
 CXXFLAGS="${CXXFLAGS}"
@@ -344,7 +350,9 @@ Here is the configuration of the package:
 
 Binutils supported architectures
     x86-32            		: ${x86_32_support}
+    x86-64            		: ${x86_64_support}
     arm                 	: ${arm_support}
+    sparc                 	: ${sparc_support}
 
 Detected SMT-solvers
     MathSAT			: ${has_mathsat_solver}

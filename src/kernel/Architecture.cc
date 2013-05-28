@@ -33,6 +33,7 @@
 #include <cassert>
 
 #include <kernel/Architecture_ARM.hh>
+#include <kernel/Architecture_SPARC.hh>
 #include <kernel/Architecture_X86_32.hh>
 #include <kernel/Architecture_X86_64.hh>
 
@@ -212,6 +213,10 @@ Architecture::getArchitecture (const processor_t proc,
 	{
 	case Architecture::ARM:
 	  arch = new Architecture_ARM(endian);
+	  break;
+	  
+	case Architecture::SPARC:
+	  arch = new Architecture_SPARC(endian);
 	  break;
 	  
 	case Architecture::X86_32:

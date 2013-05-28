@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -77,7 +77,11 @@ list<string> *get_BinutilsDecoder_supported_architectures()
   else
     architectures->push_back("arm: warning support not found in binutils!");
 
-  return architectures;
+  /* Checking for sparc architecture support */
+  if (bfd_scan_arch("sparc") != NULL)
+    architectures->push_back("sparc");
+  else
+    architectures->push_back("sparc: warning support not found in binutils!");
 
   /* Checking for x86-32 architecture support */
   /* NOTE: "i386" is the binutils' label for x86-32 */
@@ -87,11 +91,13 @@ list<string> *get_BinutilsDecoder_supported_architectures()
     architectures->push_back("x86-32: warning: support not found in binutils!");
 
   /* Checking for x86-64 architecture support */
-  /* NOTE: "amd64" is the binutils' label for x86-64 */
+  /* NOTE: "i386:x86-64" is the binutils' label for x86-64 */
   if (bfd_scan_arch("i386:x86-64") != NULL)
     architectures->push_back("x86-64");
   else
     architectures->push_back("x86-64: warning: support not found in binutils!");
+
+  return architectures;
 }
 
 list<string> *DecoderFactory::get_Decoder_supported_architectures()

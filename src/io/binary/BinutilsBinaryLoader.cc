@@ -63,6 +63,9 @@ const Architecture * BinutilsBinaryLoader::get_BFD_architecture() const
   else if (bfd_architecture == "arm")
     _processor = Architecture::ARM;
 
+  else if (bfd_architecture == "sparc")
+    _processor = Architecture::SPARC;
+
   else  if (bfd_architecture == "i386:x86-64")
     _processor = Architecture::X86_64;
 

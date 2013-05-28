@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -39,6 +39,7 @@
 
 #include <kernel/annotations/AsmAnnotation.hh>
 #include "arm/arm_decoder.hh"
+#include "sparc/sparc_decoder.hh"
 #include "x86-32/x86_32_decoder.hh"
 #include "x86-64/x86_64_decoder.hh"
 
@@ -141,6 +142,14 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
 	throw Decoder::DecoderUnexpectedError("arm is not supported on your system");
       /* Setting the decoder function for arm */
       this->decoder = &arm_decoder_func;
+      break;
+
+    case Architecture::SPARC:
+      /* Checking support and setting the disassembler for sparc */
+      if ((abfd->arch_info = bfd_scan_arch("sparc"))  == NULL)
+	throw Decoder::DecoderUnexpectedError("sparc is not supported on your system");
+      /* Setting the decoder function for arm */
+      this->decoder = &sparc_decoder_func;
       break;
 
     case Architecture::X86_32:

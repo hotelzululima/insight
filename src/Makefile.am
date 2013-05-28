@@ -48,6 +48,8 @@ kernel_source = \
 	kernel/Architecture.hh 	  	\
 	kernel/Architecture_ARM.cc    	\
 	kernel/Architecture_ARM.hh    	\
+	kernel/Architecture_SPARC.cc    \
+	kernel/Architecture_SPARC.hh    \
 	kernel/Architecture_X86_32.cc 	\
 	kernel/Architecture_X86_32.hh 	\
 	kernel/Architecture_X86_64.cc 	\
@@ -257,6 +259,41 @@ BUILT_SOURCES+= \
 	decoders/binutils/arm/arm_parser.hh  	\
 	decoders/binutils/arm/arm_parser.cc
 
+sparc_decoder= \
+	decoders/binutils/sparc/sparc_cc.def \
+	decoders/binutils/sparc/sparc_decoder.hh \
+	decoders/binutils/sparc/sparc_decoder.cc \
+        \
+	decoders/binutils/sparc/sparc_instr_arithmetics.cc \
+	decoders/binutils/sparc/sparc_instr_bits.cc \
+	decoders/binutils/sparc/sparc_instr_boolean.cc \
+	decoders/binutils/sparc/sparc_instr_call.cc \
+	decoders/binutils/sparc/sparc_instr_interrupts.cc \
+	decoders/binutils/sparc/sparc_instr_jump.cc \
+	decoders/binutils/sparc/sparc_instr_load_store.cc \
+	decoders/binutils/sparc/sparc_instr_loops.cc \
+	decoders/binutils/sparc/sparc_instr_misc.cc \
+	decoders/binutils/sparc/sparc_instr_mov.cc \
+	decoders/binutils/sparc/sparc_instr_prefixes.cc \
+	decoders/binutils/sparc/sparc_instr_shift.cc \
+	decoders/binutils/sparc/sparc_instr_stack.cc \
+	decoders/binutils/sparc/sparc_instr_strings.cc \
+        \
+	decoders/binutils/sparc/sparc_translate.cc  \
+	decoders/binutils/sparc/sparc_translate.hh  \
+	decoders/binutils/sparc/sparc_translation_functions.hh \
+        decoders/binutils/sparc/sparc_parser.yy  \
+        decoders/binutils/sparc/sparc_scanner.ll 
+
+BUILT_SOURCES+= \
+	decoders/binutils/sparc/stack.hh 	      	\
+	decoders/binutils/sparc/location.hh       	\
+	decoders/binutils/sparc/position.hh       	\
+	decoders/binutils/sparc/sparc_scanner.hh 	\
+	decoders/binutils/sparc/sparc_scanner.cc 	\
+	decoders/binutils/sparc/sparc_parser.hh  	\
+	decoders/binutils/sparc/sparc_parser.cc 
+
 x86_32_decoder= \
 	decoders/binutils/x86-32/x86_32_cc.def \
 	decoders/binutils/x86-32/x86_32_decoder.hh \
@@ -335,6 +372,7 @@ decoders_sources = \
 	decoders/binutils/BinutilsDecoder.hh \
 	decoders/binutils/BinutilsDecoder.cc \
         ${arm_decoder}	  \
+        ${sparc_decoder}  \
         ${x86_32_decoder} \
         ${x86_64_decoder}
 
@@ -355,6 +393,23 @@ decoders/binutils/arm/arm_scanner.cc : 	\
 	$(LEX) --outfile=decoders/binutils/arm/arm_scanner.cc \
 	       --header-file=decoders/binutils/arm/arm_scanner.hh \
 		${srcdir}/decoders/binutils/arm/arm_scanner.ll
+
+decoders/binutils/sparc/stack.hh	\
+decoders/binutils/sparc/location.hh 	\
+decoders/binutils/sparc/position.hh 	\
+decoders/binutils/sparc/sparc_parser.hh 	\
+decoders/binutils/sparc/sparc_parser.cc:	\
+  decoders/binutils/sparc/sparc_parser.yy
+	$(YACC) --output=decoders/binutils/sparc/sparc_parser.cc \
+		${srcdir}/decoders/binutils/sparc/sparc_parser.yy
+
+decoders/binutils/sparc/sparc_scanner.hh 	\
+decoders/binutils/sparc/sparc_scanner.cc : 	\
+       decoders/binutils/sparc/sparc_scanner.ll	\
+       decoders/binutils/sparc/sparc_parser.hh
+	$(LEX) --outfile=decoders/binutils/sparc/sparc_scanner.cc \
+	       --header-file=decoders/binutils/sparc/sparc_scanner.hh \
+		${srcdir}/decoders/binutils/sparc/sparc_scanner.ll
 
 decoders/binutils/x86-32/stack.hh		\
 decoders/binutils/x86-32/location.hh 		\
