@@ -12,3 +12,5 @@ concrete_memory_test_SOURCES = memory_test.cc
 concrete_value_test_SOURCES = value_test.cc
 concrete_simulator_test_SOURCES = simulator_test_cases.hh simulator_test.cc
 
+maintainer-clean-local:
+	rm -fr Makefile.in

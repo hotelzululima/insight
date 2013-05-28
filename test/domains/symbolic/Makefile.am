@@ -12,3 +12,5 @@ symbolic_simulator_test_SOURCES = \
 	simulator_test_cases.hh \
         simulator_test.cc
 
+maintainer-clean-local:
+	rm -fr Makefile.in

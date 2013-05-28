@@ -6,3 +6,8 @@ check_PROGRAMS = \
 
 bug_001_test_SOURCES = bug_001_test.cc
 
+distclean-local:
+	rm -fr Makefile
+
+maintainer-clean-local:
+	rm -fr Makefile.in

@@ -203,6 +203,5 @@ save: ${TESTS}
             cp -f $${T} $${REF}; \
           done
 
-
-
-
+maintainer-clean-local:
+	rm -fr Makefile.in

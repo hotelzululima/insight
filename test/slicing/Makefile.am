@@ -74,3 +74,6 @@ save: ${TESTS}
             REF="${srcdir}/$$(basename $${T}).result"; \
             cp -f $${T} $${REF}; \
           done
+
+maintainer-clean-local:
+	rm -fr Makefile.in

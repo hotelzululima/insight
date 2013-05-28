@@ -7,3 +7,6 @@ check_PROGRAMS = \
 
 io_binaryloader_test_SOURCES = binaryloader_test.cc
 io_expr_to_smtlib_test_SOURCES = expr_to_smtlib_test.cc
+
+maintainer-clean-local:
+	rm -fr Makefile.in

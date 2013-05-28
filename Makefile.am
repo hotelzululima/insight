@@ -15,6 +15,9 @@ doc:
 distclean-local:
 	rm -fr lib bin
 
+maintainer-clean-local:
+	rm -fr Makefile.in aclocal.m4 autotools-files/
+
 EXTRA_DIST =      \
         AUTHORS   \
         COPYING   \

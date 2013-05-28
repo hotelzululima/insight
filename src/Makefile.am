@@ -413,3 +413,6 @@ DISTCLEANFILES = ${BUILT_SOURCES}
 
 MAINTAINERCLEANFILES = \
 	compile.log
+
+maintainer-clean-local:
+	rm -fr Makefile.in config.h.in

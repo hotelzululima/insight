@@ -12,3 +12,5 @@ kernel_expr_parser_test_SOURCES = expr_parser_test.cc
 kernel_expr_solver_test_SOURCES = expr_solver_test.cc
 kernel_expression_test_SOURCES = expression_test.cc
 
+maintainer-clean-local:
+	rm -fr Makefile.in
