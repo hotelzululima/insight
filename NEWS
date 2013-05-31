@@ -1,20 +1,26 @@
 Major changes in version 0.4
 ----------------------------
-* Add support for amd64 and sparc (TODO)
+* Add support for amd64 (TODO) and sparc (TODO)
+
+* Debug support for arm architecture (TODO)
 
 * Add ptrace interface in the loaders (TODO)
 
+* Debug XML writer (TODO)
+
 * Improve cfgrecovery user interface (TODO)
+
+* Bug fixing (TODO)
 
 
 Major changes in version 0.3
 ----------------------------
-* Add configuration options for specify how symbolic simulator handle
-  dynamic jumps.
+* Added configuration options for specify how symbolic simulator
+  handle dynamic jumps.
 
-* Improve DOT format generation.
+* Improved DOT format generation.
 
-* Fix bugs in microcode generation for x86_32 decoder.
+* Fixed bugs in microcode generation for x86_32 decoder.
 
 
 Major changes in version 0.2
