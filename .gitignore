@@ -59,6 +59,13 @@ src/decoders/binutils/arm/arm_scanner.hh
 src/decoders/binutils/arm/location.hh
 src/decoders/binutils/arm/position.hh
 src/decoders/binutils/arm/stack.hh
+src/decoders/binutils/sparc/location.hh
+src/decoders/binutils/sparc/position.hh
+src/decoders/binutils/sparc/sparc_parser.cc
+src/decoders/binutils/sparc/sparc_parser.hh
+src/decoders/binutils/sparc/sparc_scanner.cc
+src/decoders/binutils/sparc/sparc_scanner.hh
+src/decoders/binutils/sparc/stack.hh
 src/decoders/binutils/x86-32/location.hh
 src/decoders/binutils/x86-32/position.hh
 src/decoders/binutils/x86-32/stack.hh
