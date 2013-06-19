@@ -107,11 +107,11 @@ of architectures and binary formats.
 The Debian-based systems propose a binutils-multiarch package that
 includes among others ARM support and adds several extra binary
 formats. It is generally a good idea to install it and to execute the
-following command as root (we assume binutils-2.22):
+following command as root (we assume binutils-x.xx):
 
 # cd /usr/lib/
-# ln -s libbfd-2.22-multiarch.so libbfd-multiarch.so
-# ln -s libopcodes-2.22-multiarch.so libopcodes-multiarch.so
+# ln -s libbfd-x.xx-multiarch.so libbfd-multiarch.so
+# ln -s libopcodes-x.xx-multiarch.so libopcodes-multiarch.so
 
 If you do not have a Debian-based system, or if you want more than
 what binutils-multiarch package provides, you will need to recompile
