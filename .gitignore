@@ -21,6 +21,7 @@
 *.so
 *.toc
 *.tp
+*.trs
 *.vrb
 *_test
 .cproject
