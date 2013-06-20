@@ -318,14 +318,12 @@ main (int argc, char *argv[])
   BinaryLoader * loader;
   try {
     loader = new BinutilsBinaryLoader(execfile_name);
-  } catch (BinaryLoader::UnknownBinaryFormat) {
-    cerr << prog_name
-	 << ": error: unsupported binary format" << endl;
-    exit (EXIT_FAILURE);
-  } catch (Architecture::UnsupportedArch) {
-    cerr << prog_name
-	 << ": error: unsupported architecture" << endl;
-    exit (EXIT_FAILURE);
+  } catch (Architecture::UnsupportedArch &e) {
+    cerr << execfile_name << ": " << e.what() << endl;
+    exit(EXIT_FAILURE);
+  } catch (std::runtime_error &e) {
+    cerr << e.what() << endl;
+    exit(EXIT_FAILURE);
   }
 
   if (verbosity > 0)
