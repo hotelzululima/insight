@@ -59,7 +59,6 @@ const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY =
 Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	  Decoder *decoder)
-  throw (Decoder::Exception &)
 {
   SymbolicSimulator *symsim = NULL;
   Microcode *result = new Microcode ();

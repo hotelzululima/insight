@@ -43,8 +43,7 @@ extern const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY;
 
 extern Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
-	  Decoder *decoder)
-  throw (Decoder::Exception &);
+	  Decoder *decoder);
 
 
 #endif /* ! SYMBEXEC_HH */
