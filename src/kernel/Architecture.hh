@@ -143,7 +143,7 @@ public:
   {
   public:
     UnsupportedArch() :
-      std::runtime_error(" : Unsupported architecture") { }
+      std::runtime_error("Unsupported architecture") { }
   };
 
   /** \brief Exception thrown when a register is not found in the
