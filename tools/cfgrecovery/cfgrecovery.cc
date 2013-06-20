@@ -383,6 +383,10 @@ main (int argc, char *argv[])
     {
       cerr << "error: " << e.what () << endl;
     }
+  catch (runtime_error &e)
+    {
+      cerr << e.what() << endl;
+    }
 
   if (mc == NULL)
     exit (EXIT_FAILURE);
