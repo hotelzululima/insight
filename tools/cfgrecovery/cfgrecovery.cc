@@ -72,8 +72,7 @@ struct disassembler {
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linearsweep },
   { "recursive", "recursive traversal", recursivetraversal },
-  { "symsim", "symbolic traversal (require an SMT solver with QF_AUFBV).",
-    symbexec },
+  { "symsim", "symbolic simulation", symbexec },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };
