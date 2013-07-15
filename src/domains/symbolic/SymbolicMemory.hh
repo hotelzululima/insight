@@ -48,6 +48,9 @@ class SymbolicMemory
   address_t maxaddr;
 
 public:
+  typedef ConcreteAddress Address;
+  typedef SymbolicValue Value;
+
   SymbolicMemory (const ConcreteMemory *base);
 
   virtual ~SymbolicMemory();
