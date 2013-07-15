@@ -17,7 +17,8 @@ public:
     const;
 
   virtual bool equals (const MicrocodeAddressProgramPoint *pp) const;
-
+  virtual bool equals (const MicrocodeAddressProgramPoint &pp) const;
+  virtual bool lessThan(const MicrocodeAddressProgramPoint &pp) const;
   virtual std::size_t hashcode () const;
 
   virtual void output_text (std::ostream &out) const;

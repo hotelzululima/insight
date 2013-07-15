@@ -33,7 +33,7 @@
 
 #include <list>
 #include <map>
-#include <domains/common/ConcreteProgramPoint.hh>
+#include <analyses/cfgrecovery/MicrocodeAddressProgramPoint.hh>
 #include <kernel/Architecture.hh>
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
@@ -94,14 +94,14 @@ public:
 
 class LocatedLValue {
 private:
-  ConcreteProgramPoint pp;
+  MicrocodeAddressProgramPoint pp;
   LValue *lv;
 public:
   LocatedLValue(const LocatedLValue &other);
-  LocatedLValue (MicrocodeAddress addr, const LValue *lv);
+  LocatedLValue (const MicrocodeAddress &addr, const LValue *lv);
   ~LocatedLValue ();
 
-  const ConcreteProgramPoint &get_ProgramPoint () const;
+  const MicrocodeAddressProgramPoint &get_ProgramPoint () const;
   const LValue *get_LValue () const;
 };
 
@@ -109,8 +109,8 @@ class DataDependency {
 
 private:
   Microcode * the_program;
-  std::map<ConcreteProgramPoint, DataDependencyLocalContext *, 
-	   LessThanFunctor<ConcreteProgramPoint> > the_fixpoint;
+  std::map<MicrocodeAddressProgramPoint, DataDependencyLocalContext *, 
+	   LessThanFunctor<MicrocodeAddressProgramPoint> > the_fixpoint;
   std::list<StaticArrow *> pending_arrows;
   bool fixpoint_reached;
 
@@ -124,10 +124,10 @@ private:
    * returns true if and only if the fixpoint has been reached. */
   bool InverseStep();
 
-  DataDependencyLocalContext *get_local_context (ConcreteProgramPoint pp);
+  DataDependencyLocalContext *get_local_context (const MicrocodeAddressProgramPoint &pp);
 
   /*! push the arrows pointing on pp into the pending arrow list */
-  void update_from_program_point(ConcreteProgramPoint pp);
+  void update_from_program_point(const MicrocodeAddressProgramPoint &pp);
 
   /* algorithm parameters*/
   static bool consider_jump_cond_flag;
@@ -138,7 +138,7 @@ public:
   /*! Initializes the fixpoint calculus:
    * - puts the seeds into the fixpoint map
    * - puts the inverse arrows into the pending arrow list. */
-  DataDependency(Microcode *prg, std::list<LocatedLValue> seeds);
+  DataDependency(Microcode *prg, const std::list<LocatedLValue> &seeds);
   ~DataDependency();
   /* Iterates InverseStep until reaching the fixpoint (or max step nb reached). */
   void ComputeFixpoint(int max_step_nb);
@@ -146,13 +146,13 @@ public:
   /*! Get the result at program point pp from the current state of the fixpoint.
    *  If the fixpoint has not been reached already, then
    *  one does at most max_step_nb more step before returning the result. */
-  Expr * get_dependencies(ConcreteProgramPoint pp, int max_step_nb);
+  Expr * get_dependencies(const MicrocodeAddressProgramPoint &pp, int max_step_nb);
 
   /*! Get the result at program point pp from the current state of the fixpoint.
    *  This simplified version gives all the possibilities.
    *  If the fixpoint has not been reached already, then
    *  one does at most max_step_nb more step before returning the result. */
-  std::vector<Expr*> get_simple_dependencies(ConcreteProgramPoint pp, int max_step_nb);
+  std::vector<Expr*> get_simple_dependencies(const MicrocodeAddressProgramPoint &pp, int max_step_nb);
 
   /*! In the computation of the slicing, consider or not conditions on arrows.
    * considering them (ConsiderJumpCondMode(true)) means adding them in the conditional set. */
@@ -164,8 +164,8 @@ public:
 
   /* Returns an upper set of the set of arrow that may influence the value of the seed.
    * A seed is a located lvalue, ie. a particular lvalue at a particular program point. */
-  static std::vector<StmtArrow*> slice_it(Microcode * prg, std::list<LocatedLValue> seeds);
-  static std::vector<StmtArrow*> slice_it(Microcode * prg, MicrocodeAddress seed_loc, const Expr *seed);
+  static std::vector<StmtArrow*> slice_it(Microcode * prg, const std::list<LocatedLValue> &seeds);
+  static std::vector<StmtArrow*> slice_it(Microcode * prg, const MicrocodeAddress &seed_loc, const Expr *seed);
 
   /* Tells whether a statement is used or not in a piece of microcode.
    * Note that when a not resolved dynamic jump is found, or a missing node,

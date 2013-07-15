@@ -29,6 +29,20 @@ MicrocodeAddressProgramPoint::equals (const MicrocodeAddressProgramPoint *pp)
   return pp->to_MicrocodeAddress ().equals (address);
 }
 
+bool 
+MicrocodeAddressProgramPoint::equals (const MicrocodeAddressProgramPoint &pp) 
+  const
+{
+  return pp.to_MicrocodeAddress ().equals (address);
+}
+
+bool 
+MicrocodeAddressProgramPoint::lessThan(const MicrocodeAddressProgramPoint &pp) 
+  const
+{
+  return pp.to_MicrocodeAddress ().lessThan (address);
+}
+
 std::size_t 
 MicrocodeAddressProgramPoint::hashcode () const
 {

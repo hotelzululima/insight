@@ -92,8 +92,8 @@ LocatedLValue::LocatedLValue(const LocatedLValue &other) :
 {
 }
 
-LocatedLValue::LocatedLValue(MicrocodeAddress addr, const LValue *lv) :
-  pp (ConcreteProgramPoint (addr)),
+LocatedLValue::LocatedLValue(const MicrocodeAddress &addr, const LValue *lv) :
+  pp (addr),
   lv ((LValue *)lv->ref ())
 {
 }
@@ -103,7 +103,7 @@ LocatedLValue::~LocatedLValue()
   lv->deref ();
 }
 
-const ConcreteProgramPoint &
+const MicrocodeAddressProgramPoint &
 LocatedLValue::get_ProgramPoint () const
 {
   return pp;
@@ -499,10 +499,10 @@ bool DataDependencyLocalContext::merge(DataDependencyLocalContext *other)
 /*****************************************************************************/
 
 DataDependencyLocalContext * 
-DataDependency::get_local_context(ConcreteProgramPoint pp)
+DataDependency::get_local_context(const MicrocodeAddressProgramPoint &pp)
 {
   DataDependencyLocalContext *result = NULL;
-  map<ConcreteProgramPoint, DataDependencyLocalContext *>::iterator pair = 
+  map<MicrocodeAddressProgramPoint, DataDependencyLocalContext *>::iterator pair = 
     the_fixpoint.find(pp);
 
   if (pair != the_fixpoint.end())
@@ -513,9 +513,10 @@ DataDependency::get_local_context(ConcreteProgramPoint pp)
 /*****************************************************************************/
 
 void 
-DataDependency::update_from_program_point (ConcreteProgramPoint pp)
+DataDependency::update_from_program_point (const MicrocodeAddressProgramPoint &pp)
 {
-  MicrocodeNode *target_node = the_program->get_node (pp.to_address ());
+  MicrocodeNode *target_node = 
+    the_program->get_node (pp.to_MicrocodeAddress ());
   std::vector<StmtArrow *> *preds = target_node->get_predecessors();
 
   if (preds == NULL)
@@ -535,17 +536,18 @@ DataDependency::update_from_program_point (ConcreteProgramPoint pp)
 
 /*****************************************************************************/
 
-DataDependency::DataDependency (Microcode *prg, list<LocatedLValue> seeds) :
+DataDependency::DataDependency (Microcode *prg, 
+				const list<LocatedLValue> &seeds) :
   the_program (prg),
   fixpoint_reached (false)
 {
   prg->regular_form ();
   prg->optimize ();
 
-  for (list<LocatedLValue>::iterator llv = seeds.begin (); llv != seeds.end (); 
-       llv++)
+  for (list<LocatedLValue>::const_iterator llv = seeds.begin (); 
+       llv != seeds.end (); llv++)
     {
-      ConcreteProgramPoint pp = llv->get_ProgramPoint ();
+      MicrocodeAddressProgramPoint pp = llv->get_ProgramPoint ();
       DataDependencyLocalContext *ctxt = get_local_context (pp);
 
       if (ctxt == NULL)
@@ -563,9 +565,9 @@ DataDependency::DataDependency (Microcode *prg, list<LocatedLValue> seeds) :
 
 DataDependency::~DataDependency()
 {
-  std::map<ConcreteProgramPoint, DataDependencyLocalContext *>::iterator i =
+  std::map<MicrocodeAddressProgramPoint, DataDependencyLocalContext *>::iterator i =
     the_fixpoint.begin ();
-  std::map<ConcreteProgramPoint, DataDependencyLocalContext *>::iterator end =
+  std::map<MicrocodeAddressProgramPoint, DataDependencyLocalContext *>::iterator end =
     the_fixpoint.end ();
   for (; i != end; i++)
     delete (*i).second;
@@ -615,7 +617,7 @@ bool DataDependency::InverseStep()
   StaticArrow * the_arrow = pending_arrows.front();
   pending_arrows.pop_front();
   DataDependencyLocalContext * target_context = 
-    get_local_context(ConcreteProgramPoint(the_arrow->get_concrete_target()));
+    get_local_context(MicrocodeAddressProgramPoint(the_arrow->get_concrete_target()));
 
   if (target_context == NULL)
     {
@@ -645,7 +647,7 @@ bool DataDependency::InverseStep()
       logs::debug << endl;
     }
 
-  ConcreteProgramPoint origin_pp (the_arrow->get_origin());
+  MicrocodeAddressProgramPoint origin_pp (the_arrow->get_origin());
   DataDependencyLocalContext *origin_context = get_local_context (origin_pp);
   bool need_update = true;
 
@@ -679,7 +681,8 @@ DataDependency::ComputeFixpoint (int max_step_nb)
 }
 
 Expr * 
-DataDependency::get_dependencies (ConcreteProgramPoint pp, int max_step_nb) 
+DataDependency::get_dependencies (const MicrocodeAddressProgramPoint &pp, 
+				  int max_step_nb) 
 {
   Expr *result;
   DataDependencyLocalContext *ctxt = get_local_context (pp);
@@ -695,7 +698,7 @@ DataDependency::get_dependencies (ConcreteProgramPoint pp, int max_step_nb)
 }
 
 std::vector<Expr*> 
-DataDependency::get_simple_dependencies(ConcreteProgramPoint pp, 
+DataDependency::get_simple_dependencies(const MicrocodeAddressProgramPoint &pp, 
 					int max_step_nb) 
 {
   Expr *result = get_dependencies (pp, max_step_nb);
@@ -709,7 +712,7 @@ DataDependency::get_simple_dependencies(ConcreteProgramPoint pp,
 /*****************************************************************************/
 
 std::vector<StmtArrow*> 
-DataDependency::slice_it (Microcode *prg, MicrocodeAddress seed_loc, 
+DataDependency::slice_it (Microcode *prg, const MicrocodeAddress &seed_loc, 
 			  const Expr * seed) 
 {
   list<const LValue*> seeds = nested_dependencies (seed);
@@ -722,7 +725,8 @@ DataDependency::slice_it (Microcode *prg, MicrocodeAddress seed_loc,
 }
 
 std::vector<StmtArrow*> 
-DataDependency::slice_it(Microcode *prg, std::list<LocatedLValue> seeds) {
+DataDependency::slice_it(Microcode *prg, 
+			 const std::list<LocatedLValue> &seeds) {
   DataDependency::ConsiderJumpCondMode(true);
   DataDependency::OnlySimpleSetsMode(true);
 

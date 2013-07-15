@@ -21,13 +21,14 @@ public:
   virtual PP *next (const MicrocodeAddress &addr) const = 0;
 
   virtual bool equals (const PP *) const = 0;
-
+  virtual bool equals (const PP &) const = 0;
+  virtual bool lessThan(const PP &other) const = 0;
   virtual std::size_t hashcode () const = 0;
 
   virtual void output_text (std::ostream &) const = 0;
 
 private:
-  mutable int refcount;
+  mutable int refcount;  
 };
 
 # include <analyses/cfgrecovery/AbstractProgramPoint.ii>
