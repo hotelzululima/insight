@@ -1,0 +1,48 @@
+#ifndef ABSTRACTDOMAINCONTEXT_II
+# define ABSTRACTDOMAINCONTEXT_II
+
+template <typename MEM>
+AbstractDomainContext<MEM>::AbstractDomainContext (Memory *mem) 
+  : AbstractContext  (), memory (mem)
+{
+}
+
+template <typename MEM>
+AbstractDomainContext<MEM>::~AbstractDomainContext ()
+{
+  delete memory;
+}
+
+template <typename MEM>
+typename AbstractDomainContext<MEM>::Memory *
+AbstractDomainContext<MEM>::get_memory () const
+{
+  return memory;
+}
+
+template <typename MEM>
+bool 
+AbstractDomainContext<MEM>::equals (const AbstractContext *ctx) const 
+{
+  const AbstractDomainContext<Memory> *dsc = 
+    dynamic_cast<const AbstractDomainContext<Memory> *> (ctx);
+  return dsc != NULL && dsc->memory->equals (*memory);
+}
+
+template <typename MEM>
+std::size_t 
+AbstractDomainContext<MEM>::hashcode () const 
+{
+  return memory->hashcode ();
+}
+
+template <typename MEM>
+void 
+AbstractDomainContext<MEM>::output_text (std::ostream &out) const 
+{
+  out << "mem = ";
+  memory->output_text (out);
+  out << std::endl;
+}
+
+#endif /* ! ABSTRACTDOMAINCONTEXT_II */
