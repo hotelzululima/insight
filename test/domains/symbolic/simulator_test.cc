@@ -27,14 +27,18 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef INSIGHT_CONFIG_FILE
+# error INSIGHT_CONFIG_FILE is not defined
+#endif
 
 #include <atf-c++.hpp>
 #include <string>
 #include <sstream>
 
-#include <analyses/microcode_exec.hh>
+#include <kernel/annotations/AsmAnnotation.hh>
 #include <decoders/DecoderFactory.hh>
-#include <domains/symbolic/SymbolicExecContext.hh>
+#include <domains/symbolic/SymbolicStepper.hh>
+#include <analyses/cfgrecovery/DomainSimulator.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
@@ -47,117 +51,115 @@
 
 using namespace std;
 
-#define EXCEPTION_HANDLING_ADDR 0x12FA792
 #define FAILURE_ADDR 0x6666
 #define SUCCESS_ADDR 0x1111
+#define EXCEPTION_HANDLING_ADDR (FAILURE_ADDR+20)
+
+typedef DomainSimulator<SymbolicStepper> SymbolicSimulator;
+
+static Microcode *
+s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+	     Decoder *decoder)
+{
+  Microcode *result = new Microcode ();
+  SymbolicSimulator::Stepper *stepper = 
+    new SymbolicSimulator::Stepper (memory, decoder->get_arch ());
+  SymbolicSimulator::StateSpace *states =  
+    new SymbolicSimulator::StateSpace ();
+  SymbolicSimulator::Traversal rec (memory, decoder, stepper, states, result);
+
+  rec.set_show_states (false);
+  rec.set_show_pending_arrows (false);
+  rec.set_number_of_visits_per_address (1000);
+  stepper->set_map_dynamic_jumps_to_memory (true);
+  stepper->set_dynamic_jump_threshold (50);
+  rec.compute (*entrypoint);
+
+  delete stepper;
+  delete states;
+  
+  return result;
+}
+
+static bool
+s_program_has_node (Microcode *prg, address_t addr)
+{
+  bool result;
+
+  try
+    {
+      MicrocodeAddress ma (addr, 0);
+      MicrocodeNode *node = prg->get_node (ma);
+      result = node->has_annotation (AsmAnnotation::ID);
+    }
+  catch (GetNodeNotFoundExc &)
+    {
+      result = false;
+    }
+  return result;
+}
 
 static void 
 s_simulate (const char *filename)
 {
   ConfigTable ct;
+
+  fstream config (INSIGHT_CONFIG_FILE, fstream::in);
+  ATF_REQUIRE  (config.is_open ());
+  ct.load (config);
+  config.close();
+
   ct.set (logs::DEBUG_ENABLED_PROP, false);
   ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
-  {
-    BinaryLoader *loader = new BinutilsBinaryLoader (filename);
-    ConcreteMemory *memory = loader->get_memory();
-    const Architecture *A = loader->get_architecture ();
-    // Must initialize registers
-    for (RegisterSpecs::const_iterator i = A->get_registers ()->begin ();
+
+  BinaryLoader *loader = new BinutilsBinaryLoader (filename);
+  const Architecture *A = loader->get_architecture ();
+  ConcreteMemory *memory = loader->get_memory();
+  MicrocodeArchitecture arch (loader->get_architecture ());
+  Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
+  ConcreteAddress start = loader->get_entrypoint ();
+
+  logs::display << "Entry-point := " << start << endl;
+   // Must initialize registers
+  for (RegisterSpecs::const_iterator i = A->get_registers ()->begin ();
 	 i != A->get_registers ()->end (); i++)
-      {
-	if (! i->second->is_alias ())
-	  memory->put (i->second, 		     
-		       ConcreteValue (i->second->get_register_size (), 0) );
-      }
-    MicrocodeArchitecture arch (A);
-
-    Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
-    ConcreteAddress start = loader->get_entrypoint ();
-
-    logs::display << "Entry-point := " << start << endl;
-    SymbolicExecContext *ctxt = new SymbolicExecContext (memory, decoder);
-
-    ctxt->init (SymbolicContext::empty_context (memory));
-
-    MicrocodeAddress lastaddr;
-    MicrocodeAddress newaddr = ctxt->get_current_program_point ().to_address ();
-
-    SymbolicExecContext::Context *last_context = NULL;
-
-    for (;;)
-      {      
-	lastaddr = newaddr;
-
-	bool simulation_can_continue = ctxt->step();
-
-	if (!(simulation_can_continue && 
-	      ctxt->get_current_context ().hasValue ()))
-	  break;
-
-	if (last_context != NULL)
-	  delete last_context;
-	last_context =  ctxt->get_current_context ().getValue ()->clone ();
-	last_context->memory->output_text (logs::display);
-	logs::display << endl;
-
-	ATF_REQUIRE (simulation_can_continue);
-	ATF_REQUIRE (ctxt->pending_arrows.size () > 0);
-
-	newaddr = ctxt->get_current_program_point ().to_address ();
-      
-	if (lastaddr.equals (newaddr))
-	  {
-	    SymbolicExecContext::Arrow pa = ctxt->pending_arrows.front ();
-
-	    if (! pa.arr->is_static ())
-	      continue;
-	  
-	    StaticArrow *a = dynamic_cast<StaticArrow *> (pa.arr);
-	    if (a->get_condition () != NULL)
-	      {
-		SymbolicExecContext::Context *c = 
-		  ctxt->get_current_context ().getValue ();
-		SymbolicValue v = c->eval (a->get_condition ());
-		if (! v.to_bool().getValue ())
-		  continue;
-	      }
-	    if (a->get_target().equals (lastaddr))
-	      break;
-	  }
-      }
-
-    ATF_REQUIRE (last_context != NULL);
+    {
+      if (! i->second->is_alias ())
+	memory->put (i->second, 		     
+		     ConcreteValue (i->second->get_register_size (), 0) );
+    }
+  Microcode *prg = s_build_cfg (&start, memory, decoder);
   
-    ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
-    ATF_REQUIRE (last_context->memory->is_defined (exception_handling_addr));
+  prg->sort ();
 
-    SymbolicValue check_exception = 
-      last_context->memory->get (exception_handling_addr, 1, 
-				 arch.get_endian ());
+  logs::display << "Microcode program : " << endl
+		<< prg->pp () << endl;
 
-    if (! check_exception.to_bool().getValue ())
-      {
-	ATF_REQUIRE (lastaddr.getLocal () == 0);
-	ATF_REQUIRE (lastaddr.getGlobal () == FAILURE_ADDR ||
-		     lastaddr.getGlobal () == SUCCESS_ADDR);
-	ATF_REQUIRE (lastaddr.getGlobal () == SUCCESS_ADDR);
-      }
-    else
-      {
-	ATF_REQUIRE (lastaddr.getGlobal () != FAILURE_ADDR);
-	ATF_REQUIRE (lastaddr.getGlobal () != SUCCESS_ADDR);
-	ATF_REQUIRE (ctxt->pending_arrows.size () == 0);
-      }
-    delete last_context;
-    delete ctxt; 
-    delete loader;
-    delete decoder;
-    delete memory;
-  }
+  ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
+  ATF_REQUIRE (memory->is_defined (exception_handling_addr));
+  
+  ConcreteValue check_exception = memory->get (exception_handling_addr, 1, 
+					       arch.get_endian ());
+
+  if (! check_exception.get ())
+    {
+      ATF_REQUIRE (s_program_has_node (prg, SUCCESS_ADDR));
+      ATF_REQUIRE (! s_program_has_node (prg, FAILURE_ADDR));
+    }
+  else
+    {
+      ATF_REQUIRE (! s_program_has_node (prg, SUCCESS_ADDR));
+      ATF_REQUIRE (! s_program_has_node (prg, FAILURE_ADDR));
+    }
+  delete prg;
+  delete loader;
+  delete decoder;
+  delete memory;
   insight::terminate ();
+
 }
 
 #include "simulator_test_cases.hh"

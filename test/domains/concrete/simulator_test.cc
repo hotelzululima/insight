@@ -32,9 +32,10 @@
 #include <string>
 #include <sstream>
 
-#include <analyses/microcode_exec.hh>
+#include <kernel/annotations/AsmAnnotation.hh>
 #include <decoders/DecoderFactory.hh>
-#include <domains/concrete/concrete_context.hh>
+#include <domains/concrete/ConcreteStepper.hh>
+#include <analyses/cfgrecovery/DomainSimulator.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
@@ -47,9 +48,51 @@
 
 using namespace std;
 
-#define EXCEPTION_HANDLING_ADDR 0x12FA792
 #define FAILURE_ADDR 0x6666
 #define SUCCESS_ADDR 0x1111
+#define EXCEPTION_HANDLING_ADDR (FAILURE_ADDR+20)
+
+typedef DomainSimulator<ConcreteStepper> ConcreteSimulator;
+
+static Microcode *
+s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+	     Decoder *decoder)
+{
+  Microcode *result = new Microcode ();
+  ConcreteSimulator::Stepper *stepper = 
+    new ConcreteSimulator::Stepper (memory, decoder->get_arch ());
+  ConcreteSimulator::StateSpace *states =  
+    new ConcreteSimulator::StateSpace ();
+  ConcreteSimulator::Traversal rec (memory, decoder, stepper, states, result);
+
+  rec.set_show_states (false);
+  rec.set_show_pending_arrows (false);
+  rec.set_number_of_visits_per_address (-1);
+  rec.compute (*entrypoint);
+
+  delete stepper;
+  delete states;
+  
+  return result;
+}
+
+static bool
+s_program_has_node (Microcode *prg, address_t addr)
+{
+  bool result;
+
+  try
+    {
+      MicrocodeAddress ma (addr, 0);
+      MicrocodeNode *node = prg->get_node (ma);
+      result = node->has_annotation (AsmAnnotation::ID);
+    }
+  catch (GetNodeNotFoundExc &)
+    {
+      result = false;
+    }
+  return result;
+}
 
 static void 
 s_simulate (const char *filename)
@@ -68,83 +111,29 @@ s_simulate (const char *filename)
   ConcreteAddress start = loader->get_entrypoint ();
 
   logs::display << "Entry-point := " << start << endl;
-  Microcode *prg = Build_Microcode (&arch, memory, start);
-  ConcreteExecContext *ctxt = new ConcreteExecContext (memory, decoder, prg);
-  ctxt->init (ConcreteContext::empty_context ());
-  MicrocodeAddress lastaddr;
-  MicrocodeAddress newaddr = ctxt->get_current_program_point ().to_address ();
-  ConcreteExecContext::Context *last_context = NULL;
-
+  Microcode *prg = s_build_cfg (&start, memory, decoder);
+  
   prg->sort ();
 
   logs::display << "Microcode program : " << endl
-       << prg->pp () << endl;
+		<< prg->pp () << endl;
 
-  for (;;)
-    {      
-      lastaddr = newaddr;
-
-      bool simulation_can_continue = ctxt->step();
-      if (!(simulation_can_continue && 
-	    ctxt->get_current_context ().hasValue ()))
-	break;
-      
-      if (last_context != NULL)
-	delete last_context;
-      last_context =  ctxt->get_current_context ().getValue ()->clone ();
-      last_context->memory->ConcreteMemory::output_text (logs::display);
-      logs::display << endl;
-
-      ATF_REQUIRE (simulation_can_continue);
-      ATF_REQUIRE (ctxt->pending_arrows.size () > 0);
-
-      newaddr = ctxt->get_current_program_point ().to_address ();
-      
-      if (lastaddr.equals (newaddr))
-	{
-	  ConcreteExecContext::Arrow pa = ctxt->pending_arrows.front ();
-
-	  if (! pa.arr->is_static ())
-	    continue;
-	  
-	  StaticArrow *a = dynamic_cast<StaticArrow *> (pa.arr);
-	  if (a->get_condition () != NULL)
-	    {
-	      ConcreteExecContext::Context *c = 
-		ctxt->get_current_context ().getValue ();
-	      ConcreteValue v = c->eval (a->get_condition ());
-	      if (! v.get ())
-		continue;
-	    }
-	  if (a->get_target().equals (lastaddr))
-	    break;
-	}
-    }
-
-  ATF_REQUIRE (last_context != NULL);
-  
   ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
-  ATF_REQUIRE (last_context->memory->is_defined (exception_handling_addr));
+  ATF_REQUIRE (memory->is_defined (exception_handling_addr));
   
-  ConcreteValue check_exception = 
-    last_context->memory->get (exception_handling_addr, 1, 
-			       arch.get_endian ());
+  ConcreteValue check_exception = memory->get (exception_handling_addr, 1, 
+					       arch.get_endian ());
 
   if (! check_exception.get ())
     {
-      ATF_REQUIRE (lastaddr.getLocal () == 0);
-      ATF_REQUIRE (lastaddr.getGlobal () == FAILURE_ADDR ||
-		   lastaddr.getGlobal () == SUCCESS_ADDR);
-      ATF_REQUIRE (lastaddr.getGlobal () == SUCCESS_ADDR);
+      ATF_REQUIRE (s_program_has_node (prg, SUCCESS_ADDR));
+      ATF_REQUIRE (! s_program_has_node (prg, FAILURE_ADDR));
     }
   else
     {
-      ATF_REQUIRE (lastaddr.getGlobal () != FAILURE_ADDR);
-      ATF_REQUIRE (lastaddr.getGlobal () != SUCCESS_ADDR);
-      ATF_REQUIRE (ctxt->pending_arrows.size () == 0);
+      ATF_REQUIRE (! s_program_has_node (prg, SUCCESS_ADDR));
+      ATF_REQUIRE (! s_program_has_node (prg, FAILURE_ADDR));
     }
-  delete last_context;
-  delete ctxt; 
   delete prg;
   delete loader;
   delete decoder;
