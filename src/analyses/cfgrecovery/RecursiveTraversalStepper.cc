@@ -41,7 +41,6 @@ RecursiveTraversal::Stepper::get_successors (const State *s,
       for (list<MicrocodeAddress>::iterator i = successors.begin ();
 	   i != successors.end (); i++)
 	{
-	  ctx->ref ();
 	  State *new_s = new State (pp->next (*i), ctx->clone ());
 	  result->insert (new_s);
 	}
