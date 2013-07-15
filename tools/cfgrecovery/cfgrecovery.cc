@@ -47,7 +47,7 @@
 #include <io/microcode/dot-writer.hh>
 
 #include <config.h>
-#include "symbexec.hh"
+#include "algorithms.hh"
 #include "cfgrecovery.hh"
 
 using namespace std;
@@ -66,13 +66,11 @@ struct disassembler {
 } disassemblers[] = {
   /* List must be kept sorted by name */
   { "flood", "flood traversal", flood_traversal },
-  { "linear", "linear sweep", linearsweep },
-  { "recursive", "recursive traversal", recursivetraversal },
-  { "symsim", "symbolic simulation", symbexec },
-  { "sim=symbolic", "symbolic traversal (require an SMT solver with QF_AUFBV).",
-    symbexec },
-  { "sim=concrete", "simulation within concrete domain.",
-    concexec },
+  { "linear", "linear sweep", linear_sweep },
+  { "recursive", "recursive traversal", recursive_traversal },
+  { "symsim", "symbolic simulation", symbolic_simulator },
+  { "sim=symbolic", "symbolic simulation.", symbolic_simulator },
+  { "sim=concrete", "simulation within concrete domain.", concrete_simulator },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };

@@ -27,21 +27,38 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <utils/logs.hh>
-#include <symbexec.hh>
-#include <simulator.hh>
 
+#ifndef ALGORITHMS_HH
+#define ALGORITHMS_HH
 
-Microcode *
-symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
-	  Decoder *decoder)
-{
-  return simulator (entrypoint, memory, decoder, SYMBOLIC_DOMAIN);
+# include <kernel/Microcode.hh>
+# include <domains/concrete/ConcreteMemory.hh>
+# include <decoders/Decoder.hh>
 
-}
-Microcode *
-concexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
-	  Decoder *decoder)
-{
-  return simulator (entrypoint, memory, decoder, CONCRETE_DOMAIN);
-}
+extern Microcode * 
+linear_sweep(const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+	    Decoder * decoder)
+  throw (Decoder::Exception &);
+
+extern Microcode *
+flood_traversal (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+		 Decoder *decoder)
+  throw (Decoder::Exception &);
+
+extern Microcode * 
+recursive_traversal (const ConcreteAddress * entrypoint, 
+		     ConcreteMemory * memory,
+		     Decoder * decoder)
+  throw (Decoder::Exception &);
+
+extern Microcode * 
+symbolic_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+		    Decoder * decoder)
+  throw (Decoder::Exception &);
+
+extern Microcode * 
+concrete_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+		    Decoder * decoder)
+  throw (Decoder::Exception &);
+
+#endif /* ALGORITHMS_HH */
