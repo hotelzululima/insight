@@ -167,6 +167,8 @@ SymbolicMemory::clone () const
   for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) {
     result->memory[i->first] = i->second;
   }
+  result->minaddr = minaddr;
+  result->maxaddr = maxaddr;
 
   return result;
 }
@@ -215,6 +217,9 @@ SymbolicMemory::equals (const SymbolicMemory &mem) const
   if (memory.size () != mem.memory.size ())
     return false;
 
+  if (base != mem.base)
+    return false;
+
   try 
     {
       for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); 
@@ -226,23 +231,9 @@ SymbolicMemory::equals (const SymbolicMemory &mem) const
 	    return false;
 	}
 
-      for (MemoryMap::const_iterator i = mem.memory.begin (); 
-	   i != mem.memory.end (); i++) 
-	{
-	  if (! is_defined (i->first) || 
-	      ! (get (i->first, 1, Architecture::LittleEndian) == i->second))
-	    return false;
-	}
-
       for (RegisterMap<SymbolicValue>::const_reg_iterator i = regs_begin ();
 	   i != regs_end (); i++) {
 	if (! mem.is_defined (i->first) || ! (mem.get (i->first) == i->second))
-	  return false;
-      }
-
-      for (RegisterMap<SymbolicValue>::const_reg_iterator i = mem.regs_begin ();
-	   i != mem.regs_end (); i++) {
-	if (! is_defined (i->first) || ! (get (i->first) == i->second))
 	  return false;
       }
     } 
