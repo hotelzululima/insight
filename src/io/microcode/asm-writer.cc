@@ -32,22 +32,31 @@
 #include "asm-writer.hh"
 
 void 
-asm_writer (std::ostream &out, const Microcode *mc)
+asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader)
 {
-  std::vector<MicrocodeNode *> *nodes = mc->get_nodes();
-  int nb_nodes = nodes->size ();
-  
-  for (int i = 0; i < nb_nodes; i++)
+  for (Microcode::node_iterator N = mc->begin_nodes (); N != mc->end_nodes (); 
+       N++)
     {
-      MicrocodeNode *N = nodes->at (i);
-
       if (! N->has_annotation (AsmAnnotation::ID))
 	continue;
+      MicrocodeAddress ma (N->get_loc ());
 
+      if (loader && ma.getLocal () == 0)
+	{
+	  Option<std::string> fun = loader->get_symbol_name (ma.getGlobal ());
+
+	  if (fun.hasValue ())
+	    {
+	      out << std::hex << std::setfill ('0') << std::setw (8) 
+		  << ma.getGlobal () 
+		  << std::setw (0) 
+		  << " <" << fun.getValue () << ">: " << std::endl;
+	    }
+	}
       AsmAnnotation *a = (AsmAnnotation *) 
 	N->get_annotation (AsmAnnotation::ID);
 
-      out << std::right << std::hex << std::setw (8) 
+      out << std::right << std::hex << std::setw (8) << std::setfill (' ')
 	  << N->get_loc ().getGlobal () << ":\t" 
 	  << a->get_value () << std::endl;
     }

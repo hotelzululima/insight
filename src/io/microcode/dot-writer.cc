@@ -110,11 +110,10 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 
   if (! graphlabel.empty ())
     out << " label=\"" << graphlabel << "\"; " << endl;
-  std::vector<MicrocodeNode *>* ns = mc->get_nodes();
-  for (std::vector<MicrocodeNode *>::iterator it = ns->begin(); 
-       it != ns->end(); ++it)
+
+  for (Microcode::node_iterator it = mc->begin_nodes (); 
+       it != mc->end_nodes(); ++it)
     {
-      MicrocodeNode *n = *it;
       std::string pp;
 
       MicrocodeAddress ma = n->get_loc ();
