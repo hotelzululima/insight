@@ -55,7 +55,7 @@ using namespace std;
 	     "15{0;32}")					    \
   EVAL_TEST (E2, "(MUL_S %eax{0;8} %ebx{0;8}){0;16}", \
     "(AND (EQ %eax{0;32} 0x4{0;32}) (EQ %ebx{0;32} 0xFE{0;32})){0;1}", \
-	     "0xFFmaF8{0;16}")
+	     "0xFFF8{0;16}")
 
 #define SOLVER_TEST(id, e, res)     \
 ATF_TEST_CASE(id)		    \
