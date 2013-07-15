@@ -433,6 +433,18 @@ vector<MicrocodeNode *> * Microcode::get_nodes()   const
   return nodes;
 }
 
+node_iterator 
+Microcode::begin_nodes () const
+{
+  return nodes->begin ();
+}
+
+node_iterator 
+Microcode::end_nodes () const
+{
+  return nodes->end ();
+}
+
 void Microcode::add_node(MicrocodeNode *n)
 {
   // TODO: optimization !

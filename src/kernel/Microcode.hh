@@ -54,12 +54,15 @@ public:
     virtual void add_node (Microcode *mc, StmtArrow *e) = 0;
   };
 
+  typedef std::vector<MicrocodeNode *> NodeStore;
+  typedef NodeStore::iterator node_iterator;
+
 /*****************************************************************************/
 private:
 
   /*! \brief A microcode program is simply defined as a collection of
    * nodes. */
-  std::vector<MicrocodeNode *> * nodes;
+  NodeStore * nodes;
   /*! \brief the entry point of the program */
   MicrocodeAddress start;
 
@@ -93,6 +96,9 @@ public:
   MicrocodeNode * get_or_create_node(MicrocodeAddress addr);
   void add_node(MicrocodeNode *n);
   std::vector<MicrocodeNode *> * get_nodes() const;
+  
+  node_iterator begin_nodes () const;
+  node_iterator end_nodes () const;
 
   void add_arrow_creation_callback (ArrowCreationCallback *cb);
   void remove_arrow_creation_callback (ArrowCreationCallback *cb);
