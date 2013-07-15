@@ -60,7 +60,7 @@ RegisterDesc::RegisterDesc (int index, const std::string &label, int regsize,
 void
 RegisterDesc::output_text(ostream &os) const
 {
-  os << this->label << "{" << this->window_offset 
+  os << this->label << std::dec << "{" << this->window_offset 
      << ";" << this->window_size << "}";
 }
 
