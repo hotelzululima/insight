@@ -89,6 +89,7 @@ public:
   MicrocodeAddress get_loc() const;
   std::vector<StmtArrow *> * get_successors() const;
   std::vector<StmtArrow *> * get_predecessors() const;
+  std::vector<MicrocodeNode *> get_global_parents () const;
 
   /* equality of location only (not successors) */
   bool operator==(const MicrocodeNode &) const;
@@ -303,6 +304,8 @@ public:
     target attribute. */
   friend std::vector<Expr **>* MicrocodeNode::expr_list();
   std::string pp() const;
+
+  void add_solved_jump (MicrocodeAddress tgt);
 };
 
 /* MicrocodeAddress Hash function */
