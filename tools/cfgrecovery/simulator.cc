@@ -13,6 +13,8 @@ const std::string SIMULATOR_X86_32_INIT_EBP_PROP =
   "disas.simulator.x86_32.init-ebp";
 const std::string SIMULATOR_NB_VISITS_PER_ADDRESS =
   "disas.simulator.nb-visits-per-address";
+const std::string SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS =
+  "disas.simulator.warn-unsolved-dynamic-jumps";
 const std::string SIMULATOR_DEBUG_SHOW_STATES =
   "disas.simulator.debug.show-states";
 const std::string SIMULATOR_DEBUG_SHOW_PENDING_ARROWS =
@@ -52,11 +54,15 @@ simulate (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
   StateSpace *states = new StateSpace ();
   Traversal rec (memory, decoder, stepper, states, result);
 
+  bool warn_unsolved = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
+				     false);
   bool show_states = 
     CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
   bool show_pending_arrows = 
     CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
 				     false);
+  rec.set_warn_on_unsolved_dynamic_jump (warn_unsolved);
   rec.set_show_states (show_states);
   rec.set_show_pending_arrows (show_pending_arrows);
   int max_nb_visits =

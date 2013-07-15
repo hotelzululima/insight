@@ -9,7 +9,7 @@ AbstractMemoryTraversal<AlgoSpec>::
    memory (memory), worklist(), stepper (stepper), 
    decoder (decoder), program (mc), states (states), 
    nb_visits_per_address (-1), show_states (false), 
-   show_pending_arrows (false) 
+   show_pending_arrows (false),  warn_unsolved_dynamic_jump (false)
 {
 }
 
@@ -30,6 +30,14 @@ void
 AbstractMemoryTraversal<AlgoSpec>::set_show_pending_arrows (bool value) 
 {
   show_pending_arrows = value;
+}
+
+template<typename AlgoSpec>
+void 
+AbstractMemoryTraversal<AlgoSpec>::set_warn_on_unsolved_dynamic_jump (bool 
+								      value)
+{
+  warn_unsolved_dynamic_jump = value;
 }
 
 template<typename AlgoSpec>
@@ -55,18 +63,26 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint)
       try 
 	{
 	  StateSet *succ = stepper->get_successors (pa.s, pa.arrow);
+	  DynamicArrow *da = dynamic_cast<DynamicArrow *> (pa.arrow);
 	
-	  for (typename StateSet::iterator i = succ->begin(); 
-	       i != succ->end ();  i++) 
+	  if (da != NULL && succ->size () == 0)
 	    {
-	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (pa.arrow);
-	      if (da != NULL)
+	      logs::warning << "unable to solve dynmic jump " 
+			    << da->pp() << std::endl;
+	    }
+	  else
+	    {
+	      for (typename StateSet::iterator i = succ->begin(); 
+		   i != succ->end ();  i++) 
 		{
-		  MicrocodeAddress a =
-		    (*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
-		  da->add_solved_jump (a);
+		  if (da != NULL)
+		    {
+		      MicrocodeAddress a =
+			(*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
+		      da->add_solved_jump (a);
+		    }
+		  computePendingArrowsFor (*i);
 		}
-	      computePendingArrowsFor (*i);
 	    }
 	  if (show_states)
 	    logs::debug << "# state " << states->size() << std::endl;

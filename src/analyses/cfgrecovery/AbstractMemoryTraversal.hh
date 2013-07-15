@@ -35,6 +35,8 @@ public:
 
   void set_show_pending_arrows (bool value);
 
+  void set_warn_on_unsolved_dynamic_jump (bool value);
+
   void set_number_of_visits_per_address (int value);
 
   void compute (const ConcreteAddress &entrypoint);
@@ -61,6 +63,7 @@ private:
   std::tr1::unordered_map<address_t,int> visits;
   bool show_states;
   bool show_pending_arrows;
+  bool warn_unsolved_dynamic_jump;
 };
 
 # include <analyses/cfgrecovery/AbstractMemoryTraversal.ii>

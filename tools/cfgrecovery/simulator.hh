@@ -42,6 +42,7 @@ enum DomainName {
 
 extern const std::string SIMULATOR_X86_32_INIT_ESP_PROP;
 extern const std::string SIMULATOR_NB_VISITS_PER_ADDRESS;
+extern const std::string SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS;
 extern const std::string SIMULATOR_DEBUG_SHOW_STATES;
 extern const std::string SIMULATOR_DEBUG_SHOW_PENDING_ARROWS;
 
