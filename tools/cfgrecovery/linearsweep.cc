@@ -30,6 +30,7 @@
 
 #include <stdlib.h>
 #include <analyses/cfgrecovery/LinearSweep.hh>
+#include "cfgrecovery.hh"
 #include "simulator.hh"
 
 Microcode *

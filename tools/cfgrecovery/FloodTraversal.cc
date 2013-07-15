@@ -28,6 +28,7 @@
  * SUCH DAMAGE.
  */
 #include <analyses/cfgrecovery/FloodTraversal.hh>
+#include "cfgrecovery.hh"
 #include "simulator.hh"
 
 /* Flood traversal disassembly method */

@@ -48,4 +48,19 @@ extern std::ofstream output_file;              /* output file */
 extern const ConfigTable *CFGRECOVERY_CONFIG;
 const std::string CFGRECOVERY_CONFIG_FILENAME = ".cfgrecoveryrc";
 
+extern Microcode * 
+linearsweep(const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+	    Decoder * decoder)
+  throw (Decoder::Exception &);
+
+extern Microcode *
+flood_traversal (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+		 Decoder *decoder)
+  throw (Decoder::Exception &);
+
+extern Microcode * 
+recursivetraversal (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
+		    Decoder * decoder)
+  throw (Decoder::Exception &);
+
 #endif /* CFGRECOVERY_HH */

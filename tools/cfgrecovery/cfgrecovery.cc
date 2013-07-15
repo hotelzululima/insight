@@ -47,11 +47,7 @@
 #include <io/microcode/dot-writer.hh>
 
 #include <config.h>
-#include "FloodTraversal.hh"
-#include "linearsweep.hh"
-#include "recursivetraversal.hh"
 #include "symbexec.hh"
-
 #include "cfgrecovery.hh"
 
 using namespace std;
