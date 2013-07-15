@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  *
@@ -28,29 +28,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef KERNEL_ANNOTATIONS_GENERICANNOTATION_HH
-#define KERNEL_ANNOTATIONS_GENERICANNOTATION_HH
-
-#include <kernel/annotations/AbstractAnnotation.hh>
+#ifndef ABSTRACTANNOTATION_HH
+# define ABSTRACTANNOTATION_HH
 
 template <typename T>
-class GenericAnnotation : public AbstractAnnotation<T>
+class AbstractAnnotation : public Annotation
 {
+protected:
+  T value;
+
+  AbstractAnnotation (const T &v) : Annotation(), value (v) { }
+
 public:
-  GenericAnnotation (const T &v) : AbstractAnnotation<T> (v) { 
-  }
 
-  virtual ~GenericAnnotation () { 
-  } 
+  virtual ~AbstractAnnotation () { } 
 
-  virtual void output_text (std::ostream &out) const { 
-    out << this->value;
-  }
+  virtual void output_text (std::ostream &out) const = 0;
+  virtual void *clone () const = 0;
 
-  virtual void *clone () const { 
-    return new GenericAnnotation (this->value); 
-  }
+  virtual const T &get_value () const { return value; }
 };
 
 
-#endif /* ! KERNEL_ANNOTATIONS_GENERICANNOTATION_HH */
+#endif /* ! ABSTRACTANNOTATION_HH */
