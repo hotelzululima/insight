@@ -166,6 +166,45 @@ ConcreteMemory::put(const RegisterDesc *r, ConcreteValue v)
 /* Utils                                                                     */
 /*****************************************************************************/
 
+bool 
+ConcreteMemory::equals (const ConcreteMemory &mem) const
+{
+  if (memory.size () != mem.memory.size ())
+    return false;
+
+  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) 
+    {
+      if (! mem.is_defined (i->first) || 
+	  ! (mem.get (i->first, 1, 
+		      Architecture::LittleEndian).get () == i->second))
+	    return false;
+    }
+
+  for (RegisterMap<ConcreteValue>::const_reg_iterator i = mem.regs_begin ();
+       i != mem.regs_end (); i++) {
+    if (! is_defined (i->first) || ! (get (i->first).equals(i->second)))
+      return false;
+  }
+
+  return true;
+}
+
+std::size_t 
+ConcreteMemory::hashcode () const
+{
+  std::size_t result = 0;
+  
+  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++)
+    result = ((result << 3) + 19 * i->second);
+
+  for (RegisterMap<ConcreteValue>::const_reg_iterator i = regs_begin ();
+       i != regs_end (); i++) {
+    result = ((result << 3) + 19 * (intptr_t) i->second.get ());
+  }
+
+  return result;
+}
+
 void
 ConcreteMemory::output_text(ostream &os) const
 {
