@@ -11,6 +11,9 @@ all:
 
 ## analyses module
 analyses_sources = \
+        analyses/cfgrecovery/AlgorithmFactory.hh \
+        analyses/cfgrecovery/AlgorithmFactory.cc \
+        \
         analyses/cfgrecovery/AbstractContext.hh \
         analyses/cfgrecovery/AbstractContext.cc \
         analyses/cfgrecovery/AbstractDomainContext.hh \
