@@ -47,11 +47,10 @@ namespace logs
 
 
   extern bool debug_is_on;
-
-
   
   extern std::string DEBUG_ENABLED_PROP;
   extern std::string STDIO_ENABLED_PROP;
+  extern std::string STDIO_ENABLE_WARNINGS_PROP;
   extern std::string STDIO_DEBUG_IS_CERR_PROP;
   extern std::string STDIO_DEBUG_MAXLEVEL_PROP;
   extern std::string STDIO_DEBUG_TABSIZE_PROP;
@@ -61,6 +60,9 @@ namespace logs
    * logs.stdio.enabled:
    *   if true then a default listener based on standard streams is set using
    *   add_listener.
+   * 
+   * logs.stdio.enable-warnings:
+   *   if true then warning message are displayed.
    *
    * logs.debug.enabled:
    *   debug_is_on variable is assign the value of this property

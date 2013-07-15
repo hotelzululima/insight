@@ -57,9 +57,10 @@ private:
   int max_debug_level;
   int tabsize;
   ostream *out;
-
+  bool enable_warnings;
 public: 
-  StdStreamListener () : max_debug_level(-1), tabsize (0), out (&std::cout) { }
+  StdStreamListener () : max_debug_level(-1), tabsize (0), out (&std::cout),
+			 enable_warnings (true) { }
 
   ~StdStreamListener () { }
 
@@ -75,13 +76,20 @@ public:
     out = &o;
   }
 
+  void set_enable_warnings (bool value) {
+    enable_warnings = value;
+  }
+
   void error (const std::string &msg) { 
     cerr << msg << endl;
   }
 
   void warning (const std::string &msg) { 
-    cout << msg << endl;
-    cout.flush ();
+    if (enable_warnings)
+      {
+	cout << msg << endl;
+	cout.flush ();
+      }
   }
 
   void display (const std::string &msg) { 
@@ -103,6 +111,7 @@ static StdStreamListener *STDLISTENER = NULL;
 
 std::string logs::DEBUG_ENABLED_PROP = "logs.debug.enabled";
 std::string logs::STDIO_ENABLED_PROP = "logs.stdio.enabled";
+std::string logs::STDIO_ENABLE_WARNINGS_PROP = "logs.stdio.enable-warnings";
 std::string logs::STDIO_DEBUG_IS_CERR_PROP = "logs.stdio.debug.is_cerr"; 
 std::string logs::STDIO_DEBUG_MAXLEVEL_PROP = "logs.stdio.debug.maxlevel";
 std::string logs::STDIO_DEBUG_TABSIZE_PROP = "logs.stdio.debug.tabsize";
@@ -117,6 +126,8 @@ logs::init (const ConfigTable &cfg)
       STDLISTENER = new StdStreamListener ();
       if (cfg.get_boolean (STDIO_DEBUG_IS_CERR_PROP))
       	STDLISTENER->set_out (cerr);
+
+      STDLISTENER->set_enable_warnings (cfg.get_boolean (STDIO_ENABLE_WARNINGS_PROP));
       
       int maxlevel = cfg.get_integer (STDIO_DEBUG_MAXLEVEL_PROP, -1);
       STDLISTENER->set_max_level (maxlevel);
