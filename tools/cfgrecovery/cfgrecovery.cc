@@ -62,7 +62,7 @@ const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
 struct disassembler {
   const char *name;
   const char *desc;
-  Microcode * (*process)(const ConcreteAddress *, ConcreteMemory *, Decoder *);
+  Microcode * (*process)(const ConcreteAddress &, ConcreteMemory *, Decoder *);
 } disassemblers[] = {
   /* List must be kept sorted by name */
   { "flood", "flood traversal", flood_traversal },
@@ -375,7 +375,7 @@ main (int argc, char *argv[])
 
   try
     {
-      mc = dis->process(entrypoint, memory, decoder);
+      mc = dis->process(*entrypoint, memory, decoder);
     }
   catch (Decoder::Exception &e)
     {

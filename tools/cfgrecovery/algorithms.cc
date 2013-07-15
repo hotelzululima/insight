@@ -1,4 +1,4 @@
-#include <analyses/cfgrecovery/recovery_algorithms.hh>
+#include <analyses/cfgrecovery/AlgorithmFactory.hh>
 #include "cfgrecovery.hh"
 #include "algorithms.hh"
 
@@ -20,114 +20,14 @@ static const std::string SYMSIM_DYNAMIC_JUMP_THRESHOLD =
 static const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY =
   "disas.symsim.map-dynamic-jump-to-memory";
 
+typedef AlgorithmFactory::Algorithm * (AlgorithmFactory::* FactoryMethod) ();
 
-Microcode * 
-linear_sweep(const ConcreteAddress * entrypoint, ConcreteMemory * memory,
-	    Decoder * decoder)
-  throw (Decoder::Exception &)
+static Microcode *
+s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
+		Decoder *decoder, FactoryMethod build)
 {
   Microcode *result = new Microcode ();
-  bool show_states = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
-  bool show_pending_arrows = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
-				     false);
-  try
-    {
-      cfgrecovery_linear_sweep (entrypoint, memory, decoder, result, 
-				show_states, show_pending_arrows);
-    }
-  catch (Decoder::Exception &)
-    {
-      delete result;
-      throw;
-    }
-  return result;
-}
-
-Microcode *
-flood_traversal (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
-		 Decoder *decoder)
-  throw (Decoder::Exception &)
-{
-  Microcode *result = new Microcode ();
-  bool show_states = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
-  bool show_pending_arrows = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
-				     false);
-  try
-    {
-      cfgrecovery_flood_traversal (entrypoint, memory, decoder, result, 
-				   show_states, show_pending_arrows);
-    }
-  catch (Decoder::Exception &)
-    {
-      delete result;
-      throw;
-    }
-  return result;
-}
-
-Microcode * 
-recursive_traversal (const ConcreteAddress * entrypoint, 
-		     ConcreteMemory * memory,
-		     Decoder * decoder)
-  throw (Decoder::Exception &)
-{
-  Microcode *result = new Microcode ();
-  bool show_states = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
-  bool show_pending_arrows = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
-				     false);
-  int max_nb_visits =
-    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
-
-  if (max_nb_visits > 0 && verbosity)
-    {
-      logs::warning << "warning: restrict number of visits per program point "
-		    << "to " << std::dec << max_nb_visits << " visits." 
-		    << std::endl;
-    }
-
-  try
-    {
-      cfgrecovery_recursive_traversal (entrypoint, memory, decoder, result, 
-				       show_states, show_pending_arrows,
-				       max_nb_visits);
-    }
-  catch (Decoder::Exception &)
-    {
-      delete result;
-      throw;
-    }
-  return result;
-}
-
-static Microcode * 
-s_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
-	     Decoder * decoder, bool symbolic)
-  throw (Decoder::Exception &)
-{
-  Microcode *result = new Microcode ();
-  bool show_states = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
-  bool show_pending_arrows = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
-				     false);
-  bool warn_unsolved_jumps =
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
-				     false);
-  int max_nb_visits =
-    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
-
-  if (max_nb_visits > 0 && verbosity)
-    {
-      logs::warning << "warning: restrict number of visits per program point "
-		    << "to " << std::dec << max_nb_visits << " visits." 
-		    << std::endl;
-    }
+  AlgorithmFactory F;
 
   if (decoder->get_arch ()->get_proc () == Architecture::X86_32)
     {
@@ -159,30 +59,47 @@ s_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
 	}
     }
 
+  bool show_states = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
+  bool show_pending_arrows = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
+				     false);
+  bool warn_unsolved_jumps =
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
+				     false);
+  int max_nb_visits =
+    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
+
+  if (max_nb_visits > 0 && verbosity)
+    {
+      logs::warning << "warning: restrict number of visits per program point "
+		    << "to " << std::dec << max_nb_visits << " visits." 
+		    << std::endl;
+    }
+  int djmpth = 
+    CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
+  bool djmp2mem = 
+    CFGRECOVERY_CONFIG->get_boolean (SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY);
+
+  F.set_memory (memory);
+  F.set_decoder (decoder); 
+  F.set_show_states (show_states);
+  F.set_show_pending_arrows (show_pending_arrows);
+  F.set_warn_on_unsolved_dynamic_jumps (warn_unsolved_jumps);
+  F.set_map_dynamic_jumps_to_memory (djmp2mem);
+  F.set_dynamic_jumps_threshold (djmpth);
+  F.set_max_number_of_visits_per_address (max_nb_visits);
+ 
+  AlgorithmFactory::Algorithm *algo = (F.* build) ();
+
   try
     {
-      if (symbolic)
-	{
-	  int djmpth = 
-	    CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
-	  bool djmp2mem = 
-	    CFGRECOVERY_CONFIG->get_boolean (SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY);
-	  cfgrecovery_symbolic_simulator (entrypoint, memory, decoder, result, 
-					  show_states, show_pending_arrows,
-					  warn_unsolved_jumps,
-					  max_nb_visits,
-					  djmpth, djmp2mem);
-	}
-      else
-	{
-	  cfgrecovery_concrete_simulator (entrypoint, memory, decoder, result, 
-					  show_states, show_pending_arrows,
-					  warn_unsolved_jumps, 
-					  max_nb_visits);
-	}
+      algo->compute (entrypoint, result);
+      delete algo;
     }
   catch (Decoder::Exception &)
     {
+      delete algo;
       delete result;
       throw;
     }
@@ -190,17 +107,46 @@ s_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
 }
 
 Microcode * 
-symbolic_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
-		    Decoder * decoder)
+linear_sweep(const ConcreteAddress &entrypoint, ConcreteMemory * memory,
+	    Decoder * decoder)
+  throw (Decoder::Exception &)
+{ 
+  return s_generic_call (entrypoint, memory, decoder, 
+			 &AlgorithmFactory::buildLinearSweep);
+}
+
+Microcode *
+flood_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
+		 Decoder *decoder)
   throw (Decoder::Exception &)
 {
-  return s_simulator (entrypoint, memory, decoder, true);
+  return s_generic_call (entrypoint, memory, decoder, 
+			 &AlgorithmFactory::buildFloodTraversal);
 }
 
 Microcode * 
-concrete_simulator (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
-		    Decoder * decoder)
+recursive_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
+		     Decoder *decoder)
   throw (Decoder::Exception &)
 {
-  return s_simulator (entrypoint, memory, decoder, false);
+  return s_generic_call (entrypoint, memory, decoder, 
+			 &AlgorithmFactory::buildRecursiveTraversal);
+}
+
+Microcode * 
+symbolic_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
+		    Decoder *decoder)
+  throw (Decoder::Exception &)
+{
+  return s_generic_call (entrypoint, memory, decoder, 
+			 &AlgorithmFactory::buildSymbolicSimulator);
+}
+
+Microcode * 
+concrete_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
+		    Decoder *decoder)
+  throw (Decoder::Exception &)
+{
+  return s_generic_call (entrypoint, memory, decoder, 
+			 &AlgorithmFactory::buildConcreteSimulator);
 }
