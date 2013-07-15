@@ -34,8 +34,7 @@
 
 #include <kernel/annotations/AsmAnnotation.hh>
 #include <decoders/DecoderFactory.hh>
-#include <domains/concrete/ConcreteStepper.hh>
-#include <analyses/cfgrecovery/DomainSimulator.hh>
+#include <analyses/cfgrecovery/AlgorithmFactory.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
@@ -52,27 +51,23 @@ using namespace std;
 #define SUCCESS_ADDR 0x1111
 #define EXCEPTION_HANDLING_ADDR (FAILURE_ADDR+20)
 
-typedef DomainSimulator<ConcreteStepper> ConcreteSimulator;
-
 static Microcode *
 s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	     Decoder *decoder)
 {
   Microcode *result = new Microcode ();
-  ConcreteSimulator::Stepper *stepper = 
-    new ConcreteSimulator::Stepper (memory, decoder->get_arch ());
-  ConcreteSimulator::StateSpace *states =  
-    new ConcreteSimulator::StateSpace ();
-  ConcreteSimulator::Traversal rec (memory, decoder, stepper, states, result);
-
-  rec.set_show_states (false);
-  rec.set_show_pending_arrows (false);
-  rec.set_number_of_visits_per_address (-1);
-  rec.compute (*entrypoint);
-
-  delete stepper;
-  delete states;
+  AlgorithmFactory F;
   
+  F.set_memory (memory);
+  F.set_decoder (decoder);
+  F.set_show_states (false);
+  F.set_show_pending_arrows (false);
+  F.set_warn_on_unsolved_dynamic_jumps (false);
+  F.set_max_number_of_visits_per_address (-1);
+  AlgorithmFactory::Algorithm *algo = F.buildConcreteSimulator ();
+  algo->compute (*entrypoint, result);
+  delete algo;
+
   return result;
 }
 

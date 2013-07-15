@@ -36,7 +36,7 @@
 #include <analyses/slicing/Slicing.hh>
 #include <domains/ExprSemantics.hh>
 #include <domains/concrete/ConcreteExprSemantics.hh>
-#include <analyses/cfgrecovery/RecursiveTraversal.hh>
+#include <analyses/cfgrecovery/AlgorithmFactory.hh>
 
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/expressions/expr-parser.hh>
@@ -52,21 +52,18 @@ s_build_cfg (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
 	     Decoder *decoder)
 {
   Microcode *result = new Microcode ();
-  RecursiveTraversal::Stepper *stepper = 
-    new RecursiveTraversal::Stepper (memory, 
-				     decoder->get_arch ()->get_reference_arch ());
-  RecursiveTraversal::StateSpace *states =  
-    new RecursiveTraversal::StateSpace ();
-  RecursiveTraversal::Traversal rec (memory, decoder, stepper, states, result);
-
-  rec.set_show_states (false);
-  rec.set_show_pending_arrows (false);
-  rec.set_number_of_visits_per_address (-1);
-  rec.compute (entrypoint);
-
-  delete stepper;
-  delete states;
+  AlgorithmFactory F;
   
+  F.set_memory (memory);
+  F.set_decoder (decoder);
+  F.set_show_states (false);
+  F.set_show_pending_arrows (false);
+  F.set_warn_on_unsolved_dynamic_jumps (false);
+  F.set_max_number_of_visits_per_address (-1);
+  AlgorithmFactory::Algorithm *algo = F.buildRecursiveTraversal ();
+  algo->compute (entrypoint, result);
+  delete algo;
+
   return result;
 }
 
