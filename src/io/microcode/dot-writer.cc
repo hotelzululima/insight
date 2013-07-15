@@ -29,8 +29,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <set>
+#include <list>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/SolvedJmpAnnotation.hh>
 #include <cstdlib>
 #include "dot-writer.hh"
 
@@ -43,18 +45,30 @@ s_successor_instructions_rec (const Microcode *mc, const MicrocodeNode *node,
 {
   MicrocodeNode_iterate_successors (*node, succ)
     {
-      if (! (*succ)->is_static ())
-	continue;
+      list<MicrocodeAddress> addresses;
 
-      MicrocodeAddress tgt = ((StaticArrow *) *succ)->get_target ();
-      MicrocodeNode *n = mc->get_node (tgt);
-            
-      if (tgt.getLocal () == 0)
-	res.push_back (n);
-      else if (done.find (n) == done.end ())
+      if ((*succ)->is_static ())
+	addresses.push_back (((StaticArrow *) *succ)->get_target ());
+      else if ((*succ)-> has_annotation (SolvedJmpAnnotation::ID))
 	{
-	  done.insert (n);
-	  s_successor_instructions_rec (mc, n, done, res);
+	  SolvedJmpAnnotation *sja = (SolvedJmpAnnotation *)
+	    (*succ)->get_annotation (SolvedJmpAnnotation::ID);
+	  addresses = sja->get_value ();
+	}
+
+      for (list<MicrocodeAddress>::const_iterator i = addresses.begin ();
+	   i != addresses.end (); i++)
+	{
+	  MicrocodeAddress tgt = *i;
+	  MicrocodeNode *n = mc->get_node (tgt);
+            
+	  if (tgt.getLocal () == 0)
+	    res.push_back (n);
+	  else if (done.find (n) == done.end ())
+	    {
+	      done.insert (n);
+	      s_successor_instructions_rec (mc, n, done, res);
+	    }
 	}
     }
 }
