@@ -1,0 +1,22 @@
+[(0x0,0)] @{asm:=movb   $0x0,0x12fa792}@ StaticArrow (0x0,0) [0x12FA792{0;32}]{0;8} := 0x0{0;8}  --> (0x7,0)
+[(0x7,0)] @{asm:=mov    $0xffff,%ax}@ StaticArrow (0x7,0) %eax{0;16} := 0xFFFF{0;16}  --> (0xB,0)
+[(0xB,0)] @{asm:=add    %ax,%ax}@ %tmpr0_17{0;17} := (ADD %eax{0;16} %eax{0;16}){0;17}
+[(0xB,1)] %cf{0;1} := %tmpr0_17{16;1}
+[(0xB,2)] %of{0;1} := (AND (XOR %eax{15;1} %tmpr0_17{15;1}){0;1} (NOT (XOR %eax{15;1} %eax{15;1}){0;1}){0;1}){0;1}
+[(0xB,3)] %eax{0;16} := %tmpr0_17{0;16}
+[(0xB,4)] %sf{0;1} := %eax{15;1}
+[(0xB,5)] %zf{0;1} := (EQ %eax{0;16} 0x0{0;16}){0;1}
+[(0xB,6)] %af{0;1} := %eax{4;1}
+[(0xB,7)] StaticArrow (0xB,7) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %eax{0;16} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %eax{0;16} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xE,0)
+[(0xE,0)] @{asm:=jae    0x6666}@ StaticArrow (0xE,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xE,0) Skip << %cf{0;1} >> --> (0x14,0)
+[(0x14,0)] @{asm:=clc    }@ StaticArrow (0x14,0) %cf{0;1} := 0x0{0;1}  --> (0x15,0)
+[(0x15,0)] @{asm:=jb     0x6666}@ StaticArrow (0x15,0) Skip << %cf{0;1} >> --> (0x6666,0)StaticArrow (0x15,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x1B,0)
+[(0x1B,0)] @{asm:=cmc    }@ StaticArrow (0x1B,0) %cf{0;1} := (NOT %cf{0;1}){0;1}  --> (0x1C,0)
+[(0x1C,0)] @{asm:=jae    0x6666}@ StaticArrow (0x1C,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x1C,0) Skip << %cf{0;1} >> --> (0x22,0)
+[(0x22,0)] @{asm:=cmc    }@ StaticArrow (0x22,0) %cf{0;1} := (NOT %cf{0;1}){0;1}  --> (0x23,0)
+[(0x23,0)] @{asm:=jb     0x6666}@ StaticArrow (0x23,0) Skip << %cf{0;1} >> --> (0x6666,0)StaticArrow (0x23,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x29,0)
+[(0x29,0)] @{asm:=jmp    0x1000}@ StaticArrow (0x29,0) Skip  --> (0x1000,0)
+[(0x1000,0)] @{asm:=jmp    0x1111}@ StaticArrow (0x1000,0) Skip  --> (0x1111,0)
+[(0x1111,0)] @{asm:=jmp    0x1111}@ StaticArrow (0x1111,0) Skip  --> (0x1111,0)
+[(0x6666,0)] 
+

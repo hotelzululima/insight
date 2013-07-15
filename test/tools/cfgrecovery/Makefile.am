@@ -9,9 +9,207 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_FLD_FLAGS = -D -d flood
-CFGR_LSW_FLAGS = -D -d linear
-CFGR_RT_FLAGS = -D -d recursive
+CFGR_FLD_FLAGS = -D -c ${srcdir}/config -d flood
+CFGR_LSW_FLAGS = -D -c ${srcdir}/config -d linear
+CFGR_RT_FLAGS = -D -c ${srcdir}/config -d recursive
+CFGR_SCONC_FLAGS = -D -c ${srcdir}/config -d sim=concrete
+CFGR_SSYMB_FLAGS = -D -c ${srcdir}/config -d sim=symbolic
+
+X86_32_SYM_TESTS = \
+	x86_32-cfgrecovery-01.sym.res \
+        \
+	x86_32-simulator-01.sym.res \
+	x86_32-simulator-02.sym.res \
+	x86_32-simulator-03.sym.res \
+	x86_32-simulator-04.sym.res \
+	x86_32-simulator-05.sym.res \
+	\
+	x86_32-simulator-aaa.sym.res \
+	x86_32-simulator-aad.sym.res \
+	x86_32-simulator-aam.sym.res \
+	x86_32-simulator-aas.sym.res \
+	x86_32-simulator-add.sym.res \
+	x86_32-simulator-adcsbb.sym.res \
+	\
+	x86_32-simulator-booleans.sym.res \
+	x86_32-simulator-bound.sym.res \
+	x86_32-simulator-bsf.sym.res \
+	x86_32-simulator-bsr.sym.res \
+	x86_32-simulator-bswap.sym.res \
+	x86_32-simulator-bt-01.sym.res \
+	x86_32-simulator-bt-02.sym.res \
+	x86_32-simulator-btc.sym.res \
+	x86_32-simulator-btr.sym.res \
+	x86_32-simulator-bts.sym.res \
+	\
+	x86_32-simulator-CF.sym.res \
+	x86_32-simulator-call.sym.res \
+	x86_32-simulator-cbw.sym.res \
+	x86_32-simulator-cmov.sym.res \
+	x86_32-simulator-cmps-01.sym.res \
+	x86_32-simulator-cmps-02.sym.res \
+	x86_32-simulator-cmpxchg.sym.res \
+	x86_32-simulator-cwdcdq.sym.res \
+	\
+	x86_32-simulator-daadas.sym.res \
+	x86_32-simulator-div.sym.res \
+	\
+	x86_32-simulator-enter-leave-01.sym.res \
+	x86_32-simulator-enter-leave-02.sym.res \
+	\
+	x86_32-simulator-idiv.sym.res \
+	x86_32-simulator-imul-01.sym.res \
+	x86_32-simulator-imul-02.sym.res \
+	x86_32-simulator-imul-03.sym.res \
+	x86_32-simulator-int.sym.res \
+	x86_32-simulator-int3.sym.res \
+	x86_32-simulator-into-01.sym.res \
+	x86_32-simulator-into-02.sym.res \
+	\
+	x86_32-simulator-lsahf.sym.res \
+	x86_32-simulator-lods.sym.res \
+	x86_32-simulator-loop.sym.res \
+	\
+	x86_32-simulator-movbe.sym.res \
+	x86_32-simulator-movs.sym.res \
+	x86_32-simulator-movsxz.sym.res \
+	x86_32-simulator-mul.sym.res \
+	\
+	x86_32-simulator-neg.sym.res \
+	\
+	x86_32-simulator-popcnt.sym.res \
+	x86_32-simulator-pushpop-01.sym.res \
+	x86_32-simulator-pushpop-02.sym.res \
+	x86_32-simulator-pushpop-03.sym.res \
+	x86_32-simulator-pushpop-04.sym.res \
+	x86_32-simulator-pushpop-05.sym.res \
+	x86_32-simulator-pushpop-06.sym.res \
+	x86_32-simulator-pushfpopf.sym.res \
+	x86_32-simulator-pushapopa.sym.res \
+	\
+	x86_32-simulator-rep-01.sym.res \
+	x86_32-simulator-rep-02.sym.res \
+	x86_32-simulator-rep-03.sym.res \
+	x86_32-simulator-rep-04.sym.res \
+	\
+	x86_32-simulator-rotate-01.sym.res \
+	x86_32-simulator-rotate-02.sym.res \
+	x86_32-simulator-rotate-03.sym.res \
+	x86_32-simulator-rotate-04.sym.res \
+	\
+	x86_32-simulator-shift-01.sym.res \
+	x86_32-simulator-shift-02.sym.res \
+	x86_32-simulator-shift-03.sym.res \
+	x86_32-simulator-shift-04.sym.res \
+	\
+	x86_32-simulator-scas.sym.res \
+	x86_32-simulator-sub.sym.res \
+	x86_32-simulator-setcc.sym.res \
+	\
+	x86_32-simulator-xadd.sym.res \
+	x86_32-simulator-xchg.sym.res \
+	\
+	x86_32-gcd.sym.res \
+        \
+        ${dummy}
+
+X86_32_SC_TESTS = \
+	x86_32-cfgrecovery-01.sc.res \
+        \
+	x86_32-simulator-01.sc.res \
+	x86_32-simulator-02.sc.res \
+	x86_32-simulator-03.sc.res \
+	x86_32-simulator-04.sc.res \
+	x86_32-simulator-05.sc.res \
+	\
+	x86_32-simulator-aaa.sc.res \
+	x86_32-simulator-aad.sc.res \
+	x86_32-simulator-aam.sc.res \
+	x86_32-simulator-aas.sc.res \
+	x86_32-simulator-add.sc.res \
+	x86_32-simulator-adcsbb.sc.res \
+	\
+	x86_32-simulator-booleans.sc.res \
+	x86_32-simulator-bound.sc.res \
+	x86_32-simulator-bsf.sc.res \
+	x86_32-simulator-bsr.sc.res \
+	x86_32-simulator-bswap.sc.res \
+	x86_32-simulator-bt-01.sc.res \
+	x86_32-simulator-bt-02.sc.res \
+	x86_32-simulator-btc.sc.res \
+	x86_32-simulator-btr.sc.res \
+	x86_32-simulator-bts.sc.res \
+	\
+	x86_32-simulator-CF.sc.res \
+	x86_32-simulator-call.sc.res \
+	x86_32-simulator-cbw.sc.res \
+	x86_32-simulator-cmov.sc.res \
+	x86_32-simulator-cmps-01.sc.res \
+	x86_32-simulator-cmps-02.sc.res \
+	x86_32-simulator-cmpxchg.sc.res \
+	x86_32-simulator-cwdcdq.sc.res \
+	\
+	x86_32-simulator-daadas.sc.res \
+	x86_32-simulator-div.sc.res \
+	\
+	x86_32-simulator-enter-leave-01.sc.res \
+	x86_32-simulator-enter-leave-02.sc.res \
+	\
+	x86_32-simulator-idiv.sc.res \
+	x86_32-simulator-imul-01.sc.res \
+	x86_32-simulator-imul-02.sc.res \
+	x86_32-simulator-imul-03.sc.res \
+	x86_32-simulator-int.sc.res \
+	x86_32-simulator-int3.sc.res \
+	x86_32-simulator-into-01.sc.res \
+	x86_32-simulator-into-02.sc.res \
+	\
+	x86_32-simulator-lsahf.sc.res \
+	x86_32-simulator-lods.sc.res \
+	x86_32-simulator-loop.sc.res \
+	\
+	x86_32-simulator-movbe.sc.res \
+	x86_32-simulator-movs.sc.res \
+	x86_32-simulator-movsxz.sc.res \
+	x86_32-simulator-mul.sc.res \
+	\
+	x86_32-simulator-neg.sc.res \
+	\
+	x86_32-simulator-popcnt.sc.res \
+	x86_32-simulator-pushpop-01.sc.res \
+	x86_32-simulator-pushpop-02.sc.res \
+	x86_32-simulator-pushpop-03.sc.res \
+	x86_32-simulator-pushpop-04.sc.res \
+	x86_32-simulator-pushpop-05.sc.res \
+	x86_32-simulator-pushpop-06.sc.res \
+	x86_32-simulator-pushfpopf.sc.res \
+	x86_32-simulator-pushapopa.sc.res \
+	\
+	x86_32-simulator-rep-01.sc.res \
+	x86_32-simulator-rep-02.sc.res \
+	x86_32-simulator-rep-03.sc.res \
+	x86_32-simulator-rep-04.sc.res \
+	\
+	x86_32-simulator-rotate-01.sc.res \
+	x86_32-simulator-rotate-02.sc.res \
+	x86_32-simulator-rotate-03.sc.res \
+	x86_32-simulator-rotate-04.sc.res \
+	\
+	x86_32-simulator-shift-01.sc.res \
+	x86_32-simulator-shift-02.sc.res \
+	x86_32-simulator-shift-03.sc.res \
+	x86_32-simulator-shift-04.sc.res \
+	\
+	x86_32-simulator-scas.sc.res \
+	x86_32-simulator-sub.sc.res \
+	x86_32-simulator-setcc.sc.res \
+	\
+	x86_32-simulator-xadd.sc.res \
+	x86_32-simulator-xchg.sc.res \
+	\
+	x86_32-gcd.sc.res \
+        \
+        ${dummy}
 
 X86_32_RT_TESTS = \
 	x86_32-cfgrecovery-01.rt.res \
@@ -503,7 +701,13 @@ X86_32_LSW_TESTS += \
         ${dummy}
 endif
 
-BASE_TESTS = ${X86_32_RT_TESTS} ${X86_32_FLD_TESTS} ${X86_32_LSW_TESTS}
+BASE_TESTS = ${X86_32_SYM_TESTS} \
+             ${X86_32_SC_TESTS} \
+             ${X86_32_RT_TESTS} \
+             ${X86_32_FLD_TESTS} \
+             ${X86_32_LSW_TESTS}
+
+#BASE_TESTS = ${X86_32_FLD_TESTS} ${X86_32_LSW_TESTS}
 
 
 TESTS = \
@@ -515,6 +719,14 @@ EXTRA_DIST=${TESTS:%=%.result}
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
+
+%.sc.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	@echo "generate $@"
+	@${CFGRECOVERY} ${CFGR_SCONC_FLAGS}  $< > $@ 2>&1
+
+%.sym.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	@echo "generate $@"
+	@${CFGRECOVERY} ${CFGR_SSYMB_FLAGS}  $< > $@ 2>&1
 
 %.fld.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
 	@echo "generate $@"

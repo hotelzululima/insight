@@ -2,6 +2,10 @@
 	.include "x86_32-simulator-header.s"
 
 start:
+	xor %ax, %ax
+	xor %bx, %bx
+	xor %cx, %cx
+	xor %dx, %dx
 	mov $0x1, %ah
 	mov $0x2, %bh
 	mov $0x3, %ch

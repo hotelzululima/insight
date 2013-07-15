@@ -11,6 +11,12 @@ ok:
 ok2:	
 	jmp ok2
 	. = erraddr	
-error:  
+error:
 	jmp error
-
+	. = exception_handling_addr
+.excepthdl:	
+	.ifgt	EXCEPTION_CHECK
+	.byte 0x01
+	.else
+	.byte 0x00
+	.endif

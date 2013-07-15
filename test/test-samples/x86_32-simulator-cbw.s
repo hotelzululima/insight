@@ -1,5 +1,6 @@
 	.include "x86_32-simulator-header.s"
 start:
+	xor	%eax, %eax
 	mov	$0x87,	%al
 	cmp	$0x00000087, %eax
 	jne	error
