@@ -395,7 +395,7 @@ main (int argc, char *argv[])
   
   /* Displaying the microcode */
   if (output_format == "asm")
-    asm_writer (*output, mc);
+    asm_writer (*output, mc, loader);
   else if (output_format == "mc")
     *output << mc->pp() << endl;
   else if (output_format == "dot" || output_format == "asm-dot")
