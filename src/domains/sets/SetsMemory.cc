@@ -31,7 +31,6 @@
 #include <domains/sets/SetsMemory.hh>
 
 #include <domains/common/ConcreteAddressMemory.hh>
-#include <domains/concrete/concrete_context.hh>
 #include <domains/sets/SetsAddress.hh>
 #include <domains/sets/SetsValue.hh>
 #include <kernel/Memory.hh>

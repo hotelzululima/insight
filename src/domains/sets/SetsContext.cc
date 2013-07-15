@@ -29,8 +29,6 @@
  */
 
 #include <domains/sets/SetsContext.hh>
-
-#include <domains/concrete/concrete_context.hh>
 #include <domains/sets/SetsAddress.hh>
 #include <domains/sets/SetsExprSemantics.hh>
 #include <domains/sets/SetsMemory.hh>

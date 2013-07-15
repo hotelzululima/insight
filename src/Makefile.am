@@ -11,6 +11,35 @@ all:
 
 ## analyses module
 analyses_sources = \
+        analyses/cfgrecovery/AbstractContext.hh \
+        analyses/cfgrecovery/AbstractContext.cc \
+        analyses/cfgrecovery/AbstractDomainContext.hh \
+        analyses/cfgrecovery/AbstractDomainContext.ii \
+        analyses/cfgrecovery/AbstractDomainStepper.hh \
+        analyses/cfgrecovery/AbstractDomainStepper.ii \
+        analyses/cfgrecovery/AbstractMemoryTraversal.hh \
+        analyses/cfgrecovery/AbstractMemoryTraversal.ii \
+        analyses/cfgrecovery/AbstractProgramPoint.hh \
+        analyses/cfgrecovery/AbstractProgramPoint.ii \
+        analyses/cfgrecovery/AbstractState.hh \
+        analyses/cfgrecovery/AbstractState.ii \
+        analyses/cfgrecovery/AbstractStateSpace.hh \
+        analyses/cfgrecovery/AbstractStepper.hh \
+        analyses/cfgrecovery/DomainSimulator.hh \
+        analyses/cfgrecovery/FloodTraversal.hh \
+        analyses/cfgrecovery/FloodTraversalStepper.cc \
+        analyses/cfgrecovery/LinearSweep.hh \
+        analyses/cfgrecovery/LinearSweepStepper.cc \
+        analyses/cfgrecovery/MicrocodeAddressProgramPoint.cc \
+        analyses/cfgrecovery/MicrocodeAddressProgramPoint.hh \
+        analyses/cfgrecovery/NullContext.cc \
+        analyses/cfgrecovery/NullContext.hh \
+        analyses/cfgrecovery/RecursiveTraversal.hh \
+        analyses/cfgrecovery/RecursiveTraversalContext.cc \
+        analyses/cfgrecovery/RecursiveTraversalStepper.cc \
+        analyses/cfgrecovery/SingleContextStateSpace.hh \
+        analyses/cfgrecovery/SingleContextStateSpace.ii \
+        \
 	analyses/microcode_exec.hh	\
 	analyses/microcode_exec.ii	\
 	analyses/Wp.cc			\
@@ -64,6 +93,12 @@ kernel_source = \
 	kernel/RegisterMap.ii 		\
 	kernel/Value.cc 		\
 	kernel/Value.hh 		\
+	kernel/annotations/AbstractAnnotation.hh	\
+	kernel/annotations/ListAnnotation.hh	\
+	kernel/annotations/SolvedJmpAnnotation.hh	\
+	kernel/annotations/SolvedJmpAnnotation.cc	\
+	kernel/annotations/NextInstAnnotation.cc     \
+	kernel/annotations/NextInstAnnotation.hh	\
 	kernel/annotations/AsmAnnotation.hh	\
 	kernel/annotations/AsmAnnotation.cc     \
 	kernel/annotations/StringAnnotation.hh	\
@@ -121,6 +156,8 @@ kernel_cleanfiles = \
 
 ## domains module
 domains_source = \
+        domains/symbolic/SymbolicStepper.hh \
+        domains/symbolic/SymbolicStepper.cc \
         domains/symbolic/SymbolicValue.hh \
         domains/symbolic/SymbolicValue.cc \
         domains/symbolic/SymbolicMemory.hh \
@@ -129,8 +166,6 @@ domains_source = \
         domains/symbolic/SymbolicExprSemantics.cc \
         domains/symbolic/SymbolicContext.hh \
         domains/symbolic/SymbolicContext.cc \
-        domains/symbolic/SymbolicExecContext.hh \
-        domains/symbolic/SymbolicExecContext.cc \
         \
 	domains/ExprSemantics.hh                   \
 	domains/ExprSemantics.ii                   \
@@ -138,6 +173,11 @@ domains_source = \
 	domains/common/ConcreteAddressMemory.ii    \
 	domains/common/ConcreteProgramPoint.cc     \
 	domains/common/ConcreteProgramPoint.hh     \
+        \
+	domains/concrete/ConcreteContext.hh        \
+	domains/concrete/ConcreteContext.cc        \
+	domains/concrete/ConcreteStepper.hh        \
+	domains/concrete/ConcreteStepper.cc        \
 	domains/concrete/ConcreteAddress.cc        \
 	domains/concrete/ConcreteAddress.hh        \
 	domains/concrete/ConcreteExprSemantics.cc  \
@@ -146,8 +186,7 @@ domains_source = \
 	domains/concrete/ConcreteMemory.hh         \
 	domains/concrete/ConcreteValue.cc          \
 	domains/concrete/ConcreteValue.hh          \
-	domains/concrete/concrete_context.cc       \
-	domains/concrete/concrete_context.hh       \
+        \
 	domains/interval/interval_context.cc       \
 	domains/interval/interval_context.hh       \
 	domains/interval/IntervalExprSemantics.cc  \
