@@ -63,7 +63,7 @@ template <class T>
 struct EqualsPtrFunctor
 {
     bool operator() (const T *a, const T *b) const {
-	return a->equals(*b);
+	return a->equals(b);
     }
 };
 
