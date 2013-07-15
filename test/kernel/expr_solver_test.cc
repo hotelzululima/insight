@@ -45,16 +45,20 @@ using namespace std;
 #if HAVE_Z3_SOLVER 
 
 #define ALL_TESTS					\
-  SOLVER_TEST (NP, "(NOT %pf)", ExprSolver::SAT)  \
+  SOLVER_TEST (NP, "(NOT %pf)", ExprSolver::SAT)	     \
   SOLVER_TEST (US1, "(EQ (NOT %pf) %pf)", ExprSolver::UNSAT) \
   SOLVER_TEST (S2, "(OR (NOT %pf) %pf){0;1}", ExprSolver::SAT) \
   SOLVER_TEST (US2, "(NOT (OR (NOT %pf) %pf){0;1})", ExprSolver::UNSAT) \
   SOLVER_TEST (S3, "[%eax]{0;8}", ExprSolver::SAT) \
   \
-  EVAL_TEST (E1, "(MUL_U 3{0;32} Y{0;32}){0;32}", "(EQ Y{0;32} 5)", "15{0;32}")
+  EVAL_TEST (E1, "(MUL_U 3{0;32} Y{0;32}){0;32}", "(EQ Y{0;32} 5)", \
+	     "15{0;32}")					    \
+  EVAL_TEST (E2, "(MUL_S %eax{0;8} %ebx{0;8}){0;16}", \
+    "(AND (EQ %eax{0;32} 0x4{0;32}) (EQ %ebx{0;32} 0xFE{0;32})){0;1}", \
+	     "0xFFmaF8{0;16}")
 
 #define SOLVER_TEST(id, e, res)     \
-ATF_TEST_CASE(id);		    \
+ATF_TEST_CASE(id)		    \
 \
 ATF_TEST_CASE_HEAD(id)			\
 { \
@@ -68,7 +72,7 @@ ATF_TEST_CASE_BODY(id)			\
 }
 
 #define EVAL_TEST(id, e, cond, res)  \
-ATF_TEST_CASE(id);		    \
+ATF_TEST_CASE(id)		    \
 \
 ATF_TEST_CASE_HEAD(id)			\
 { \
@@ -121,6 +125,7 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
   
   cfg.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
   cfg.set (ExprSolver::DEFAULT_ARGS_PROP, "-smt2 -in");
+  cfg.set (ExprSolver::DEBUG_TRACES_PROP, true);
 
   insight::init (cfg);
   const Architecture *x86_32 = 
@@ -137,6 +142,14 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
   ExprSolver *s = ExprSolver::create_default_solver (&ma);
   
   Expr *res = s->evaluate (e, c);
+  if (res != er)
+    {
+      er->output_text (cerr);
+      cerr << " != ";
+      res->output_text (cerr);
+      cerr << endl;
+    }
+
   ATF_REQUIRE_EQ (res, er);
   e->deref ();
   c->deref ();
