@@ -335,7 +335,7 @@ public:
    */
   /* ***************************************************/
   virtual std::string pp() const;
-
+  virtual void output_text(std::ostream & out) const = 0;
   /* ***************************************************/
   /**
    * \brief  Export the current graph to dot format

@@ -896,12 +896,8 @@ std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, st
 template<typename Node, typename Edge>
 std::string GraphInterface<Node, Edge>::pp() const
 {
-
   std::ostringstream oss;
-  for (typename std::vector<Node *>::const_iterator stmt = this->get_nodes()->begin();
-       stmt != this->get_nodes()->end();
-       ++stmt)
-    oss << (*stmt)->pp() << std::endl;
+  this->output_text (oss);
   return oss.str();
 }
 
