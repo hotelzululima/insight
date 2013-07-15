@@ -75,7 +75,8 @@ main (int argc, char **argv)
 	      start = decoder->decode (mc, start);
 
 	      mc->sort ();
-	      logs::display << mc->pp () << endl;
+	      mc->output_text (logs::display);
+	      logs::display << endl;;
 	    }
 	  catch (std::runtime_error &e)
 	    {
