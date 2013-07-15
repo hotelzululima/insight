@@ -1,0 +1,44 @@
+#ifndef SINGLECONTEXTSTATESPACE_II
+# define SINGLECONTEXTSTATESPACE_II
+
+template <typename State>
+SingleContextStateSpace<State>::SingleContextStateSpace () 
+  : AbstractStateSpace<State>(), states () 
+{
+}
+
+template <typename State>
+SingleContextStateSpace<State>::~SingleContextStateSpace () 
+{ 
+  for (typename StateTable::iterator i = states.begin (); i != states.end (); 
+       i++)
+    delete *i;
+}
+
+template <typename State> 
+const State *
+SingleContextStateSpace<State>::find_or_add_state (State *s) 
+{
+  State *result;
+  typename StateTable::iterator i = states.find (s);
+  if (i == states.end ())
+    {
+      result = s;
+      states.insert (result);
+    }
+  else 
+    {
+      result = *i;
+    }
+  return result;
+}
+
+template <typename State>
+std::size_t 
+SingleContextStateSpace<State>::size () const 
+{ 
+  return states.size(); 
+}
+
+
+#endif /* SINGLECONTEXTSTATESPACE_II */
