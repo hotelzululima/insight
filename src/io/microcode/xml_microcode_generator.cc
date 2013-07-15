@@ -412,11 +412,11 @@ xml_of_microcode(const Microcode *prg)
   string result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
   result = result + "<!DOCTYPE program SYSTEM \"bincoa.dtd\">\n";
 
-
-  vector<MicrocodeNode *> * elts = prg->get_nodes();
   string nodes = "";
-  for (int i = 0; i < (int) elts->size(); i++)
-    nodes = nodes + xml_of_microcode_element((*elts)[i]) + "\n\n";
+
+  for (Microcode::node_iterator n = prg->begin_nodes (); 
+       n != prg->end_nodes (); n++)
+    nodes = nodes + xml_of_microcode_element(*n) + "\n\n";
 
   result = result + xml_elt("program", xml_register_declarations() + "\n" + xml_elt("code", nodes));
   return result;

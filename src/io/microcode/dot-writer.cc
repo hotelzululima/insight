@@ -116,7 +116,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
     {
       std::string pp;
 
-      MicrocodeAddress ma = n->get_loc ();
+      MicrocodeAddress ma = (*it)->get_loc ();
       if (ma.getLocal () != 0)
 	continue;
 
@@ -145,11 +145,11 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	  << "[shape=box,style=filled,fillcolor=\"#" 
 	  << hex << rgb << "\",label=\"";
       
-      if (n->has_annotation (AsmAnnotation::ID))
+      if ((*it)->has_annotation (AsmAnnotation::ID))
 	out << setw(8) << hex << ma.getGlobal () << ": " 
-	    << *n->get_annotation (AsmAnnotation::ID);
+	    << (*it)->get_annotation (AsmAnnotation::ID);
       else
-	out << n->pp ();
+	out << (*it)->pp ();
 
       out << "\"";
 
@@ -159,7 +159,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	out << ",color=\"#" << hex << rgb << "\"";
       out << "];\n";
 
-      vector<MicrocodeNode *> succs = s_successor_instructions (mc, n);
+      vector<MicrocodeNode *> succs = s_successor_instructions (mc, *it);
 
       set<MicrocodeAddress,LessThanFunctor<MicrocodeAddress> > targets;
 

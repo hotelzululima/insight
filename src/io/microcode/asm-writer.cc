@@ -37,9 +37,9 @@ asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader)
   for (Microcode::node_iterator N = mc->begin_nodes (); N != mc->end_nodes (); 
        N++)
     {
-      if (! N->has_annotation (AsmAnnotation::ID))
+      if (! (*N)->has_annotation (AsmAnnotation::ID))
 	continue;
-      MicrocodeAddress ma (N->get_loc ());
+      MicrocodeAddress ma ((*N)->get_loc ());
 
       if (loader && ma.getLocal () == 0)
 	{
@@ -54,10 +54,10 @@ asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader)
 	    }
 	}
       AsmAnnotation *a = (AsmAnnotation *) 
-	N->get_annotation (AsmAnnotation::ID);
+	(*N)->get_annotation (AsmAnnotation::ID);
 
       out << std::right << std::hex << std::setw (8) << std::setfill (' ')
-	  << N->get_loc ().getGlobal () << ":\t" 
+	  << (*N)->get_loc ().getGlobal () << ":\t" 
 	  << a->get_value () << std::endl;
     }
 }

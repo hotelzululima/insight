@@ -731,8 +731,7 @@ DataDependency::slice_it(Microcode *prg,
   DataDependency::OnlySimpleSetsMode(true);
 
   DataDependency invfix(prg, seeds);
-  std::vector<MicrocodeNode *> * nodes = prg->get_nodes();
-  int max_step_nb = nodes->size();
+  int max_step_nb = prg->get_number_of_nodes ();
   invfix.ComputeFixpoint(max_step_nb);
 
   vector<StmtArrow*> result;
@@ -742,17 +741,18 @@ DataDependency::slice_it(Microcode *prg,
       logs::debug << logs::separator << endl
 		 << "Dependencies:" << endl;
 
-      for (int n=0; n<(int) nodes->size(); n++) 
+      for (Microcode::node_iterator n = prg->begin_nodes ();
+	   n != prg->end_nodes (); n++)
 	{
-	  logs::debug << (*nodes)[n]->get_loc() << " <== ";
+	  logs::debug << (*n)->get_loc() << " <== ";
 	  std::vector<Expr*> deps = 
-	    invfix.get_simple_dependencies((*nodes)[n]->get_loc(), max_step_nb);
+	    invfix.get_simple_dependencies((*n)->get_loc(), max_step_nb);
 	  print_expressions(& deps, 2);
 	  logs::debug << endl;
 
 	  std::vector<LValue*> lv_deps;
 
-	  std::vector<StmtArrow *> * succs = (*nodes)[n]->get_successors();
+	  std::vector<StmtArrow *> * succs = (*n)->get_successors();
 	  for (int s=0; s<(int) succs->size(); s++) 
 	    {
 	      if (! (*succs)[s]->get_stmt()->is_Assignment()) 
@@ -872,16 +872,16 @@ std::vector<StmtArrow *>
 DataDependency::useless_statements (Microcode * prg) 
 {
   vector<StmtArrow*> result;
-  vector<MicrocodeNode *> *nodes = prg->get_nodes ();
 
-  for (int n = 0; n< (int) nodes->size (); n++) 
+  for (Microcode::node_iterator n = prg->begin_nodes (); 
+       n != prg->end_nodes (); n++)
     {
-      vector<StmtArrow *> *succs = (*nodes)[n]->get_successors ();
-    for (int s = 0; s<(int) succs->size (); s++) 
-      {
-	if (! DataDependency::statement_used (prg, (*succs)[s])) 
+      vector<StmtArrow *> *succs = (*n)->get_successors ();
+      for (int s = 0; s<(int) succs->size (); s++) 
+	{
+	  if (! DataDependency::statement_used (prg, (*succs)[s])) 
 	    result.push_back ((*succs)[s]);
-      }
+	}
     }
 
   return result;

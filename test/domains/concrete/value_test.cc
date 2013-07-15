@@ -67,7 +67,7 @@ ATF_TEST_CASE_BODY(concretevalue)
   ATF_REQUIRE_EQ(value.get_size(), 32);
 
   /* Checking to_string method */
-  ATF_REQUIRE(value.to_string() == std::string("6342{32}"));
+  ATF_REQUIRE(value.to_string() == std::string("0x18c6{32}"));
 
   /* Checking cloning */
   ConcreteValue clone_value(value);

@@ -243,8 +243,8 @@ bool Microcode::is_optimized() {
 void
 Microcode::output_text(ostream & out) const
 {
-  vector<MicrocodeNode *>::const_iterator stmt = this->get_nodes()->begin();
-  for (; stmt != this->get_nodes()->end(); stmt++)
+  Microcode::node_iterator stmt = begin_nodes ();
+  for (; stmt != end_nodes (); stmt++)
     out << "(" << (*stmt)->get_loc() << ", " << (*stmt)->pp() << ")" << endl;
 }
 
@@ -433,13 +433,19 @@ vector<MicrocodeNode *> * Microcode::get_nodes()   const
   return nodes;
 }
 
-node_iterator 
+std::size_t 
+Microcode::get_number_of_nodes () const
+{
+  return nodes->size ();
+}
+
+Microcode::node_iterator 
 Microcode::begin_nodes () const
 {
   return nodes->begin ();
 }
 
-node_iterator 
+Microcode::node_iterator 
 Microcode::end_nodes () const
 {
   return nodes->end ();
@@ -528,7 +534,7 @@ void Microcode::replace_nodes(MicrocodeNodeSet &to_replace, MicrocodeNode *nvo, 
 /*****************************************************************************/
 /* extract_subgraph                                                          */
 /*****************************************************************************/
-
+/*
 Microcode *Microcode::extract_subgraph(list<MicrocodeNode *>* subset)
 {
   Microcode *res = new Microcode();
@@ -558,12 +564,12 @@ Microcode *Microcode::extract_subgraph(list<MicrocodeNode *>* subset)
     }
   return res;
 }
-
+*/
 /*****************************************************************************/
 /* get_subgraph                                                          */
 /*****************************************************************************/
 
-
+/*
 Microcode *Microcode::get_subgraph(list<MicrocodeNode *>* subset)
 {
   Microcode *res = new Microcode();
@@ -593,4 +599,4 @@ Microcode *Microcode::get_subgraph(list<MicrocodeNode *>* subset)
     }
   return res;
 }
-
+*/

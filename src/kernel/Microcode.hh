@@ -99,6 +99,7 @@ public:
   
   node_iterator begin_nodes () const;
   node_iterator end_nodes () const;
+  std::size_t get_number_of_nodes () const;
 
   void add_arrow_creation_callback (ArrowCreationCallback *cb);
   void remove_arrow_creation_callback (ArrowCreationCallback *cb);
@@ -134,13 +135,13 @@ public:
    *  Arrows linking both graphs will be deleted.
    *  \param  subset the nodes of the subgraph to extract
    *  \returns a new graph */
-  virtual Microcode * extract_subgraph(std::list<MicrocodeNode *> * subset);
+  //virtual Microcode * extract_subgraph(std::list<MicrocodeNode *> * subset);
 
   /*! \brief get a subgraph (consisting of the <subset> nodes)
    *  from this graph. Those nodes will NOT be removed from current graph.
    *  \param  subset the nodes of the subgraph to extract
    *  \returns  a new graph */
-  virtual Microcode * get_subgraph(std::list<MicrocodeNode *>* subset);
+  //virtual Microcode * get_subgraph(std::list<MicrocodeNode *>* subset);
 
   /*! \brief Replace a set of MicrocodeNodes with another
    *  MicrocodeNode. StaticArrows are redirected, while dynamic
@@ -204,15 +205,15 @@ public:
 /***************************************************************************/
 
 /*! \brief Iterator syntaxic sugar */
-#define Microcode_iterate_nodes(prg, node)				      \
-  for (std::vector<MicrocodeNode*>::iterator node = (prg).get_nodes()->begin(); \
-       node != (prg).get_nodes()->end();				      \
+#define Microcode_iterate_nodes(prg, node)				\
+  for (Microcode::node_iterator node = (prg).begin_nodes ();		\
+       node != (prg).end_nodes ();					\
        node++)
 
 /*! \brief Iterator syntaxic sugar */
-#define Microcode_nodes_pass(node)			            	      \
-  for (std::vector<MicrocodeNode*>::iterator node = get_nodes()->begin();       \
-       node != get_nodes()->end();            				      \
+#define Microcode_nodes_pass(node)			     \
+  for (Microcode::node_iterator node = begin_nodes ();       \
+       node != end_nodes ();				     \
        node++)
 
 /*****************************************************************************/
