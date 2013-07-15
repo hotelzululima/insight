@@ -187,6 +187,7 @@ public:
     const char *op_str = NULL;
     bool extract = need_extract (e); 	  	
     bool extend = false;
+    bool with_sign = false;
     bool ite = false;
 
     switch (op)
@@ -210,7 +211,7 @@ public:
 	out << ")";
 	break;
 
-      case BV_OP_MUL_S: 
+      case BV_OP_MUL_S: with_sign = true;
       case BV_OP_MUL_U: op_str = "bvmul"; extend = true; goto output_binary_1;
       case BV_OP_ADD: op_str = "bvadd"; extend = true; goto output_binary_1;
       case BV_OP_SUB: op_str = "bvsub"; extend = true; goto output_binary_1;
@@ -260,7 +261,11 @@ public:
 	if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
 	  {
 	    int ext = (e->get_bv_size () - e->get_arg1 ()->get_bv_size ());
-	    out << "((_ zero_extend " << dec << ext << ") ";
+	    if (with_sign)
+	      out << "((_ sign_extend ";
+	    else
+	      out << "((_ zero_extend ";
+	    out << dec << ext << ") ";
 	  }
 	e->get_arg1 ()->acceptVisitor (this);
 	if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
@@ -269,7 +274,11 @@ public:
 	if (extend && e->get_bv_size () > e->get_arg2 ()->get_bv_size ())
 	  {
 	    int ext = (e->get_bv_size () - e->get_arg2 ()->get_bv_size ());
-	    out << "((_ zero_extend " << dec << ext << ") ";
+	    if (with_sign)
+	      out << "((_ sign_extend ";
+	    else
+	      out << "((_ zero_extend ";
+	    out << dec << ext << ") ";
 	  }
 	e->get_arg2 ()->acceptVisitor (this);
 	if (extend && e->get_bv_size () > e->get_arg2 ()->get_bv_size ())
