@@ -223,11 +223,4 @@ public:
 #define MCPath_reverse_iterator std::list<StmtArrow*>::reverse_iterator
 
 
-/*
- * @pre: assert (mem->is_memcell_defined (start))
- */
-extern Microcode *
-Build_Microcode (MicrocodeArchitecture *arch, ConcreteMemory *mem, 
-		 const ConcreteAddress &start);
-
 #endif /* KERNEL_MICROCODE_HH */
