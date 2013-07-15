@@ -78,7 +78,7 @@ public:
   /** \brief Text output */
   virtual void output_text(std::ostream &) const;
 
-protected:
+private:
 
   /** \brief Register Values Table */
   RegisterHashMap registermap;
