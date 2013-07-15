@@ -28,31 +28,26 @@
  * SUCH DAMAGE.
  */
 
-#ifndef CFGRECOVERY_FLOOD_TRAVERSAL_HH
-#define CFGRECOVERY_FlOOD_TRAVERSAL_HH
+#ifndef SIMULATOR_HH
+# define SIMULATOR_HH
 
-#include "ConcreteMemoryTraversal.hh"
-#include "cfgrecovery.hh"
+# include <kernel/Microcode.hh>
+# include <decoders/Decoder.hh>
+# include "cfgrecovery.hh"
 
-class FloodTraversal : public ConcreteMemoryTraversal
-{
-public :
-  FloodTraversal(bool scan_all, 
-		 const ConcreteMemory *memory, Decoder *decoder);
-  ~FloodTraversal ();
-
-protected:
-  void treat_new_arrow(Microcode *,
-		       const MicrocodeNode *, const StmtArrow *arrow, 
-		       const ConcreteAddress &next);
-private:
-  bool scan_all;
+enum DomainName {
+  SYMBOLIC_DOMAIN,
+  CONCRETE_DOMAIN
 };
 
-/* Linear sweep disassembly method */
-extern Microcode * 
-flood_traversal(const ConcreteAddress * entrypoint, ConcreteMemory * memory,
-		Decoder * decoder) 
-  throw (Decoder::Exception &);
+extern const std::string SIMULATOR_X86_32_INIT_ESP_PROP;
+extern const std::string SIMULATOR_NB_VISITS_PER_ADDRESS;
+extern const std::string SIMULATOR_DEBUG_SHOW_STATES;
+extern const std::string SIMULATOR_DEBUG_SHOW_PENDING_ARROWS;
 
-#endif /* CFGRECOVERY_FLOOD_TRAVERSAL_HH */
+extern Microcode *
+simulator (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+	   Decoder *decoder, DomainName dom);
+
+
+#endif /* ! SIMULATOR_HH */

@@ -45,5 +45,9 @@ extern Microcode *
 symbexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 	  Decoder *decoder);
 
+extern Microcode *
+concexec (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
+	  Decoder *decoder);
+
 
 #endif /* ! SYMBEXEC_HH */

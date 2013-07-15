@@ -29,53 +29,41 @@
  */
 
 #include <stdlib.h>
+#include <analyses/cfgrecovery/LinearSweep.hh>
+#include "simulator.hh"
 
-#include "ConcreteMemoryTraversal.hh"
-#include "linearsweep.hh"
-
-using namespace std;
-
-LinearSweepTraversal::LinearSweepTraversal(const ConcreteMemory *memory, 
-					    Decoder *decoder)
-  : ConcreteMemoryTraversal(memory, decoder)
-{
-}
-
-LinearSweepTraversal::~LinearSweepTraversal()
-{
-}
-
-void 
-LinearSweepTraversal::treat_new_arrow(Microcode *, 
-				      const MicrocodeNode *, 
-				      const StmtArrow *,
-				      const ConcreteAddress &next)
-{
-  if (can_visit (next.get_address ()))
-    add_to_todo_list(next);
-}
-
-/* Linear sweep disassembly method */
 Microcode *
 linearsweep (const ConcreteAddress *entrypoint,ConcreteMemory *memory,
 	     Decoder *decoder)
   throw (Decoder::Exception &)
 {
-  Microcode *mc = new Microcode();
-  LinearSweepTraversal lst(memory, decoder);
-  
-  try 
-    {
-      lst.compute (mc, *entrypoint);
-    }
-  catch (Decoder::OutOfBounds &e)
-    {
-    }
-  catch (Decoder::Exception &e) 
-    {
-      delete mc;
-      throw e;
-    }
+  Microcode *result = new Microcode ();
+  LinearSweep::Stepper *stepper = new LinearSweep::Stepper ();
+  LinearSweep::StateSpace *states = new LinearSweep::StateSpace ();
+  LinearSweep::Traversal rec (memory, decoder, stepper, states, result);
 
-  return mc;
+  bool show_states = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
+  bool show_pending_arrows = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
+				     false);
+  rec.set_show_states (show_states);
+  rec.set_show_pending_arrows (show_pending_arrows);
+  int max_nb_visits =
+    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
+
+  if (max_nb_visits > 0 && verbosity)
+    {
+      logs::warning << "warning: restrict number of visits per program point "
+		    << "to " << std::dec << max_nb_visits << " visits." 
+		    << std::endl;
+    }
+  rec.set_number_of_visits_per_address (max_nb_visits);
+  rec.compute (*entrypoint);
+
+  delete stepper;
+  delete states;
+
+  return result;
 }
+

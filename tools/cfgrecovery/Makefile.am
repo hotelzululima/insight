@@ -7,10 +7,8 @@ cfgrecovery_SOURCES = \
 	FloodTraversal.cc FloodTraversal.hh \
 	linearsweep.cc linearsweep.hh \
 	recursivetraversal.cc recursivetraversal.hh \
-        ConcreteMemoryTraversal.cc ConcreteMemoryTraversal.hh \
-        SymbolicSimulator.cc SymbolicSimulator.hh \
-        SymbolicState.cc SymbolicState.hh \
         symbexec.cc symbexec.hh \
+        simulator.cc simulator.hh \
         \
         ${dummy}
 

@@ -73,6 +73,10 @@ struct disassembler {
   { "linear", "linear sweep", linearsweep },
   { "recursive", "recursive traversal", recursivetraversal },
   { "symsim", "symbolic simulation", symbexec },
+  { "sim=symbolic", "symbolic traversal (require an SMT solver with QF_AUFBV).",
+    symbexec },
+  { "sim=concrete", "simulation within concrete domain.",
+    concexec },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };
@@ -296,6 +300,7 @@ main (int argc, char *argv[])
   /* Starting insight and initializing the needed objects */
   
   CONFIG.set (logs::STDIO_ENABLED_PROP, true);
+  CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, verbosity > 0);
   CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
   CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
   if (enable_debug)

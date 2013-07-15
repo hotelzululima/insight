@@ -27,182 +27,43 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <analyses/cfgrecovery/RecursiveTraversal.hh>
+#include "simulator.hh"
 
-#include "recursivetraversal.hh"
-
-#include <stdlib.h>
-#include <utils/logs.hh>
-#include <kernel/annotations/CallRetAnnotation.hh>
-#include <analyses/slicing/Slicing.hh>
-#include <tr1/unordered_map>
-
-#include "FloodTraversal.hh"
-
-using namespace std;
-using namespace std::tr1;
-
-class RecursiveTraversal : public FloodTraversal
-{
-  struct CA_Hash { 
-    size_t operator()(const ConcreteAddress &F) const {
-      return F.get_address ();
-    }
-    bool operator()(const ConcreteAddress &F1, 
-		    const ConcreteAddress &F2) const {
-      return F1 == F2;
-    }
-  };
-
-  list<ConcreteAddress> stack;
-
-  unordered_map<ConcreteAddress, pair<MicrocodeNode *, Expr *>,
-		CA_Hash, CA_Hash > call_ret_store;
-
-
-
-public :
-  RecursiveTraversal (const ConcreteMemory *memory, Decoder *decoder) 
-    : FloodTraversal (false, memory, decoder), stack ()
-  {
-  }
-      
-  ~RecursiveTraversal ()
-  {
-  }
-
-protected:
-  void treat_new_arrow (Microcode *mc, 
-			const MicrocodeNode *entry, const StmtArrow *arrow, 
-			const ConcreteAddress &next)
-  {    
-    FloodTraversal::treat_new_arrow (mc, entry, arrow, next);
-
-    MicrocodeNode *src = arrow->get_src ();
-
-    if (! src->has_annotation (CallRetAnnotation::ID))
-      return;
-
-    CallRetAnnotation *an = (CallRetAnnotation *) 
-      src->get_annotation (CallRetAnnotation::ID);
-    if (an->is_call ())
-      {
-	const Expr *tgt = an->get_target ();
-	ConcreteAddress ctgt;
-	bool ctgt_is_defined = false;
-	if (tgt->is_Constant ())
-	  {
-	    const Constant *c = dynamic_cast<const Constant *> (tgt);
-	    ctgt = ConcreteAddress (c->get_val ());
-	    ctgt_is_defined = true;
-	  }
-	else if (tgt->is_MemCell ())
-	  {
-	    const MemCell *mc = dynamic_cast<const MemCell *> (tgt);
-      
-	    if (mc != NULL && mc->get_addr ()->is_Constant ())
-	      {
-		Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());
-		ConcreteAddress a (cst->get_val());
-	  
-		if (mem->is_defined(a))
-		  {
-		    const Architecture *arch = 
-		      decoder->get_arch ()->get_reference_arch ();
-		    ConcreteValue val = 
-		      mem->get (a, arch->get_address_size (), 
-				arch->get_endian ());
-		    ctgt = ConcreteAddress (val.get ());
-		    ctgt_is_defined = true;
-		  }
-	      }
-	  }
-  
-	if (ctgt_is_defined && mem->is_defined (ctgt))
-	  {
-	    if (already_visited (ctgt))
-	      {		    
-		address_t na = next.get_address ();
-		assert (! (call_ret_store.find (ctgt) == 
-			   call_ret_store.end ()));
-		pair<MicrocodeNode *, Expr *> retnode = call_ret_store[ctgt];
-		Expr *rettgt = retnode.second;
-		Expr *cond =
-		  Expr::createEquality (rettgt->ref (),
-					Constant::create (na, 0, 
-							  rettgt->get_bv_size ()));
-		MicrocodeAddress nma (na);
-		MicrocodeNode *tgt = mc->get_or_create_node (nma);
-		StmtArrow *a =
-		  retnode.first->add_successor (cond, tgt, new Skip ());
-		FloodTraversal::treat_new_arrow (mc, entry, a, next);
-	      }
-	    else
-	      {
-		ConcreteAddress call (entry->get_loc ().getGlobal ());
-		assert (call_ret_store.find (next) == call_ret_store.end ());
-		stack.push_front (ctgt);
-		stack.push_front (next);
-	      }
-	  }
-      }
-    else if (! stack.empty ())
-      {
-	ConcreteAddress ret(stack.front ());
-	stack.pop_front ();
-	ConcreteAddress call(stack.front ());
-	stack.pop_front ();
-	if (can_visit (ret))
-	  {
-	    const DynamicArrow *da = dynamic_cast<const DynamicArrow *> (arrow);
-
-	    if (da != NULL)
-	      {
-		Expr *target = da->get_target ();
-		int targetsz = target->get_bv_size ();
-		call_ret_store[call].first = arrow->get_src ();
-		call_ret_store[call].second = target;
-		address_t na = ret.get_address ();
-		Expr *cond =
-		  Expr::createEquality (target->ref (),
-					Constant::create (na, 0, targetsz));
-		MicrocodeAddress nma (na);
-		MicrocodeNode *tgt = mc->get_or_create_node (nma);
-		StmtArrow *a =
-		  arrow->get_src ()->add_successor (cond, tgt, new Skip ());
-		FloodTraversal::treat_new_arrow (mc, entry, a, next);
-	      }
-	    else
-	      {
-		add_to_todo_list (ret);
-	      }
-	  }
-      }
-    else
-      {
-	logs::error << src->get_loc ()
-		   << ": error: ret without matching call" << endl;
-      }
-  }
-};
-
-/* Recursive traversal disassembly method */
 Microcode *
 recursivetraversal (const ConcreteAddress * entrypoint, ConcreteMemory * memory,
 		    Decoder * decoder)
   throw (Decoder::Exception &)
 {
-  Microcode * mc = new Microcode();
-  RecursiveTraversal rt (memory, decoder);
+  Microcode *result = new Microcode ();
+  RecursiveTraversal::Stepper *stepper = 
+    new RecursiveTraversal::Stepper (memory, 
+		  decoder->get_arch ()->get_reference_arch() );
+  RecursiveTraversal::StateSpace *states = 
+    new RecursiveTraversal::StateSpace ();
+  RecursiveTraversal::Traversal rec (memory, decoder, stepper, states, result);
 
-  try 
+  bool show_states = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
+  bool show_pending_arrows = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
+				     false);
+  rec.set_show_states (show_states);
+  rec.set_show_pending_arrows (show_pending_arrows);
+  int max_nb_visits =
+    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
+
+  if (max_nb_visits > 0 && verbosity)
     {
-      rt.compute (mc, *entrypoint);
-    } 
-  catch (Decoder::Exception &e) 
-    {
-      delete mc;
-      throw (e);
+      logs::warning << "warning: restrict number of visits per program point "
+		    << "to " << std::dec << max_nb_visits << " visits." 
+		    << std::endl;
     }
+  rec.set_number_of_visits_per_address (max_nb_visits);
+  rec.compute (*entrypoint);
 
-  return mc;
+  delete stepper;
+  delete states;
+
+  return result;
 }

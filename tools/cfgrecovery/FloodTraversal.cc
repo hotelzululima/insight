@@ -27,86 +27,8 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#include "FloodTraversal.hh"
-
-#include <stdlib.h>
-
-using namespace std;
-
-FloodTraversal::FloodTraversal (bool scan_all, 
-				const ConcreteMemory *memory, 
-				Decoder *decoder)
-  : ConcreteMemoryTraversal (memory, decoder), scan_all (scan_all)
-{
-}
-
-FloodTraversal::~FloodTraversal ()
-{
-}
-
-void 
-FloodTraversal::treat_new_arrow (Microcode *, 
-				 const MicrocodeNode *, 
-				 const StmtArrow *arrow,
-				 const ConcreteAddress &next)
-{
-  const Architecture *arch = decoder->get_arch ()->get_reference_arch ();
-
-  const StaticArrow *sa = dynamic_cast<const StaticArrow *> (arrow);
-  MicrocodeAddress tgt;
-  bool tgt_is_defined = false;
-  
-  ConcreteAddress src (arrow->get_src ()->get_loc().getGlobal ());
-
-  if (mem->is_defined (src) && can_visit (src))
-    add_to_todo_list (src);
-
-  if (sa == NULL)
-    {
-      const DynamicArrow *da = dynamic_cast<const DynamicArrow *> (arrow);
-      MemCell *mc = dynamic_cast<MemCell *> (da->get_target ());
-      
-      if (mc != NULL && mc->get_addr ()->is_Constant ())
-	{
-	  Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());
-	  word_t addr = cst->get_val();
-	  bool isdef = true;
-
-	  for (int i = 0; i < arch->get_address_size () / 8 && isdef; i++)
-	    {	      
-	      ConcreteAddress a (addr + i);
-	      isdef = mem->is_defined(a);
-	    }
-
-	  if (isdef)
-	    {
-	      ConcreteAddress a (addr);
-	      ConcreteValue val = 
-		mem->get (a, arch->get_address_size () / 8, 
-			  arch->get_endian ());
-	      tgt = MicrocodeAddress (val.get ());
-	      tgt_is_defined = true;
-	    }
-	}
-    }
-  else
-    {
-      tgt = sa->get_target ();
-      tgt_is_defined = true;
-    }
-  
-  if (tgt_is_defined && tgt.getLocal () == 0)
-    {
-      ConcreteAddress ctgt (tgt.getGlobal ());
-      
-      if (mem->is_defined (ctgt) && can_visit (ctgt))
-	add_to_todo_list (ctgt);
-    }
-
-  if (scan_all && can_visit (next.get_address ()))
-    add_to_todo_list (next);
-}
+#include <analyses/cfgrecovery/FloodTraversal.hh>
+#include "simulator.hh"
 
 /* Flood traversal disassembly method */
 Microcode *
@@ -114,18 +36,34 @@ flood_traversal (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 		 Decoder *decoder)
   throw (Decoder::Exception &)
 {
-  Microcode *mc = new Microcode();
-  FloodTraversal lst (true, memory, decoder);
+  Microcode *result = new Microcode ();
+  FloodTraversal::Stepper *stepper = 
+    new FloodTraversal::Stepper (memory, 
+				 decoder->get_arch ()->get_reference_arch());
+  FloodTraversal::StateSpace *states = new FloodTraversal::StateSpace ();
+  FloodTraversal::Traversal rec (memory, decoder, stepper, states, result);
 
-  try
-    {      
-      lst.compute (mc, *entrypoint);
-    }
-  catch (Decoder::Exception &e)
+  bool show_states = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
+  bool show_pending_arrows = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
+				     false);
+  rec.set_show_states (show_states);
+  rec.set_show_pending_arrows (show_pending_arrows);
+  int max_nb_visits =
+    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
+
+  if (max_nb_visits > 0 && verbosity)
     {
-      delete mc;
-      throw (e);
+      logs::warning << "warning: restrict number of visits per program point "
+		    << "to " << std::dec << max_nb_visits << " visits." 
+		    << std::endl;
     }
-  
-  return mc;
+  rec.set_number_of_visits_per_address (max_nb_visits);
+  rec.compute (*entrypoint);
+
+  delete stepper;
+  delete states;
+
+  return result;
 }
