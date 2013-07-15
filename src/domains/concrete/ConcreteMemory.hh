@@ -57,6 +57,7 @@ class ConcreteMemory : public Memory<ConcreteAddress, ConcreteValue>,
 				  std::tr1::hash<address_t> > MemoryMap;
 
   /** \brief The actual storage into memory. */
+  const ConcreteMemory *base;
   MemoryMap memory;
   address_t minaddr;
   address_t maxaddr;
@@ -71,8 +72,11 @@ public:
   /** \brief Default constructor : the memory is empty. */
   ConcreteMemory();
 
+
   /** \brief Copy constructor. */
-  ConcreteMemory(ConcreteMemory &);
+  explicit ConcreteMemory(const ConcreteMemory &mem);
+
+  ConcreteMemory(const ConcreteMemory *base);
 
   /** \brief Destructor. */
   virtual ~ConcreteMemory();
@@ -104,7 +108,8 @@ public:
     throw (UndefinedValueException);
 
   /** \brief Put the value v into the register */
-  virtual void put(const RegisterDesc *, ConcreteValue);
+
+  using RegisterMap<ConcreteValue>::put;
 
   /** \brief Tells if the register has been written or not. */
   bool is_defined(const RegisterDesc *) const;
@@ -120,6 +125,8 @@ public:
   virtual std::size_t hashcode () const;
   void output_text(std::ostream &) const;
   void get_address_range (address_t &min, address_t &max) const; 
+
+  virtual ConcreteMemory *clone () const;
 };
 
 #endif /* DOMAINS_CONCRETE_CONCRETEMEMORY_HH */

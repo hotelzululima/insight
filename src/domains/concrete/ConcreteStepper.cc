@@ -142,7 +142,7 @@ ConcreteStepper::get_initial_state (const ConcreteAddress &entrypoint)
 {
   MicrocodeAddress ma (entrypoint.get_address ());
   State *result = new State (new ProgramPoint (ma), 
-			     new Context (new ConcreteMemory (*memory)));
+			     new Context (new ConcreteMemory (memory)));
 
   return result;
 }

@@ -12,5 +12,5 @@ ConcreteContext::~ConcreteContext ()
 ConcreteContext *
 ConcreteContext::clone () const 
 {
-  return new ConcreteContext (new ConcreteMemory (*memory));
+  return new ConcreteContext (memory->clone ());
 }

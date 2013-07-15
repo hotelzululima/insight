@@ -30,7 +30,7 @@
 
 #include "ConcreteMemory.hh"
 
-#include <assert.h>
+#include <cassert>
 #include <inttypes.h>
 
 #include <iomanip>
@@ -51,19 +51,32 @@ using namespace std;
 
 ConcreteMemory::ConcreteMemory() :
   Memory<ConcreteAddress, ConcreteValue>(), RegisterMap<ConcreteValue>(),
-  memory(), minaddr (MAX_ADDRESS), maxaddr (NULL_ADDRESS)
+  base (NULL), memory (), minaddr (MAX_ADDRESS), maxaddr (NULL_ADDRESS)
 {
 }
 
-ConcreteMemory::ConcreteMemory(ConcreteMemory & m) :
-  Memory<ConcreteAddress,ConcreteValue>(m), RegisterMap<ConcreteValue>(m),
-  memory(m.memory), minaddr (m.minaddr), maxaddr (m.maxaddr)
+ConcreteMemory::ConcreteMemory(const ConcreteMemory &m) :
+  Memory<ConcreteAddress,ConcreteValue> (m), RegisterMap<ConcreteValue> (m),
+  memory (m.memory), base (m.base), minaddr (m.minaddr), maxaddr (m.maxaddr)
 {
+}
+
+ConcreteMemory::ConcreteMemory(const ConcreteMemory *base) :
+  Memory<ConcreteAddress,ConcreteValue> (), RegisterMap<ConcreteValue> (),
+  base (base)
+{
+  if (base)
+    base->get_address_range (minaddr, maxaddr);
+  else 
+    {
+      minaddr = MAX_ADDRESS;
+      maxaddr = NULL_ADDRESS;
+    }
 }
 
 ConcreteMemory::~ConcreteMemory()
 {
-    memory.clear();
+  memory.clear ();
 }
 
 /*****************************************************************************/
@@ -83,14 +96,23 @@ ConcreteMemory::get(const ConcreteAddress &addr,
     {
       address_t cur =
 	(e == Architecture::LittleEndian ? a + size - i - 1 : a + i);
+      word_t byte;
 
-      if (!is_defined(ConcreteAddress(cur)))
+      if (!is_defined (ConcreteAddress (cur)))
 	throw UndefinedValueException("at address " + addr.to_string ());
+      MemoryMap::const_iterator ci = memory.find (cur);
+      if (ci != memory.end ())
+	byte = ci->second;
+      else 
+	{
+	  assert (base->is_defined (addr));
+	  byte = base->get (addr, 1, e).get ();
+	}
 
-      res = (res << 8) | memory.find(cur)->second;
+      res = (res << 8) | byte;
     }
 
-  return ConcreteValue(8 * size, res);
+  return ConcreteValue (8 * size, res);
 }
 
 void
@@ -125,13 +147,15 @@ ConcreteMemory::put(const ConcreteAddress &addr,
 bool
 ConcreteMemory::is_defined(const ConcreteAddress &a) const
 {
-  return (memory.find(a.get_address()) != memory.end());
+  return (memory.find(a.get_address()) != memory.end() ||
+	  (base && base->is_defined (a)));  
 }
 
 bool
 ConcreteMemory::is_defined(const RegisterDesc *r) const
 {
-  return RegisterMap<ConcreteValue>::is_defined(r);
+  return (RegisterMap<ConcreteValue>::is_defined (r) ||
+	  (base && base->is_defined (r)));  
 }
 
 ConcreteValue
@@ -139,28 +163,20 @@ ConcreteMemory::get(const RegisterDesc * r) const
     throw (UndefinedValueException)
 {
   assert (! r->is_alias ());
-  /* Checking for unspecified access */
-  if (!is_defined(r))
-    {
-      throw UndefinedValueException (r->get_label ());
-    }
-
   int offset = r->get_window_offset ();
   int size = r->get_window_size ();
-  word_t reg = regs_find(r)->second.get();
-  word_t val = BitVectorManip::extract_from_word (reg, offset, size);
+  ConcreteValue regval;
 
-  return ConcreteValue(size, val);
+  if (RegisterMap<ConcreteValue>::is_defined (r))
+    regval = RegisterMap<ConcreteValue>::get (r);
+  else if (base)
+    regval = base->get (r);
+  else
+    throw UndefinedValueException ("for register " + r->to_string ());
+
+  word_t val = BitVectorManip::extract_from_word (regval.get (), offset, size);
+  return ConcreteValue (size, val);
 }
-
-void
-ConcreteMemory::put(const RegisterDesc *r, ConcreteValue v)
-{
-  assert (! r->is_alias ());
-  assert (r->get_register_size () == v.get_size());
-  registermap[r] = v;
-}
-
 
 /*****************************************************************************/
 /* Utils                                                                     */
@@ -170,6 +186,9 @@ bool
 ConcreteMemory::equals (const ConcreteMemory &mem) const
 {
   if (memory.size () != mem.memory.size ())
+    return false;
+
+  if (base != mem.base)
     return false;
 
   for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) 
@@ -218,15 +237,7 @@ ConcreteMemory::output_text(ostream &os) const
   os << endl;
 
   os << "Registers: " << endl;
-
-  for (const_reg_iterator iter = regs_begin (); iter != regs_end (); iter++)
-    {
-      const RegisterDesc * reg = iter->first;
-      os << reg->get_label () << ": "
-	 << "0x" << hex << setfill('0') << setw(reg->get_register_size ()/4)
-	 << nouppercase << iter->second
-	 << dec << endl;
-    }
+  RegisterMap<ConcreteValue>::output_text (os);  
 }
 
 void 
@@ -234,4 +245,11 @@ ConcreteMemory::get_address_range (address_t &min, address_t &max) const
 {
   min = minaddr;
   max = maxaddr;
+}
+
+ConcreteMemory *
+ConcreteMemory::clone () const
+{
+  ConcreteMemory *result = new ConcreteMemory (*this);
+  return result;
 }
