@@ -28,22 +28,47 @@
  * SUCH DAMAGE.
  */
 
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
-#include <analyses/microcode_exec.hh>
 #include <analyses/slicing/Slicing.hh>
 #include <domains/ExprSemantics.hh>
 #include <domains/concrete/ConcreteExprSemantics.hh>
-#include <domains/concrete/concrete_context.hh>
+#include <analyses/cfgrecovery/RecursiveTraversal.hh>
+
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/expressions/expr-parser.hh>
 #include <kernel/insight.hh>
 #include <kernel/Microcode.hh>
 #include <utils/logs.hh>
+#include <decoders/DecoderFactory.hh>
 
 using namespace std;
+
+static Microcode *
+s_build_cfg (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
+	     Decoder *decoder)
+{
+  Microcode *result = new Microcode ();
+  RecursiveTraversal::Stepper *stepper = 
+    new RecursiveTraversal::Stepper (memory, 
+				     decoder->get_arch ()->get_reference_arch ());
+  RecursiveTraversal::StateSpace *states =  
+    new RecursiveTraversal::StateSpace ();
+  RecursiveTraversal::Traversal rec (memory, decoder, stepper, states, result);
+
+  rec.set_show_states (false);
+  rec.set_show_pending_arrows (false);
+  rec.set_number_of_visits_per_address (-1);
+  rec.compute (entrypoint);
+
+  delete stepper;
+  delete states;
+  
+  return result;
+}
 
 static void 
 test_slicing (const char *filename, int max_step_nb, int target_addr, 
@@ -59,8 +84,10 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
   BinaryLoader *loader = new BinutilsBinaryLoader (filename);
   MicrocodeArchitecture *mcarch = 
     new MicrocodeArchitecture (loader->get_architecture ());
+
   ConcreteMemory *mem = loader->get_memory ();
-  Microcode *prg = Build_Microcode (mcarch, mem, ConcreteAddress (0));
+  Decoder *decoder = DecoderFactory::get_Decoder (mcarch, mem);
+  Microcode *prg = s_build_cfg (ConcreteAddress (0), mem, decoder);
   
   Expr *lvalue = expr_parser (target_lv, mcarch);
   vector<StmtArrow*> stmt_deps =
@@ -107,6 +134,7 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
   delete mcarch;
   delete mem;
   delete loader;
+  delete decoder;
 }
 
 int main(int argc, char **argv)
