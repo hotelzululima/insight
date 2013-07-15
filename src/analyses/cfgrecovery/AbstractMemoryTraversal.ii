@@ -80,6 +80,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint)
 	}
 
     }
+  program->set_entry_point (MicrocodeAddress (entrypoint.get_address ()));
 }
   
 template<typename AlgoSpec>  
