@@ -1,0 +1,136 @@
+#ifndef ABSTRACTDOMAINSTEPPER_II
+# define ABSTRACTDOMAINSTEPPER_II
+
+template <typename CTX, typename PP>
+AbstractDomainStepper<CTX,PP>::AbstractDomainStepper (const Architecture *arch) 
+  : arch (arch), 
+    map_dynamic_jumps_to_memory (false), 
+    dynamic_jump_threshold (10) 
+{ 
+}
+
+template <typename CTX, typename PP>
+AbstractDomainStepper<CTX,PP>::~AbstractDomainStepper () 
+{ 
+}
+
+template <typename CTX, typename PP>
+typename AbstractDomainStepper<CTX,PP>::StateSet *
+AbstractDomainStepper<CTX,PP>::get_successors (const State *s, 
+					       const StmtArrow *arrow) 
+{
+  StateSet *result = new StateSet ();      
+  Context *newctx = restrict_to_condition (s->get_Context (), 
+					   arrow->get_condition ());
+  
+  if (newctx == NULL)
+    return result;
+  
+  ProgramPoint *from = s->get_ProgramPoint ();
+      
+  try
+    {
+      if (arrow->is_static ())
+	{
+	  StaticArrow *sa = (StaticArrow *) arrow;
+	  MicrocodeAddress tgt = sa->get_target ();
+	  exec (newctx, sa->get_stmt ());
+	  ProgramPoint *to = from->next (tgt);
+	      result->insert (new State (to, newctx));
+	}
+      else
+	{
+	  DynamicArrow *da = (DynamicArrow *) arrow;
+	  Expr *addr = da->get_target ();
+	  
+	  assert (! da->get_stmt()->is_Assignment ());
+	  
+	  Value vaddr = eval (newctx, addr);
+	  std::vector<address_t> *targets = 
+	    value_to_concrete_addresses (newctx, vaddr);
+	  
+	  for (size_t i = 0; i < targets->size (); i++)
+	    {
+	      MicrocodeAddress tgt (targets->at(i));
+	      ProgramPoint *to = from->next (tgt);
+	      result->insert (new State (to, newctx));
+	      newctx->ref ();
+	    }
+	  newctx->deref ();
+	  delete targets;	    
+	}
+    }
+  catch (UndefinedValueException &e)
+    {
+      delete newctx;
+      for (typename StateSet::iterator i = result->begin (); 
+	   i != result->end (); i++)
+	delete *i;
+      delete result;
+      throw;
+    }
+  
+  return result;
+}
+
+template <typename CTX, typename PP>
+void 
+AbstractDomainStepper<CTX,PP>::
+  set_map_dynamic_jumps_to_memory (bool value) 
+{
+  map_dynamic_jumps_to_memory = value;
+}
+    
+template <typename CTX, typename PP>
+void 
+AbstractDomainStepper<CTX,PP>::set_dynamic_jump_threshold (int value)
+{
+  dynamic_jump_threshold = value;
+}
+
+template <typename CTX, typename PP>
+void 
+AbstractDomainStepper<CTX,PP>::exec (Context *newctx, const Statement *st)
+{
+  assert (newctx != NULL);
+  
+  const Assignment *assign = dynamic_cast<const Assignment *> (st);
+  if (assign == NULL)
+    return;
+
+  Memory *memory = newctx->get_memory ();
+
+  if (assign->get_lval()->is_MemCell())
+    {
+      const MemCell *cell = 
+	dynamic_cast<const MemCell *> (assign->get_lval());
+
+      assert (cell->get_bv_offset () == 0);
+      assert (cell->get_bv_size () == assign->get_rval()->get_bv_size ());
+      Value va (eval (newctx, cell->get_addr ()));
+      Address a (value_to_address (newctx, va));
+      Value v (eval (newctx, assign->get_rval()));
+	
+      memory->put (a, v, arch->get_endian ());
+    }
+  else if (assign->get_lval()->is_RegisterExpr())
+    {
+      RegisterExpr *reg = (RegisterExpr *) assign->get_lval();
+      const RegisterDesc *rdesc = reg->get_descriptor();
+      Value v (eval (newctx, assign->get_rval ()));
+      Value regval;
+	
+      if (v.get_size () != rdesc->get_register_size ())
+	{
+	  if (memory->is_defined (rdesc))
+	    regval = memory->get (rdesc);
+	  else 
+	    regval = Value::unknown_value (rdesc->get_window_size ());
+
+	  v = embed_eval (regval, v, reg->get_bv_offset());
+	}     
+      memory->put (rdesc, v);
+    }
+}
+
+#endif /* ! ABSTRACTDOMAINSTEPPER_II */
