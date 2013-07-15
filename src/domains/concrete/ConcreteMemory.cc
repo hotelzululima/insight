@@ -57,7 +57,7 @@ ConcreteMemory::ConcreteMemory() :
 
 ConcreteMemory::ConcreteMemory(ConcreteMemory & m) :
   Memory<ConcreteAddress,ConcreteValue>(m), RegisterMap<ConcreteValue>(m),
-  memory(m.memory)
+  memory(m.memory), minaddr (m.minaddr), maxaddr (m.maxaddr)
 {
 }
 
