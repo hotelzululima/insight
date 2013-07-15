@@ -82,7 +82,8 @@ ConcreteValue::equals (const ConcreteValue &v) const
 void
 ConcreteValue::output_text(std::ostream &os) const
 {
-  os << (uint64_t)this->value << dec << "{" << this->size << "}";
+  os << "0x" << hex << (uint64_t) this->value 
+     << dec << "{" << this->size << "}";
 }
 
 Option<MicrocodeAddress>
