@@ -226,8 +226,7 @@ bool SetsValue::operator==(const SetsValue &other) const
 
   ConcreteValueSet::iterator v1 = the_set.begin();
   ConcreteValueSet::iterator v2 = other.the_set.begin();
-  while ((v1 != the_set.end()) &&
-         (*v1 == *v2))
+  while ((v1 != the_set.end()) && (v1->equals (*v2)))
     {
       v1++;
       v2++;

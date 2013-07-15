@@ -74,7 +74,7 @@ word_t ConcreteValue::get() const
 }
 
 bool
-ConcreteValue::operator==(const ConcreteValue &v) const
+ConcreteValue::equals (const ConcreteValue &v) const
 {
   return ((this->size == v.get_size()) && (get () == v.get()));
 }

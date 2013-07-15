@@ -75,7 +75,7 @@ ATF_TEST_CASE_BODY(concretevalue)
   ATF_REQUIRE_EQ(clone_value.get_size(), 32);
 
   /* Checking for operator== */
-  ATF_REQUIRE(value == clone_value);
+  ATF_REQUIRE(value.equals (clone_value));
 
   /* Checking for unknown_value() primitive */
   ConcreteValue unknown_value = ConcreteValue::unknown_value(BV_DEFAULT_SIZE);

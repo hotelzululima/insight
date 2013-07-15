@@ -116,7 +116,7 @@ generic_ternary_semantic(ConcreteValue(*op_sem)(ConcreteValue, ConcreteValue,
 #define particular_case_equal(v,the_val,the_result)			\
   try {									\
     ConcreteValue _aux = v.extract_value().getValue();			\
-    if (_aux == ConcreteValue(_aux.get_size (), (word_t) the_val))	\
+    if (_aux.equals (ConcreteValue(_aux.get_size (), (word_t) the_val))) \
       return SetsValue(Option<ConcreteValue>(ConcreteValue(_aux.get_size (), \
 							   (word_t) the_result))); \
   } catch (OptionNoValueExc &) {}

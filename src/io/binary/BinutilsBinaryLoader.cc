@@ -214,7 +214,7 @@ BinutilsBinaryLoader::fill_memory_from_sections(ConcreteMemory *memory) const {
 	    {
 	      ConcreteValue v = memory->get (current, 1,
 					     Architecture::BigEndian);
-	      if (! (v == val))
+	      if (! v.equals (val))
 		logs::warning << "address " << current.to_string()
 			     << " is reassigned :"
 			     << v.to_string() << " -> " << val.to_string()

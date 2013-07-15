@@ -74,7 +74,7 @@ ATF_TEST_CASE_BODY(concretememory_registers)
   ATF_REQUIRE_EQ(memory->is_defined(eax), true);
 
   /* Check if the put() did work well */
-  ATF_REQUIRE(memory->get(eax) == ConcreteValue(32, 32768));
+  ATF_REQUIRE(memory->get(eax).equals (ConcreteValue(32, 32768)));
 
   delete memory;
 
