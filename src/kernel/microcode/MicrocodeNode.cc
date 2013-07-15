@@ -140,7 +140,7 @@ MicrocodeNode::add_predecessor (StmtArrow * arr)
   predecessors->push_back(arr);
 }
 
-MicrocodeAddress MicrocodeNode::get_loc() const {
+const MicrocodeAddress &MicrocodeNode::get_loc() const {
   return loc;
 }
 std::vector<StmtArrow *> * MicrocodeNode::get_successors() const { return successors; }

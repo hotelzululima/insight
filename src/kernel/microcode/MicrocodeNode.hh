@@ -86,7 +86,7 @@ public:
   void set_father(Microcode * f);
   void add_predecessor(StmtArrow * arr);
 
-  MicrocodeAddress get_loc() const;
+  const MicrocodeAddress &get_loc() const;
   std::vector<StmtArrow *> * get_successors() const;
   std::vector<StmtArrow *> * get_predecessors() const;
   std::vector<MicrocodeNode *> get_global_parents () const;
