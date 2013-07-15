@@ -1,14 +1,14 @@
-[(0x0,0)] @{asm:=movb   $0x1,0x12fa792}@ StaticArrow (0x0,0) [0x12FA792{0;32}]{0;8} := 0x1{0;8}  --> (0x7,0)
-[(0x7,0)] @{asm:=mov    $0x7fff,%ax}@ StaticArrow (0x7,0) %eax{0;16} := 0x7FFF{0;16}  --> (0xB,0)
-[(0xB,0)] @{asm:=imul   %ax,%ax}@ %tmpr0_32{0;32} := (MUL_S %eax{0;16} %eax{0;16}){0;32}
-[(0xB,1)] %eax{0;16} := %tmpr0_32{0;16}
-[(0xB,2)] StaticArrow (0xB,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1} >> --> (0xB,3)StaticArrow (0xB,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1}){0;1} >> --> (0xB,5)
-[(0xB,3)] %cf{0;1} := 0x1{0;1}
-[(0xB,4)] StaticArrow (0xB,4) %of{0;1} := 0x1{0;1}  --> (0xF,0)
-[(0xB,5)] %cf{0;1} := 0x0{0;1}
-[(0xB,6)] StaticArrow (0xB,6) %of{0;1} := 0x0{0;1}  --> (0xF,0)
-[(0xF,0)] @{asm:=jno    0x6666}@ StaticArrow (0xF,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xF,0) Skip << %of{0;1} >> --> (0x15,0)
-[(0x15,0)] @{asm:=into   }@ StaticArrow (0x15,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x16,0)
-[(0x16,0)] 
-[(0x6666,0)] 
+((0x0,0), [(0x0,0)] @{asm:=movb   $0x1,0x12fa792, next-inst:=(0x7,0)}@ StaticArrow (0x0,0) [0x12FA792{0;32}]{0;8} := 0x1{0;8}  --> (0x7,0))
+((0x7,0), [(0x7,0)] @{asm:=mov    $0x7fff,%ax, next-inst:=(0xB,0)}@ StaticArrow (0x7,0) %eax{0;16} := 0x7FFF{0;16}  --> (0xB,0))
+((0xB,0), [(0xB,0)] @{asm:=imul   %ax,%ax, next-inst:=(0xF,0)}@ %tmpr0_32{0;32} := (MUL_S %eax{0;16} %eax{0;16}){0;32})
+((0xB,1), [(0xB,1)] %eax{0;16} := %tmpr0_32{0;16})
+((0xB,2), [(0xB,2)] StaticArrow (0xB,2) Skip << (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1} >> --> (0xB,3)StaticArrow (0xB,2) Skip << (NOT (NEQ 0x0{0;16} %tmpr0_32{16;16}){0;1}){0;1} >> --> (0xB,5))
+((0xB,3), [(0xB,3)] %cf{0;1} := 0x1{0;1})
+((0xB,4), [(0xB,4)] StaticArrow (0xB,4) %of{0;1} := 0x1{0;1}  --> (0xF,0))
+((0xB,5), [(0xB,5)] %cf{0;1} := 0x0{0;1})
+((0xB,6), [(0xB,6)] StaticArrow (0xB,6) %of{0;1} := 0x0{0;1}  --> (0xF,0))
+((0xF,0), [(0xF,0)] @{asm:=jno    0x6666, next-inst:=(0x15,0)}@ StaticArrow (0xF,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xF,0) Skip << %of{0;1} >> --> (0x15,0))
+((0x15,0), [(0x15,0)] @{asm:=into   , next-inst:=(0x16,0)}@ StaticArrow (0x15,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x16,0))
+((0x16,0), [(0x16,0)] )
+((0x6666,0), [(0x6666,0)] )
 

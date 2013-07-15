@@ -456,6 +456,202 @@ X86_32_LSW_TESTS = \
         ${dummy}
 
 if WITH_VALGRIND
+X86_32_SYM_TESTS += \
+	x86_32-cfgrecovery-01.sym.memres \
+        \
+	x86_32-simulator-01.sym.memres \
+	x86_32-simulator-02.sym.memres \
+	x86_32-simulator-03.sym.memres \
+	x86_32-simulator-04.sym.memres \
+	x86_32-simulator-05.sym.memres \
+	\
+	x86_32-simulator-aaa.sym.memres \
+	x86_32-simulator-aad.sym.memres \
+	x86_32-simulator-aam.sym.memres \
+	x86_32-simulator-aas.sym.memres \
+	x86_32-simulator-add.sym.memres \
+	x86_32-simulator-adcsbb.sym.memres \
+	\
+	x86_32-simulator-booleans.sym.memres \
+	x86_32-simulator-bound.sym.memres \
+	x86_32-simulator-bsf.sym.memres \
+	x86_32-simulator-bsr.sym.memres \
+	x86_32-simulator-bswap.sym.memres \
+	x86_32-simulator-bt-01.sym.memres \
+	x86_32-simulator-bt-02.sym.memres \
+	x86_32-simulator-btc.sym.memres \
+	x86_32-simulator-btr.sym.memres \
+	x86_32-simulator-bts.sym.memres \
+	\
+	x86_32-simulator-CF.sym.memres \
+	x86_32-simulator-call.sym.memres \
+	x86_32-simulator-cbw.sym.memres \
+	x86_32-simulator-cmov.sym.memres \
+	x86_32-simulator-cmps-01.sym.memres \
+	x86_32-simulator-cmps-02.sym.memres \
+	x86_32-simulator-cmpxchg.sym.memres \
+	x86_32-simulator-cwdcdq.sym.memres \
+	\
+	x86_32-simulator-daadas.sym.memres \
+	x86_32-simulator-div.sym.memres \
+	\
+	x86_32-simulator-enter-leave-01.sym.memres \
+	x86_32-simulator-enter-leave-02.sym.memres \
+	\
+	x86_32-simulator-idiv.sym.memres \
+	x86_32-simulator-imul-01.sym.memres \
+	x86_32-simulator-imul-02.sym.memres \
+	x86_32-simulator-imul-03.sym.memres \
+	x86_32-simulator-int.sym.memres \
+	x86_32-simulator-int3.sym.memres \
+	x86_32-simulator-into-01.sym.memres \
+	x86_32-simulator-into-02.sym.memres \
+	\
+	x86_32-simulator-lsahf.sym.memres \
+	x86_32-simulator-lods.sym.memres \
+	x86_32-simulator-loop.sym.memres \
+	\
+	x86_32-simulator-movbe.sym.memres \
+	x86_32-simulator-movs.sym.memres \
+	x86_32-simulator-movsxz.sym.memres \
+	x86_32-simulator-mul.sym.memres \
+	\
+	x86_32-simulator-neg.sym.memres \
+	\
+	x86_32-simulator-popcnt.sym.memres \
+	x86_32-simulator-pushpop-01.sym.memres \
+	x86_32-simulator-pushpop-02.sym.memres \
+	x86_32-simulator-pushpop-03.sym.memres \
+	x86_32-simulator-pushpop-04.sym.memres \
+	x86_32-simulator-pushpop-05.sym.memres \
+	x86_32-simulator-pushpop-06.sym.memres \
+	x86_32-simulator-pushfpopf.sym.memres \
+	x86_32-simulator-pushapopa.sym.memres \
+	\
+	x86_32-simulator-rep-01.sym.memres \
+	x86_32-simulator-rep-02.sym.memres \
+	x86_32-simulator-rep-03.sym.memres \
+	x86_32-simulator-rep-04.sym.memres \
+	\
+	x86_32-simulator-rotate-01.sym.memres \
+	x86_32-simulator-rotate-02.sym.memres \
+	x86_32-simulator-rotate-03.sym.memres \
+	x86_32-simulator-rotate-04.sym.memres \
+	\
+	x86_32-simulator-shift-01.sym.memres \
+	x86_32-simulator-shift-02.sym.memres \
+	x86_32-simulator-shift-03.sym.memres \
+	x86_32-simulator-shift-04.sym.memres \
+	\
+	x86_32-simulator-scas.sym.memres \
+	x86_32-simulator-sub.sym.memres \
+	x86_32-simulator-setcc.sym.memres \
+	\
+	x86_32-simulator-xadd.sym.memres \
+	x86_32-simulator-xchg.sym.memres \
+	\
+	x86_32-gcd.sym.memres \
+        \
+        ${dummy}
+
+X86_32_SC_TESTS += \
+	x86_32-cfgrecovery-01.sc.memres \
+        \
+	x86_32-simulator-01.sc.memres \
+	x86_32-simulator-02.sc.memres \
+	x86_32-simulator-03.sc.memres \
+	x86_32-simulator-04.sc.memres \
+	x86_32-simulator-05.sc.memres \
+	\
+	x86_32-simulator-aaa.sc.memres \
+	x86_32-simulator-aad.sc.memres \
+	x86_32-simulator-aam.sc.memres \
+	x86_32-simulator-aas.sc.memres \
+	x86_32-simulator-add.sc.memres \
+	x86_32-simulator-adcsbb.sc.memres \
+	\
+	x86_32-simulator-booleans.sc.memres \
+	x86_32-simulator-bound.sc.memres \
+	x86_32-simulator-bsf.sc.memres \
+	x86_32-simulator-bsr.sc.memres \
+	x86_32-simulator-bswap.sc.memres \
+	x86_32-simulator-bt-01.sc.memres \
+	x86_32-simulator-bt-02.sc.memres \
+	x86_32-simulator-btc.sc.memres \
+	x86_32-simulator-btr.sc.memres \
+	x86_32-simulator-bts.sc.memres \
+	\
+	x86_32-simulator-CF.sc.memres \
+	x86_32-simulator-call.sc.memres \
+	x86_32-simulator-cbw.sc.memres \
+	x86_32-simulator-cmov.sc.memres \
+	x86_32-simulator-cmps-01.sc.memres \
+	x86_32-simulator-cmps-02.sc.memres \
+	x86_32-simulator-cmpxchg.sc.memres \
+	x86_32-simulator-cwdcdq.sc.memres \
+	\
+	x86_32-simulator-daadas.sc.memres \
+	x86_32-simulator-div.sc.memres \
+	\
+	x86_32-simulator-enter-leave-01.sc.memres \
+	x86_32-simulator-enter-leave-02.sc.memres \
+	\
+	x86_32-simulator-idiv.sc.memres \
+	x86_32-simulator-imul-01.sc.memres \
+	x86_32-simulator-imul-02.sc.memres \
+	x86_32-simulator-imul-03.sc.memres \
+	x86_32-simulator-int.sc.memres \
+	x86_32-simulator-int3.sc.memres \
+	x86_32-simulator-into-01.sc.memres \
+	x86_32-simulator-into-02.sc.memres \
+	\
+	x86_32-simulator-lsahf.sc.memres \
+	x86_32-simulator-lods.sc.memres \
+	x86_32-simulator-loop.sc.memres \
+	\
+	x86_32-simulator-movbe.sc.memres \
+	x86_32-simulator-movs.sc.memres \
+	x86_32-simulator-movsxz.sc.memres \
+	x86_32-simulator-mul.sc.memres \
+	\
+	x86_32-simulator-neg.sc.memres \
+	\
+	x86_32-simulator-popcnt.sc.memres \
+	x86_32-simulator-pushpop-01.sc.memres \
+	x86_32-simulator-pushpop-02.sc.memres \
+	x86_32-simulator-pushpop-03.sc.memres \
+	x86_32-simulator-pushpop-04.sc.memres \
+	x86_32-simulator-pushpop-05.sc.memres \
+	x86_32-simulator-pushpop-06.sc.memres \
+	x86_32-simulator-pushfpopf.sc.memres \
+	x86_32-simulator-pushapopa.sc.memres \
+	\
+	x86_32-simulator-rep-01.sc.memres \
+	x86_32-simulator-rep-02.sc.memres \
+	x86_32-simulator-rep-03.sc.memres \
+	x86_32-simulator-rep-04.sc.memres \
+	\
+	x86_32-simulator-rotate-01.sc.memres \
+	x86_32-simulator-rotate-02.sc.memres \
+	x86_32-simulator-rotate-03.sc.memres \
+	x86_32-simulator-rotate-04.sc.memres \
+	\
+	x86_32-simulator-shift-01.sc.memres \
+	x86_32-simulator-shift-02.sc.memres \
+	x86_32-simulator-shift-03.sc.memres \
+	x86_32-simulator-shift-04.sc.memres \
+	\
+	x86_32-simulator-scas.sc.memres \
+	x86_32-simulator-sub.sc.memres \
+	x86_32-simulator-setcc.sc.memres \
+	\
+	x86_32-simulator-xadd.sc.memres \
+	x86_32-simulator-xchg.sc.memres \
+	\
+	x86_32-gcd.sc.memres \
+        \
+        ${dummy}
+
 X86_32_RT_TESTS += \
 	x86_32-cfgrecovery-01.rt.memres \
         \
@@ -623,7 +819,7 @@ X86_32_FLD_TESTS += \
 	x86_32-xchg.fld.memres \
 	x86_32-xor.fld.memres \
         \
-	x86_32-cfgrecovery-01.fld.res \
+	x86_32-cfgrecovery-01.fld.memres \
         \
         ${dummy}
 
@@ -696,7 +892,7 @@ X86_32_LSW_TESTS += \
 	x86_32-xchg.lsw.memres \
 	x86_32-xor.lsw.memres \
         \
-	x86_32-cfgrecovery-01.lsw.res \
+	x86_32-cfgrecovery-01.lsw.memres \
         \
         ${dummy}
 endif
@@ -716,7 +912,7 @@ TESTS = \
 
 EXTRA_DIST=${TESTS:%=%.result}
 
-MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
+MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=full
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
@@ -751,6 +947,14 @@ MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 %.rt.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
 	@echo "generate $@"
 	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} $< > $@ 2>&1
+
+%.sym.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	@echo "generate $@"
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_SSYMB_FLAGS} $< > $@ 2>&1
+
+%.sc.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+	@echo "generate $@"
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_SCONC_FLAGS} $< > $@ 2>&1
 
 check-diff : ${BASE_TESTS}
 	@ > check-diff
