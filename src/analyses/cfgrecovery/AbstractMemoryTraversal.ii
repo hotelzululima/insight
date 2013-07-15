@@ -4,12 +4,11 @@
 template<typename AlgoSpec>
 AbstractMemoryTraversal<AlgoSpec>::
  AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder, 
-			  Stepper *stepper, StateSpace *states, Microcode *mc) 
-   :
-   memory (memory), worklist(), stepper (stepper), 
-   decoder (decoder), program (mc), states (states), 
-   nb_visits_per_address (-1), show_states (false), 
-   show_pending_arrows (false),  warn_unsolved_dynamic_jump (false)
+			  Stepper *stepper, StateSpace *states) 
+   : memory (memory), worklist(), stepper (stepper), 
+     decoder (decoder), states (states), 
+     nb_visits_per_address (-1), show_states (false), 
+     show_pending_arrows (false),  warn_unsolved_dynamic_jump (false)
 {
 }
 
@@ -42,8 +41,10 @@ AbstractMemoryTraversal<AlgoSpec>::set_warn_on_unsolved_dynamic_jump (bool
 
 template<typename AlgoSpec>
 void 
-AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint) 
+AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
+					    Microcode *mc)
 {
+  this->program = mc;
   State *s = stepper->get_initial_state (entrypoint);
   computePendingArrowsFor (s);
 

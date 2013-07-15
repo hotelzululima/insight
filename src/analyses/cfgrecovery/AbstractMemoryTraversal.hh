@@ -27,7 +27,7 @@ public:
   };
 
   AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder, 
-			   Stepper *stepper, StateSpace *states, Microcode *mc);
+			   Stepper *stepper, StateSpace *states);
 
   virtual ~AbstractMemoryTraversal ();
 
@@ -39,20 +39,20 @@ public:
 
   void set_number_of_visits_per_address (int value);
 
-  void compute (const ConcreteAddress &entrypoint);
+  void compute (const ConcreteAddress &entrypoint, Microcode *result);
     
-  PendingArrow nextPendinArrow ();
 
-  bool skip_pending_arrow (const PendingArrow &pa);
-
-  void computePendingArrowsFor (State *s)
+protected:
+  virtual MicrocodeNode *get_node (const ProgramPoint *pp)
     throw (Decoder::Exception);
 
-  MicrocodeNode *get_node (const ProgramPoint *pp)
-    throw (Decoder::Exception);
+  virtual PendingArrow nextPendinArrow ();
 
+  virtual bool skip_pending_arrow (const PendingArrow &pa);
+
+  virtual void computePendingArrowsFor (State *s)
+    throw (Decoder::Exception);
 private:
-
   ConcreteMemory *memory;
   std::list<PendingArrow> worklist;
   Stepper *stepper;
