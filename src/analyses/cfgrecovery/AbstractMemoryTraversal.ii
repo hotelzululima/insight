@@ -1,0 +1,200 @@
+#ifndef ABSTRACTMEMORYTRAVERSAL_II
+# define ABSTRACTMEMORYTRAVERSAL_II
+
+template<typename AlgoSpec>
+AbstractMemoryTraversal<AlgoSpec>::
+ AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder, 
+			  Stepper *stepper, StateSpace *states, Microcode *mc) 
+   :
+   memory (memory), worklist(), stepper (stepper), 
+   decoder (decoder), program (mc), states (states), 
+   nb_visits_per_address (-1), show_states (false), 
+   show_pending_arrows (false) 
+{
+}
+
+template<typename AlgoSpec>
+AbstractMemoryTraversal<AlgoSpec>::~AbstractMemoryTraversal () 
+{
+}
+
+template<typename AlgoSpec>
+void 
+AbstractMemoryTraversal<AlgoSpec>::set_show_states (bool value) 
+{
+  show_states = value;
+}
+
+template<typename AlgoSpec>
+void 
+AbstractMemoryTraversal<AlgoSpec>::set_show_pending_arrows (bool value) 
+{
+  show_pending_arrows = value;
+}
+
+template<typename AlgoSpec>
+void 
+AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint) 
+{
+  State *s = stepper->get_initial_state (entrypoint);
+  computePendingArrowsFor (s);
+
+  while (! worklist.empty ())
+    {
+      PendingArrow pa = nextPendinArrow ();
+
+      if (skip_pending_arrow (pa))
+	continue;
+      if (show_states)
+	{
+	  logs::debug << "New state" << std::endl
+		      << *(pa.s) << std::endl
+		      << "(" << worklist.size () << ") Pending " 
+		      << pa.arrow->pp () << std::endl;
+	}
+      try 
+	{
+	  StateSet *succ = stepper->get_successors (pa.s, pa.arrow);
+	
+	  for (typename StateSet::iterator i = succ->begin(); 
+	       i != succ->end ();  i++) 
+	    {
+	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (pa.arrow);
+	      if (da != NULL)
+		{
+		  MicrocodeAddress a =
+		    (*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
+		  da->add_solved_jump (a);
+		}
+	      computePendingArrowsFor (*i);
+	    }
+	  if (show_states)
+	    logs::debug << "# state " << states->size() << std::endl;
+	  delete succ;
+	}
+      catch (UndefinedValueException &e)
+	{
+	  MicrocodeAddress a =
+	    pa.s->get_ProgramPoint ()->to_MicrocodeAddress ();
+	  logs::warning << a << " " << e.what () << std::endl;	    
+	}
+
+    }
+}
+  
+template<typename AlgoSpec>  
+typename AbstractMemoryTraversal<AlgoSpec>::PendingArrow 
+AbstractMemoryTraversal<AlgoSpec>::nextPendinArrow () 
+{
+  PendingArrow res = worklist.front ();
+  worklist.pop_front ();
+  
+  return res;
+}
+
+template<typename AlgoSpec>
+void
+AbstractMemoryTraversal<AlgoSpec>::set_number_of_visits_per_address (int value)
+{
+  nb_visits_per_address = value;
+}
+
+template<typename AlgoSpec>
+bool 
+AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
+{
+  bool result = false;
+  MicrocodeAddress ma (pa.s->get_ProgramPoint ()->to_MicrocodeAddress ());
+  if (nb_visits_per_address > 0 && ma.getLocal () == 0)
+    {
+      address_t a = ma.getGlobal ();
+      
+      if (visits.find (a) == visits.end ())
+	visits[a] = 1;
+      else
+	{
+	  int count = visits[a];
+	  visits[a] = count +1;
+	}
+      if (visits[a] > nb_visits_per_address)
+	result = true;
+    }
+  return result;
+}
+
+template<typename AlgoSpec>
+void 
+AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s) 
+    throw (Decoder::Exception) 
+{
+  const State *ns = states->find_or_add_state (s);
+  if (ns != s)
+    delete s;
+  else
+    {
+      ProgramPoint *pp = ns->get_ProgramPoint ();
+      if (memory->is_defined (pp->to_MicrocodeAddress ().getGlobal ()))
+	{
+	  try 
+	    {
+	      MicrocodeNode *node = get_node (pp);
+	      MicrocodeNode_iterate_successors (*node, succ) {
+		PendingArrow pa = { s, *succ };
+		if (show_pending_arrows)
+		  logs::debug << "   (" << worklist.size () 
+			      << ") add pending " 
+			      << pa.arrow->pp () << std::endl;
+		worklist.push_back (pa);
+	      }
+	    }
+	  catch (Decoder::Exception &e)
+	    {
+	      logs::warning << "warning: decoder says :" 
+			    << e.what () << std::endl;
+	    }
+	}
+    }
+}
+
+template<typename AlgoSpec>
+MicrocodeNode *
+AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp) 
+  throw (Decoder::Exception) 
+{
+  MicrocodeAddress ma = pp->to_MicrocodeAddress ();
+  bool is_global = (ma.getLocal () == 0);
+  MicrocodeNode *result = NULL;
+
+  try
+    {
+      result = program->get_node (ma);
+
+      if (is_global && ! result->has_annotation (AsmAnnotation::ID))
+	{
+	  // result is a node added by the decoder but asm instruction at
+	  // pp.to_address () has not yet been decoded.
+	  MicrocodeAddress addr = result->get_loc ();
+	  assert (addr.getLocal () == 0);
+	  ConcreteAddress next =
+	    decoder->decode (program, ConcreteAddress (addr.getGlobal ()));
+	  MicrocodeAddress nextma (next.get_address ());
+	  result->add_annotation (NextInstAnnotation::ID,
+				  new NextInstAnnotation (nextma));
+	}
+    }
+  catch (GetNodeNotFoundExc &)
+    {
+      if (! is_global)
+	throw;
+      ConcreteAddress next =
+	decoder->decode (program, ConcreteAddress (ma.getGlobal ()));
+      MicrocodeAddress nextma (next.get_address ());
+      result = program->get_node (ma);
+      result->add_annotation (NextInstAnnotation::ID,
+			      new NextInstAnnotation (nextma));
+    }
+    
+  return result;
+}
+
+#endif /* ! ABSTRACTMEMORYTRAVERSAL_II */
