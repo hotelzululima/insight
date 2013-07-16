@@ -4,8 +4,8 @@
 
 static const std::string SIMULATOR_X86_32_INIT_ESP_PROP =
   "disas.simulator.x86_32.init-esp";
-static const std::string SIMULATOR_X86_32_INIT_EBP_PROP =
-  "disas.simulator.x86_32.init-ebp";
+static const std::string SIMULATOR_X86_32_ZERO_REGISTERS =
+  "disas.simulator.x86_32.zero-registers";
 static const std::string SIMULATOR_NB_VISITS_PER_ADDRESS =
   "disas.simulator.nb-visits-per-address";
 static const std::string SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS =
@@ -31,6 +31,26 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
 
   if (decoder->get_arch ()->get_proc () == Architecture::X86_32)
     {
+      if (CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_X86_32_ZERO_REGISTERS, 
+					   false))
+	{	
+	  const Architecture *arch = 
+	    decoder->get_arch ()->get_reference_arch ();
+	  
+	  for (RegisterSpecs::const_iterator i = 
+		 arch->get_registers ()->begin ();
+	       i != arch->get_registers ()->end (); i++)
+	    {
+	      if (i->second->is_alias ())
+		continue;
+	      
+	      Constant *c = 
+		Constant::create (0, 0, i->second->get_register_size ());
+	      
+	      memory->put (i->second,  c);
+	      c->deref ();
+	    }
+	}
       if (CFGRECOVERY_CONFIG->has (SIMULATOR_X86_32_INIT_ESP_PROP))
 	{
 	  long valesp = 
@@ -42,19 +62,6 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
 	  Constant *c = Constant::create (valesp, 0, 32);
 	  
 	  memory->put (decoder->get_arch ()->get_register ("esp"),  c);
-	  c->deref ();
-	}
-      if (CFGRECOVERY_CONFIG->has (SIMULATOR_X86_32_INIT_EBP_PROP))
-	{
-	  long valesp = 
-	    CFGRECOVERY_CONFIG->get_integer (SIMULATOR_X86_32_INIT_EBP_PROP);
-	  if (verbosity)
-	    logs::warning << "warning: setting %ebp to " << std::hex << "0x" 
-			  << valesp << std::endl;
-	  
-	  Constant *c = Constant::create (valesp, 0, 32);
-	  
-	  memory->put (decoder->get_arch ()->get_register ("ebp"),  c);
 	  c->deref ();
 	}
     }
