@@ -168,7 +168,7 @@ public:
   }
 
   bool need_extract (const BinaryApp *e) {
-    bool result;
+    bool result = true;
 
     if (e->get_op () == BV_OP_CONCAT)
       {
@@ -176,7 +176,7 @@ public:
 		  (e->get_bv_size () < e->get_arg1 ()->get_bv_size () + 
 		   e->get_arg2 ()->get_bv_size ()));
       }
-    else 
+    else if (e->get_op () != BV_OP_EXTEND_U && e->get_op () != BV_OP_EXTEND_S)
       result = (e->get_bv_offset () != 0 ||
 		e->get_bv_size () != e->get_arg1 ()->get_bv_size ());
     return result;
