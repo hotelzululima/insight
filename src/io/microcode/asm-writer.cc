@@ -42,7 +42,7 @@ s_instruction_bytes (const BinaryLoader *loader, const ConcreteAddress &start,
 
   for (ConcreteAddress a = start; ! a.equals (next); a++)
     result << std::hex << std::setfill('0') << std::setw (2) 
-	   << m->get (a, 1, Architecture::LittleEndian).get ();
+	   << m->get (a, 1, Architecture::LittleEndian).get () << ' ';
   return result.str ();
 }
 
