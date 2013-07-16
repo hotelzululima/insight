@@ -214,7 +214,8 @@ SymbolicMemory::output_text (std::ostream &out) const
 bool 
 SymbolicMemory::equals (const SymbolicMemory &mem) const
 {
-  if (memory.size () != mem.memory.size ())
+  if (memory.size () != mem.memory.size () ||
+      this->RegisterMap<SymbolicValue>::size () != mem.RegisterMap<SymbolicValue>::size ())
     return false;
 
   if (base != mem.base)
@@ -225,17 +226,18 @@ SymbolicMemory::equals (const SymbolicMemory &mem) const
       for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); 
 	   i++) 
 	{
-	  if (! mem.is_defined (i->first) || 
-	      ! (mem.get (i->first, 1, 
-			  Architecture::LittleEndian) == i->second))
+	  SymbolicValue v = mem.get (i->first, 1, Architecture::LittleEndian);
+	  if (! i->second.equals (v))
 	    return false;
 	}
 
       for (RegisterMap<SymbolicValue>::const_reg_iterator i = regs_begin ();
-	   i != regs_end (); i++) {
-	if (! mem.is_defined (i->first) || ! (mem.get (i->first) == i->second))
-	  return false;
-      }
+	   i != regs_end (); i++) 
+	{
+	  SymbolicValue v = mem.get (i->first);
+	  if (! i->second.equals (v))
+	    return false;
+	}
     } 
   catch (UndefinedValueException&)
     {
