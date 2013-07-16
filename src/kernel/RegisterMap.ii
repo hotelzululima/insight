@@ -153,3 +153,10 @@ RegisterMap<Value>::clear(const RegisterDesc *reg)
   if (r != regs_end())
     registermap.erase(r);
 }
+
+template <typename Value>
+int 
+RegisterMap<Value>::size () const
+{
+  return registermap.size ();
+}

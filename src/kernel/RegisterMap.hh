@@ -74,7 +74,7 @@ public:
   virtual reg_iterator regs_end ();
   virtual reg_iterator regs_find (const RegisterDesc *);
   virtual void clear(const RegisterDesc *);
-
+  virtual int size () const;
   /** \brief Text output */
   virtual void output_text(std::ostream &) const;
 
