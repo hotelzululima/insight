@@ -28,11 +28,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <sstream>
+#include <kernel/annotations/NextInstAnnotation.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
 #include "asm-writer.hh"
 
+static std::string 
+s_instruction_bytes (const BinaryLoader *loader, const ConcreteAddress &start,
+		     const ConcreteAddress &next)
+{
+  std::ostringstream result;
+  ConcreteMemory *m = loader->get_memory ();
+
+  for (ConcreteAddress a = start; ! a.equals (next); a++)
+    result << std::hex << std::setfill('0') << std::setw (2) 
+	   << m->get (a, 1, Architecture::LittleEndian).get ();
+  return result.str ();
+}
+
 void 
-asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader)
+asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader,
+	    bool with_bytes)
 {
   for (Microcode::node_iterator N = mc->begin_nodes (); N != mc->end_nodes (); 
        N++)
@@ -47,7 +63,8 @@ asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader)
 
 	  if (fun.hasValue ())
 	    {
-	      out << std::hex << std::setfill ('0') << std::setw (8) 
+	      out << std::right << std::hex << std::setfill ('0') 
+		  << std::setw (8) 
 		  << ma.getGlobal () 
 		  << std::setw (0) 
 		  << " <" << fun.getValue () << ">: " << std::endl;
@@ -57,7 +74,27 @@ asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader)
 	(*N)->get_annotation (AsmAnnotation::ID);
 
       out << std::right << std::hex << std::setw (8) << std::setfill (' ')
-	  << (*N)->get_loc ().getGlobal () << ":\t" 
-	  << a->get_value () << std::endl;
+	  << (*N)->get_loc ().getGlobal () << ":\t";
+      if (with_bytes)
+	{
+	  std::string bytes;
+
+	  if ((*N)->has_annotation (NextInstAnnotation::ID))
+	    {
+	      ConcreteAddress next;
+	      NextInstAnnotation *nia = (NextInstAnnotation *)
+		(*N)->get_annotation (NextInstAnnotation::ID);
+	      next = nia->get_value ().getGlobal ();
+	      bytes = s_instruction_bytes (loader, ma.getGlobal (), next);
+	    }
+	  else
+	    {
+	      bytes = "(unknown)";
+	    }
+	  out << std::left << std::setw (24) << std::setfill (' ') 
+	      << bytes << "\t";
+	}
+      out << a->get_value ();
+      out << std::endl;
     }
 }

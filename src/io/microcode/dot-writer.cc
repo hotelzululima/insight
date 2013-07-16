@@ -120,7 +120,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
       if (ma.getLocal () != 0)
 	continue;
 
-      if (loader )
+      if (loader)
 	{
 	  Option<string> fun = loader->get_symbol_name (ma.getGlobal ());
 

@@ -36,6 +36,7 @@
 # include <io/binary/BinaryLoader.hh>
 
 extern void 
-asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader);
+asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader,
+	    bool with_bytes);
 
 #endif /* ! ASM_WRITER_HH */
