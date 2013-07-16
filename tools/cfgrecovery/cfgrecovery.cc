@@ -32,6 +32,7 @@
 #include <iostream>
 #include <map>
 
+#include <signal.h>
 #include <ctype.h>
 #include <getopt.h>
 #include <libgen.h>
@@ -62,13 +63,14 @@ const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
 struct disassembler {
   const char *name;
   const char *desc;
-  Microcode * (*process)(const ConcreteAddress &, ConcreteMemory *, Decoder *);
+  void (*process)(const ConcreteAddress &, ConcreteMemory *, Decoder *,
+		  Microcode *);
 } disassemblers[] = {
   /* List must be kept sorted by name */
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linear_sweep },
   { "recursive", "recursive traversal", recursive_traversal },
-  { "symsim", "symbolic simulation", symbolic_simulator },
+  { "symsim", "symbolic simulation.", symbolic_simulator },
   { "sim=symbolic", "symbolic simulation.", symbolic_simulator },
   { "sim=concrete", "simulation within concrete domain.", concrete_simulator },
   /* List must be kept sorted by name */
@@ -136,6 +138,55 @@ version ()
   exit (EXIT_SUCCESS);
 }
 
+struct CtrlCHandler : public Microcode::ArrowCreationCallback {
+  bool output_program;
+  std::string format;
+  BinaryLoader *loader;
+  std::string exec_filename;
+  ConcreteAddress *entrypoint;
+
+  bool write_microcode (Microcode *mc) {
+    bool result = true;
+    if (format == "asm")
+      asm_writer (*output, mc, loader, true);
+    else if (format == "mc")
+      {
+	mc->output_text (*output);
+	*output << endl;
+      }
+    else if (format == "dot" || format == "asm-dot")
+      {
+	bool asmonly = (format == "asm-dot");
+	dot_writer (*output, mc, asmonly, exec_filename, entrypoint, loader);
+      }
+    else if (format == "xml")
+      {
+	*output << xml_of_microcode(mc);
+      }
+    else
+      {
+	result = false;
+      }
+    return result;
+  }
+    
+  virtual void add_node (Microcode *mc, StmtArrow *) {
+    if (output_program)
+      {
+	write_microcode (mc);    
+	output_program = false;
+      }
+  }
+  static CtrlCHandler CTRL_C_HANDLER;
+
+
+  static void sighandler (int) {
+    CTRL_C_HANDLER.output_program = true;
+  }    
+};
+
+CtrlCHandler CtrlCHandler::CTRL_C_HANDLER;
+
 int
 main (int argc, char *argv[])
 {
@@ -146,7 +197,7 @@ main (int argc, char *argv[])
 
   /* Default output format (asm, _mc_, dot, asm-dot, xml) */
   string output_format = "mc";
-
+  
   /* Long options struct */
   struct option const
     long_opts[] = {
@@ -373,45 +424,44 @@ main (int argc, char *argv[])
   if (verbosity > 0)
     cout << "Starting " << dis->desc << " disassembly" << endl;
 
+
+  CtrlCHandler::CTRL_C_HANDLER.output_program = false;
+  CtrlCHandler::CTRL_C_HANDLER.format = output_format;
+  CtrlCHandler::CTRL_C_HANDLER.loader = loader;
+  CtrlCHandler::CTRL_C_HANDLER.exec_filename = execfile_name;
+  CtrlCHandler::CTRL_C_HANDLER.entrypoint = entrypoint;
+
+  if (signal (SIGINT, &CtrlCHandler::sighandler) != 0)
+    logs::error << "unable to set CTRL-C handler." << std::endl;
+
   try
     {
-      mc = dis->process(*entrypoint, memory, decoder);
+      mc = new Microcode ();
+      mc->add_arrow_creation_callback (&CtrlCHandler::CTRL_C_HANDLER);
+      dis->process (*entrypoint, memory, decoder, mc);
     }
   catch (Decoder::Exception &e)
     {
+      delete mc;
+      mc = NULL;
       cerr << "error: " << e.what () << endl;
     }
   catch (runtime_error &e)
     {
+      delete mc;
+      mc = NULL;
       cerr << e.what() << endl;
     }
 
   if (mc == NULL)
     exit (EXIT_FAILURE);
 
-  mc->sort ();
-  
-  /* Displaying the microcode */
-  if (output_format == "asm")
-    asm_writer (*output, mc, loader, true);
-  else if (output_format == "mc")
+  if (! CtrlCHandler::CTRL_C_HANDLER.write_microcode (mc))
     {
-      mc->output_text (*output);
-	*output << endl;
-    }
-  else if (output_format == "dot" || output_format == "asm-dot")
-    {
-      int asmonly = (output_format == "asm-dot");
-      dot_writer (*output, mc, asmonly, execfile_name, entrypoint, loader);
-    }
-  else if (output_format == "xml")
-    {
-      *output << xml_of_microcode(mc);
-    }
-  else
-    {
-      cerr << prog_name
-	   << ": error: '" << output_format << "' unknown format" << endl;
+      logs::error << prog_name
+		  << ": error: '" << output_format << "' unknown format" 
+		  << endl;      
+      
       usage(EXIT_FAILURE);
     }
 
@@ -429,3 +479,4 @@ main (int argc, char *argv[])
 
   return (EXIT_SUCCESS);
 }
+

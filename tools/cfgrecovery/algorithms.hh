@@ -35,29 +35,29 @@
 # include <domains/concrete/ConcreteMemory.hh>
 # include <decoders/Decoder.hh>
 
-extern Microcode * 
+extern void
 linear_sweep (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-	      Decoder * decoder)
+	      Decoder * decoder, Microcode *result)
   throw (Decoder::Exception &);
 
-extern Microcode *
+extern void
 flood_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		 Decoder *decoder)
+		 Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
-extern Microcode * 
+extern void
 recursive_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		     Decoder *decoder)
+		     Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
-extern Microcode * 
+extern void
 symbolic_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		    Decoder *decoder)
+		    Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
-extern Microcode * 
+extern void
 concrete_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		    Decoder *decoder)
+		    Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
 #endif /* ALGORITHMS_HH */

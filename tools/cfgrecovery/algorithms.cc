@@ -22,11 +22,11 @@ static const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY =
 
 typedef AlgorithmFactory::Algorithm * (AlgorithmFactory::* FactoryMethod) ();
 
-static Microcode *
+
+static void
 s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		Decoder *decoder, FactoryMethod build)
+		Decoder *decoder, FactoryMethod build, Microcode *result)
 {
-  Microcode *result = new Microcode ();
   AlgorithmFactory F;
 
   if (decoder->get_arch ()->get_proc () == Architecture::X86_32)
@@ -110,50 +110,49 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
       delete result;
       throw;
     }
-  return result;
 }
 
-Microcode * 
+void
 linear_sweep(const ConcreteAddress &entrypoint, ConcreteMemory * memory,
-	    Decoder * decoder)
+	     Decoder * decoder, Microcode *result)
   throw (Decoder::Exception &)
 { 
-  return s_generic_call (entrypoint, memory, decoder, 
-			 &AlgorithmFactory::buildLinearSweep);
+  s_generic_call (entrypoint, memory, decoder, 
+		  &AlgorithmFactory::buildLinearSweep, result);
 }
 
-Microcode *
+void 
 flood_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		 Decoder *decoder)
+		 Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &)
 {
-  return s_generic_call (entrypoint, memory, decoder, 
-			 &AlgorithmFactory::buildFloodTraversal);
+  s_generic_call (entrypoint, memory, decoder, 
+		  &AlgorithmFactory::buildFloodTraversal, result);
 }
 
-Microcode * 
+void 
 recursive_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		     Decoder *decoder)
+		     Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &)
 {
-  return s_generic_call (entrypoint, memory, decoder, 
-			 &AlgorithmFactory::buildRecursiveTraversal);
+  s_generic_call (entrypoint, memory, decoder, 
+		  &AlgorithmFactory::buildRecursiveTraversal, result);
 }
 
-Microcode * 
+void 
 symbolic_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		    Decoder *decoder)
+		    Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &)
 {
-  return s_generic_call (entrypoint, memory, decoder, 
-			 &AlgorithmFactory::buildSymbolicSimulator);
+  s_generic_call (entrypoint, memory, decoder, 
+		  &AlgorithmFactory::buildSymbolicSimulator, result);
 }
 
-Microcode * 
+void 
 concrete_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		    Decoder *decoder)
+		    Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &)
 {
-  return s_generic_call (entrypoint, memory, decoder, 
-			 &AlgorithmFactory::buildConcreteSimulator);
+  s_generic_call (entrypoint, memory, decoder, 
+		  &AlgorithmFactory::buildConcreteSimulator, result);
 }
