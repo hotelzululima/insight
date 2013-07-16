@@ -91,7 +91,10 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 		}
 	    }
 	  if (show_states)
-	    logs::debug << "# state " << states->size() << std::endl;
+	    logs::debug << "# state " << states->size() 
+			<< " # pp " << visits.size () 
+			<< " # WL " << worklist.size ()
+			<< std::endl;
 	  delete succ;
 	}
       catch (UndefinedValueException &e)
