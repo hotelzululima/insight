@@ -1,7 +1,7 @@
-((0x0,0), [(0x0,0)] @{asm:=lea    -0x64(%eax,%esi,2),%bx, next-inst:=(0x5,0)}@ StaticArrow (0x0,0) %ebx{0;16} := (ADD (ADD %eax{0;32} (MUL_U %esi{0;32} 0x2{0;32}){0;32}){0;32} 0xFFFFFF9C{0;32}){0;32}  --> (0x5,0))
-((0x5,0), [(0x5,0)] @{asm:=lea    0x1234,%bx, next-inst:=(0xC,0)}@ StaticArrow (0x5,0) %ebx{0;16} := 0x1234{0;32}  --> (0xC,0))
-((0xC,0), [(0xC,0)] @{asm:=lea    0x12345678,%bx, next-inst:=(0x13,0)}@ StaticArrow (0xC,0) %ebx{0;16} := 0x12345678{0;32}  --> (0x13,0))
-((0x13,0), [(0x13,0)] @{asm:=lea    0x12345678,%ebx, next-inst:=(0x19,0)}@ StaticArrow (0x13,0) %ebx{0;32} := 0x12345678{0;32}  --> (0x19,0))
-((0x19,0), [(0x19,0)] @{asm:=lea    -0x64(%eax,%esi,2),%ebx, next-inst:=(0x1D,0)}@ StaticArrow (0x19,0) %ebx{0;32} := (ADD (ADD %eax{0;32} (MUL_U %esi{0;32} 0x2{0;32}){0;32}){0;32} 0xFFFFFF9C{0;32}){0;32}  --> (0x1D,0))
-((0x1D,0), [(0x1D,0)] )
+[(0x0,0)] @{asm:=lea    -0x64(%eax,%esi,2),%bx, next-inst:=(0x5,0)}@ StaticArrow (0x0,0) %ebx{0;16} := (ADD (ADD %eax{0;32} (MUL_U %esi{0;32} 0x2{0;32}){0;32}){0;32} 0xFFFFFF9C{0;32}){0;32}  --> (0x5,0)
+[(0x5,0)] @{asm:=lea    0x1234,%bx, next-inst:=(0xC,0)}@ StaticArrow (0x5,0) %ebx{0;16} := 0x1234{0;32}  --> (0xC,0)
+[(0xC,0)] @{asm:=lea    0x12345678,%bx, next-inst:=(0x13,0)}@ StaticArrow (0xC,0) %ebx{0;16} := 0x12345678{0;32}  --> (0x13,0)
+[(0x13,0)] @{asm:=lea    0x12345678,%ebx, next-inst:=(0x19,0)}@ StaticArrow (0x13,0) %ebx{0;32} := 0x12345678{0;32}  --> (0x19,0)
+[(0x19,0)] @{asm:=lea    -0x64(%eax,%esi,2),%ebx, next-inst:=(0x1D,0)}@ StaticArrow (0x19,0) %ebx{0;32} := (ADD (ADD %eax{0;32} (MUL_U %esi{0;32} 0x2{0;32}){0;32}){0;32} 0xFFFFFF9C{0;32}){0;32}  --> (0x1D,0)
+[(0x1D,0)] 
 

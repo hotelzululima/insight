@@ -1,8 +1,8 @@
-((0x0,0), [(0x0,0)] @{asm:=not    %ah, next-inst:=(0x2,0)}@ StaticArrow (0x0,0) %eax{8;8} := (NOT %eax{8;8}){0;8}  --> (0x2,0))
-((0x2,0), [(0x2,0)] @{asm:=notb   0x1234(%eax), next-inst:=(0x8,0)}@ StaticArrow (0x2,0) [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;8} := (NOT [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;8}){0;8}  --> (0x8,0))
-((0x8,0), [(0x8,0)] @{asm:=not    %ax, next-inst:=(0xB,0)}@ StaticArrow (0x8,0) %eax{0;16} := (NOT %eax{0;16}){0;16}  --> (0xB,0))
-((0xB,0), [(0xB,0)] @{asm:=notw   0x1234(%eax), next-inst:=(0x12,0)}@ StaticArrow (0xB,0) [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;16} := (NOT [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;16}){0;16}  --> (0x12,0))
-((0x12,0), [(0x12,0)] @{asm:=not    %eax, next-inst:=(0x14,0)}@ StaticArrow (0x12,0) %eax{0;32} := (NOT %eax{0;32}){0;32}  --> (0x14,0))
-((0x14,0), [(0x14,0)] @{asm:=notl   0x1234(%eax), next-inst:=(0x1A,0)}@ StaticArrow (0x14,0) [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;32} := (NOT [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;32}){0;32}  --> (0x1A,0))
-((0x1A,0), [(0x1A,0)] )
+[(0x0,0)] @{asm:=not    %ah, next-inst:=(0x2,0)}@ StaticArrow (0x0,0) %eax{8;8} := (NOT %eax{8;8}){0;8}  --> (0x2,0)
+[(0x2,0)] @{asm:=notb   0x1234(%eax), next-inst:=(0x8,0)}@ StaticArrow (0x2,0) [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;8} := (NOT [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;8}){0;8}  --> (0x8,0)
+[(0x8,0)] @{asm:=not    %ax, next-inst:=(0xB,0)}@ StaticArrow (0x8,0) %eax{0;16} := (NOT %eax{0;16}){0;16}  --> (0xB,0)
+[(0xB,0)] @{asm:=notw   0x1234(%eax), next-inst:=(0x12,0)}@ StaticArrow (0xB,0) [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;16} := (NOT [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;16}){0;16}  --> (0x12,0)
+[(0x12,0)] @{asm:=not    %eax, next-inst:=(0x14,0)}@ StaticArrow (0x12,0) %eax{0;32} := (NOT %eax{0;32}){0;32}  --> (0x14,0)
+[(0x14,0)] @{asm:=notl   0x1234(%eax), next-inst:=(0x1A,0)}@ StaticArrow (0x14,0) [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;32} := (NOT [(ADD %eax{0;32} 0x1234{0;32}){0;32}]{0;32}){0;32}  --> (0x1A,0)
+[(0x1A,0)] 
 

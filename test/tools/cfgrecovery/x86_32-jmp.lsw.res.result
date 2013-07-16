@@ -1,11 +1,11 @@
-((0x0,0), [(0x0,0)] @{asm:=jmp    0x13, next-inst:=(0x5,0)}@ StaticArrow (0x0,0) Skip  --> (0x13,0))
-((0x5,0), [(0x5,0)] @{asm:=jmp    0x123a, next-inst:=(0xA,0)}@ StaticArrow (0x5,0) Skip  --> (0x123A,0))
-((0xA,0), [(0xA,0)] @{asm:=jmp    0xedcba993, next-inst:=(0xF,0)}@ StaticArrow (0xA,0) Skip  --> (0xEDCBA993,0))
-((0xF,0), [(0xF,0)] @{asm:=jmpw   *%ax, next-inst:=(0x12,0)}@ DynamicArrow (0xF,0) Jmp %eax{0;16}  --> << %eax{0;16} >>@{solved-jmp:={ (0x12,0)}}@ )
-((0x12,0), [(0x12,0)] @{asm:=jmp    *0x12345678, next-inst:=(0x18,0)}@ DynamicArrow (0x12,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>@{solved-jmp:={ (0x18,0)}}@ )
-((0x13,0), [(0x13,0)] )
-((0x18,0), [(0x18,0)] @{asm:=jmp    *%eax, next-inst:=(0x1A,0)}@ DynamicArrow (0x18,0) Jmp %eax{0;32}  --> << %eax{0;32} >>@{solved-jmp:={ (0x1A,0)}}@ )
-((0x1A,0), [(0x1A,0)] @{asm:=jmp    *0x12345678, next-inst:=(0x20,0)}@ DynamicArrow (0x1A,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>@{solved-jmp:={ (0x20,0)}}@ )
-((0x123A,0), [(0x123A,0)] )
-((0xEDCBA993,0), [(0xEDCBA993,0)] )
+[(0x0,0)] @{asm:=jmp    0x13, next-inst:=(0x5,0)}@ StaticArrow (0x0,0) Skip  --> (0x13,0)
+[(0x5,0)] @{asm:=jmp    0x123a, next-inst:=(0xA,0)}@ StaticArrow (0x5,0) Skip  --> (0x123A,0)
+[(0xA,0)] @{asm:=jmp    0xedcba993, next-inst:=(0xF,0)}@ StaticArrow (0xA,0) Skip  --> (0xEDCBA993,0)
+[(0xF,0)] @{asm:=jmpw   *%ax, next-inst:=(0x12,0)}@ DynamicArrow (0xF,0) Jmp %eax{0;16}  --> << %eax{0;16} >>@{solved-jmp:={ (0x12,0)}}@ 
+[(0x12,0)] @{asm:=jmp    *0x12345678, next-inst:=(0x18,0)}@ DynamicArrow (0x12,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>@{solved-jmp:={ (0x18,0)}}@ 
+[(0x13,0)] 
+[(0x18,0)] @{asm:=jmp    *%eax, next-inst:=(0x1A,0)}@ DynamicArrow (0x18,0) Jmp %eax{0;32}  --> << %eax{0;32} >>@{solved-jmp:={ (0x1A,0)}}@ 
+[(0x1A,0)] @{asm:=jmp    *0x12345678, next-inst:=(0x20,0)}@ DynamicArrow (0x1A,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
+[(0x123A,0)] 
+[(0xEDCBA993,0)] 
 

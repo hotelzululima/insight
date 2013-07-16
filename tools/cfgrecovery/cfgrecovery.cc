@@ -393,9 +393,12 @@ main (int argc, char *argv[])
   
   /* Displaying the microcode */
   if (output_format == "asm")
-    asm_writer (*output, mc, loader);
+    asm_writer (*output, mc, loader, true);
   else if (output_format == "mc")
-    *output << mc->pp() << endl;
+    {
+      mc->output_text (*output);
+	*output << endl;
+    }
   else if (output_format == "dot" || output_format == "asm-dot")
     {
       int asmonly = (output_format == "asm-dot");

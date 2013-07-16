@@ -1,35 +1,35 @@
-((0x0,0), [(0x0,0)] @{asm:=loop   0xffffff82, next-inst:=(0x2,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0x0,1), [(0x0,1)] StaticArrow (0x0,1) Skip << (NEQ %ecx{0;32} 0x0{0;32}){0;1} >> --> (0xFFFFFF82,0)StaticArrow (0x0,1) Skip << (NOT (NEQ %ecx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0x2,0))
-((0x2,0), [(0x2,0)] @{asm:=loope  0x83, next-inst:=(0x4,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0x2,1), [(0x2,1)] StaticArrow (0x2,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1} >> --> (0x83,0)StaticArrow (0x2,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x4,0))
-((0x4,0), [(0x4,0)] @{asm:=loopne 0x84, next-inst:=(0x6,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0x4,1), [(0x4,1)] StaticArrow (0x4,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x84,0)StaticArrow (0x4,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x6,0))
-((0x6,0), [(0x6,0)] @{asm:=loope  0x87, next-inst:=(0x8,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0x6,1), [(0x6,1)] StaticArrow (0x6,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1} >> --> (0x87,0)StaticArrow (0x6,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x8,0))
-((0x8,0), [(0x8,0)] @{asm:=loopne 0x88, next-inst:=(0xA,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0x8,1), [(0x8,1)] StaticArrow (0x8,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x88,0)StaticArrow (0x8,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0xA,0))
-((0xA,0), [(0xA,0)] @{asm:=loop   0x0, next-inst:=(0xC,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0xA,1), [(0xA,1)] StaticArrow (0xA,1) Skip << (NEQ %ecx{0;32} 0x0{0;32}){0;1} >> --> (0x0,0)StaticArrow (0xA,1) Skip << (NOT (NEQ %ecx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0xC,0))
-((0xC,0), [(0xC,0)] @{asm:=loopw  0xffffff8f, next-inst:=(0xF,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16})
-((0xC,1), [(0xC,1)] StaticArrow (0xC,1) Skip << (NEQ %ecx{0;16} 0x0{0;16}){0;1} >> --> (0xFFFFFF8F,0)StaticArrow (0xC,1) Skip << (NOT (NEQ %ecx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0xF,0))
-((0xF,0), [(0xF,0)] @{asm:=loopew 0x19, next-inst:=(0x12,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16})
-((0xF,1), [(0xF,1)] StaticArrow (0xF,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1} >> --> (0x19,0)StaticArrow (0xF,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x12,0))
-((0x12,0), [(0x12,0)] @{asm:=loopnew 0x93, next-inst:=(0x15,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16})
-((0x12,1), [(0x12,1)] StaticArrow (0x12,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x93,0)StaticArrow (0x12,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x15,0))
-((0x15,0), [(0x15,0)] @{asm:=loopew 0x1f, next-inst:=(0x18,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16})
-((0x15,1), [(0x15,1)] StaticArrow (0x15,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1} >> --> (0x1F,0)StaticArrow (0x15,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x18,0))
-((0x18,0), [(0x18,0)] @{asm:=loopnew 0x99, next-inst:=(0x1B,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16})
-((0x18,1), [(0x18,1)] StaticArrow (0x18,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x99,0)StaticArrow (0x18,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x1B,0))
-((0x19,0), [(0x19,0)] @{asm:=loopne 0x99, next-inst:=(0x1B,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32})
-((0x19,1), [(0x19,1)] StaticArrow (0x19,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x99,0)StaticArrow (0x19,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x1B,0))
-((0x1B,0), [(0x1B,0)] )
-((0x1F,0), [(0x1F,0)] )
-((0x83,0), [(0x83,0)] )
-((0x84,0), [(0x84,0)] )
-((0x87,0), [(0x87,0)] )
-((0x88,0), [(0x88,0)] )
-((0x93,0), [(0x93,0)] )
-((0x99,0), [(0x99,0)] )
-((0xFFFFFF82,0), [(0xFFFFFF82,0)] )
-((0xFFFFFF8F,0), [(0xFFFFFF8F,0)] )
+[(0x0,0)] @{asm:=loop   0xffffff82, next-inst:=(0x2,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0x0,1)] StaticArrow (0x0,1) Skip << (NEQ %ecx{0;32} 0x0{0;32}){0;1} >> --> (0xFFFFFF82,0)StaticArrow (0x0,1) Skip << (NOT (NEQ %ecx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0x2,0)
+[(0x2,0)] @{asm:=loope  0x83, next-inst:=(0x4,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0x2,1)] StaticArrow (0x2,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1} >> --> (0x83,0)StaticArrow (0x2,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x4,0)
+[(0x4,0)] @{asm:=loopne 0x84, next-inst:=(0x6,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0x4,1)] StaticArrow (0x4,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x84,0)StaticArrow (0x4,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x6,0)
+[(0x6,0)] @{asm:=loope  0x87, next-inst:=(0x8,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0x6,1)] StaticArrow (0x6,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1} >> --> (0x87,0)StaticArrow (0x6,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x8,0)
+[(0x8,0)] @{asm:=loopne 0x88, next-inst:=(0xA,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0x8,1)] StaticArrow (0x8,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x88,0)StaticArrow (0x8,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0xA,0)
+[(0xA,0)] @{asm:=loop   0x0, next-inst:=(0xC,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0xA,1)] StaticArrow (0xA,1) Skip << (NEQ %ecx{0;32} 0x0{0;32}){0;1} >> --> (0x0,0)StaticArrow (0xA,1) Skip << (NOT (NEQ %ecx{0;32} 0x0{0;32}){0;1}){0;1} >> --> (0xC,0)
+[(0xC,0)] @{asm:=loopw  0xffffff8f, next-inst:=(0xF,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16}
+[(0xC,1)] StaticArrow (0xC,1) Skip << (NEQ %ecx{0;16} 0x0{0;16}){0;1} >> --> (0xFFFFFF8F,0)StaticArrow (0xC,1) Skip << (NOT (NEQ %ecx{0;16} 0x0{0;16}){0;1}){0;1} >> --> (0xF,0)
+[(0xF,0)] @{asm:=loopew 0x19, next-inst:=(0x12,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16}
+[(0xF,1)] StaticArrow (0xF,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1} >> --> (0x19,0)StaticArrow (0xF,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x12,0)
+[(0x12,0)] @{asm:=loopnew 0x93, next-inst:=(0x15,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16}
+[(0x12,1)] StaticArrow (0x12,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x93,0)StaticArrow (0x12,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x15,0)
+[(0x15,0)] @{asm:=loopew 0x1f, next-inst:=(0x18,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16}
+[(0x15,1)] StaticArrow (0x15,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1} >> --> (0x1F,0)StaticArrow (0x15,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x18,0)
+[(0x18,0)] @{asm:=loopnew 0x99, next-inst:=(0x1B,0)}@ %ecx{0;16} := (SUB %ecx{0;16} 0x1{0;16}){0;16}
+[(0x18,1)] StaticArrow (0x18,1) Skip << (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x99,0)StaticArrow (0x18,1) Skip << (NOT (AND (NEQ %ecx{0;16} 0x0{0;16}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x1B,0)
+[(0x19,0)] @{asm:=loopne 0x99, next-inst:=(0x1B,0)}@ %ecx{0;32} := (SUB %ecx{0;32} 0x1{0;32}){0;32}
+[(0x19,1)] StaticArrow (0x19,1) Skip << (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x99,0)StaticArrow (0x19,1) Skip << (NOT (AND (NEQ %ecx{0;32} 0x0{0;32}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x1B,0)
+[(0x1B,0)] 
+[(0x1F,0)] 
+[(0x83,0)] 
+[(0x84,0)] 
+[(0x87,0)] 
+[(0x88,0)] 
+[(0x93,0)] 
+[(0x99,0)] 
+[(0xFFFFFF82,0)] 
+[(0xFFFFFF8F,0)] 
 
