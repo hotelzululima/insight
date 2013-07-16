@@ -539,6 +539,7 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
   if (cpid == 0) 
     {
       int fid;
+      setpgid (0, 0);
 
       /* Child code */
       close (parent_child_pipe[1]); // close write part of P --> C
