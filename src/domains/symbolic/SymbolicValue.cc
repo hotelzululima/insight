@@ -148,7 +148,7 @@ SymbolicValue::operator ConcreteAddress () const
 }
 
 bool 
-SymbolicValue ::operator==(const SymbolicValue &sv) const
+SymbolicValue::equals (const SymbolicValue &sv) const
 {
   return value == sv.value;
 }
