@@ -108,19 +108,19 @@ X86_32_TRANSLATE_2_OP(ADD)
 X86_32_TRANSLATE_2_OP(ADDB)
 {
   x86_32_translate_with_size (data, op1, op2, 8, 
-			      x86_32_translate<X86_32_TOKEN(SUB)>);
+			      x86_32_translate<X86_32_TOKEN(ADD)>);
 }
 
 X86_32_TRANSLATE_2_OP(ADDW)
 {
   x86_32_translate_with_size (data, op1, op2, 16, 
-			      x86_32_translate<X86_32_TOKEN(SUB)>);
+			      x86_32_translate<X86_32_TOKEN(ADD)>);
 }
 
 X86_32_TRANSLATE_2_OP(ADDL)
 {
   x86_32_translate_with_size (data, op1, op2, 32, 
-			      x86_32_translate<X86_32_TOKEN(SUB)>);
+			      x86_32_translate<X86_32_TOKEN(ADD)>);
 }
 
 static void
