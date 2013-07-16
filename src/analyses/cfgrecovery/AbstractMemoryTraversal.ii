@@ -80,6 +80,11 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 		    {
 		      MicrocodeAddress a =
 			(*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
+		      if (! memory->is_defined (a.getGlobal ()))
+			{
+			  delete *i;
+			  continue;
+			}
 		      da->add_solved_jump (a);
 		    }
 		  computePendingArrowsFor (*i);
@@ -156,6 +161,8 @@ AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s)
 	  try 
 	    {
 	      MicrocodeNode *node = get_node (pp);
+	      if (show_pending_arrows)
+		logs::debug << "new arrows" << std::endl;
 	      MicrocodeNode_iterate_successors (*node, succ) {
 		PendingArrow pa = { s, *succ };
 		if (show_pending_arrows)
