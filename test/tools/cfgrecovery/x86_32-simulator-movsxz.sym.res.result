@@ -1,30 +1,30 @@
-[(0x0,0)] @{asm:=movb   $0x0,0x12fa792, next-inst:=(0x7,0)}@ StaticArrow (0x0,0) [0x12FA792{0;32}]{0;8} := 0x0{0;8}  --> (0x7,0)
-[(0x7,0)] @{asm:=mov    $0xf4,%ah, next-inst:=(0x9,0)}@ StaticArrow (0x7,0) %eax{8;8} := 0xF4{0;8}  --> (0x9,0)
-[(0x9,0)] @{asm:=mov    %ah,0x1234, next-inst:=(0xF,0)}@ StaticArrow (0x9,0) [0x1234{0;32}]{0;8} := %eax{8;8}  --> (0xF,0)
-[(0xF,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x14,0)}@ StaticArrow (0xF,0) %ecx{0;32} := 0x0{0;32}  --> (0x14,0)
-[(0x14,0)] @{asm:=movsbw 0x1234,%cx, next-inst:=(0x1C,0)}@ StaticArrow (0x14,0) %ecx{0;16} := (EXTEND_S [0x1234{0;32}]{0;8} 0x10{0;32}){0;16}  --> (0x1C,0)
-[(0x1C,0)] @{asm:=cmp    $0xfff4,%ecx, next-inst:=(0x22,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xFFF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0x1C,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0x1C,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
-[(0x1C,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0x1C,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0x1C,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0x1C,6)] StaticArrow (0x1C,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x22,0)
+[(0x0,0)] @{asm:=movb   $0x0,0x12fa792, next-inst:=(0x7,0)}@ StaticArrow (0x0,0) [0x12fa792{0;32}]{0;8} := 0x0{0;8}  --> (0x7,0)
+[(0x7,0)] @{asm:=mov    $0xf4,%ah, next-inst:=(0x9,0)}@ StaticArrow (0x7,0) %eax{8;8} := 0xf4{0;8}  --> (0x9,0)
+[(0x9,0)] @{asm:=mov    %ah,0x1234, next-inst:=(0xf,0)}@ StaticArrow (0x9,0) [0x1234{0;32}]{0;8} := %eax{8;8}  --> (0xf,0)
+[(0xf,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x14,0)}@ StaticArrow (0xf,0) %ecx{0;32} := 0x0{0;32}  --> (0x14,0)
+[(0x14,0)] @{asm:=movsbw 0x1234,%cx, next-inst:=(0x1c,0)}@ StaticArrow (0x14,0) %ecx{0;16} := (EXTEND_S [0x1234{0;32}]{0;8} 0x10{0;32}){0;16}  --> (0x1c,0)
+[(0x1c,0)] @{asm:=cmp    $0xfff4,%ecx, next-inst:=(0x22,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xfff4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x1c,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0x1c,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
+[(0x1c,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0x1c,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0x1c,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0x1c,6)] StaticArrow (0x1c,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x22,0)
 [(0x22,0)] @{asm:=jne    0x6666, next-inst:=(0x28,0)}@ StaticArrow (0x22,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x22,0) Skip << %zf{0;1} >> --> (0x28,0)
-[(0x28,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x2D,0)}@ StaticArrow (0x28,0) %ecx{0;32} := 0x0{0;32}  --> (0x2D,0)
-[(0x2D,0)] @{asm:=movsbl 0x1234,%ecx, next-inst:=(0x34,0)}@ StaticArrow (0x2D,0) %ecx{0;32} := (EXTEND_S [0x1234{0;32}]{0;8} 0x20{0;32}){0;32}  --> (0x34,0)
-[(0x34,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x37,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xFFFFFFF4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x28,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x2d,0)}@ StaticArrow (0x28,0) %ecx{0;32} := 0x0{0;32}  --> (0x2d,0)
+[(0x2d,0)] @{asm:=movsbl 0x1234,%ecx, next-inst:=(0x34,0)}@ StaticArrow (0x2d,0) %ecx{0;32} := (EXTEND_S [0x1234{0;32}]{0;8} 0x20{0;32}){0;32}  --> (0x34,0)
+[(0x34,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x37,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xfffffff4{0;32} 0x21{0;32}){0;33}){0;33}
 [(0x34,1)] %cf{0;1} := %tmpr0_33{32;1}
 [(0x34,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x1{0;1}){0;1}){0;1}
 [(0x34,3)] %sf{0;1} := %tmpr0_33{31;1}
 [(0x34,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x34,5)] %af{0;1} := %tmpr0_33{4;1}
 [(0x34,6)] StaticArrow (0x34,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x37,0)
-[(0x37,0)] @{asm:=jne    0x6666, next-inst:=(0x3D,0)}@ StaticArrow (0x37,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x37,0) Skip << %zf{0;1} >> --> (0x3D,0)
-[(0x3D,0)] @{asm:=mov    %cx,0x1234, next-inst:=(0x44,0)}@ StaticArrow (0x3D,0) [0x1234{0;32}]{0;16} := %ecx{0;16}  --> (0x44,0)
+[(0x37,0)] @{asm:=jne    0x6666, next-inst:=(0x3d,0)}@ StaticArrow (0x37,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x37,0) Skip << %zf{0;1} >> --> (0x3d,0)
+[(0x3d,0)] @{asm:=mov    %cx,0x1234, next-inst:=(0x44,0)}@ StaticArrow (0x3d,0) [0x1234{0;32}]{0;16} := %ecx{0;16}  --> (0x44,0)
 [(0x44,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x49,0)}@ StaticArrow (0x44,0) %ecx{0;32} := 0x0{0;32}  --> (0x49,0)
 [(0x49,0)] @{asm:=movswl 0x1234,%ecx, next-inst:=(0x50,0)}@ StaticArrow (0x49,0) %ecx{0;32} := (EXTEND_S [0x1234{0;32}]{0;16} 0x20{0;32}){0;32}  --> (0x50,0)
-[(0x50,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x53,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xFFFFFFF4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x50,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x53,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xfffffff4{0;32} 0x21{0;32}){0;33}){0;33}
 [(0x50,1)] %cf{0;1} := %tmpr0_33{32;1}
 [(0x50,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x1{0;1}){0;1}){0;1}
 [(0x50,3)] %sf{0;1} := %tmpr0_33{31;1}
@@ -32,102 +32,102 @@
 [(0x50,5)] %af{0;1} := %tmpr0_33{4;1}
 [(0x50,6)] StaticArrow (0x50,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x53,0)
 [(0x53,0)] @{asm:=jne    0x6666, next-inst:=(0x59,0)}@ StaticArrow (0x53,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x53,0) Skip << %zf{0;1} >> --> (0x59,0)
-[(0x59,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x5E,0)}@ StaticArrow (0x59,0) %ecx{0;32} := 0x0{0;32}  --> (0x5E,0)
-[(0x5E,0)] @{asm:=movsbw %ah,%cx, next-inst:=(0x62,0)}@ StaticArrow (0x5E,0) %ecx{0;16} := (EXTEND_S %eax{8;8} 0x10{0;32}){0;16}  --> (0x62,0)
-[(0x62,0)] @{asm:=cmp    $0xfff4,%ecx, next-inst:=(0x68,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xFFF4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x59,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x5e,0)}@ StaticArrow (0x59,0) %ecx{0;32} := 0x0{0;32}  --> (0x5e,0)
+[(0x5e,0)] @{asm:=movsbw %ah,%cx, next-inst:=(0x62,0)}@ StaticArrow (0x5e,0) %ecx{0;16} := (EXTEND_S %eax{8;8} 0x10{0;32}){0;16}  --> (0x62,0)
+[(0x62,0)] @{asm:=cmp    $0xfff4,%ecx, next-inst:=(0x68,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xfff4{0;32} 0x21{0;32}){0;33}){0;33}
 [(0x62,1)] %cf{0;1} := %tmpr0_33{32;1}
 [(0x62,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
 [(0x62,3)] %sf{0;1} := %tmpr0_33{31;1}
 [(0x62,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x62,5)] %af{0;1} := %tmpr0_33{4;1}
 [(0x62,6)] StaticArrow (0x62,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x68,0)
-[(0x68,0)] @{asm:=jne    0x6666, next-inst:=(0x6E,0)}@ StaticArrow (0x68,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x68,0) Skip << %zf{0;1} >> --> (0x6E,0)
-[(0x6E,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x73,0)}@ StaticArrow (0x6E,0) %ecx{0;32} := 0x0{0;32}  --> (0x73,0)
+[(0x68,0)] @{asm:=jne    0x6666, next-inst:=(0x6e,0)}@ StaticArrow (0x68,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x68,0) Skip << %zf{0;1} >> --> (0x6e,0)
+[(0x6e,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x73,0)}@ StaticArrow (0x6e,0) %ecx{0;32} := 0x0{0;32}  --> (0x73,0)
 [(0x73,0)] @{asm:=movsbl %ah,%ecx, next-inst:=(0x76,0)}@ StaticArrow (0x73,0) %ecx{0;32} := (EXTEND_S %eax{8;8} 0x20{0;32}){0;32}  --> (0x76,0)
-[(0x76,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x79,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xFFFFFFF4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x76,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x79,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xfffffff4{0;32} 0x21{0;32}){0;33}){0;33}
 [(0x76,1)] %cf{0;1} := %tmpr0_33{32;1}
 [(0x76,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x1{0;1}){0;1}){0;1}
 [(0x76,3)] %sf{0;1} := %tmpr0_33{31;1}
 [(0x76,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x76,5)] %af{0;1} := %tmpr0_33{4;1}
 [(0x76,6)] StaticArrow (0x76,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x79,0)
-[(0x79,0)] @{asm:=jne    0x6666, next-inst:=(0x7F,0)}@ StaticArrow (0x79,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x79,0) Skip << %zf{0;1} >> --> (0x7F,0)
-[(0x7F,0)] @{asm:=mov    %cx,%ax, next-inst:=(0x82,0)}@ StaticArrow (0x7F,0) %eax{0;16} := %ecx{0;16}  --> (0x82,0)
+[(0x79,0)] @{asm:=jne    0x6666, next-inst:=(0x7f,0)}@ StaticArrow (0x79,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x79,0) Skip << %zf{0;1} >> --> (0x7f,0)
+[(0x7f,0)] @{asm:=mov    %cx,%ax, next-inst:=(0x82,0)}@ StaticArrow (0x7f,0) %eax{0;16} := %ecx{0;16}  --> (0x82,0)
 [(0x82,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x87,0)}@ StaticArrow (0x82,0) %ecx{0;32} := 0x0{0;32}  --> (0x87,0)
-[(0x87,0)] @{asm:=movswl %ax,%ecx, next-inst:=(0x8A,0)}@ StaticArrow (0x87,0) %ecx{0;32} := (EXTEND_S %eax{0;16} 0x20{0;32}){0;32}  --> (0x8A,0)
-[(0x8A,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x8D,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xFFFFFFF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0x8A,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0x8A,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x1{0;1}){0;1}){0;1}
-[(0x8A,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0x8A,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0x8A,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0x8A,6)] StaticArrow (0x8A,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x8D,0)
-[(0x8D,0)] @{asm:=jne    0x6666, next-inst:=(0x93,0)}@ StaticArrow (0x8D,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x8D,0) Skip << %zf{0;1} >> --> (0x93,0)
-[(0x93,0)] @{asm:=mov    $0xf4,%ah, next-inst:=(0x95,0)}@ StaticArrow (0x93,0) %eax{8;8} := 0xF4{0;8}  --> (0x95,0)
-[(0x95,0)] @{asm:=mov    %ah,0x1234, next-inst:=(0x9B,0)}@ StaticArrow (0x95,0) [0x1234{0;32}]{0;8} := %eax{8;8}  --> (0x9B,0)
-[(0x9B,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xA0,0)}@ StaticArrow (0x9B,0) %ecx{0;32} := 0x0{0;32}  --> (0xA0,0)
-[(0xA0,0)] @{asm:=movzbw 0x1234,%cx, next-inst:=(0xA8,0)}@ StaticArrow (0xA0,0) %ecx{0;16} := (EXTEND_U [0x1234{0;32}]{0;8} 0x10{0;32}){0;16}  --> (0xA8,0)
-[(0xA8,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xAE,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0xA8,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0xA8,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
-[(0xA8,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0xA8,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0xA8,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0xA8,6)] StaticArrow (0xA8,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xAE,0)
-[(0xAE,0)] @{asm:=jne    0x6666, next-inst:=(0xB4,0)}@ StaticArrow (0xAE,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xAE,0) Skip << %zf{0;1} >> --> (0xB4,0)
-[(0xB4,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xB9,0)}@ StaticArrow (0xB4,0) %ecx{0;32} := 0x0{0;32}  --> (0xB9,0)
-[(0xB9,0)] @{asm:=movzbl 0x1234,%ecx, next-inst:=(0xC0,0)}@ StaticArrow (0xB9,0) %ecx{0;32} := (EXTEND_U [0x1234{0;32}]{0;8} 0x20{0;32}){0;32}  --> (0xC0,0)
-[(0xC0,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xC6,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0xC0,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0xC0,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
-[(0xC0,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0xC0,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0xC0,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0xC0,6)] StaticArrow (0xC0,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xC6,0)
-[(0xC6,0)] @{asm:=jne    0x6666, next-inst:=(0xCC,0)}@ StaticArrow (0xC6,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xC6,0) Skip << %zf{0;1} >> --> (0xCC,0)
-[(0xCC,0)] @{asm:=mov    %cx,0x1234, next-inst:=(0xD3,0)}@ StaticArrow (0xCC,0) [0x1234{0;32}]{0;16} := %ecx{0;16}  --> (0xD3,0)
-[(0xD3,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xD8,0)}@ StaticArrow (0xD3,0) %ecx{0;32} := 0x0{0;32}  --> (0xD8,0)
-[(0xD8,0)] @{asm:=movzwl 0x1234,%ecx, next-inst:=(0xDF,0)}@ StaticArrow (0xD8,0) %ecx{0;32} := (EXTEND_U [0x1234{0;32}]{0;16} 0x20{0;32}){0;32}  --> (0xDF,0)
-[(0xDF,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xE5,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0xDF,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0xDF,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
-[(0xDF,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0xDF,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0xDF,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0xDF,6)] StaticArrow (0xDF,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xE5,0)
-[(0xE5,0)] @{asm:=jne    0x6666, next-inst:=(0xEB,0)}@ StaticArrow (0xE5,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xE5,0) Skip << %zf{0;1} >> --> (0xEB,0)
-[(0xEB,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xF0,0)}@ StaticArrow (0xEB,0) %ecx{0;32} := 0x0{0;32}  --> (0xF0,0)
-[(0xF0,0)] @{asm:=movzbw %ah,%cx, next-inst:=(0xF4,0)}@ StaticArrow (0xF0,0) %ecx{0;16} := (EXTEND_U %eax{8;8} 0x10{0;32}){0;16}  --> (0xF4,0)
-[(0xF4,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xFA,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0xF4,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0xF4,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
-[(0xF4,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0xF4,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0xF4,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0xF4,6)] StaticArrow (0xF4,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xFA,0)
-[(0xFA,0)] @{asm:=jne    0x6666, next-inst:=(0x100,0)}@ StaticArrow (0xFA,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xFA,0) Skip << %zf{0;1} >> --> (0x100,0)
+[(0x87,0)] @{asm:=movswl %ax,%ecx, next-inst:=(0x8a,0)}@ StaticArrow (0x87,0) %ecx{0;32} := (EXTEND_S %eax{0;16} 0x20{0;32}){0;32}  --> (0x8a,0)
+[(0x8a,0)] @{asm:=cmp    $0xfffffff4,%ecx, next-inst:=(0x8d,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xfffffff4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x8a,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0x8a,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x1{0;1}){0;1}){0;1}
+[(0x8a,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0x8a,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0x8a,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0x8a,6)] StaticArrow (0x8a,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x8d,0)
+[(0x8d,0)] @{asm:=jne    0x6666, next-inst:=(0x93,0)}@ StaticArrow (0x8d,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x8d,0) Skip << %zf{0;1} >> --> (0x93,0)
+[(0x93,0)] @{asm:=mov    $0xf4,%ah, next-inst:=(0x95,0)}@ StaticArrow (0x93,0) %eax{8;8} := 0xf4{0;8}  --> (0x95,0)
+[(0x95,0)] @{asm:=mov    %ah,0x1234, next-inst:=(0x9b,0)}@ StaticArrow (0x95,0) [0x1234{0;32}]{0;8} := %eax{8;8}  --> (0x9b,0)
+[(0x9b,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xa0,0)}@ StaticArrow (0x9b,0) %ecx{0;32} := 0x0{0;32}  --> (0xa0,0)
+[(0xa0,0)] @{asm:=movzbw 0x1234,%cx, next-inst:=(0xa8,0)}@ StaticArrow (0xa0,0) %ecx{0;16} := (EXTEND_U [0x1234{0;32}]{0;8} 0x10{0;32}){0;16}  --> (0xa8,0)
+[(0xa8,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xae,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xf4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0xa8,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0xa8,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
+[(0xa8,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0xa8,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0xa8,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0xa8,6)] StaticArrow (0xa8,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xae,0)
+[(0xae,0)] @{asm:=jne    0x6666, next-inst:=(0xb4,0)}@ StaticArrow (0xae,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xae,0) Skip << %zf{0;1} >> --> (0xb4,0)
+[(0xb4,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xb9,0)}@ StaticArrow (0xb4,0) %ecx{0;32} := 0x0{0;32}  --> (0xb9,0)
+[(0xb9,0)] @{asm:=movzbl 0x1234,%ecx, next-inst:=(0xc0,0)}@ StaticArrow (0xb9,0) %ecx{0;32} := (EXTEND_U [0x1234{0;32}]{0;8} 0x20{0;32}){0;32}  --> (0xc0,0)
+[(0xc0,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xc6,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xf4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0xc0,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0xc0,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
+[(0xc0,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0xc0,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0xc0,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0xc0,6)] StaticArrow (0xc0,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xc6,0)
+[(0xc6,0)] @{asm:=jne    0x6666, next-inst:=(0xcc,0)}@ StaticArrow (0xc6,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xc6,0) Skip << %zf{0;1} >> --> (0xcc,0)
+[(0xcc,0)] @{asm:=mov    %cx,0x1234, next-inst:=(0xd3,0)}@ StaticArrow (0xcc,0) [0x1234{0;32}]{0;16} := %ecx{0;16}  --> (0xd3,0)
+[(0xd3,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xd8,0)}@ StaticArrow (0xd3,0) %ecx{0;32} := 0x0{0;32}  --> (0xd8,0)
+[(0xd8,0)] @{asm:=movzwl 0x1234,%ecx, next-inst:=(0xdf,0)}@ StaticArrow (0xd8,0) %ecx{0;32} := (EXTEND_U [0x1234{0;32}]{0;16} 0x20{0;32}){0;32}  --> (0xdf,0)
+[(0xdf,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xe5,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xf4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0xdf,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0xdf,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
+[(0xdf,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0xdf,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0xdf,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0xdf,6)] StaticArrow (0xdf,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xe5,0)
+[(0xe5,0)] @{asm:=jne    0x6666, next-inst:=(0xeb,0)}@ StaticArrow (0xe5,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xe5,0) Skip << %zf{0;1} >> --> (0xeb,0)
+[(0xeb,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0xf0,0)}@ StaticArrow (0xeb,0) %ecx{0;32} := 0x0{0;32}  --> (0xf0,0)
+[(0xf0,0)] @{asm:=movzbw %ah,%cx, next-inst:=(0xf4,0)}@ StaticArrow (0xf0,0) %ecx{0;16} := (EXTEND_U %eax{8;8} 0x10{0;32}){0;16}  --> (0xf4,0)
+[(0xf4,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0xfa,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xf4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0xf4,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0xf4,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
+[(0xf4,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0xf4,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0xf4,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0xf4,6)] StaticArrow (0xf4,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0xfa,0)
+[(0xfa,0)] @{asm:=jne    0x6666, next-inst:=(0x100,0)}@ StaticArrow (0xfa,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0xfa,0) Skip << %zf{0;1} >> --> (0x100,0)
 [(0x100,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x105,0)}@ StaticArrow (0x100,0) %ecx{0;32} := 0x0{0;32}  --> (0x105,0)
 [(0x105,0)] @{asm:=movzbl %ah,%ecx, next-inst:=(0x108,0)}@ StaticArrow (0x105,0) %ecx{0;32} := (EXTEND_U %eax{8;8} 0x20{0;32}){0;32}  --> (0x108,0)
-[(0x108,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0x10E,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xF4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x108,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0x10e,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xf4{0;32} 0x21{0;32}){0;33}){0;33}
 [(0x108,1)] %cf{0;1} := %tmpr0_33{32;1}
 [(0x108,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
 [(0x108,3)] %sf{0;1} := %tmpr0_33{31;1}
 [(0x108,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
 [(0x108,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0x108,6)] StaticArrow (0x108,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x10E,0)
-[(0x10E,0)] @{asm:=jne    0x6666, next-inst:=(0x114,0)}@ StaticArrow (0x10E,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x10E,0) Skip << %zf{0;1} >> --> (0x114,0)
+[(0x108,6)] StaticArrow (0x108,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x10e,0)
+[(0x10e,0)] @{asm:=jne    0x6666, next-inst:=(0x114,0)}@ StaticArrow (0x10e,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x10e,0) Skip << %zf{0;1} >> --> (0x114,0)
 [(0x114,0)] @{asm:=mov    %cx,%ax, next-inst:=(0x117,0)}@ StaticArrow (0x114,0) %eax{0;16} := %ecx{0;16}  --> (0x117,0)
-[(0x117,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x11C,0)}@ StaticArrow (0x117,0) %ecx{0;32} := 0x0{0;32}  --> (0x11C,0)
-[(0x11C,0)] @{asm:=movzwl %ax,%ecx, next-inst:=(0x11F,0)}@ StaticArrow (0x11C,0) %ecx{0;32} := (EXTEND_U %eax{0;16} 0x20{0;32}){0;32}  --> (0x11F,0)
-[(0x11F,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0x125,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xF4{0;32} 0x21{0;32}){0;33}){0;33}
-[(0x11F,1)] %cf{0;1} := %tmpr0_33{32;1}
-[(0x11F,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
-[(0x11F,3)] %sf{0;1} := %tmpr0_33{31;1}
-[(0x11F,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
-[(0x11F,5)] %af{0;1} := %tmpr0_33{4;1}
-[(0x11F,6)] StaticArrow (0x11F,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x125,0)
-[(0x125,0)] @{asm:=jne    0x6666, next-inst:=(0x12B,0)}@ StaticArrow (0x125,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x125,0) Skip << %zf{0;1} >> --> (0x12B,0)
-[(0x12B,0)] @{asm:=jmp    0x1000, next-inst:=(0x130,0)}@ StaticArrow (0x12B,0) Skip  --> (0x1000,0)
+[(0x117,0)] @{asm:=mov    $0x0,%ecx, next-inst:=(0x11c,0)}@ StaticArrow (0x117,0) %ecx{0;32} := 0x0{0;32}  --> (0x11c,0)
+[(0x11c,0)] @{asm:=movzwl %ax,%ecx, next-inst:=(0x11f,0)}@ StaticArrow (0x11c,0) %ecx{0;32} := (EXTEND_U %eax{0;16} 0x20{0;32}){0;32}  --> (0x11f,0)
+[(0x11f,0)] @{asm:=cmp    $0xf4,%ecx, next-inst:=(0x125,0)}@ %tmpr0_33{0;33} := (SUB (EXTEND_U %ecx{0;32} 0x21{0;32}){0;33} (EXTEND_U 0xf4{0;32} 0x21{0;32}){0;33}){0;33}
+[(0x11f,1)] %cf{0;1} := %tmpr0_33{32;1}
+[(0x11f,2)] %of{0;1} := (AND (XOR %ecx{31;1} %tmpr0_33{31;1}){0;1} (XOR %ecx{31;1} 0x0{0;1}){0;1}){0;1}
+[(0x11f,3)] %sf{0;1} := %tmpr0_33{31;1}
+[(0x11f,4)] %zf{0;1} := (EQ %tmpr0_33{0;32} 0x0{0;32}){0;1}
+[(0x11f,5)] %af{0;1} := %tmpr0_33{4;1}
+[(0x11f,6)] StaticArrow (0x11f,6) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} (EXTRACT %tmpr0_33{0;32} 0x0{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x1{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x2{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x3{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x4{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x5{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x6{0;32} 0x1{0;32}){0;1}){0;1} (EXTRACT %tmpr0_33{0;32} 0x7{0;32} 0x1{0;32}){0;1}){0;1}  --> (0x125,0)
+[(0x125,0)] @{asm:=jne    0x6666, next-inst:=(0x12b,0)}@ StaticArrow (0x125,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6666,0)StaticArrow (0x125,0) Skip << %zf{0;1} >> --> (0x12b,0)
+[(0x12b,0)] @{asm:=jmp    0x1000, next-inst:=(0x130,0)}@ StaticArrow (0x12b,0) Skip  --> (0x1000,0)
 [(0x1000,0)] @{asm:=jmp    0x1111, next-inst:=(0x1005,0)}@ StaticArrow (0x1000,0) Skip  --> (0x1111,0)
 [(0x1111,0)] @{asm:=jmp    0x1111, next-inst:=(0x1113,0)}@ StaticArrow (0x1111,0) Skip  --> (0x1111,0)
 [(0x6666,0)] 

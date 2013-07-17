@@ -2,34 +2,34 @@
 [(0x0,1)] StaticArrow (0x0,1) [%esp{0;32}]{0;16} := %eax{0;16}  --> (0x2,0)
 [(0x2,0)] @{asm:=pushw  0x31415926, next-inst:=(0x9,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
 [(0x2,1)] StaticArrow (0x2,1) [%esp{0;32}]{0;16} := [0x31415926{0;32}]{0;16}  --> (0x9,0)
-[(0x9,0)] @{asm:=push   %eax, next-inst:=(0xA,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x9,1)] StaticArrow (0x9,1) [%esp{0;32}]{0;32} := %eax{0;32}  --> (0xA,0)
-[(0xA,0)] @{asm:=pushl  0x31415926, next-inst:=(0x10,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0xA,1)] StaticArrow (0xA,1) [%esp{0;32}]{0;32} := [0x31415926{0;32}]{0;32}  --> (0x10,0)
+[(0x9,0)] @{asm:=push   %eax, next-inst:=(0xa,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x9,1)] StaticArrow (0x9,1) [%esp{0;32}]{0;32} := %eax{0;32}  --> (0xa,0)
+[(0xa,0)] @{asm:=pushl  0x31415926, next-inst:=(0x10,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0xa,1)] StaticArrow (0xa,1) [%esp{0;32}]{0;32} := [0x31415926{0;32}]{0;32}  --> (0x10,0)
 [(0x10,0)] @{asm:=push   %bp, next-inst:=(0x12,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
 [(0x10,1)] StaticArrow (0x10,1) [%esp{0;32}]{0;16} := %ebp{0;16}  --> (0x12,0)
 [(0x12,0)] @{asm:=push   %esp, next-inst:=(0x13,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
 [(0x12,1)] StaticArrow (0x12,1) [%esp{0;32}]{0;32} := %esp{0;32}  --> (0x13,0)
 [(0x13,0)] @{asm:=push   $0xf1, next-inst:=(0x18,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x13,1)] StaticArrow (0x13,1) [%esp{0;32}]{0;32} := 0xF1{0;32}  --> (0x18,0)
-[(0x18,0)] @{asm:=push   $0x3141, next-inst:=(0x1D,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x18,1)] StaticArrow (0x18,1) [%esp{0;32}]{0;32} := 0x3141{0;32}  --> (0x1D,0)
-[(0x1D,0)] @{asm:=pushw  $0x3141, next-inst:=(0x21,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x1D,1)] StaticArrow (0x1D,1) [%esp{0;32}]{0;16} := 0x3141{0;16}  --> (0x21,0)
+[(0x13,1)] StaticArrow (0x13,1) [%esp{0;32}]{0;32} := 0xf1{0;32}  --> (0x18,0)
+[(0x18,0)] @{asm:=push   $0x3141, next-inst:=(0x1d,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x18,1)] StaticArrow (0x18,1) [%esp{0;32}]{0;32} := 0x3141{0;32}  --> (0x1d,0)
+[(0x1d,0)] @{asm:=pushw  $0x3141, next-inst:=(0x21,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0x1d,1)] StaticArrow (0x1d,1) [%esp{0;32}]{0;16} := 0x3141{0;16}  --> (0x21,0)
 [(0x21,0)] @{asm:=push   $0x31415926, next-inst:=(0x26,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
 [(0x21,1)] StaticArrow (0x21,1) [%esp{0;32}]{0;32} := 0x31415926{0;32}  --> (0x26,0)
-[(0x26,0)] @{asm:=push   $0x31415926, next-inst:=(0x2B,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x26,1)] StaticArrow (0x26,1) [%esp{0;32}]{0;32} := 0x31415926{0;32}  --> (0x2B,0)
-[(0x2B,0)] @{asm:=push   %cs, next-inst:=(0x2C,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2B,1)] StaticArrow (0x2B,1) [%esp{0;32}]{0;32} := (EXTEND_U %cs{0;16} 0x20{0;32}){0;32}  --> (0x2C,0)
-[(0x2C,0)] @{asm:=push   %ss, next-inst:=(0x2D,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2C,1)] StaticArrow (0x2C,1) [%esp{0;32}]{0;32} := (EXTEND_U %ss{0;16} 0x20{0;32}){0;32}  --> (0x2D,0)
-[(0x2D,0)] @{asm:=push   %ds, next-inst:=(0x2E,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2D,1)] StaticArrow (0x2D,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;32}){0;32}  --> (0x2E,0)
-[(0x2E,0)] @{asm:=push   %ds, next-inst:=(0x2F,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2E,1)] StaticArrow (0x2E,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;32}){0;32}  --> (0x2F,0)
-[(0x2F,0)] @{asm:=push   %fs, next-inst:=(0x31,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0x2F,1)] StaticArrow (0x2F,1) [%esp{0;32}]{0;32} := (EXTEND_U %fs{0;16} 0x20{0;32}){0;32}  --> (0x31,0)
+[(0x26,0)] @{asm:=push   $0x31415926, next-inst:=(0x2b,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x26,1)] StaticArrow (0x26,1) [%esp{0;32}]{0;32} := 0x31415926{0;32}  --> (0x2b,0)
+[(0x2b,0)] @{asm:=push   %cs, next-inst:=(0x2c,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x2b,1)] StaticArrow (0x2b,1) [%esp{0;32}]{0;32} := (EXTEND_U %cs{0;16} 0x20{0;32}){0;32}  --> (0x2c,0)
+[(0x2c,0)] @{asm:=push   %ss, next-inst:=(0x2d,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x2c,1)] StaticArrow (0x2c,1) [%esp{0;32}]{0;32} := (EXTEND_U %ss{0;16} 0x20{0;32}){0;32}  --> (0x2d,0)
+[(0x2d,0)] @{asm:=push   %ds, next-inst:=(0x2e,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x2d,1)] StaticArrow (0x2d,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;32}){0;32}  --> (0x2e,0)
+[(0x2e,0)] @{asm:=push   %ds, next-inst:=(0x2f,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x2e,1)] StaticArrow (0x2e,1) [%esp{0;32}]{0;32} := (EXTEND_U %ds{0;16} 0x20{0;32}){0;32}  --> (0x2f,0)
+[(0x2f,0)] @{asm:=push   %fs, next-inst:=(0x31,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0x2f,1)] StaticArrow (0x2f,1) [%esp{0;32}]{0;32} := (EXTEND_U %fs{0;16} 0x20{0;32}){0;32}  --> (0x31,0)
 [(0x31,0)] @{asm:=push   %gs, next-inst:=(0x33,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
 [(0x31,1)] StaticArrow (0x31,1) [%esp{0;32}]{0;32} := (EXTEND_U %gs{0;16} 0x20{0;32}){0;32}  --> (0x33,0)
 [(0x33,0)] @{asm:=pushw  %cs, next-inst:=(0x35,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
@@ -38,11 +38,11 @@
 [(0x35,1)] StaticArrow (0x35,1) [%esp{0;32}]{0;16} := %ss{0;16}  --> (0x37,0)
 [(0x37,0)] @{asm:=pushw  %ds, next-inst:=(0x39,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
 [(0x37,1)] StaticArrow (0x37,1) [%esp{0;32}]{0;16} := %ds{0;16}  --> (0x39,0)
-[(0x39,0)] @{asm:=pushw  %ds, next-inst:=(0x3B,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x39,1)] StaticArrow (0x39,1) [%esp{0;32}]{0;16} := %ds{0;16}  --> (0x3B,0)
-[(0x3B,0)] @{asm:=pushw  %fs, next-inst:=(0x3E,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x3B,1)] StaticArrow (0x3B,1) [%esp{0;32}]{0;16} := %fs{0;16}  --> (0x3E,0)
-[(0x3E,0)] @{asm:=pushw  %gs, next-inst:=(0x41,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x3E,1)] StaticArrow (0x3E,1) [%esp{0;32}]{0;16} := %gs{0;16}  --> (0x41,0)
+[(0x39,0)] @{asm:=pushw  %ds, next-inst:=(0x3b,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0x39,1)] StaticArrow (0x39,1) [%esp{0;32}]{0;16} := %ds{0;16}  --> (0x3b,0)
+[(0x3b,0)] @{asm:=pushw  %fs, next-inst:=(0x3e,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0x3b,1)] StaticArrow (0x3b,1) [%esp{0;32}]{0;16} := %fs{0;16}  --> (0x3e,0)
+[(0x3e,0)] @{asm:=pushw  %gs, next-inst:=(0x41,0)}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0x3e,1)] StaticArrow (0x3e,1) [%esp{0;32}]{0;16} := %gs{0;16}  --> (0x41,0)
 [(0x41,0)] 
 

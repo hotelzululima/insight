@@ -10,12 +10,12 @@
 
 **** Decode instruction: push   %ax
 [(0x9,0)] @{asm:=push   %ax}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x9,1)] StaticArrow (0x9,1) [%esp{0;32}]{0;16} := %eax{0;16}  --> (0xB,0)
-[(0xB,0)] 
+[(0x9,1)] StaticArrow (0x9,1) [%esp{0;32}]{0;16} := %eax{0;16}  --> (0xb,0)
+[(0xb,0)] 
 
 **** Decode instruction: pushw  0x31415926
-[(0xB,0)] @{asm:=pushw  0x31415926}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0xB,1)] StaticArrow (0xB,1) [%esp{0;32}]{0;16} := [0x31415926{0;32}]{0;16}  --> (0x12,0)
+[(0xb,0)] @{asm:=pushw  0x31415926}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0xb,1)] StaticArrow (0xb,1) [%esp{0;32}]{0;16} := [0x31415926{0;32}]{0;16}  --> (0x12,0)
 [(0x12,0)] 
 
 **** Decode instruction: push   %bp
@@ -35,12 +35,12 @@
 
 **** Decode instruction: pushw  $0x3141
 [(0x19,0)] @{asm:=pushw  $0x3141}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x19,1)] StaticArrow (0x19,1) [%esp{0;32}]{0;16} := 0x3141{0;16}  --> (0x1D,0)
-[(0x1D,0)] 
+[(0x19,1)] StaticArrow (0x19,1) [%esp{0;32}]{0;16} := 0x3141{0;16}  --> (0x1d,0)
+[(0x1d,0)] 
 
 **** Decode instruction: pushw  $0x5926
-[(0x1D,0)] @{asm:=pushw  $0x5926}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x1D,1)] StaticArrow (0x1D,1) [%esp{0;32}]{0;16} := 0x5926{0;16}  --> (0x21,0)
+[(0x1d,0)] @{asm:=pushw  $0x5926}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0x1d,1)] StaticArrow (0x1d,1) [%esp{0;32}]{0;16} := 0x5926{0;16}  --> (0x21,0)
 [(0x21,0)] 
 
 **** Decode instruction: pushw  %cs
@@ -65,11 +65,11 @@
 
 **** Decode instruction: pushw  %fs
 [(0x29,0)] @{asm:=pushw  %fs}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x29,1)] StaticArrow (0x29,1) [%esp{0;32}]{0;16} := %fs{0;16}  --> (0x2C,0)
-[(0x2C,0)] 
+[(0x29,1)] StaticArrow (0x29,1) [%esp{0;32}]{0;16} := %fs{0;16}  --> (0x2c,0)
+[(0x2c,0)] 
 
 **** Decode instruction: pushw  %gs
-[(0x2C,0)] @{asm:=pushw  %gs}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
-[(0x2C,1)] StaticArrow (0x2C,1) [%esp{0;32}]{0;16} := %gs{0;16}  --> (0x2F,0)
-[(0x2F,0)] 
+[(0x2c,0)] @{asm:=pushw  %gs}@ %esp{0;32} := (SUB %esp{0;32} 0x2{0;32}){0;32}
+[(0x2c,1)] StaticArrow (0x2c,1) [%esp{0;32}]{0;16} := %gs{0;16}  --> (0x2f,0)
+[(0x2f,0)] 
 

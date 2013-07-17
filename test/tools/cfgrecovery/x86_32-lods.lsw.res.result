@@ -22,22 +22,22 @@
 [(0x7,1)] StaticArrow (0x7,1) Skip << %df{0;1} >> --> (0x7,2)StaticArrow (0x7,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x7,3)
 [(0x7,2)] StaticArrow (0x7,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0x8,0)
 [(0x7,3)] StaticArrow (0x7,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0x8,0)
-[(0x8,0)] @{asm:=lods   %ds:(%si),%al, next-inst:=(0xA,0)}@ %eax{0;8} := [%esi{0;32}]{0;8}
+[(0x8,0)] @{asm:=lods   %ds:(%si),%al, next-inst:=(0xa,0)}@ %eax{0;8} := [%esi{0;32}]{0;8}
 [(0x8,1)] StaticArrow (0x8,1) Skip << %df{0;1} >> --> (0x8,2)StaticArrow (0x8,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x8,3)
-[(0x8,2)] StaticArrow (0x8,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0xA,0)
-[(0x8,3)] StaticArrow (0x8,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0xA,0)
-[(0xA,0)] @{asm:=lods   %ds:(%si),%ax, next-inst:=(0xD,0)}@ %eax{0;16} := [%esi{0;32}]{0;16}
-[(0xA,1)] StaticArrow (0xA,1) Skip << %df{0;1} >> --> (0xA,2)StaticArrow (0xA,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xA,3)
-[(0xA,2)] StaticArrow (0xA,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0xD,0)
-[(0xA,3)] StaticArrow (0xA,3) %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32}  --> (0xD,0)
-[(0xD,0)] @{asm:=lods   %ds:(%si),%eax, next-inst:=(0xF,0)}@ %eax{0;32} := [%esi{0;32}]{0;32}
-[(0xD,1)] StaticArrow (0xD,1) Skip << %df{0;1} >> --> (0xD,2)StaticArrow (0xD,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xD,3)
-[(0xD,2)] StaticArrow (0xD,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0xF,0)
-[(0xD,3)] StaticArrow (0xD,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0xF,0)
-[(0xF,0)] @{asm:=lods   %ds:(%si),%al, next-inst:=(0x11,0)}@ %eax{0;8} := [%esi{0;32}]{0;8}
-[(0xF,1)] StaticArrow (0xF,1) Skip << %df{0;1} >> --> (0xF,2)StaticArrow (0xF,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xF,3)
-[(0xF,2)] StaticArrow (0xF,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0x11,0)
-[(0xF,3)] StaticArrow (0xF,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0x11,0)
+[(0x8,2)] StaticArrow (0x8,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0xa,0)
+[(0x8,3)] StaticArrow (0x8,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0xa,0)
+[(0xa,0)] @{asm:=lods   %ds:(%si),%ax, next-inst:=(0xd,0)}@ %eax{0;16} := [%esi{0;32}]{0;16}
+[(0xa,1)] StaticArrow (0xa,1) Skip << %df{0;1} >> --> (0xa,2)StaticArrow (0xa,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xa,3)
+[(0xa,2)] StaticArrow (0xa,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0xd,0)
+[(0xa,3)] StaticArrow (0xa,3) %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32}  --> (0xd,0)
+[(0xd,0)] @{asm:=lods   %ds:(%si),%eax, next-inst:=(0xf,0)}@ %eax{0;32} := [%esi{0;32}]{0;32}
+[(0xd,1)] StaticArrow (0xd,1) Skip << %df{0;1} >> --> (0xd,2)StaticArrow (0xd,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xd,3)
+[(0xd,2)] StaticArrow (0xd,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0xf,0)
+[(0xd,3)] StaticArrow (0xd,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0xf,0)
+[(0xf,0)] @{asm:=lods   %ds:(%si),%al, next-inst:=(0x11,0)}@ %eax{0;8} := [%esi{0;32}]{0;8}
+[(0xf,1)] StaticArrow (0xf,1) Skip << %df{0;1} >> --> (0xf,2)StaticArrow (0xf,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xf,3)
+[(0xf,2)] StaticArrow (0xf,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0x11,0)
+[(0xf,3)] StaticArrow (0xf,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0x11,0)
 [(0x11,0)] @{asm:=lods   %ds:(%si),%ax, next-inst:=(0x14,0)}@ %eax{0;16} := [%esi{0;32}]{0;16}
 [(0x11,1)] StaticArrow (0x11,1) Skip << %df{0;1} >> --> (0x11,2)StaticArrow (0x11,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x11,3)
 [(0x11,2)] StaticArrow (0x11,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0x14,0)
@@ -54,26 +54,26 @@
 [(0x17,1)] StaticArrow (0x17,1) Skip << %df{0;1} >> --> (0x17,2)StaticArrow (0x17,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x17,3)
 [(0x17,2)] StaticArrow (0x17,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x19,0)
 [(0x17,3)] StaticArrow (0x17,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x19,0)
-[(0x19,0)] @{asm:=stos   %eax,%es:(%edi), next-inst:=(0x1A,0)}@ [%edi{0;32}]{0;32} := %eax{0;32}
+[(0x19,0)] @{asm:=stos   %eax,%es:(%edi), next-inst:=(0x1a,0)}@ [%edi{0;32}]{0;32} := %eax{0;32}
 [(0x19,1)] StaticArrow (0x19,1) Skip << %df{0;1} >> --> (0x19,2)StaticArrow (0x19,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x19,3)
-[(0x19,2)] StaticArrow (0x19,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x1A,0)
-[(0x19,3)] StaticArrow (0x19,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x1A,0)
-[(0x1A,0)] @{asm:=stos   %al,%es:(%edi), next-inst:=(0x1B,0)}@ [%edi{0;32}]{0;8} := %eax{0;8}
-[(0x1A,1)] StaticArrow (0x1A,1) Skip << %df{0;1} >> --> (0x1A,2)StaticArrow (0x1A,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1A,3)
-[(0x1A,2)] StaticArrow (0x1A,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x1B,0)
-[(0x1A,3)] StaticArrow (0x1A,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x1B,0)
-[(0x1B,0)] @{asm:=stos   %ax,%es:(%edi), next-inst:=(0x1D,0)}@ [%edi{0;32}]{0;16} := %eax{0;16}
-[(0x1B,1)] StaticArrow (0x1B,1) Skip << %df{0;1} >> --> (0x1B,2)StaticArrow (0x1B,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1B,3)
-[(0x1B,2)] StaticArrow (0x1B,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x1D,0)
-[(0x1B,3)] StaticArrow (0x1B,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x1D,0)
-[(0x1D,0)] @{asm:=stos   %eax,%es:(%edi), next-inst:=(0x1E,0)}@ [%edi{0;32}]{0;32} := %eax{0;32}
-[(0x1D,1)] StaticArrow (0x1D,1) Skip << %df{0;1} >> --> (0x1D,2)StaticArrow (0x1D,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1D,3)
-[(0x1D,2)] StaticArrow (0x1D,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x1E,0)
-[(0x1D,3)] StaticArrow (0x1D,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x1E,0)
-[(0x1E,0)] @{asm:=stos   %al,%es:(%di), next-inst:=(0x20,0)}@ [%edi{0;32}]{0;8} := %eax{0;8}
-[(0x1E,1)] StaticArrow (0x1E,1) Skip << %df{0;1} >> --> (0x1E,2)StaticArrow (0x1E,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1E,3)
-[(0x1E,2)] StaticArrow (0x1E,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x20,0)
-[(0x1E,3)] StaticArrow (0x1E,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x20,0)
+[(0x19,2)] StaticArrow (0x19,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x1a,0)
+[(0x19,3)] StaticArrow (0x19,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x1a,0)
+[(0x1a,0)] @{asm:=stos   %al,%es:(%edi), next-inst:=(0x1b,0)}@ [%edi{0;32}]{0;8} := %eax{0;8}
+[(0x1a,1)] StaticArrow (0x1a,1) Skip << %df{0;1} >> --> (0x1a,2)StaticArrow (0x1a,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1a,3)
+[(0x1a,2)] StaticArrow (0x1a,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x1b,0)
+[(0x1a,3)] StaticArrow (0x1a,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x1b,0)
+[(0x1b,0)] @{asm:=stos   %ax,%es:(%edi), next-inst:=(0x1d,0)}@ [%edi{0;32}]{0;16} := %eax{0;16}
+[(0x1b,1)] StaticArrow (0x1b,1) Skip << %df{0;1} >> --> (0x1b,2)StaticArrow (0x1b,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1b,3)
+[(0x1b,2)] StaticArrow (0x1b,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x1d,0)
+[(0x1b,3)] StaticArrow (0x1b,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x1d,0)
+[(0x1d,0)] @{asm:=stos   %eax,%es:(%edi), next-inst:=(0x1e,0)}@ [%edi{0;32}]{0;32} := %eax{0;32}
+[(0x1d,1)] StaticArrow (0x1d,1) Skip << %df{0;1} >> --> (0x1d,2)StaticArrow (0x1d,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1d,3)
+[(0x1d,2)] StaticArrow (0x1d,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x1e,0)
+[(0x1d,3)] StaticArrow (0x1d,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x1e,0)
+[(0x1e,0)] @{asm:=stos   %al,%es:(%di), next-inst:=(0x20,0)}@ [%edi{0;32}]{0;8} := %eax{0;8}
+[(0x1e,1)] StaticArrow (0x1e,1) Skip << %df{0;1} >> --> (0x1e,2)StaticArrow (0x1e,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1e,3)
+[(0x1e,2)] StaticArrow (0x1e,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x20,0)
+[(0x1e,3)] StaticArrow (0x1e,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x20,0)
 [(0x20,0)] @{asm:=stos   %ax,%es:(%di), next-inst:=(0x23,0)}@ [%edi{0;32}]{0;16} := %eax{0;16}
 [(0x20,1)] StaticArrow (0x20,1) Skip << %df{0;1} >> --> (0x20,2)StaticArrow (0x20,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x20,3)
 [(0x20,2)] StaticArrow (0x20,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x23,0)
@@ -86,13 +86,13 @@
 [(0x25,1)] StaticArrow (0x25,1) Skip << %df{0;1} >> --> (0x25,2)StaticArrow (0x25,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x25,3)
 [(0x25,2)] StaticArrow (0x25,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x27,0)
 [(0x25,3)] StaticArrow (0x25,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x27,0)
-[(0x27,0)] @{asm:=stos   %ax,%es:(%di), next-inst:=(0x2A,0)}@ [%edi{0;32}]{0;16} := %eax{0;16}
+[(0x27,0)] @{asm:=stos   %ax,%es:(%di), next-inst:=(0x2a,0)}@ [%edi{0;32}]{0;16} := %eax{0;16}
 [(0x27,1)] StaticArrow (0x27,1) Skip << %df{0;1} >> --> (0x27,2)StaticArrow (0x27,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x27,3)
-[(0x27,2)] StaticArrow (0x27,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x2A,0)
-[(0x27,3)] StaticArrow (0x27,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x2A,0)
-[(0x2A,0)] @{asm:=stos   %eax,%es:(%di), next-inst:=(0x2C,0)}@ [%edi{0;32}]{0;32} := %eax{0;32}
-[(0x2A,1)] StaticArrow (0x2A,1) Skip << %df{0;1} >> --> (0x2A,2)StaticArrow (0x2A,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x2A,3)
-[(0x2A,2)] StaticArrow (0x2A,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x2C,0)
-[(0x2A,3)] StaticArrow (0x2A,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x2C,0)
-[(0x2C,0)] 
+[(0x27,2)] StaticArrow (0x27,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x2a,0)
+[(0x27,3)] StaticArrow (0x27,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x2a,0)
+[(0x2a,0)] @{asm:=stos   %eax,%es:(%di), next-inst:=(0x2c,0)}@ [%edi{0;32}]{0;32} := %eax{0;32}
+[(0x2a,1)] StaticArrow (0x2a,1) Skip << %df{0;1} >> --> (0x2a,2)StaticArrow (0x2a,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x2a,3)
+[(0x2a,2)] StaticArrow (0x2a,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x2c,0)
+[(0x2a,3)] StaticArrow (0x2a,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x2c,0)
+[(0x2c,0)] 
 
