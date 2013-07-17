@@ -147,8 +147,11 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   bool write_microcode (Microcode *mc, const std::string &format, 
 			ostream &output) {
     bool result = true;
+    mc->sort ();
     if (format == "asm")
-      asm_writer (output, mc, loader, true);
+      {
+	asm_writer (output, mc, loader, true);
+      }
     else if (format == "mc")
       {
 	mc->output_text (output);
