@@ -51,7 +51,7 @@ public:
   }
 
   virtual void visit (const Constant *c) {
-    out << "0x" << std::hex << std::uppercase << c->get_val ()
+    out << "0x" << std::hex << c->get_val ()
 	<< std::dec << "{0;" << c->get_bv_size () << "}";
   }
 

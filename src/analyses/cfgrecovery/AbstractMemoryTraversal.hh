@@ -12,6 +12,16 @@
 template<typename AlgoSpec>
 class AbstractMemoryTraversal 
 {
+# define ABSTRACT_MEMORY_TRAVERSAL_PROPERTIES				\
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (bool, show_states, false)		\
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (bool, show_state_space_size, false) \
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (bool, show_pending_arrows, false)	\
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (bool, warn_on_unsolved_dynamic_jumps, \
+				      false)				\
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (bool, warn_skipped_dynamic_jumps, false) \
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (int, number_of_visits_per_address, 1)
+# undef ABSTRACT_MEMORY_TRAVERSAL_PROPERTY
+
 public:
   typedef typename AlgoSpec::Stepper Stepper;
   typedef typename AlgoSpec::StateSpace StateSpace;
@@ -31,19 +41,10 @@ public:
 
   virtual ~AbstractMemoryTraversal ();
 
-  void set_show_states (bool value);
-  void set_show_state_space_size (bool value);
-
-  void set_show_pending_arrows (bool value);
-
-  void set_warn_on_unsolved_dynamic_jump (bool value);
-
-  void set_number_of_visits_per_address (int value);
-
   void abort_computation ();
+
   void compute (const ConcreteAddress &entrypoint, Microcode *result);
     
-
 protected:
   virtual MicrocodeNode *get_node (const ProgramPoint *pp)
     throw (Decoder::Exception);
@@ -61,13 +62,15 @@ private:
   Decoder *decoder;
   Microcode *program;
   StateSpace *states;
-  int nb_visits_per_address;
   std::tr1::unordered_map<address_t,int> visits;
-  bool show_states;
-  bool show_state_space_size;
-  bool show_pending_arrows;
-  bool warn_unsolved_dynamic_jump;
   bool stop_computation;
+
+# define ABSTRACT_MEMORY_TRAVERSAL_PROPERTY(type_, name_, defval_)	\
+  private: type_ name_; \
+  public: void set_ ## name_ (type_ value) { name_ = value; } 
+
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTIES
+# undef ABSTRACT_MEMORY_TRAVERSAL_PROPERTY
 };
 
 # include <analyses/cfgrecovery/AbstractMemoryTraversal.ii>

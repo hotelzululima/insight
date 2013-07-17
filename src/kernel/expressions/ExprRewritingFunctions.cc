@@ -486,7 +486,13 @@ binary_operations_simplification (const Expr *e)
        (o->get_op () == BV_OP_SUB && op == BV_OP_ADD)) &&
       o->get_arg2 () == arg2)
     {
-      result = (Expr *) o->get_arg1()->extract_with_bit_vector_of (ba);
+      if (ba->get_bv_offset () == 0 && 
+	  o->get_arg1 ()->get_bv_size () < ba->get_bv_size ())
+	result = BinaryApp::createExtend (BV_OP_EXTEND_S, 
+					  o->get_arg1 ()->ref (),
+					  ba->get_bv_size ());
+      else
+	result = (Expr *) o->get_arg1()->extract_with_bit_vector_of (ba);
     }
   else if (arg2->is_Constant() && o->get_arg2()->is_Constant()) // OL: ????
     {

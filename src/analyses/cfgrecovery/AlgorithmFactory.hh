@@ -6,6 +6,18 @@
 
 class AlgorithmFactory 
 {
+# define ALGORITHM_FACTORY_PROPERTIES					\
+  ALGORITHM_FACTORY_PROPERTY (ConcreteMemory *, memory, NULL)		\
+  ALGORITHM_FACTORY_PROPERTY (Decoder *, decoder, NULL)			\
+  ALGORITHM_FACTORY_PROPERTY (bool, show_states, false)			\
+  ALGORITHM_FACTORY_PROPERTY (bool, show_state_space_size, false)	\
+  ALGORITHM_FACTORY_PROPERTY (bool, show_pending_arrows, false)		\
+  ALGORITHM_FACTORY_PROPERTY (bool, warn_on_unsolved_dynamic_jumps, false) \
+  ALGORITHM_FACTORY_PROPERTY (bool, warn_skipped_dynamic_jumps, false)	\
+  ALGORITHM_FACTORY_PROPERTY (bool, map_dynamic_jumps_to_memory, false)	\
+  ALGORITHM_FACTORY_PROPERTY (int, dynamic_jumps_threshold, 1000) 	\
+  ALGORITHM_FACTORY_PROPERTY (int, max_number_of_visits_per_address, 1)
+
 public:
   class Algorithm {
   protected:
@@ -22,45 +34,19 @@ public:
   AlgorithmFactory ();
   ~AlgorithmFactory ();
 
-  void set_memory (ConcreteMemory *memory);
-  ConcreteMemory *get_memory ();
-  void set_decoder (Decoder *decoder);
-  Decoder *get_decoder ();
-
-  void set_show_states (bool value);
-  bool get_show_states ();
-  void set_show_state_space_size (bool value);
-  bool get_show_state_space_size ();
-  void set_show_pending_arrows (bool value);
-  bool get_show_pending_arrows ();
-  void set_warn_on_unsolved_dynamic_jumps (bool value);
-  bool get_warn_on_unsolved_dynamic_jumps ();
-
-  void set_map_dynamic_jumps_to_memory (bool value);
-  bool get_map_dynamic_jumps_to_memory ();
-  void set_dynamic_jumps_threshold (int threshold);
-  int get_dynamic_jumps_threshold ();
-  void set_max_number_of_visits_per_address (int max_nb_visits);
-  int get_max_number_of_visits_per_address ();
-
   Algorithm *buildLinearSweep ();
   Algorithm *buildFloodTraversal ();
   Algorithm *buildRecursiveTraversal ();
   Algorithm *buildSymbolicSimulator ();
   Algorithm *buildConcreteSimulator ();
 
-private:
-  ConcreteMemory *memory;
-  Decoder *decoder;
-
-  bool show_states;
-  bool show_pending_arrows;
-  bool show_state_space_size;
-  bool warn_on_unsolved_dynamic_jumps;
-
-  bool map_dynamic_jumps_to_memory;
-  int dynamic_jumps_threshold;
-  int max_number_of_visits_per_address;
+# define ALGORITHM_FACTORY_PROPERTY(type_, name_, defval_)	\
+  private: type_ name_;						\
+  public: void set_ ## name_ (type_ value) { name_ = value; }	\
+  public: type_ get_ ## name_ () { return name_;} 
+  
+  ALGORITHM_FACTORY_PROPERTIES
+# undef ALGORITHM_FACTORY_PROPERTY
 };
 
 #endif /* ! ALGORITHMFACTORY_HH */

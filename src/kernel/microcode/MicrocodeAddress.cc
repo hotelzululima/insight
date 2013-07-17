@@ -123,7 +123,7 @@ MicrocodeAddress MicrocodeAddress::null_addr()
 void 
 MicrocodeAddress::output_text (std::ostream &out) const
 {
-  out << "(0x" << uppercase << hex << global << "," << dec << local << ")";
+  out << "(0x" << hex << global << "," << dec << local << ")";
 }
 
 MicrocodeAddress MicrocodeAddress::operator++ (int) 

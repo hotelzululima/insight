@@ -45,7 +45,8 @@ public:
     traversal->set_show_states (F->get_show_states ());
     traversal->set_show_state_space_size (F->get_show_state_space_size ());
     traversal->set_show_pending_arrows (F->get_show_pending_arrows ());
-    traversal->set_warn_on_unsolved_dynamic_jump (F->get_warn_on_unsolved_dynamic_jumps ());
+    traversal->set_warn_on_unsolved_dynamic_jumps (F->get_warn_on_unsolved_dynamic_jumps ());
+    traversal->set_warn_skipped_dynamic_jumps (F->get_warn_skipped_dynamic_jumps ());
     traversal->set_number_of_visits_per_address (F->get_max_number_of_visits_per_address ());   
   }
 
@@ -72,33 +73,14 @@ private:
 
 AlgorithmFactory::AlgorithmFactory () 
 {
-  memory = NULL;
-  decoder = NULL;
-  show_states = false;
-  show_pending_arrows = false;
-  warn_on_unsolved_dynamic_jumps = false;
-  map_dynamic_jumps_to_memory = false;
-  dynamic_jumps_threshold = 1000;
-  max_number_of_visits_per_address = 50;
+#define ALGORITHM_FACTORY_PROPERTY(type_, name_, defval_) name_ = defval_;  
+  ALGORITHM_FACTORY_PROPERTIES
+#undef ALGORITHM_FACTORY_PROPERTY
 }
 
 AlgorithmFactory::~AlgorithmFactory ()
 {
 }
-
-#define DEF_ATTRIBUTE(type_, name_) \
-void AlgorithmFactory::set_ ## name_ (type_ name_) { this->name_ = name_; } \
-type_ AlgorithmFactory::get_ ## name_ () { return name_; } 
-
-DEF_ATTRIBUTE (ConcreteMemory *, memory)
-DEF_ATTRIBUTE (Decoder *, decoder)
-DEF_ATTRIBUTE (bool, show_states)
-DEF_ATTRIBUTE (bool, show_state_space_size)
-DEF_ATTRIBUTE (bool, show_pending_arrows)
-DEF_ATTRIBUTE (bool, warn_on_unsolved_dynamic_jumps)
-DEF_ATTRIBUTE (bool, map_dynamic_jumps_to_memory)
-DEF_ATTRIBUTE (int, dynamic_jumps_threshold)
-DEF_ATTRIBUTE (int, max_number_of_visits_per_address)
 
 template<> void 
 GenAlgorithm<LinearSweep>::setup_stepper (AlgorithmFactory *)

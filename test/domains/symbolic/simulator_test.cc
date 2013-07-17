@@ -53,6 +53,7 @@ using namespace std;
 #define FAILURE_ADDR 0x6666
 #define SUCCESS_ADDR 0x1111
 #define EXCEPTION_HANDLING_ADDR (FAILURE_ADDR+20)
+#define DEBUG_MODE false
 
 static Microcode *
 s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
@@ -63,11 +64,12 @@ s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
   
   F.set_memory (memory);
   F.set_decoder (decoder);
-  F.set_show_states (false);
-  F.set_show_pending_arrows (false);
-  F.set_warn_on_unsolved_dynamic_jumps (false);
+  F.set_show_states (DEBUG_MODE);
+  F.set_show_state_space_size (DEBUG_MODE);
+  F.set_show_pending_arrows (DEBUG_MODE);
+  F.set_warn_on_unsolved_dynamic_jumps (DEBUG_MODE);
+  F.set_warn_skipped_dynamic_jumps (DEBUG_MODE);
   F.set_max_number_of_visits_per_address (-1);
-  F.set_map_dynamic_jumps_to_memory (true);
   F.set_dynamic_jumps_threshold (50);
 
   AlgorithmFactory::Algorithm *algo = F.buildSymbolicSimulator ();

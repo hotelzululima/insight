@@ -7,45 +7,18 @@ AbstractMemoryTraversal<AlgoSpec>::
 			  Stepper *stepper, StateSpace *states) 
    : memory (memory), worklist(), stepper (stepper), 
      decoder (decoder), states (states), 
-     nb_visits_per_address (-1), show_states (false), 
-     show_state_space_size (false), 
-     show_pending_arrows (false),  warn_unsolved_dynamic_jump (false),
      stop_computation (false)
 {
+# define ABSTRACT_MEMORY_TRAVERSAL_PROPERTY(type_, name_, defval_) \
+  name_ = defval_; 
+
+  ABSTRACT_MEMORY_TRAVERSAL_PROPERTIES
+# undef ABSTRACT_MEMORY_TRAVERSAL_PROPERTY
 }
 
 template<typename AlgoSpec>
 AbstractMemoryTraversal<AlgoSpec>::~AbstractMemoryTraversal () 
 {
-}
-
-template<typename AlgoSpec>
-void 
-AbstractMemoryTraversal<AlgoSpec>::set_show_states (bool value) 
-{
-  show_states = value;
-}
-
-template<typename AlgoSpec>
-void 
-AbstractMemoryTraversal<AlgoSpec>::set_show_state_space_size (bool value) 
-{
-  show_state_space_size = value;
-}
-
-template<typename AlgoSpec>
-void 
-AbstractMemoryTraversal<AlgoSpec>::set_show_pending_arrows (bool value) 
-{
-  show_pending_arrows = value;
-}
-
-template<typename AlgoSpec>
-void 
-AbstractMemoryTraversal<AlgoSpec>::set_warn_on_unsolved_dynamic_jump (bool 
-								      value)
-{
-  warn_unsolved_dynamic_jump = value;
 }
 
 template<typename AlgoSpec>
@@ -99,6 +72,12 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 			(*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
 		      if (! memory->is_defined (a.getGlobal ()))
 			{
+			  if (warn_skipped_dynamic_jumps)
+			    logs::warning << "at " 
+					  << pa.s->get_ProgramPoint ()->to_MicrocodeAddress ()
+					  << " skip dynamic jump to undefined "
+					  << "target 0x" << std::hex 
+					  << a.getGlobal () << std::endl;
 			  delete *i;
 			  continue;
 			}
@@ -136,19 +115,12 @@ AbstractMemoryTraversal<AlgoSpec>::nextPendinArrow ()
 }
 
 template<typename AlgoSpec>
-void
-AbstractMemoryTraversal<AlgoSpec>::set_number_of_visits_per_address (int value)
-{
-  nb_visits_per_address = value;
-}
-
-template<typename AlgoSpec>
 bool 
 AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
 {
   bool result = false;
   MicrocodeAddress ma (pa.s->get_ProgramPoint ()->to_MicrocodeAddress ());
-  if (nb_visits_per_address > 0 && ma.getLocal () == 0)
+  if (number_of_visits_per_address > 0 && ma.getLocal () == 0)
     {
       address_t a = ma.getGlobal ();
       
@@ -159,7 +131,7 @@ AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
 	  int count = visits[a];
 	  visits[a] = count +1;
 	}
-      if (visits[a] > nb_visits_per_address)
+      if (visits[a] > number_of_visits_per_address)
 	result = true;
     }
   return result;

@@ -58,7 +58,6 @@ SymbolicValue::SymbolicValue (int size, word_t val) : Value (size)
 SymbolicValue::SymbolicValue (const Expr *e) 
   : Value (e->get_bv_size ()), value (e->ref ())
 {
-  exprutils::simplify (&value);
 }
 
 SymbolicValue::~SymbolicValue ()

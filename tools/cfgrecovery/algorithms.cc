@@ -11,6 +11,8 @@ static const std::string SIMULATOR_NB_VISITS_PER_ADDRESS =
   "disas.simulator.nb-visits-per-address";
 static const std::string SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS =
   "disas.simulator.warn-unsolved-dynamic-jumps";
+static const std::string SIMULATOR_WARN_SKIPPED_DYNAMIC_JUMPS =
+  "disas.simulator.warn-skipped-dynamic-jumps";
 static const std::string SIMULATOR_DEBUG_SHOW_STATES =
   "disas.simulator.debug.show-states";
 static const std::string SIMULATOR_DEBUG_SHOW_STATE_SPACE_SIZE =
@@ -88,6 +90,9 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
   bool warn_unsolved_jumps =
     CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
 				     false);
+  bool warn_skipped_jumps =
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
+				     false);
   int max_nb_visits =
     CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
 
@@ -108,6 +113,7 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
   F.set_show_state_space_size (show_state_space_size);
   F.set_show_pending_arrows (show_pending_arrows);
   F.set_warn_on_unsolved_dynamic_jumps (warn_unsolved_jumps);
+  F.set_warn_skipped_dynamic_jumps (warn_skipped_jumps);
   F.set_map_dynamic_jumps_to_memory (djmp2mem);
   F.set_dynamic_jumps_threshold (djmpth);
   F.set_max_number_of_visits_per_address (max_nb_visits);
