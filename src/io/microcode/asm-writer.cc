@@ -50,12 +50,18 @@ void
 asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader,
 	    bool with_bytes)
 {
-  for (Microcode::node_iterator N = mc->begin_nodes (); N != mc->end_nodes (); 
-       N++)
+  int i;
+  std::vector<MicrocodeNode *> *nodes = mc->get_nodes ();
+  int nb_nodes = nodes->size ();
+  
+
+  for (i = 0; i < nb_nodes; i++)
     {
-      if (! (*N)->has_annotation (AsmAnnotation::ID))
+      MicrocodeNode *node = nodes->at(i);
+
+      if (! node->has_annotation (AsmAnnotation::ID))
 	continue;
-      MicrocodeAddress ma ((*N)->get_loc ());
+      MicrocodeAddress ma (node->get_loc ());
 
       if (loader && ma.getLocal () == 0)
 	{
@@ -71,19 +77,19 @@ asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader,
 	    }
 	}
       AsmAnnotation *a = (AsmAnnotation *) 
-	(*N)->get_annotation (AsmAnnotation::ID);
+	node->get_annotation (AsmAnnotation::ID);
 
       out << std::right << std::hex << std::setw (8) << std::setfill (' ')
-	  << (*N)->get_loc ().getGlobal () << ":\t";
+	  << node->get_loc ().getGlobal () << ":\t";
       if (with_bytes)
 	{
 	  std::string bytes;
 
-	  if ((*N)->has_annotation (NextInstAnnotation::ID))
+	  if (node->has_annotation (NextInstAnnotation::ID))
 	    {
 	      ConcreteAddress next;
 	      NextInstAnnotation *nia = (NextInstAnnotation *)
-		(*N)->get_annotation (NextInstAnnotation::ID);
+		node->get_annotation (NextInstAnnotation::ID);
 	      next = nia->get_value ().getGlobal ();
 	      bytes = s_instruction_bytes (loader, ma.getGlobal (), next);
 	    }

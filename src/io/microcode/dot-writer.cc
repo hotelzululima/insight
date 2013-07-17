@@ -147,7 +147,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
       
       if ((*it)->has_annotation (AsmAnnotation::ID))
 	out << setw(8) << hex << ma.getGlobal () << ": " 
-	    << (*it)->get_annotation (AsmAnnotation::ID);
+	    << *((*it)->get_annotation (AsmAnnotation::ID));
       else
 	out << (*it)->pp ();
 
