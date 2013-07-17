@@ -70,9 +70,9 @@ struct disassembler {
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linear_sweep },
   { "recursive", "recursive traversal", recursive_traversal },
-  { "symsim", "symbolic simulation.", symbolic_simulator },
-  { "sim=symbolic", "symbolic simulation.", symbolic_simulator },
-  { "sim=concrete", "simulation within concrete domain.", concrete_simulator },
+  { "symsim", "symbolic simulation", symbolic_simulator },
+  { "sim=symbolic", "symbolic simulation", symbolic_simulator },
+  { "sim=concrete", "simulation within concrete domain", concrete_simulator },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };
