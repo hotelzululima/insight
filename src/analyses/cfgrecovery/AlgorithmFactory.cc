@@ -43,6 +43,7 @@ public:
 			       states);
 
     traversal->set_show_states (F->get_show_states ());
+    traversal->set_show_state_space_size (F->get_show_state_space_size ());
     traversal->set_show_pending_arrows (F->get_show_pending_arrows ());
     traversal->set_warn_on_unsolved_dynamic_jump (F->get_warn_on_unsolved_dynamic_jumps ());
     traversal->set_number_of_visits_per_address (F->get_max_number_of_visits_per_address ());   
@@ -52,7 +53,12 @@ public:
     setup_stepper (factory);
     setup_traversal (factory);
   }
-  
+
+  virtual void stop () {
+    if (traversal)
+      traversal->abort_computation ();
+  }
+
   virtual void compute (const ConcreteAddress &entrypoint, Microcode *result) {
     traversal->compute (entrypoint, result);
   }
@@ -87,6 +93,7 @@ type_ AlgorithmFactory::get_ ## name_ () { return name_; }
 DEF_ATTRIBUTE (ConcreteMemory *, memory)
 DEF_ATTRIBUTE (Decoder *, decoder)
 DEF_ATTRIBUTE (bool, show_states)
+DEF_ATTRIBUTE (bool, show_state_space_size)
 DEF_ATTRIBUTE (bool, show_pending_arrows)
 DEF_ATTRIBUTE (bool, warn_on_unsolved_dynamic_jumps)
 DEF_ATTRIBUTE (bool, map_dynamic_jumps_to_memory)

@@ -32,6 +32,7 @@ public:
   virtual ~AbstractMemoryTraversal ();
 
   void set_show_states (bool value);
+  void set_show_state_space_size (bool value);
 
   void set_show_pending_arrows (bool value);
 
@@ -39,6 +40,7 @@ public:
 
   void set_number_of_visits_per_address (int value);
 
+  void abort_computation ();
   void compute (const ConcreteAddress &entrypoint, Microcode *result);
     
 
@@ -62,8 +64,10 @@ private:
   int nb_visits_per_address;
   std::tr1::unordered_map<address_t,int> visits;
   bool show_states;
+  bool show_state_space_size;
   bool show_pending_arrows;
   bool warn_unsolved_dynamic_jump;
+  bool stop_computation;
 };
 
 # include <analyses/cfgrecovery/AbstractMemoryTraversal.ii>

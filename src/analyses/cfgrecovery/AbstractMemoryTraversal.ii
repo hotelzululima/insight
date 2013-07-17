@@ -8,7 +8,9 @@ AbstractMemoryTraversal<AlgoSpec>::
    : memory (memory), worklist(), stepper (stepper), 
      decoder (decoder), states (states), 
      nb_visits_per_address (-1), show_states (false), 
-     show_pending_arrows (false),  warn_unsolved_dynamic_jump (false)
+     show_state_space_size (false), 
+     show_pending_arrows (false),  warn_unsolved_dynamic_jump (false),
+     stop_computation (false)
 {
 }
 
@@ -22,6 +24,13 @@ void
 AbstractMemoryTraversal<AlgoSpec>::set_show_states (bool value) 
 {
   show_states = value;
+}
+
+template<typename AlgoSpec>
+void 
+AbstractMemoryTraversal<AlgoSpec>::set_show_state_space_size (bool value) 
+{
+  show_state_space_size = value;
 }
 
 template<typename AlgoSpec>
@@ -41,14 +50,22 @@ AbstractMemoryTraversal<AlgoSpec>::set_warn_on_unsolved_dynamic_jump (bool
 
 template<typename AlgoSpec>
 void 
+AbstractMemoryTraversal<AlgoSpec>::abort_computation ()
+{  
+  stop_computation = true;
+}
+
+template<typename AlgoSpec>
+void 
 AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 					    Microcode *mc)
 {
+  stop_computation = false;
   this->program = mc;
   State *s = stepper->get_initial_state (entrypoint);
   computePendingArrowsFor (s);
 
-  while (! worklist.empty ())
+  while (! worklist.empty () && ! stop_computation)
     {
       PendingArrow pa = nextPendinArrow ();
 
@@ -90,7 +107,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 		  computePendingArrowsFor (*i);
 		}
 	    }
-	  if (show_states)
+	  if (show_state_space_size)
 	    logs::debug << "# state " << states->size() 
 			<< " # pp " << visits.size () 
 			<< " # WL " << worklist.size ()

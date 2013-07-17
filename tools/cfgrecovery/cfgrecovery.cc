@@ -140,28 +140,28 @@ version ()
 
 struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   bool output_program;
-  std::string format;
   BinaryLoader *loader;
   std::string exec_filename;
   ConcreteAddress *entrypoint;
 
-  bool write_microcode (Microcode *mc) {
+  bool write_microcode (Microcode *mc, const std::string &format, 
+			ostream &output) {
     bool result = true;
     if (format == "asm")
-      asm_writer (*output, mc, loader, true);
+      asm_writer (output, mc, loader, true);
     else if (format == "mc")
       {
-	mc->output_text (*output);
-	*output << endl;
+	mc->output_text (output);
+	output << endl;
       }
     else if (format == "dot" || format == "asm-dot")
       {
 	bool asmonly = (format == "asm-dot");
-	dot_writer (*output, mc, asmonly, exec_filename, entrypoint, loader);
+	dot_writer (output, mc, asmonly, exec_filename, entrypoint, loader);
       }
     else if (format == "xml")
       {
-	*output << xml_of_microcode(mc);
+	output << xml_of_microcode(mc);
       }
     else
       {
@@ -173,7 +173,7 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   virtual void add_node (Microcode *mc, StmtArrow *) {
     if (output_program)
       {
-	write_microcode (mc);    
+	write_microcode (mc, "asm", logs::warning);    
 	output_program = false;
       }
   }
@@ -426,12 +426,11 @@ main (int argc, char *argv[])
 
 
   CtrlCHandler::CTRL_C_HANDLER.output_program = false;
-  CtrlCHandler::CTRL_C_HANDLER.format = output_format;
   CtrlCHandler::CTRL_C_HANDLER.loader = loader;
   CtrlCHandler::CTRL_C_HANDLER.exec_filename = execfile_name;
   CtrlCHandler::CTRL_C_HANDLER.entrypoint = entrypoint;
 
-  if (signal (SIGINT, &CtrlCHandler::sighandler) != 0)
+  if (signal (SIGUSR1, &CtrlCHandler::sighandler) != 0)
     logs::error << "unable to set CTRL-C handler." << std::endl;
 
   try
@@ -456,7 +455,8 @@ main (int argc, char *argv[])
   if (mc == NULL)
     exit (EXIT_FAILURE);
 
-  if (! CtrlCHandler::CTRL_C_HANDLER.write_microcode (mc))
+  if (! CtrlCHandler::CTRL_C_HANDLER.write_microcode (mc, 
+						      output_format, *output))
     {
       logs::error << prog_name
 		  << ": error: '" << output_format << "' unknown format" 

@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <analyses/cfgrecovery/AlgorithmFactory.hh>
 #include "cfgrecovery.hh"
 #include "algorithms.hh"
@@ -12,6 +13,8 @@ static const std::string SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS =
   "disas.simulator.warn-unsolved-dynamic-jumps";
 static const std::string SIMULATOR_DEBUG_SHOW_STATES =
   "disas.simulator.debug.show-states";
+static const std::string SIMULATOR_DEBUG_SHOW_STATE_SPACE_SIZE =
+  "disas.simulator.debug.show-state-space-size";
 static const std::string SIMULATOR_DEBUG_SHOW_PENDING_ARROWS =
   "disas.simulator.debug.show-pending-arrows";
 
@@ -22,6 +25,14 @@ static const std::string SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY =
 
 typedef AlgorithmFactory::Algorithm * (AlgorithmFactory::* FactoryMethod) ();
 
+static AlgorithmFactory::Algorithm *running_algorithm = NULL;
+
+static void 
+s_sigint_handler (int)
+{
+  if (running_algorithm)
+    running_algorithm->stop ();
+}
 
 static void
 s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
@@ -68,6 +79,9 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
 
   bool show_states = 
     CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
+  bool show_state_space_size = 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATE_SPACE_SIZE, 
+				     false);
   bool show_pending_arrows = 
     CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
 				     false);
@@ -91,22 +105,27 @@ s_generic_call (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
   F.set_memory (memory);
   F.set_decoder (decoder); 
   F.set_show_states (show_states);
+  F.set_show_state_space_size (show_state_space_size);
   F.set_show_pending_arrows (show_pending_arrows);
   F.set_warn_on_unsolved_dynamic_jumps (warn_unsolved_jumps);
   F.set_map_dynamic_jumps_to_memory (djmp2mem);
   F.set_dynamic_jumps_threshold (djmpth);
   F.set_max_number_of_visits_per_address (max_nb_visits);
  
-  AlgorithmFactory::Algorithm *algo = (F.* build) ();
+  running_algorithm = (F.* build) ();
+  if (signal (SIGINT, &s_sigint_handler) != 0)
+    logs::error << "unable to set CTRL-C handler." << std::endl;
 
   try
     {
-      algo->compute (entrypoint, result);
-      delete algo;
+      running_algorithm->compute (entrypoint, result);
+      delete running_algorithm;
+      running_algorithm = NULL;
     }
   catch (Decoder::Exception &)
     {
-      delete algo;
+      delete running_algorithm;
+      running_algorithm = NULL;
       delete result;
       throw;
     }

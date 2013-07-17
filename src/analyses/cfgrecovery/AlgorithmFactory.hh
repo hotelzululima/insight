@@ -14,6 +14,7 @@ public:
 
   public:
     virtual ~Algorithm () { }
+    virtual void stop () = 0;
     virtual void compute (const ConcreteAddress &ca, Microcode *result) = 0;
 
   };
@@ -28,6 +29,8 @@ public:
 
   void set_show_states (bool value);
   bool get_show_states ();
+  void set_show_state_space_size (bool value);
+  bool get_show_state_space_size ();
   void set_show_pending_arrows (bool value);
   bool get_show_pending_arrows ();
   void set_warn_on_unsolved_dynamic_jumps (bool value);
@@ -52,6 +55,7 @@ private:
 
   bool show_states;
   bool show_pending_arrows;
+  bool show_state_space_size;
   bool warn_on_unsolved_dynamic_jumps;
 
   bool map_dynamic_jumps_to_memory;
