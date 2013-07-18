@@ -34,57 +34,10 @@
 #include <kernel/annotations/AsmAnnotation.hh>
 #include <kernel/annotations/SolvedJmpAnnotation.hh>
 #include <cstdlib>
+#include "asm-writer.hh"
 #include "dot-writer.hh"
 
 using namespace std;
-
-static void
-s_successor_instructions_rec (const Microcode *mc, const MicrocodeNode *node, 
-			      set<MicrocodeNode *> &done,
-			      vector<MicrocodeNode *> &res)
-{
-  MicrocodeNode_iterate_successors (*node, succ)
-    {
-      list<MicrocodeAddress> addresses;
-
-      if ((*succ)->is_static ())
-	addresses.push_back (((StaticArrow *) *succ)->get_target ());
-      else if ((*succ)-> has_annotation (SolvedJmpAnnotation::ID))
-	{
-	  SolvedJmpAnnotation *sja = (SolvedJmpAnnotation *)
-	    (*succ)->get_annotation (SolvedJmpAnnotation::ID);
-	  addresses = sja->get_value ();
-	}
-
-      for (list<MicrocodeAddress>::const_iterator i = addresses.begin ();
-	   i != addresses.end (); i++)
-	{
-	  MicrocodeAddress tgt = *i;
-	  MicrocodeNode *n = mc->get_node (tgt);
-            
-	  if (tgt.getLocal () == 0)
-	    res.push_back (n);
-	  else if (done.find (n) == done.end ())
-	    {
-	      done.insert (n);
-	      s_successor_instructions_rec (mc, n, done, res);
-	    }
-	}
-    }
-}
-
-
-static vector<MicrocodeNode *>
-s_successor_instructions (const Microcode *mc, const MicrocodeNode *node)
-{
-  set<MicrocodeNode *> done;
-  vector<MicrocodeNode *> result;
-  
-  s_successor_instructions_rec (mc, node, done, result);
-
-  return result;
-}
-
 
 void 
 dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
@@ -159,12 +112,12 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	out << ",color=\"#" << hex << rgb << "\"";
       out << "];\n";
 
-      vector<MicrocodeNode *> succs = s_successor_instructions (mc, *it);
+      vector<MicrocodeNode *> *succs = asm_get_successor_instructions (mc, *it);
 
       set<MicrocodeAddress,LessThanFunctor<MicrocodeAddress> > targets;
 
-      for (vector<MicrocodeNode *>::const_iterator s = succs.begin (); 
-	   s != succs.end (); s++)
+      for (vector<MicrocodeNode *>::const_iterator s = succs->begin (); 
+	   s != succs->end (); s++)
 	{
 	  MicrocodeAddress tgt = (*s)->get_loc ();
 
@@ -180,6 +133,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	      << tgt.getLocal () 
 	      << "; " << endl;
 	}
+      delete succs;
     }
 
   out << " subgraph cluster_legend { " << endl

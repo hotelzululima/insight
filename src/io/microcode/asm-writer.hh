@@ -32,8 +32,12 @@
 # define ASM_WRITER_HH
 
 # include <iostream>
+# include <vector>
 # include <kernel/Microcode.hh>
 # include <io/binary/BinaryLoader.hh>
+
+extern std::vector<MicrocodeNode *> * 
+asm_get_successor_instructions (const Microcode *mc, const MicrocodeNode *node);
 
 extern void 
 asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader,
