@@ -136,6 +136,7 @@ s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader)
       assert (result->find (*i) == result->end ());
       (*result)[*i] = tmpbuf;
     }
+  delete[] tmpbuf;
 
   return result;
 }
