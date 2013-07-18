@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * 
@@ -80,7 +80,8 @@ s_is_next_instruction_addr (const MicrocodeNode *node, address_t a)
 }
 
 static SymbolTable *
-s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader)
+s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader, 
+		      bool with_labels)
 {
   const char *label_prefix = "L";
   char *tmpbuf = new char[::strlen (label_prefix) + 10];
@@ -97,9 +98,6 @@ s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader)
       if (Nma.getLocal () != 0)
 	continue;
 
-      vector<MicrocodeNode *> *succinsts = 
-	asm_get_successor_instructions (mc, N);
-      int nb_succ = succinsts->size ();
       if (Nma.getLocal () == 0)
 	{	  
 	  address_t a = Nma.getGlobal ();
@@ -107,6 +105,12 @@ s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader)
 	  if (symb.hasValue ())
 	    (*result)[a] = symb.getValue ();
 	}
+      if (! with_labels)
+	continue;
+
+      vector<MicrocodeNode *> *succinsts = 
+	asm_get_successor_instructions (mc, N);
+      int nb_succ = succinsts->size ();
 
       for (int i = 0; i <nb_succ; i++)
 	{
@@ -141,38 +145,74 @@ s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader)
   return result;
 }
 
+static void
+s_dump_memory_between (ostream &out, const ConcreteMemory *M, 
+		       const ConcreteAddress &start, 
+		       const ConcreteAddress &end)
+{  
+  if (start.get_address () >= end.get_address ())
+    return;
+
+  ConcreteAddress a = start;
+
+  while (a.get_address () <= end.get_address ())
+    {
+      address_t p = a.get_address () % 16;
+
+      out << right << hex << setw (8) << setfill (' ') 
+	  << a.get_address () << ":\t";
+      out << right << setw (3 * p) << setfill (' ') << "";
+      while (p < 16 && a.get_address () <= end.get_address ())
+	{
+	  ConcreteValue val = M->get (a, 1, Architecture::LittleEndian);
+	  out << hex << setw(2) << setfill ('0') << val.get () << " ";
+	  a++;
+	  p++;
+	}
+      out << endl;
+    }
+}
+
 void 
 asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
-	    bool with_bytes)
+	    bool with_bytes, bool with_holes, bool with_labels)
 {
-  int i;
   vector<MicrocodeNode *> *nodes = mc->get_nodes ();
   int nb_nodes = nodes->size ();
-  SymbolTable *symbtable = s_build_symbol_table (mc, loader);
+  SymbolTable *symbtable = s_build_symbol_table (mc, loader, with_labels);
+  int i = 0;
 
-  for (i = 0; i < nb_nodes; i++)
+  while (i < nb_nodes && ! nodes->at (i)->has_annotation (AsmAnnotation::ID))
+    i++;
+  MicrocodeAddress prev = nodes->at (i)->get_loc ();
+  for (; i < nb_nodes; i++)
     {
-      MicrocodeNode *node = nodes->at(i);
+      MicrocodeNode *node = nodes->at (i);
 
       if (! node->has_annotation (AsmAnnotation::ID))
 	continue;
       MicrocodeAddress ma (node->get_loc ());
 
-      if (ma.getLocal () == 0)
+      assert (ma.getLocal () == 0);
+
+      if (with_holes)
+	s_dump_memory_between (out, loader->get_memory (), prev.getGlobal (), 
+			       ma.getGlobal () - 1);
+
+      SymbolTable::iterator j = symbtable->find (ma.getGlobal ());
+      if (j != symbtable->end ())
 	{
-	  SymbolTable::iterator j = symbtable->find (ma.getGlobal ());
-	  if (j != symbtable->end ())
-	    {
-	      out << right << hex << setfill ('0') 
-		  << setw (8) 
-		  << ma.getGlobal () 
-		  << setw (0) 
-		  << " <" << j->second << ">: " << endl;
-	    }
+	  out << right << hex << setfill ('0') 
+	      << setw (8) 
+	      << ma.getGlobal () 
+	      << setw (0) 
+	      << " <" << j->second << ">: " << endl;
 	}
       AsmAnnotation *a = (AsmAnnotation *) 
 	node->get_annotation (AsmAnnotation::ID);
       Option<address_t> next = s_next_instruction_addr (node);
+      if (next.hasValue ())
+	prev = next.getValue ();
       out << right << hex << setw (8) << setfill (' ')
 	  << node->get_loc ().getGlobal () << ":\t";
       if (with_bytes)
@@ -198,7 +238,7 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
 	    continue;
 
 	  SymbolTable::iterator sname = symbtable->find (saddr);
-	  assert (sname != symbtable->end ());
+	  if (sname != symbtable->end ())
 	    {
 	      if (first) { out << " # jump to : " ; first = false; }
 	      else { out << ", "; }

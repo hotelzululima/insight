@@ -85,6 +85,9 @@ static const OutputFormat FORMATS[] = {
 int verbosity = 0;	           /* verbosity level */
 static ConfigTable CONFIG;
 const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
+static int asm_with_bytes = 0;
+static int asm_with_holes = 0;
+static int asm_with_labels = 0;
 
 struct disassembler {
   const char *name;
@@ -180,7 +183,8 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
     switch (fmt)
       {
       case OF_ASM :
-	asm_writer (output, mc, loader, true);
+	asm_writer (output, mc, loader, asm_with_bytes, asm_with_holes,
+		    asm_with_labels);
 	break;
       case OF_MC :
 	mc->output_text (output);
@@ -244,6 +248,9 @@ main (int argc, char *argv[])
     {"debug", no_argument, NULL, 'D'},
     {"verbose", no_argument, NULL, 'v'},
     {"version", no_argument, NULL, 'V'},
+    {"asm-with-bytes", no_argument, &asm_with_bytes, 1 }, 
+    {"asm-with-holes", no_argument, &asm_with_holes, 1 }, 
+    {"asm-with-labels", no_argument, &asm_with_labels, 1 }, 
     {NULL, 0, NULL, 0}
   };
 
@@ -347,7 +354,8 @@ main (int argc, char *argv[])
       case 'V':		/* Display version number and exit */
 	version ();
 	break;
-
+      case 0:
+	break;
       default:
 	usage (EXIT_FAILURE);
       }
