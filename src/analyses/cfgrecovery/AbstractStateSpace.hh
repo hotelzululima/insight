@@ -1,6 +1,8 @@
 #ifndef ABSTRACTSTATESPACE_HH
 # define ABSTRACTSTATESPACE_HH
 
+# include <utils/Object.hh>
+
 template <typename S>
 class AbstractStateSpace : public Object 
 {

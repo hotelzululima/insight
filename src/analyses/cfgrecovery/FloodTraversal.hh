@@ -2,11 +2,14 @@
 # define FLOODTRAVERSAL_HH
 
 # include <list>
+# include <analyses/cfgrecovery/SingleContextStateSpace.hh>
 # include <analyses/cfgrecovery/LinearSweep.hh>
 
 class FloodTraversal : public LinearSweep
 {
 public:
+  typedef SingleContextStateSpace<State> StateSpace;
+
   class Stepper : public LinearSweep::Stepper {
   public:
     Stepper (ConcreteMemory *memory, const Architecture *arch);
