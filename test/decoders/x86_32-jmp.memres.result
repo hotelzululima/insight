@@ -3,15 +3,15 @@
 [(0x13,0)] 
 
 **** Decode instruction: jmp    0x123a
-[(0x5,0)] @{asm:=jmp    0x123a}@ StaticArrow (0x5,0) Skip  --> (0x123A,0)
-[(0x123A,0)] 
+[(0x5,0)] @{asm:=jmp    0x123a}@ StaticArrow (0x5,0) Skip  --> (0x123a,0)
+[(0x123a,0)] 
 
 **** Decode instruction: jmp    0xedcba993
-[(0xA,0)] @{asm:=jmp    0xedcba993}@ StaticArrow (0xA,0) Skip  --> (0xEDCBA993,0)
-[(0xEDCBA993,0)] 
+[(0xa,0)] @{asm:=jmp    0xedcba993}@ StaticArrow (0xa,0) Skip  --> (0xedcba993,0)
+[(0xedcba993,0)] 
 
 **** Decode instruction: jmpw   *%ax
-[(0xF,0)] @{asm:=jmpw   *%ax}@ DynamicArrow (0xF,0) Jmp %eax{0;16}  --> << %eax{0;16} >>
+[(0xf,0)] @{asm:=jmpw   *%ax}@ DynamicArrow (0xf,0) Jmp %eax{0;16}  --> << %eax{0;16} >>
 
 **** Decode instruction: jmp    *0x12345678
 [(0x12,0)] @{asm:=jmp    *0x12345678}@ DynamicArrow (0x12,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
@@ -20,5 +20,5 @@
 [(0x18,0)] @{asm:=jmp    *%eax}@ DynamicArrow (0x18,0) Jmp %eax{0;32}  --> << %eax{0;32} >>
 
 **** Decode instruction: jmp    *0x12345678
-[(0x1A,0)] @{asm:=jmp    *0x12345678}@ DynamicArrow (0x1A,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
+[(0x1a,0)] @{asm:=jmp    *0x12345678}@ DynamicArrow (0x1a,0) Jmp [0x12345678{0;32}]{0;32}  --> << [0x12345678{0;32}]{0;32} >>
 

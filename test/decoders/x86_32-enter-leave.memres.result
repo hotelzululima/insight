@@ -16,14 +16,14 @@
 [(0x9,0)] @{asm:=enterw $0x1111,$0x1}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
 [(0x9,1)] [%esp{0;32}]{0;32} := %ebp{0;32}
 [(0x9,2)] %ebp{0;32} := %esp{0;32}
-[(0x9,3)] StaticArrow (0x9,3) %esp{0;32} := (SUB %esp{0;32} 0x1111{0;32}){0;32}  --> (0xE,0)
-[(0xE,0)] 
+[(0x9,3)] StaticArrow (0x9,3) %esp{0;32} := (SUB %esp{0;32} 0x1111{0;32}){0;32}  --> (0xe,0)
+[(0xe,0)] 
 
 **** Decode instruction: enter  $0x1111,$0x1
-[(0xE,0)] @{asm:=enter  $0x1111,$0x1}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
-[(0xE,1)] [%esp{0;32}]{0;32} := %ebp{0;32}
-[(0xE,2)] %ebp{0;32} := %esp{0;32}
-[(0xE,3)] StaticArrow (0xE,3) %esp{0;32} := (SUB %esp{0;32} 0x1111{0;32}){0;32}  --> (0x12,0)
+[(0xe,0)] @{asm:=enter  $0x1111,$0x1}@ %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
+[(0xe,1)] [%esp{0;32}]{0;32} := %ebp{0;32}
+[(0xe,2)] %ebp{0;32} := %esp{0;32}
+[(0xe,3)] StaticArrow (0xe,3) %esp{0;32} := (SUB %esp{0;32} 0x1111{0;32}){0;32}  --> (0x12,0)
 [(0x12,0)] 
 
 **** Decode instruction: enterw $0x1111,$0x12
@@ -143,24 +143,24 @@
 [(0x17,53)] %esp{0;32} := (SUB %esp{0;32} 0x4{0;32}){0;32}
 [(0x17,54)] [%esp{0;32}]{0;32} := %esp{0;32}
 [(0x17,55)] %ebp{0;32} := %esp{0;32}
-[(0x17,56)] StaticArrow (0x17,56) %esp{0;32} := (SUB %esp{0;32} 0x1111{0;32}){0;32}  --> (0x1B,0)
-[(0x1B,0)] 
+[(0x17,56)] StaticArrow (0x17,56) %esp{0;32} := (SUB %esp{0;32} 0x1111{0;32}){0;32}  --> (0x1b,0)
+[(0x1b,0)] 
 
 **** Decode instruction: leavew 
-[(0x1B,0)] @{asm:=leavew }@ %esp{0;32} := %ebp{0;32}
-[(0x1B,1)] %ebp{0;32} := [%esp{0;32}]{0;32}
-[(0x1B,2)] StaticArrow (0x1B,2) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x1D,0)
-[(0x1D,0)] 
+[(0x1b,0)] @{asm:=leavew }@ %esp{0;32} := %ebp{0;32}
+[(0x1b,1)] %ebp{0;32} := [%esp{0;32}]{0;32}
+[(0x1b,2)] StaticArrow (0x1b,2) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x1d,0)
+[(0x1d,0)] 
 
 **** Decode instruction: leave  
-[(0x1D,0)] @{asm:=leave  }@ %esp{0;32} := %ebp{0;32}
-[(0x1D,1)] %ebp{0;32} := [%esp{0;32}]{0;32}
-[(0x1D,2)] StaticArrow (0x1D,2) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x1E,0)
-[(0x1E,0)] 
+[(0x1d,0)] @{asm:=leave  }@ %esp{0;32} := %ebp{0;32}
+[(0x1d,1)] %ebp{0;32} := [%esp{0;32}]{0;32}
+[(0x1d,2)] StaticArrow (0x1d,2) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x1e,0)
+[(0x1e,0)] 
 
 **** Decode instruction: leave  
-[(0x1E,0)] @{asm:=leave  }@ %esp{0;32} := %ebp{0;32}
-[(0x1E,1)] %ebp{0;32} := [%esp{0;32}]{0;32}
-[(0x1E,2)] StaticArrow (0x1E,2) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x1F,0)
-[(0x1F,0)] 
+[(0x1e,0)] @{asm:=leave  }@ %esp{0;32} := %ebp{0;32}
+[(0x1e,1)] %ebp{0;32} := [%esp{0;32}]{0;32}
+[(0x1e,2)] StaticArrow (0x1e,2) %esp{0;32} := (ADD %esp{0;32} 0x4{0;32}){0;32}  --> (0x1f,0)
+[(0x1f,0)] 
 

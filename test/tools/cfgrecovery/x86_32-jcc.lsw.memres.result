@@ -1,8 +1,8 @@
-((0x0,0), [(0x0,0)] @{asm:=jne    0x14, next-inst:=(0x6,0)}@ StaticArrow (0x0,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x14,0)StaticArrow (0x0,0) Skip << %zf{0;1} >> --> (0x6,0))
-((0x6,0), [(0x6,0)] @{asm:=jne    0x123c, next-inst:=(0xC,0)}@ StaticArrow (0x6,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x123C,0)StaticArrow (0x6,0) Skip << %zf{0;1} >> --> (0xC,0))
-((0xC,0), [(0xC,0)] @{asm:=jne    0xedcba996, next-inst:=(0x12,0)}@ StaticArrow (0xC,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0xEDCBA996,0)StaticArrow (0xC,0) Skip << %zf{0;1} >> --> (0x12,0))
-((0x12,0), [(0x12,0)] )
-((0x14,0), [(0x14,0)] )
-((0x123C,0), [(0x123C,0)] )
-((0xEDCBA996,0), [(0xEDCBA996,0)] )
+[(0x0,0)] @{asm:=jne    0x14, next-inst:=(0x6,0)}@ StaticArrow (0x0,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x14,0)StaticArrow (0x0,0) Skip << %zf{0;1} >> --> (0x6,0)
+[(0x6,0)] @{asm:=jne    0x123c, next-inst:=(0xc,0)}@ StaticArrow (0x6,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x123c,0)StaticArrow (0x6,0) Skip << %zf{0;1} >> --> (0xc,0)
+[(0xc,0)] @{asm:=jne    0xedcba996, next-inst:=(0x12,0)}@ StaticArrow (0xc,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0xedcba996,0)StaticArrow (0xc,0) Skip << %zf{0;1} >> --> (0x12,0)
+[(0x12,0)] 
+[(0x14,0)] 
+[(0x123c,0)] 
+[(0xedcba996,0)] 
 

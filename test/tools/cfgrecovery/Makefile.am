@@ -9,11 +9,12 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_FLD_FLAGS = -D -c ${srcdir}/config -d flood
-CFGR_LSW_FLAGS = -D -c ${srcdir}/config -d linear
-CFGR_RT_FLAGS = -D -c ${srcdir}/config -d recursive
-CFGR_SCONC_FLAGS = -D -c ${srcdir}/config -d sim=concrete
-CFGR_SSYMB_FLAGS = -D -c ${srcdir}/config -d sim=symbolic
+CFGR_COMMON_FLAGS = -D -c ${srcdir}/config -f mc
+CFGR_FLD_FLAGS = ${CFGR_COMMON_FLAGS} -d flood
+CFGR_LSW_FLAGS = ${CFGR_COMMON_FLAGS} -d linear
+CFGR_RT_FLAGS = ${CFGR_COMMON_FLAGS} -d recursive
+CFGR_SCONC_FLAGS = ${CFGR_COMMON_FLAGS} -d sim=concrete
+CFGR_SSYMB_FLAGS = ${CFGR_COMMON_FLAGS} -d sim=symbolic
 
 X86_32_SYM_TESTS = \
 	x86_32-cfgrecovery-01.sym.res \
