@@ -44,6 +44,7 @@
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
+#include <io/microcode/xml_microcode_parser.hh>
 #include <io/microcode/asm-writer.hh>
 #include <io/microcode/dot-writer.hh>
 
@@ -53,10 +54,35 @@
 
 using namespace std;
 
+#define OUTPUT_FORMATS \
+  FORMAT(OF_ASM, "asm", "assembler code", ".asm") \
+  FORMAT(OF_ASM_DOT, "asm-dot", "assembler code on a dot graph", ".asm.dot") \
+  FORMAT(OF_MC, "mc", "microcode", ".mc") \
+  FORMAT(OF_MC_DOT, "mc", "microcode on a dot graph", ".mc.dot") \
+  FORMAT(OF_XML, "xml", "microcode in XML format", ".mc.xml") 
+
+#define FORMAT(id,name,desc,ext) id, 
+enum OutputFormatID  { OUTPUT_FORMATS OF_UNKNOWN };
+#undef FORMAT
+
+struct OutputFormat {
+  OutputFormatID id;
+  const char *name;
+  const char *desc;
+  const char *extension;
+};
+
+#define FORMAT(id,name,desc,ext) { id, name, desc, ext }, 
+static const OutputFormat FORMATS[] = { 
+  OUTPUT_FORMATS 
+  FORMAT(OF_UNKNOWN, NULL, NULL, NULL) 
+};
+#undef FORMAT
+
+#define DEFAULT_FORMAT (&FORMATS[OF_ASM])
+
 /* Global options */
 int verbosity = 0;	           /* verbosity level */
-ostream * output;                  /* output stream */
-ofstream output_file;              /* output file */
 static ConfigTable CONFIG;
 const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
 
@@ -109,9 +135,14 @@ usage (int status)
 	   << "  -d, --disas TYPE\tselect disassembler type" << endl
 	   << "  -l, --list\t\tlist all disassembler types" << endl
 	   << "  -e, --entrypoint ADDR\tforce entry point" << endl
-	   << "  -f, --format FMT\toutput format asm|mc|dot|asm-dot|xml (default: mc)" 
-	   << endl
-	   << "  -o, --output FILE\twrite output to FILE" << endl
+	   << "  -f, --formats FMT\toutput format " << FORMATS->name;
+      
+      for (const OutputFormat *of = FORMATS + 1; of->id != OF_UNKNOWN; of++)
+	cout << "|" << of->name;
+      
+      cout << " (default: " << DEFAULT_FORMAT->name << ")" << endl
+	   << "  -x, --in FILE\tpreload an existing XML program" << endl
+	   << "  -o, --output FILE\twrite outputs to FILE" << endl
 	   << "  -h, --help\t\tdisplay this help" << endl
 	   << "  -v, --verbose\t\tincrease verbosity level" << endl
 	   << "  -D, --debug\t\tenable debug traces" << endl
@@ -144,62 +175,60 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   std::string exec_filename;
   ConcreteAddress *entrypoint;
 
-  bool write_microcode (Microcode *mc, const std::string &format, 
-			ostream &output) {
-    bool result = true;
+  void write_microcode (Microcode *mc, OutputFormatID fmt, ostream &output) {
     mc->sort ();
-    if (format == "asm")
+    switch (fmt)
       {
+      case OF_ASM :
 	asm_writer (output, mc, loader, true);
-      }
-    else if (format == "mc")
-      {
+	break;
+      case OF_MC :
 	mc->output_text (output);
 	output << endl;
+	break;
+      case OF_MC_DOT : 
+      case OF_ASM_DOT : 
+	dot_writer (output, mc, (fmt == OF_ASM_DOT), 
+		    exec_filename, entrypoint, loader);
+	break;
+      case OF_XML:
+	output << xml_of_microcode (mc);
+	break;
+
+      default:
+	cerr << "internal error. unknown format specified for output." << endl;
+	abort ();
       }
-    else if (format == "dot" || format == "asm-dot")
-      {
-	bool asmonly = (format == "asm-dot");
-	dot_writer (output, mc, asmonly, exec_filename, entrypoint, loader);
-      }
-    else if (format == "xml")
-      {
-	output << xml_of_microcode(mc);
-      }
-    else
-      {
-	result = false;
-      }
-    return result;
   }
     
   virtual void add_node (Microcode *mc, StmtArrow *) {
     if (output_program)
       {
-	write_microcode (mc, "asm", logs::warning);    
+	write_microcode (mc, OF_ASM, logs::warning);    
 	output_program = false;
       }
   }
-  static CtrlCHandler CTRL_C_HANDLER;
-
-
-  static void sighandler (int) {
-    CTRL_C_HANDLER.output_program = true;
-  }    
 };
 
-CtrlCHandler CtrlCHandler::CTRL_C_HANDLER;
+static CtrlCHandler CTRL_C_HANDLER;
+
+static void 
+s_sighandler (int) 
+{
+  CTRL_C_HANDLER.output_program = true;
+}    
 
 int
 main (int argc, char *argv[])
 {
   /* Various option values */
   int optc;
-  string output_filename;
+  const char *output_filename = NULL;
+  const char *preload_filename = NULL;
   string config_filename = CFGRECOVERY_CONFIG_FILENAME;
 
   /* Default output format (asm, _mc_, dot, asm-dot, xml) */
-  string output_format = "mc";
+  list<const OutputFormat *> output_formats;
   
   /* Long options struct */
   struct option const
@@ -209,6 +238,7 @@ main (int argc, char *argv[])
     {"list", no_argument, NULL, 'l'},
     {"entrypoint", required_argument, NULL, 'e'},
     {"format", required_argument, NULL, 'f'},
+    {"in", required_argument, NULL, 'x'},
     {"output", required_argument, NULL, 'o'},
     {"help", no_argument, NULL, 'h'},
     {"debug", no_argument, NULL, 'D'},
@@ -273,24 +303,33 @@ main (int argc, char *argv[])
 	}
 	break;
 
-      case 'f':		/* Output file format */
-	output_format = string(optarg);
-
-	/* Checking if the format is known */
-	if ((output_format != "asm")  &&
-	    (output_format != "mc")  &&
-	    (output_format != "dot") &&
-	    (output_format != "asm-dot") &&
-	    (output_format != "xml"))
-	  {
-	    cerr << prog_name
-		 << ": error: '" << output_format << "' unknown format" << endl;
-	    usage(EXIT_FAILURE);
-	  }
+      case 'f':		/* Output file format */	
+	{
+	  string fmt (optarg);
+	  const OutputFormat *of = FORMATS;
+	  for (; of->id != OF_UNKNOWN; of++) 
+	    {
+	      if (fmt == of->name)
+		{
+		  output_formats.push_back (of);
+		  break;
+		}
+	    }
+	  if (of->id == OF_UNKNOWN)
+	    {
+	      cerr << prog_name 
+		   << ": error: '" << fmt << "' unknown format" << endl;
+	      usage(EXIT_FAILURE);
+	    }
+	}
 	break;
 
       case 'o':		/* Output file name */
-	output_filename = string(optarg);
+	output_filename = optarg;
+	break;
+
+      case 'x':		/* Preloaded file name */
+	preload_filename = optarg;
 	break;
 
       case 'h':		/* Display usage and exit */
@@ -319,28 +358,6 @@ main (int argc, char *argv[])
       cerr << prog_name << ": error: no executable given" << endl;
       usage (EXIT_FAILURE);
     }
-
-  /* Setting the output */
-  streambuf * buffer;
-
-  if (output_filename != "")
-    {
-      output_file.open(output_filename.c_str());
-      if (!output_file.is_open())
-	{
-	  string err_msg =
-	    prog_name + ": error opening file '" + output_filename + "'";
-	  perror(err_msg.c_str());
-	  exit(EXIT_FAILURE);
-	}
-      buffer = output_file.rdbuf();
-    }
-  else
-    {
-      buffer = cout.rdbuf();
-    }
-
-  output =  new ostream(buffer);
 
   /* Getting the execfile from command line */
   string execfile_name = argv[optind];
@@ -428,18 +445,22 @@ main (int argc, char *argv[])
     cout << "Starting " << dis->desc << " disassembly" << endl;
 
 
-  CtrlCHandler::CTRL_C_HANDLER.output_program = false;
-  CtrlCHandler::CTRL_C_HANDLER.loader = loader;
-  CtrlCHandler::CTRL_C_HANDLER.exec_filename = execfile_name;
-  CtrlCHandler::CTRL_C_HANDLER.entrypoint = entrypoint;
+  if (preload_filename != NULL)
+    mc = xml_parse_mc_program (preload_filename);
+  else
+    mc = new Microcode ();
 
-  if (signal (SIGUSR1, &CtrlCHandler::sighandler) != 0)
+  CTRL_C_HANDLER.output_program = false;
+  CTRL_C_HANDLER.loader = loader;
+  CTRL_C_HANDLER.exec_filename = execfile_name;
+  CTRL_C_HANDLER.entrypoint = entrypoint;
+
+  if (signal (SIGUSR1, &s_sighandler) != 0)
     logs::error << "unable to set CTRL-C handler." << std::endl;
 
   try
     {
-      mc = new Microcode ();
-      mc->add_arrow_creation_callback (&CtrlCHandler::CTRL_C_HANDLER);
+      mc->add_arrow_creation_callback (&CTRL_C_HANDLER);
       dis->process (*entrypoint, memory, decoder, mc);
     }
   catch (Decoder::Exception &e)
@@ -458,14 +479,37 @@ main (int argc, char *argv[])
   if (mc == NULL)
     exit (EXIT_FAILURE);
 
-  if (! CtrlCHandler::CTRL_C_HANDLER.write_microcode (mc, 
-						      output_format, *output))
+  if (output_formats.empty ())
+    output_formats.push_back (DEFAULT_FORMAT);
+  
+  if (output_filename == NULL)
     {
-      logs::error << prog_name
-		  << ": error: '" << output_format << "' unknown format" 
-		  << endl;      
-      
-      usage(EXIT_FAILURE);
+      for (list<const OutputFormat *>::iterator i = output_formats.begin ();
+	   i != output_formats.end (); i++)
+	CTRL_C_HANDLER.write_microcode (mc, (*i)->id, cout);
+      cout.flush ();
+    }
+  else 
+    {
+      for (list<const OutputFormat *>::iterator i = output_formats.begin ();
+	   i != output_formats.end (); i++)
+	{
+	  ostringstream oss;
+	  oss << output_filename << (*i)->extension;
+	  string filename = oss.str ();
+	  ofstream output (filename.c_str ());
+	  if (! output.is_open ())
+	    {
+	      logs::error << prog_name << ": error opening file '" 
+			  << filename << "'" << endl;
+	      perror (prog_name.c_str ());
+	    }
+	  else
+	    {
+	      CTRL_C_HANDLER.write_microcode (mc, (*i)->id, output);
+	      output.flush ();
+	    }
+	}
     }
 
   /* Cleaning all from Insight */
@@ -476,9 +520,6 @@ main (int argc, char *argv[])
   delete loader;
 
   insight::terminate();
-
-  /* Cleaning other stuff */
-  delete output;
 
   return (EXIT_SUCCESS);
 }
