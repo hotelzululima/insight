@@ -49,7 +49,7 @@ protected:
   virtual MicrocodeNode *get_node (const ProgramPoint *pp)
     throw (Decoder::Exception);
 
-  virtual PendingArrow nextPendinArrow ();
+  virtual PendingArrow nextPendingArrow ();
 
   virtual bool skip_pending_arrow (const PendingArrow &pa);
 

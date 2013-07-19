@@ -41,7 +41,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 
   while (! worklist.empty () && ! stop_computation)
     {
-      PendingArrow pa = nextPendinArrow ();
+      PendingArrow pa = nextPendingArrow ();
 
       if (show_states)
 	{
