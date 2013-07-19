@@ -37,13 +37,12 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
   this->program = mc;
   State *s = stepper->get_initial_state (entrypoint);
   computePendingArrowsFor (s);
+  s->deref ();
 
   while (! worklist.empty () && ! stop_computation)
     {
       PendingArrow pa = nextPendinArrow ();
 
-      if (skip_pending_arrow (pa))
-	continue;
       if (show_states)
 	{
 	  logs::debug << "New state" << std::endl
@@ -51,6 +50,13 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 		      << "(" << worklist.size () << ") Pending " 
 		      << pa.arrow->pp () << std::endl;
 	}
+
+      if (skip_pending_arrow (pa))
+	{
+	  pa.s->deref ();
+	  continue;
+	}
+
       try 
 	{
 	  StateSet *succ = stepper->get_successors (pa.s, pa.arrow);
@@ -78,12 +84,13 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 					  << " skip dynamic jump to undefined "
 					  << "target 0x" << std::hex 
 					  << a.getGlobal () << std::endl;
-			  delete *i;
+			  (*i)->deref ();
 			  continue;
 			}
 		      da->add_solved_jump (a);
 		    }
 		  computePendingArrowsFor (*i);
+		  (*i)->deref ();
 		}
 	    }
 	  if (show_state_space_size)
@@ -99,7 +106,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
 	    pa.s->get_ProgramPoint ()->to_MicrocodeAddress ();
 	  logs::warning << a << " " << e.what () << std::endl;	    
 	}
-
+      pa.s->deref ();
     }
   program->set_entry_point (MicrocodeAddress (entrypoint.get_address ()));
 }
@@ -142,34 +149,33 @@ void
 AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s) 
     throw (Decoder::Exception) 
 {
-  const State *ns = states->find_or_add_state (s);
+  State *ns = states->find_or_add_state (s);
   if (ns != s)
-    delete s;
-  else
+    return;
+
+  ProgramPoint *pp = ns->get_ProgramPoint ();
+  if (! memory->is_defined (pp->to_MicrocodeAddress ().getGlobal ()))
+    return;
+
+  try 
     {
-      ProgramPoint *pp = ns->get_ProgramPoint ();
-      if (memory->is_defined (pp->to_MicrocodeAddress ().getGlobal ()))
-	{
-	  try 
-	    {
-	      MicrocodeNode *node = get_node (pp);
-	      if (show_pending_arrows)
-		logs::debug << "new arrows" << std::endl;
-	      MicrocodeNode_iterate_successors (*node, succ) {
-		PendingArrow pa = { s, *succ };
-		if (show_pending_arrows)
-		  logs::debug << "   (" << worklist.size () 
-			      << ") add pending " 
-			      << pa.arrow->pp () << std::endl;
-		worklist.push_back (pa);
-	      }
-	    }
-	  catch (Decoder::Exception &e)
-	    {
-	      logs::warning << "warning: decoder says :" 
-			    << e.what () << std::endl;
-	    }
-	}
+      MicrocodeNode *node = get_node (pp);
+      if (show_pending_arrows)
+	logs::debug << "new arrows" << std::endl;
+      MicrocodeNode_iterate_successors (*node, succ) {
+	PendingArrow pa = { ns, *succ };
+	ns->ref ();
+	if (show_pending_arrows)
+	  logs::debug << "   (" << worklist.size () 
+		      << ") add pending " 
+		      << pa.arrow->pp () << std::endl;
+	worklist.push_back (pa);
+      }
+    }
+  catch (Decoder::Exception &e)
+    {
+      logs::warning << "warning: decoder says :" 
+		    << e.what () << std::endl;
     }
 }
 

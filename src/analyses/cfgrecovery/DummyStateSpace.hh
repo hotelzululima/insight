@@ -12,7 +12,7 @@ public:
 
   virtual ~DummyStateSpace () { }
 
-  virtual const State *find_or_add_state (State *s) { return s; }
+  virtual State *find_or_add_state (State *s) { return s; }
   virtual std::size_t size () const { return 1; }
 };
 

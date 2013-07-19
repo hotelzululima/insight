@@ -65,7 +65,7 @@ AbstractDomainStepper<CTX,PP>::get_successors (const State *s,
       delete newctx;
       for (typename StateSet::iterator i = result->begin (); 
 	   i != result->end (); i++)
-	delete *i;
+	(*i)->deref ();
       delete result;
       throw;
     }

@@ -15,7 +15,7 @@ public:
 
   virtual ~SingleContextStateSpace ();
 
-  virtual const State *find_or_add_state (State *s);
+  virtual State *find_or_add_state (State *s);
   virtual std::size_t size () const;
 
 private:

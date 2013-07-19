@@ -11,7 +11,7 @@ protected:
 public:
   typedef S State;
 
-  virtual const State *find_or_add_state (State *s) = 0;
+  virtual State *find_or_add_state (State *s) = 0;
 };
 
 #endif /* ! ABSTRACTSTATESPACE_HH */

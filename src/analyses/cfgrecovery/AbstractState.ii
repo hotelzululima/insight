@@ -1,9 +1,11 @@
 #ifndef ABSTRACTSTATE_II
 # define ABSTRACTSTATE_II
 
+# include <cassert>
+
 template<typename PP, typename CTX>
 AbstractState<PP,CTX>::AbstractState (ProgramPoint *pp, Context *ctx) 
-  : Object (), program_point (pp), context (ctx) 
+  : Object (), program_point (pp), context (ctx), refcount (1)
 { 
 }
 
@@ -59,6 +61,23 @@ AbstractState<PP,CTX>::clone () const
   context->ref ();
   
   return new AbstractState<PP,CTX> (program_point, context);
+}
+
+template<typename PP, typename CTX>
+void
+AbstractState<PP,CTX>::ref () const 
+{
+  refcount++;
+}
+
+template<typename PP, typename CTX>
+void
+AbstractState<PP,CTX>::deref () 
+{
+  assert (refcount > 0);
+  refcount--;
+  if (refcount == 0)
+    delete this;
 }
 
 #endif /* ! ABSTRACTSTATE_II */

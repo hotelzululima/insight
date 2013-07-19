@@ -32,7 +32,7 @@ public:
   typedef typename Stepper::StateSet StateSet;
 
   struct PendingArrow {
-    const State *s;
+    State *s;
     StmtArrow *arrow;
   };
 

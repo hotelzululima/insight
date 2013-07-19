@@ -12,17 +12,18 @@ SingleContextStateSpace<State>::~SingleContextStateSpace ()
 { 
   for (typename StateTable::iterator i = states.begin (); i != states.end (); 
        i++)
-    delete *i;
+    (*i)->deref ();
 }
 
 template <typename State> 
-const State *
+State *
 SingleContextStateSpace<State>::find_or_add_state (State *s) 
 {
   State *result;
   typename StateTable::iterator i = states.find (s);
   if (i == states.end ())
     {
+      s->ref ();
       result = s;
       states.insert (result);
     }
