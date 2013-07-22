@@ -43,7 +43,8 @@ public:
 
   void abort_computation ();
 
-  void compute (const ConcreteAddress &entrypoint, Microcode *result);
+  void compute (const std::list<ConcreteAddress> &entrypoints, 
+		Microcode *result);
     
 protected:
   virtual MicrocodeNode *get_node (const ProgramPoint *pp)

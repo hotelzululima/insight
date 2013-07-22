@@ -92,7 +92,7 @@ static int asm_with_labels = 0;
 struct disassembler {
   const char *name;
   const char *desc;
-  void (*process)(const ConcreteAddress &, ConcreteMemory *, Decoder *,
+  void (*process)(const list<ConcreteAddress> &, ConcreteMemory *, Decoder *,
 		  Microcode *);
 } disassemblers[] = {
   /* List must be kept sorted by name */
@@ -149,7 +149,11 @@ usage (int status)
 	   << "  -h, --help\t\tdisplay this help" << endl
 	   << "  -v, --verbose\t\tincrease verbosity level" << endl
 	   << "  -D, --debug\t\tenable debug traces" << endl
-	   << "  -V, --version\t\tdisplay version and exit" << endl;
+	   << "  -V, --version\t\tdisplay version and exit" << endl
+	   << "assembler output options:" << endl
+	   << " --asm-with-bytes" << endl
+	   << " --asm-with-holes"  << endl
+	   << " --asm-with-labels" <<endl;
     }
 
   exit (status);
@@ -176,7 +180,7 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   bool output_program;
   BinaryLoader *loader;
   std::string exec_filename;
-  ConcreteAddress *entrypoint;
+  std::list<ConcreteAddress> entrypoints;
 
   void write_microcode (Microcode *mc, OutputFormatID fmt, ostream &output) {
     mc->sort ();
@@ -192,8 +196,17 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
 	break;
       case OF_MC_DOT : 
       case OF_ASM_DOT : 
-	dot_writer (output, mc, (fmt == OF_ASM_DOT), 
-		    exec_filename, entrypoint, loader);
+	{
+	  ConcreteAddress *ep;
+	  if (entrypoints.begin () == entrypoints.end ())
+	    ep = NULL;
+	  else 
+	    ep = new ConcreteAddress (*entrypoints.begin ());
+	  dot_writer (output, mc, (fmt == OF_ASM_DOT), 
+		      exec_filename, ep, loader);
+	  if (ep != NULL)
+	    delete ep;
+	}
 	break;
       case OF_XML:
 	output << xml_of_microcode (mc);
@@ -258,14 +271,14 @@ main (int argc, char *argv[])
   const char *disassembler = "linear";
 
   /* Setting entrypoint */
-  ConcreteAddress * entrypoint = NULL;
-  const char *entrypoint_symbol = NULL;
+  std::list<ConcreteAddress> entrypoints;
+  std::list<const char *> entrypoint_symbols;
 
   /* Setting debug trace */
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "ld:e:f:o:hDvVc:", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "ld:e:f:o:hDvVc:x:", long_opts, NULL)) != -1)
     switch (optc)
       {
       case 'c':		/* Config file name */
@@ -298,16 +311,7 @@ main (int argc, char *argv[])
 	break;
 
       case 'e':		/* Force entrypoint */
-	if (isdigit(optarg[0])) {
-	  entrypoint = new ConcreteAddress(strtoul (optarg, NULL, 0));
-	  entrypoint_symbol = NULL;
-	} else {
-	  entrypoint_symbol = optarg;
-	  if (entrypoint != NULL) {
-	    entrypoint = NULL;
-	    delete entrypoint;
-	  }
-	}
+	entrypoint_symbols.push_back (optarg);	
 	break;
 
       case 'f':		/* Output file format */	
@@ -410,22 +414,34 @@ main (int argc, char *argv[])
   ConcreteMemory * memory = loader->get_memory();
 
   /* Setting the entrypoint */
-  if (entrypoint_symbol != NULL) {
-    Option<ConcreteAddress> val =
-      loader->get_symbol_value(string(entrypoint_symbol));
-    if (val.hasValue())
-      entrypoint = new ConcreteAddress(val.getValue());
-    else {
-      cerr << "Error: symbol '" << entrypoint_symbol << "' not found" << endl;
-      exit(EXIT_FAILURE);
-    }
-  }
+  for (std::list<const char *>::iterator s = entrypoint_symbols.begin ();
+       s != entrypoint_symbols.end (); s++)
+    {
+      const char *symb = *s;
+      Option<ConcreteAddress> val;
 
-  if (entrypoint == NULL)
-    entrypoint = new ConcreteAddress(loader->get_entrypoint());
+      if (isdigit (*symb))
+	val = ConcreteAddress(strtoul (symb, NULL, 0));
+      else 
+	val = loader->get_symbol_value (symb);
+      if (val.hasValue ())
+	entrypoints.push_back (val.getValue ());
+      else 
+	{
+	  cerr << "Error: symbol '" << symb << "' not found" << endl;
+	  exit(EXIT_FAILURE);
+	}
+    }
+
+  if (entrypoints.empty ())
+    entrypoints.push_back (ConcreteAddress(loader->get_entrypoint()));
 
   if (verbosity > 0)
-    cout << "Entrypoint: 0x" << hex << *entrypoint << dec << endl;
+    {
+      for (std::list<ConcreteAddress>::iterator ep = entrypoints.begin ();
+	   ep != entrypoints.end (); ep++)
+	cout << "Entrypoint: 0x" << hex << *ep << dec << endl;
+    }
 
   /* Getting the decoder */
   MicrocodeArchitecture arch(loader->get_architecture());
@@ -461,15 +477,15 @@ main (int argc, char *argv[])
   CTRL_C_HANDLER.output_program = false;
   CTRL_C_HANDLER.loader = loader;
   CTRL_C_HANDLER.exec_filename = execfile_name;
-  CTRL_C_HANDLER.entrypoint = entrypoint;
+  CTRL_C_HANDLER.entrypoints = entrypoints;
 
   if (signal (SIGUSR1, &s_sighandler) != 0)
     logs::error << "unable to set CTRL-C handler." << std::endl;
-
+  
   try
     {
       mc->add_arrow_creation_callback (&CTRL_C_HANDLER);
-      dis->process (*entrypoint, memory, decoder, mc);
+      dis->process (entrypoints, memory, decoder, mc);
     }
   catch (Decoder::Exception &e)
     {
@@ -524,7 +540,6 @@ main (int argc, char *argv[])
   delete mc;
   delete decoder;
   delete memory;
-  delete entrypoint;
   delete loader;
 
   insight::terminate();

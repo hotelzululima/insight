@@ -60,8 +60,9 @@ public:
       traversal->abort_computation ();
   }
 
-  virtual void compute (const ConcreteAddress &entrypoint, Microcode *result) {
-    traversal->compute (entrypoint, result);
+  virtual void compute (const std::list<ConcreteAddress> &entrypoints, 
+			Microcode *result) {
+    traversal->compute (entrypoints, result);
   }
 
 private:

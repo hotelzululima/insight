@@ -27,8 +27,8 @@ public:
   public:
     virtual ~Algorithm () { }
     virtual void stop () = 0;
-    virtual void compute (const ConcreteAddress &ca, Microcode *result) = 0;
-
+    virtual void compute (const std::list<ConcreteAddress> &ca, 
+			  Microcode *result) = 0;
   };
   
   AlgorithmFactory ();

@@ -35,85 +35,91 @@ AbstractMemoryTraversal<AlgoSpec>::abort_computation ()
 
 template<typename AlgoSpec>
 void 
-AbstractMemoryTraversal<AlgoSpec>::compute (const ConcreteAddress &entrypoint,
-					    Microcode *mc)
+AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress> 
+					    &entrypoints, 
+					    Microcode *result)
 {
   stop_computation = false;
-  this->program = mc;
-  State *s = stepper->get_initial_state (entrypoint);
-  computePendingArrowsFor (s);
-  s->deref ();
+  this->program = result;
 
-  while (! worklist.empty () && ! stop_computation)
+  for (std::list<ConcreteAddress>::const_iterator ep = entrypoints.begin ();
+       ep != entrypoints.end () && ! stop_computation; ep++)
     {
-      PendingArrow pa = nextPendingArrow ();
-
-      if (show_states)
+      State *s = stepper->get_initial_state (*ep);
+      computePendingArrowsFor (s);
+      s->deref ();
+      
+      while (! worklist.empty () && ! stop_computation)
 	{
-	  logs::debug << "New state" << std::endl
-		      << *(pa.s) << std::endl
-		      << "(" << worklist.size () << ") Pending " 
-		      << pa.arrow->pp () << std::endl;
-	}
+	  PendingArrow pa = nextPendingArrow ();
 
-      if (skip_pending_arrow (pa))
-	{
-	  pa.s->deref ();
-	  continue;
-	}
+	  if (show_states)
+	    {
+	      logs::debug << "New state" << std::endl
+			  << *(pa.s) << std::endl
+			  << "(" << worklist.size () << ") Pending " 
+			  << pa.arrow->pp () << std::endl;
+	    }
 
-      try 
-	{
-	  StateSet *succ = stepper->get_successors (pa.s, pa.arrow);
-	  DynamicArrow *da = dynamic_cast<DynamicArrow *> (pa.arrow);
+	  if (skip_pending_arrow (pa))
+	    {
+	      pa.s->deref ();
+	      continue;
+	    }
+
+	  try 
+	    {
+	      StateSet *succ = stepper->get_successors (pa.s, pa.arrow);
+	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (pa.arrow);
 	
-	  if (da != NULL && succ->size () == 0)
-	    {
-	      logs::warning << "unable to solve dynmic jump " 
-			    << da->pp() << std::endl;
-	    }
-	  else
-	    {
-	      for (typename StateSet::iterator i = succ->begin(); 
-		   i != succ->end ();  i++) 
+	      if (da != NULL && succ->size () == 0)
 		{
-		  if (da != NULL)
-		    {
-		      MicrocodeAddress a =
-			(*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
-		      if (! memory->is_defined (a.getGlobal ()))
-			{
-			  if (warn_skipped_dynamic_jumps)
-			    logs::warning << "at " 
-					  << pa.s->get_ProgramPoint ()->to_MicrocodeAddress ()
-					  << " skip dynamic jump to undefined "
-					  << "target 0x" << std::hex 
-					  << a.getGlobal () << std::endl;
-			  (*i)->deref ();
-			  continue;
-			}
-		      da->add_solved_jump (a);
-		    }
-		  computePendingArrowsFor (*i);
-		  (*i)->deref ();
+		  logs::warning << "unable to solve dynmic jump " 
+				<< da->pp() << std::endl;
 		}
+	      else
+		{
+		  for (typename StateSet::iterator i = succ->begin(); 
+		       i != succ->end ();  i++) 
+		    {
+		      if (da != NULL)
+			{
+			  MicrocodeAddress a =
+			    (*i)->get_ProgramPoint ()->to_MicrocodeAddress ();
+			  if (! memory->is_defined (a.getGlobal ()))
+			    {
+			      if (warn_skipped_dynamic_jumps)
+				logs::warning << "at " 
+					      << pa.s->get_ProgramPoint ()->to_MicrocodeAddress ()
+					      << " skip dynamic jump to undefined "
+					      << "target 0x" << std::hex 
+					      << a.getGlobal () << std::endl;
+			      (*i)->deref ();
+			      continue;
+			    }
+			  da->add_solved_jump (a);
+			}
+		      computePendingArrowsFor (*i);
+		      (*i)->deref ();
+		    }
+		}
+	      if (show_state_space_size)
+		logs::debug << "# state " << states->size() 
+			    << " # pp " << visits.size () 
+			    << " # WL " << worklist.size ()
+			    << std::endl;
+	      delete succ;
 	    }
-	  if (show_state_space_size)
-	    logs::debug << "# state " << states->size() 
-			<< " # pp " << visits.size () 
-			<< " # WL " << worklist.size ()
-			<< std::endl;
-	  delete succ;
+	  catch (UndefinedValueException &e)
+	    {
+	      MicrocodeAddress a =
+		pa.s->get_ProgramPoint ()->to_MicrocodeAddress ();
+	      logs::warning << a << " " << e.what () << std::endl;	    
+	    }
+	  pa.s->deref ();
 	}
-      catch (UndefinedValueException &e)
-	{
-	  MicrocodeAddress a =
-	    pa.s->get_ProgramPoint ()->to_MicrocodeAddress ();
-	  logs::warning << a << " " << e.what () << std::endl;	    
-	}
-      pa.s->deref ();
     }
-  program->set_entry_point (MicrocodeAddress (entrypoint.get_address ()));
+  program->set_entry_point (MicrocodeAddress (entrypoints.begin ()->get_address ()));
 }
   
 template<typename AlgoSpec>  

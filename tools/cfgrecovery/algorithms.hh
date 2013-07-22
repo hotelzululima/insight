@@ -36,28 +36,29 @@
 # include <decoders/Decoder.hh>
 
 extern void
-linear_sweep (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-	      Decoder * decoder, Microcode *result)
+linear_sweep (const std::list<ConcreteAddress> &entrypoints, 
+	      ConcreteMemory *memory, Decoder * decoder, Microcode *result)
   throw (Decoder::Exception &);
 
 extern void
-flood_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		 Decoder *decoder, Microcode *result)
+flood_traversal (const std::list<ConcreteAddress> &entrypoints, 
+		 ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
 extern void
-recursive_traversal (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		     Decoder *decoder, Microcode *result)
+recursive_traversal (const std::list<ConcreteAddress> &entrypoints, 
+		     ConcreteMemory *memory, Decoder *decoder, 
+		     Microcode *result)
   throw (Decoder::Exception &);
 
 extern void
-symbolic_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		    Decoder *decoder, Microcode *result)
+symbolic_simulator (const std::list<ConcreteAddress> &entrypoints, 
+		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
 extern void
-concrete_simulator (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
-		    Decoder *decoder, Microcode *result)
+concrete_simulator (const std::list<ConcreteAddress> &entrypoints, 
+		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &);
 
 #endif /* ALGORITHMS_HH */
