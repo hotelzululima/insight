@@ -181,6 +181,7 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
   int nb_nodes = nodes->size ();
   SymbolTable *symbtable = s_build_symbol_table (mc, loader, with_labels);
   int i = 0;
+  MicrocodeNode *lastnode = NULL;
 
   while (i < nb_nodes && ! nodes->at (i)->has_annotation (AsmAnnotation::ID))
     i++;
@@ -191,6 +192,7 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
 
       if (! node->has_annotation (AsmAnnotation::ID))
 	continue;
+      lastnode = node;
       MicrocodeAddress ma (node->get_loc ());
 
       assert (ma.getLocal () == 0);
@@ -249,6 +251,13 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
       out << endl;
     }
 
+  if (lastnode != NULL)
+    {
+      Option<address_t> next = s_next_instruction_addr (lastnode);
+      if (next.hasValue ())
+	out << right << hex << setw (8) << setfill (' ')
+	    << next.getValue () << ":" << endl;
+    }
   delete symbtable;
 }
 
