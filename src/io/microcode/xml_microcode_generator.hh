@@ -31,19 +31,12 @@
 #ifndef IO_XML_MICROCODE_GENERATOR_HH
 #define IO_XML_MICROCODE_GENERATOR_HH
 
+#include <iostream>
 #include <kernel/Microcode.hh>
-#include <kernel/Expressions.hh>
+#include <kernel/microcode/MicrocodeArchitecture.hh>
 
-std::string xml_of_constant(const Constant *c);
-std::string xml_of_variable(const Variable *v);
-std::string xml_of_register(const RegisterExpr *reg);
-std::string xml_of_memcell(const MemCell *m);
-std::string xml_of_binaryapp(const BinaryApp *b);
-std::string xml_of_unaryapp(const UnaryApp *u);
-std::string xml_of_lvalue(const Expr *lv);
-std::string xml_of_expr(const Expr *e);
-
-std::string xml_of_microcode_element(const MicrocodeNode *elt);
-std::string xml_of_microcode(const Microcode *prg);
+extern void 
+xml_of_microcode (std::ostream &out, const Microcode *prg,
+		  const MicrocodeArchitecture *mcarch);
 
 #endif /* IO_XML_MICROCODE_GENERATOR_HH */

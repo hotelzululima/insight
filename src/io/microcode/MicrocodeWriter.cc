@@ -50,10 +50,10 @@ MicrocodeWriter::write_xml_file(const Microcode *prg,
   ofstream file(filename.c_str());
 
    if (file.is_open())
-  {
-    file << xml_of_microcode(prg);
-    file.close();
-  }
+     {
+       xml_of_microcode (file, prg, NULL);
+       file.close();
+     }
    else
      throw runtime_error (string("cannot open '" + filename + "'"));
 }

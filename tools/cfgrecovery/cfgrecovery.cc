@@ -179,6 +179,7 @@ version ()
 struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   bool output_program;
   BinaryLoader *loader;
+  const MicrocodeArchitecture *mcarch;
   std::string exec_filename;
   std::list<ConcreteAddress> entrypoints;
 
@@ -209,7 +210,7 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
 	}
 	break;
       case OF_XML:
-	output << xml_of_microcode (mc);
+	xml_of_microcode (output, mc, mcarch);
 	break;
 
       default:
@@ -478,6 +479,7 @@ main (int argc, char *argv[])
   CTRL_C_HANDLER.loader = loader;
   CTRL_C_HANDLER.exec_filename = execfile_name;
   CTRL_C_HANDLER.entrypoints = entrypoints;
+  CTRL_C_HANDLER.mcarch = &arch;
 
   if (signal (SIGUSR1, &s_sighandler) != 0)
     logs::error << "unable to set CTRL-C handler." << std::endl;
