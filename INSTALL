@@ -86,8 +86,8 @@ clean.
 Some algorithms require calls to a SMT Solver. The current implementation
 uses the solver as a separate process and requests/responses are sent through
 pipes. This design makes Insight relatively independant from the installed
-solver; however only Z3 4.1 and MathSAT 5 had been tested. You can get them at 
-the following URLs:
+solver; however only Z3 4.3.2 (or higher) and MathSAT 5.2.6 have been tested.
+You can get them at the following URLs:
 
 - MathSAT 5
   * Project : http://mathsat.fbk.eu/

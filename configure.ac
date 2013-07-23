@@ -177,20 +177,50 @@ dnl ********************************************************************
 dnl Checking for specific programs, headers and libraries
 dnl ********************************************************************
 
+dnl Checking for MathSAT solver
+AC_CHECK_PROG([has_mathsat_solver], [mathsat], [yes], [no])
+if test ${has_mathsat_solver} = "yes"; then
+   MATHSAT_VERSION=`mathsat -version | cut -d " " -f 3`
+
+   MATHSAT_VERSION_MAJOR=`echo ${MATHSAT_VERSION} | cut -d "." -f 1`
+   MATHSAT_VERSION_MINOR=`echo ${MATHSAT_VERSION} | cut -d "." -f 2`
+   MATHSAT_VERSION_PATCH=`echo ${MATHSAT_VERSION} | cut -d "." -f 3`
+
+   if test "${MATHSAT_VERSION_MAJOR}" != "5"; then
+      has_mathsat_solver="no (version 5.0.0 or beyond is needed)"
+   fi
+
+   AC_DEFINE([HAVE_MATHSAT_SOLVER],[1])
+else
+   AC_DEFINE([HAVE_MATHSAT_SOLVER],[0],[Defined to 1 if MathSAT is installed])
+fi
+
+if test "${MATHSAT_VERSION}" = ""; then
+   MATHSAT_VERSION="	"
+fi
+
 dnl Checking for Z3 solver
 AC_CHECK_PROG([has_z3_solver], [z3], [yes], [no])
 if test ${has_z3_solver} = "yes"; then
-    AC_DEFINE([HAVE_Z3_SOLVER],[1])
+   Z3_VERSION="`z3 --version | cut -d " " -f 3`"
+
+   Z3_VERSION_MAJOR=`echo ${Z3_VERSION} | cut -d "." -f 1`
+   Z3_VERSION_MINOR=`echo ${Z3_VERSION} | cut -d "." -f 2`
+   Z3_VERSION_PATCH=`echo ${Z3_VERSION} | cut -d "." -f 3`
+
+   if test "${Z3_VERSION_MAJOR}" != "4" -o \
+           "${Z3_VERSION_MINOR}" != "3" -o \
+	    "${Z3_VERSION_PATCH}" -lt "2"; then
+      has_z3_solver="no (version 4.3.2 or beyond is needed)"
+   fi
+
+   AC_DEFINE([HAVE_Z3_SOLVER],[1])
 else
     AC_DEFINE([HAVE_Z3_SOLVER],[0],[Defined to 1 if Z3 is installed])
 fi
 
-dnl Checking for MathSAT solver
-AC_CHECK_PROG([has_mathsat_solver], [mathsat], [yes], [no])
-if test ${has_mathsat_solver} = "yes"; then
-    AC_DEFINE([HAVE_MATHSAT_SOLVER],[1])
-else
-    AC_DEFINE([HAVE_MATHSAT_SOLVER],[0],[Defined to 1 if MathSAT is installed])
+if test "${Z3_VERSION}" = ""; then
+   Z3_VERSION="	"
 fi
 
 dnl Checking for binutils (libbfd, libopcodes)
@@ -355,8 +385,8 @@ Binutils supported architectures
     sparc                 	: ${sparc_support}
 
 Detected SMT-solvers
-    MathSAT			: ${has_mathsat_solver}
-    Z3				: ${has_z3_solver}
+    MathSAT ${MATHSAT_VERSION}		: ${has_mathsat_solver}
+    Z3 ${Z3_VERSION}			: ${has_z3_solver}
 
 Optional Features:
     Enable debug mode		: ${ENABLE_DEBUG}
