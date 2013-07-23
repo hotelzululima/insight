@@ -68,8 +68,11 @@ s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
   F.set_warn_skipped_dynamic_jumps (DEBUG_MODE);
   F.set_max_number_of_visits_per_address (-1);
 
+  list<ConcreteAddress> *entrypoints =
+    new list<ConcreteAddress>(1, *entrypoint);
+
   AlgorithmFactory::Algorithm *algo = F.buildConcreteSimulator ();
-  algo->compute (*entrypoint, result);
+  algo->compute (*entrypoints, result);
   delete algo;
 
   return result;

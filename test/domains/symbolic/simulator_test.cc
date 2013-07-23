@@ -72,8 +72,11 @@ s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
   F.set_max_number_of_visits_per_address (-1);
   F.set_dynamic_jumps_threshold (50);
 
+  list<ConcreteAddress> *entrypoints =
+    new list<ConcreteAddress>(1, *entrypoint);
+
   AlgorithmFactory::Algorithm *algo = F.buildSymbolicSimulator ();
-  algo->compute (*entrypoint, result);
+  algo->compute (*entrypoints, result);
   delete algo;
 
   return result;
