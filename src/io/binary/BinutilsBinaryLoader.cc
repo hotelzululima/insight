@@ -108,7 +108,8 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
 
   /* Fill the BFD structure with the data of the object file */
   /* TODO: We must be able to extract all object files from an archive */
-  if (! bfd_check_format(bfd_file, bfd_object))
+  if (! bfd_check_format(bfd_file, bfd_object) &&
+      ! bfd_check_format(bfd_file, bfd_core))
     throw BinaryLoader::UnknownBinaryFormat(filename);
 
   /* Initializing the 'BinaryLoader' object */
@@ -159,22 +160,6 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
       /* Pushing the section to the loader */
       this->sections.push_back(section);
     }
-
-  /* Read symbols */
-  size_t ssyms = bfd_get_symtab_upper_bound(bfd_file);
-  if (ssyms > 0) {
-    asymbol **syms = (asymbol **) operator new (ssyms);
-    long nsyms = bfd_canonicalize_symtab(bfd_file, syms);
-
-    for (long i = 0; i < nsyms; i++) {
-      symbols[string(bfd_asymbol_name(syms[i]))] =
-	ConcreteAddress(bfd_asymbol_value(syms[i]));
-      symbols_addresses[bfd_asymbol_value(syms[i])] = 
-	string(bfd_asymbol_name(syms[i]));
-    }
-
-    delete syms;
-  }
 }
 
 BinutilsBinaryLoader::~BinutilsBinaryLoader()
@@ -304,11 +289,43 @@ BinutilsBinaryLoader::fill_memory_from_ELF_Phdrs(ConcreteMemory *memory) const {
   return r;
 }
 
-ConcreteMemory *
-BinutilsBinaryLoader::get_memory() const
+bool 
+BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
 {
-  ConcreteMemory * memory = new ConcreteMemory ();
+  /* Read symbols */
+  size_t ssyms = bfd_get_symtab_upper_bound(abfd);
+  bool result = (ssyms > 0);
+ 
+  if (ssyms > 0) 
+    {
+      asymbol **syms = (asymbol **) operator new (ssyms);
+      long nsyms = bfd_canonicalize_symtab(abfd, syms);
 
+      for (long i = 0; i < nsyms; i++) 
+	{
+	  if ((syms[i]->flags & BSF_FUNCTION) == 0)
+	    continue;
+
+	  string name = bfd_asymbol_name (syms[i]);
+	  address_t addr = bfd_asymbol_value(syms[i]);
+	  if (table->has (name) && table->get (name) != addr)
+	    logs::error << "error: symbol '" << name << "' already defined "
+			<< "with a different value." << std::endl;
+	  else if (table->has (addr))
+	    logs::error << "error: address '" << std::hex << addr 
+			<< "' already in use with symbol '"
+			<< table->get (addr) << "'." << std::endl;
+	  else
+	    table->add_symbol (name, addr);
+	}
+      delete syms;
+    }
+  return result;
+}
+
+bool 
+BinutilsBinaryLoader::load_memory (ConcreteMemory *memory) const
+{
   /* Prefer reading the ELF Phdr information because it's the authoritative
      information for ELF executables */
   if (bfd_get_flavour(abfd) == bfd_target_elf_flavour && abfd->flags & EXEC_P) {
@@ -320,28 +337,6 @@ BinutilsBinaryLoader::get_memory() const
 
   fill_memory_from_sections(memory);
 
-  return memory;
+  return true;
 }
 
-Option<ConcreteAddress>
-BinutilsBinaryLoader::get_symbol_value(const std::string s) const {
-  tr1::unordered_map<string, ConcreteAddress>::const_iterator it;
-
-  it = symbols.find(s);
-  return it == symbols.end()?
-    Option<ConcreteAddress>() :
-    Option<ConcreteAddress>(it->second);
-}
-
-Option<string> 
-BinutilsBinaryLoader::get_symbol_name (const address_t a) const
-{
-  tr1::unordered_map<address_t, string>::const_iterator it;
-  Option<string> result;
-
-  it = symbols_addresses.find (a);
-  if (it != symbols_addresses.end ()) 
-    result = Option<string>(it->second);
-
-  return result;
-}

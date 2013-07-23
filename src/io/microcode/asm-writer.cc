@@ -43,19 +43,16 @@
 using namespace std;
 
 static string 
-s_instruction_bytes (const BinaryLoader *loader, const ConcreteAddress &start,
+s_instruction_bytes (const ConcreteMemory *memory, const ConcreteAddress &start,
 		     const ConcreteAddress &next)
 {
   ostringstream result;
-  ConcreteMemory *m = loader->get_memory ();
 
   for (ConcreteAddress a = start; ! a.equals (next); a++)
     result << hex << setfill('0') << setw (2) 
-	   << m->get (a, 1, Architecture::LittleEndian).get () << ' ';
+	   << memory->get (a, 1, Architecture::LittleEndian).get () << ' ';
   return result.str ();
 }
-
-typedef tr1::unordered_map<address_t,string> SymbolTable;
 
 static Option<address_t>
 s_next_instruction_addr (const MicrocodeNode *node)
@@ -80,32 +77,24 @@ s_is_next_instruction_addr (const MicrocodeNode *node, address_t a)
 }
 
 static SymbolTable *
-s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader, 
+s_build_symbol_table (const Microcode *mc, const SymbolTable *symboltable,
 		      bool with_labels)
 {
   const char *label_prefix = "L";
-  char *tmpbuf = new char[::strlen (label_prefix) + 10];
   int label_index = 0;
   list<address_t> addrtable;
-  SymbolTable *result = new SymbolTable ();
+  SymbolTable *result = symboltable->clone ();
   
-  for (Microcode::node_iterator pN = mc->begin_nodes (); pN != mc->end_nodes ();
-       pN++)
+  if (! with_labels)
+    return result;
+
+  for (Microcode::node_iterator pN = mc->begin_nodes (); 
+       pN != mc->end_nodes (); pN++)
     {
       MicrocodeNode *N = *pN;
       MicrocodeAddress Nma = N->get_loc ();
-
+      
       if (Nma.getLocal () != 0)
-	continue;
-
-      if (Nma.getLocal () == 0)
-	{	  
-	  address_t a = Nma.getGlobal ();
-	  Option<string> symb = loader->get_symbol_name (a);
-	  if (symb.hasValue ())
-	    (*result)[a] = symb.getValue ();
-	}
-      if (! with_labels)
 	continue;
 
       vector<MicrocodeNode *> *succinsts = 
@@ -118,17 +107,17 @@ s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader,
 	  assert (succ->get_loc ().getLocal () == 0);
 
 	  address_t a = succ->get_loc ().getGlobal ();
-	  if (result->find (a) == result->end () &&
-	      ! s_is_next_instruction_addr (N, a))
+	  if (! result->has (a) && ! s_is_next_instruction_addr (N, a))
 	    addrtable.push_back (a);	      
 	}
       delete succinsts;
     }
 
+  char *tmpbuf = new char[::strlen (label_prefix) + 10];
   for (list<address_t>::iterator i = addrtable.begin (); i != addrtable.end ();
        i++)
     {
-      if (result->find (*i) != result->end ())
+      if (result->has (*i))
 	continue;
 
       do
@@ -136,9 +125,8 @@ s_build_symbol_table (const Microcode *mc, const BinaryLoader *loader,
 	  sprintf (tmpbuf, "%s_%x", label_prefix, label_index);
 	  label_index++;
 	}
-      while (loader->get_symbol_value (tmpbuf).hasValue ());
-      assert (result->find (*i) == result->end ());
-      (*result)[*i] = tmpbuf;
+      while (result->has (tmpbuf));
+      result->add_symbol (tmpbuf, *i);
     }
   delete[] tmpbuf;
 
@@ -174,12 +162,13 @@ s_dump_memory_between (ostream &out, const ConcreteMemory *M,
 }
 
 void 
-asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
+asm_writer (ostream &out, const Microcode *mc, 
+	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels)
 {
   vector<MicrocodeNode *> *nodes = mc->get_nodes ();
   int nb_nodes = nodes->size ();
-  SymbolTable *symbtable = s_build_symbol_table (mc, loader, with_labels);
+  SymbolTable *symbtable = s_build_symbol_table (mc, symboltable, with_labels);
   int i = 0;
   MicrocodeNode *lastnode = NULL;
 
@@ -198,17 +187,16 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
       assert (ma.getLocal () == 0);
 
       if (with_holes)
-	s_dump_memory_between (out, loader->get_memory (), prev.getGlobal (), 
+	s_dump_memory_between (out, memory, prev.getGlobal (), 
 			       ma.getGlobal () - 1);
 
-      SymbolTable::iterator j = symbtable->find (ma.getGlobal ());
-      if (j != symbtable->end ())
+      if (symbtable->has (ma.getGlobal ()))
 	{
 	  out << right << hex << setfill ('0') 
 	      << setw (8) 
 	      << ma.getGlobal () 
 	      << setw (0) 
-	      << " <" << j->second << ">: " << endl;
+	      << " <" << symbtable->get (ma.getGlobal ()) << ">: " << endl;
 	}
       AsmAnnotation *a = (AsmAnnotation *) 
 	node->get_annotation (AsmAnnotation::ID);
@@ -223,7 +211,7 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
 
 	  if (next.hasValue ())
 	    bytes = 
-	      s_instruction_bytes (loader, ma.getGlobal (), next.getValue ());
+	      s_instruction_bytes (memory, ma.getGlobal (), next.getValue ());
 	  else
 	    bytes = "(unknown)";
 	  out << left << setw (24) << setfill (' ') << bytes << "\t";
@@ -239,12 +227,11 @@ asm_writer (ostream &out, const Microcode *mc, const BinaryLoader *loader,
 	  if (next.hasValue () && next.getValue () == saddr)
 	    continue;
 
-	  SymbolTable::iterator sname = symbtable->find (saddr);
-	  if (sname != symbtable->end ())
+	  if (symbtable->has (saddr))
 	    {
 	      if (first) { out << " # jump to : " ; first = false; }
 	      else { out << ", "; }
-	      out << sname->second;
+	      out << symbtable->get (saddr);
 	    }
 	}
       delete succ;

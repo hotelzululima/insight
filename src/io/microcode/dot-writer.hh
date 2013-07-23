@@ -39,6 +39,7 @@
 extern void 
 dot_writer (std::ostream &out, const Microcode *mc, bool asm_only, 
 	    const std::string &graphlabel = std::string (), 
-	    ConcreteAddress *entrypoint = NULL, BinaryLoader *loader = NULL);
+	    ConcreteAddress *entrypoint = NULL, 
+	    const SymbolTable *symbtable = NULL);
 
 #endif /* ! DOT_WRITER_HH */

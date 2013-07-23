@@ -52,15 +52,16 @@ ConcreteAddress BinaryLoader::get_entrypoint() const
   return entrypoint;
 }
 
-Option<ConcreteAddress>
-BinaryLoader::get_symbol_value(const std::string) const {
-  return Option<ConcreteAddress>();
+bool 
+BinaryLoader::load_symbol_table (SymbolTable *) const
+{
+  return false;
 }
 
-Option<std::string> 
-BinaryLoader::get_symbol_name (const address_t) const
+bool 
+BinaryLoader::load_memory (ConcreteMemory *) const
 {
-  return Option<string>();
+  return false;
 }
 
 static string flags_to_string(list<string> flags)

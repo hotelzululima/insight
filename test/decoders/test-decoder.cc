@@ -58,7 +58,8 @@ main (int argc, char **argv)
     {
       const char *filename = argv[1];
       BinaryLoader *loader = new BinutilsBinaryLoader (filename);
-      ConcreteMemory *memory = loader->get_memory();
+      ConcreteMemory *memory = new ConcreteMemory ();
+      loader->load_memory (memory);
       MicrocodeArchitecture arch (loader->get_architecture ());
       BinutilsDecoder *decoder = new BinutilsDecoder (&arch, memory);
       ConcreteAddress start (loader->get_entrypoint());

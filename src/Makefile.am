@@ -217,6 +217,8 @@ io_sources = \
 	io/binary/BinaryLoader.hh 		\
 	io/binary/BinutilsBinaryLoader.cc	\
 	io/binary/BinutilsBinaryLoader.hh 	\
+	io/binary/SymbolTable.cc 	 	\
+	io/binary/SymbolTable.hh 	 	\
         io/expressions/expr-writer.hh		\
         io/expressions/expr-writer.cc		\
         io/expressions/smtlib-writer.hh		\

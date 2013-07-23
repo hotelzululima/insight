@@ -178,7 +178,8 @@ version ()
 
 struct CtrlCHandler : public Microcode::ArrowCreationCallback {
   bool output_program;
-  BinaryLoader *loader;
+  const ConcreteMemory *memory;
+  const SymbolTable *symboltable;
   const MicrocodeArchitecture *mcarch;
   std::string exec_filename;
   std::list<ConcreteAddress> entrypoints;
@@ -188,8 +189,8 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
     switch (fmt)
       {
       case OF_ASM :
-	asm_writer (output, mc, loader, asm_with_bytes, asm_with_holes,
-		    asm_with_labels);
+	asm_writer (output, mc, memory, symboltable, asm_with_bytes, 
+		    asm_with_holes, asm_with_labels);
 	break;
       case OF_MC :
 	mc->output_text (output);
@@ -203,8 +204,8 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
 	    ep = NULL;
 	  else 
 	    ep = new ConcreteAddress (*entrypoints.begin ());
-	  dot_writer (output, mc, (fmt == OF_ASM_DOT), 
-		      exec_filename, ep, loader);
+	  dot_writer (output, mc, (fmt == OF_ASM_DOT), exec_filename, ep, 
+		      symboltable);
 	  if (ep != NULL)
 	    delete ep;
 	}
@@ -372,9 +373,6 @@ main (int argc, char *argv[])
       usage (EXIT_FAILURE);
     }
 
-  /* Getting the execfile from command line */
-  string execfile_name = argv[optind];
-
   /* Starting insight and initializing the needed objects */
   
   CONFIG.set (logs::STDIO_ENABLED_PROP, true);
@@ -395,24 +393,60 @@ main (int argc, char *argv[])
     }
 
   insight::init (CONFIG);
+  ConcreteMemory *memory = new ConcreteMemory ();
+  SymbolTable *symboltable = new SymbolTable ();
+  MicrocodeArchitecture *arch = NULL;
+  string execfile_name;
 
-  /* Getting the loader */
-  BinaryLoader * loader;
-  try {
-    loader = new BinutilsBinaryLoader(execfile_name);
-  } catch (Architecture::UnsupportedArch &e) {
-    cerr << execfile_name << ": " << e.what() << endl;
-    exit(EXIT_FAILURE);
-  } catch (std::runtime_error &e) {
-    cerr << e.what() << endl;
-    exit(EXIT_FAILURE);
-  }
+  for (int i = optind; i < argc; i++)
+    {
+      /* Getting the execfile from command line */
+      string filename (argv[i]);
 
-  if (verbosity > 0)
-    cout << "Binary format: " << loader->get_format() << endl;
+      if (execfile_name.empty ())
+	execfile_name = filename;
+      
+      if (verbosity > 0)
+	logs::warning << "loading file " << filename << endl;
+      /* Getting the loader */
 
-  /* Getting the ConcreteMemory */
-  ConcreteMemory * memory = loader->get_memory();
+      try {
+	BinaryLoader *loader = new BinutilsBinaryLoader (filename);
+	if (arch == NULL)
+	  arch = new MicrocodeArchitecture (loader->get_architecture());
+	else if (arch->get_reference_arch () != loader->get_architecture ())
+	  {
+	    logs::error << "try to load binary files with "
+			<< "different architectures: "
+			<< (*loader->get_architecture()) << " and " 
+			<< (*arch->get_reference_arch ()) << endl;
+	    exit (EXIT_FAILURE);
+	  }
+	  
+	if (verbosity > 0)
+	  logs::warning << "Binary format: " << loader->get_format() << endl;
+
+	if (! loader->load_memory (memory) && verbosity > 0)
+	  logs::warning << "nothing to load in file " << filename << endl;
+	if (! loader->load_symbol_table (symboltable) && verbosity > 0)
+	  logs::warning << "no symbols in file " << execfile_name << endl;
+
+	if (entrypoint_symbols.empty())
+	  {
+	    if (verbosity > 0)
+	      logs::warning << "Adding entrypoint " 
+			    << loader->get_entrypoint() << endl;	    
+	    entrypoints.push_back (ConcreteAddress(loader->get_entrypoint()));
+	  }
+	delete loader;
+      } catch (Architecture::UnsupportedArch &e) {
+	logs::error << execfile_name << ": " << e.what() << endl;
+	exit(EXIT_FAILURE);
+      } catch (std::runtime_error &e) {
+	logs::error << e.what() << endl;
+	exit(EXIT_FAILURE);
+      }
+    }
 
   /* Setting the entrypoint */
   for (std::list<const char *>::iterator s = entrypoint_symbols.begin ();
@@ -422,31 +456,28 @@ main (int argc, char *argv[])
       Option<ConcreteAddress> val;
 
       if (isdigit (*symb))
-	val = ConcreteAddress(strtoul (symb, NULL, 0));
-      else 
-	val = loader->get_symbol_value (symb);
+	val = ConcreteAddress (strtoul (symb, NULL, 0));
+      else if (symboltable->has (symb))
+	val = ConcreteAddress (symboltable->get (symb));
+
       if (val.hasValue ())
 	entrypoints.push_back (val.getValue ());
       else 
 	{
-	  cerr << "Error: symbol '" << symb << "' not found" << endl;
+	  logs::error << "Error: symbol '" << symb << "' not found" << endl;
 	  exit(EXIT_FAILURE);
 	}
     }
-
-  if (entrypoints.empty ())
-    entrypoints.push_back (ConcreteAddress(loader->get_entrypoint()));
 
   if (verbosity > 0)
     {
       for (std::list<ConcreteAddress>::iterator ep = entrypoints.begin ();
 	   ep != entrypoints.end (); ep++)
-	cout << "Entrypoint: 0x" << hex << *ep << dec << endl;
+	logs::display << "Entrypoint: 0x" << hex << *ep << dec << endl;
     }
 
   /* Getting the decoder */
-  MicrocodeArchitecture arch(loader->get_architecture());
-  BinutilsDecoder * decoder = new BinutilsDecoder(&arch, memory);
+  BinutilsDecoder *decoder = new BinutilsDecoder (arch, memory);
 
   /* Initializing Microcode program */
   Microcode * mc = NULL;
@@ -454,20 +485,21 @@ main (int argc, char *argv[])
   /* Starting disassembly with proper disassembler */
   struct disassembler *dis = disassembler_lookup(disassembler);
   if (dis == NULL) {
-    cerr << prog_name
-	 << ": error: '" << disassembler << "' disassembler is unknown" << endl
-	 << "Type '" << prog_name << " -l' to list all disassemblers" << endl;
+    logs::error 
+      << prog_name
+      << ": error: '" << disassembler << "' disassembler is unknown" << endl
+      << "Type '" << prog_name << " -l' to list all disassemblers" << endl;
     exit (EXIT_FAILURE);
   }
 
   if (dis->process == NULL) {
-    cerr << prog_name << ": error: '" << dis->name << " (" << dis->desc <<
-      ")' disassembler is not yet implemented" << endl;
+    logs::error << prog_name << ": error: '" << dis->name << " (" << dis->desc
+		<< ")' disassembler is not yet implemented" << endl;
     usage(EXIT_FAILURE);
   }
 
   if (verbosity > 0)
-    cout << "Starting " << dis->desc << " disassembly" << endl;
+    logs::display << "Starting " << dis->desc << " disassembly" << endl;
 
 
   if (preload_filename != NULL)
@@ -476,10 +508,11 @@ main (int argc, char *argv[])
     mc = new Microcode ();
 
   CTRL_C_HANDLER.output_program = false;
-  CTRL_C_HANDLER.loader = loader;
+  CTRL_C_HANDLER.memory = memory;
+  CTRL_C_HANDLER.symboltable = symboltable;
   CTRL_C_HANDLER.exec_filename = execfile_name;
   CTRL_C_HANDLER.entrypoints = entrypoints;
-  CTRL_C_HANDLER.mcarch = &arch;
+  CTRL_C_HANDLER.mcarch = arch;
 
   if (signal (SIGUSR1, &s_sighandler) != 0)
     logs::error << "unable to set CTRL-C handler." << std::endl;
@@ -493,13 +526,13 @@ main (int argc, char *argv[])
     {
       delete mc;
       mc = NULL;
-      cerr << "error: " << e.what () << endl;
+      logs::error << "error: " << e.what () << endl;
     }
   catch (runtime_error &e)
     {
       delete mc;
       mc = NULL;
-      cerr << e.what() << endl;
+      logs::error << e.what() << endl;
     }
 
   if (mc == NULL)
@@ -542,7 +575,7 @@ main (int argc, char *argv[])
   delete mc;
   delete decoder;
   delete memory;
-  delete loader;
+  delete arch;
 
   insight::terminate();
 

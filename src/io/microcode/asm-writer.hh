@@ -40,7 +40,8 @@ extern std::vector<MicrocodeNode *> *
 asm_get_successor_instructions (const Microcode *mc, const MicrocodeNode *node);
 
 extern void 
-asm_writer (std::ostream &out, const Microcode *mc, const BinaryLoader *loader,
+asm_writer (std::ostream &out, const Microcode *mc, 
+	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels);
 
 #endif /* ! ASM_WRITER_HH */

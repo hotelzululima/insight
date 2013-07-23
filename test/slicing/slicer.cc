@@ -60,8 +60,10 @@ s_build_cfg (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
   F.set_show_pending_arrows (false);
   F.set_warn_on_unsolved_dynamic_jumps (false);
   F.set_max_number_of_visits_per_address (-1);
+  list<ConcreteAddress> entrypoints (1, entrypoint);
+
   AlgorithmFactory::Algorithm *algo = F.buildRecursiveTraversal ();
-  algo->compute (entrypoint, result);
+  algo->compute (entrypoints, result);
   delete algo;
 
   return result;
@@ -82,7 +84,8 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
   MicrocodeArchitecture *mcarch = 
     new MicrocodeArchitecture (loader->get_architecture ());
 
-  ConcreteMemory *mem = loader->get_memory ();
+  ConcreteMemory *mem = new ConcreteMemory ();
+  loader->load_memory (mem);
   Decoder *decoder = DecoderFactory::get_Decoder (mcarch, mem);
   Microcode *prg = s_build_cfg (ConcreteAddress (0), mem, decoder);
   

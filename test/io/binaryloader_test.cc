@@ -77,7 +77,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
 		 entrypoint.get_address());
 
   /* Checking if the memory has been properly loaded */
-  ConcreteMemory * memory = loader->get_memory();
+  ConcreteMemory * memory = new ConcreteMemory ();
+  loader->load_memory (memory);
 
   ATF_REQUIRE(memory->is_defined(entrypoint));
   ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
@@ -120,7 +121,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
 		 entrypoint.get_address());
 
   /* Checking if the memory has been properly loaded */
-  ConcreteMemory * memory = loader->get_memory();
+  ConcreteMemory * memory = new ConcreteMemory ();
+  loader->load_memory (memory);
 
   ATF_REQUIRE(memory->is_defined(entrypoint));
   ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));
@@ -162,7 +164,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 		 entrypoint.get_address());
 
   /* Checking if the memory has been properly loaded */
-  ConcreteMemory * memory = loader->get_memory();
+  ConcreteMemory * memory = new ConcreteMemory ();
+  loader->load_memory (memory);
 
   ATF_REQUIRE(memory->is_defined(entrypoint));
   ATF_REQUIRE(!memory->is_defined(ConcreteAddress(0x100)));

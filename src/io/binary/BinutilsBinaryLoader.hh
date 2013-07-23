@@ -43,6 +43,7 @@
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 #include <io/binary/BinaryLoader.hh>
+#include <io/binary/SymbolTable.hh>
 
 /*************** BinutilsBinaryLoader class definition ****************/
 
@@ -73,20 +74,17 @@ public:
   BinutilsBinaryLoader(const std::string filename);
   virtual ~BinutilsBinaryLoader();
 
-  ConcreteMemory * get_memory() const;
-  Option<ConcreteAddress> get_symbol_value(const std::string) const;
-  Option<std::string> get_symbol_name (const address_t a) const;
+  virtual bool load_symbol_table (SymbolTable *table) const;
+  virtual bool load_memory (ConcreteMemory *memory) const;
 
   /* BinutilsBinaryLoader specific fields and methods */
 protected:
   bfd *abfd;
-  std::tr1::unordered_map<std::string, ConcreteAddress> symbols;
-  std::tr1::unordered_map<address_t,std::string> symbols_addresses;
+
   std::string get_BFD_format() const;
   const Architecture *get_BFD_architecture() const;
   void fill_memory_from_sections(ConcreteMemory *) const;
   int fill_memory_from_ELF_Phdrs(ConcreteMemory *) const;
-
 private:
   void add_section_of (ConcreteMemory *memory, bfd *file) const;
 };

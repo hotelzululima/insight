@@ -40,6 +40,7 @@
 #include <kernel/Architecture.hh>
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
+#include <io/binary/SymbolTable.hh>
 
 /****************** BinaryLoader class definition *********************/
 
@@ -54,7 +55,6 @@
 class BinaryLoader : public Object
 {
 public:
-
   /******************** BinaryLoader Exceptions ***********************/
   /** \brief Exception thrown when the executable file is not found */
   class BinaryFileNotFound : public std::runtime_error
@@ -125,10 +125,8 @@ public:
   const Architecture * get_architecture() const;
   ConcreteAddress get_entrypoint() const;
 
-  virtual Option<ConcreteAddress> get_symbol_value(const std::string) const;
-  virtual Option<std::string> get_symbol_name (const address_t a) const;
-
-  virtual ConcreteMemory * get_memory() const = 0;
+  virtual bool load_symbol_table (SymbolTable *table) const;
+  virtual bool load_memory (ConcreteMemory *memory) const;
 
 protected:
   std::string filename;

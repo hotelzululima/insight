@@ -42,7 +42,7 @@ using namespace std;
 void 
 dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	    const std::string &graphlabel, 
-	    ConcreteAddress *entrypoint, BinaryLoader *loader)
+	    ConcreteAddress *entrypoint, const SymbolTable *symboltable)
 {
   if (! asm_only)
     {
@@ -73,25 +73,20 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
       if (ma.getLocal () != 0)
 	continue;
 
-      if (loader)
+      if (symboltable && symboltable->has (ma.getGlobal ()))
 	{
-	  Option<string> fun = loader->get_symbol_name (ma.getGlobal ());
-
-	  if (fun.hasValue ())
+	  string s = symboltable->get (ma.getGlobal ());
+	  rgb = 0;
+	  int k = 0;
+	  for (string::size_type i = 0; i < s.length (); i++)
 	    {
-	      string s = fun.getValue ();
-	      rgb = 0;
-	      int k = 0;
-	      for (string::size_type i = 0; i < s.length (); i++)
-		{
-		  rgb = primes[k] * s[i] + (rgb << 3);
-		  k = (k+1) % nb_primes;
-		}
-	      int b = rgb & 0xFF000000;
-	      rgb ^= (b >> 8)|(b>> 16)|(b>>24);
-	      rgb &= 0x00FFFFFF;
-	      symbols[s] = rgb;
+	      rgb = primes[k] * s[i] + (rgb << 3);
+	      k = (k+1) % nb_primes;
 	    }
+	  int b = rgb & 0xFF000000;
+	  rgb ^= (b >> 8)|(b>> 16)|(b>>24);
+	  rgb &= 0x00FFFFFF;
+	  symbols[s] = rgb;
 	}
 
       out << "cfg_" << std::hex << ma.getGlobal () << "_" << ma.getLocal ()
@@ -148,12 +143,13 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
     }
   out << " }; " << endl;
   k = 0;
+  assert (symbols.size () == 0 || symboltable != NULL);
   for (map<string,int>::const_iterator i = symbols.begin (); 
        i != symbols.end (); i++, k++)
     {
       out << "sym_" << k << " -> cfg_" << std::hex 
-	  << loader->get_symbol_value (i->first).getValue ().get_address () 
-	  << "_0; " << endl;
+	  << symboltable->get (i->first) << "_0; " 
+	  << endl;
     }
   out << "} " << std::endl;
   out.flush (); 

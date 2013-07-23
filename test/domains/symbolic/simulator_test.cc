@@ -115,10 +115,10 @@ s_simulate (const char *filename)
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
-
+  ConcreteMemory *memory = new ConcreteMemory ();
   BinaryLoader *loader = new BinutilsBinaryLoader (filename);
   const Architecture *A = loader->get_architecture ();
-  ConcreteMemory *memory = loader->get_memory();
+  loader->load_memory (memory);
   MicrocodeArchitecture arch (loader->get_architecture ());
   Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
   ConcreteAddress start = loader->get_entrypoint ();
