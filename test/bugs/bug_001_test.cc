@@ -63,7 +63,8 @@ ATF_TEST_CASE_BODY (BUG_001)
 
   BinaryLoader *loader =
     new BinutilsBinaryLoader (TEST_SAMPLES_DIR "x86_32-bug-001.bin");
-  ConcreteMemory *memory = loader->get_memory ();
+  ConcreteMemory *memory = new ConcreteMemory ();
+  loader->load_memory (memory);
   ConcreteAddress entrypoint (loader->get_entrypoint ());
   MicrocodeArchitecture arch (loader->get_architecture());
   Decoder *decoder = DecoderFactory::get_Decoder (&arch, memory);
