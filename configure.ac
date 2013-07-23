@@ -187,7 +187,7 @@ if test ${has_mathsat_solver} = "yes"; then
    MATHSAT_VERSION_PATCH=`echo ${MATHSAT_VERSION} | cut -d "." -f 3`
 
    if test "${MATHSAT_VERSION_MAJOR}" != "5"; then
-      has_mathsat_solver="no (version 5.0.0 or beyond is needed)"
+      has_mathsat_solver="warning! (version 5.0.0 or beyond is prefered)"
    fi
 
    AC_DEFINE([HAVE_MATHSAT_SOLVER],[1])
@@ -211,7 +211,7 @@ if test ${has_z3_solver} = "yes"; then
    if test "${Z3_VERSION_MAJOR}" != "4" -o \
            "${Z3_VERSION_MINOR}" != "3" -o \
 	    "${Z3_VERSION_PATCH}" -lt "2"; then
-      has_z3_solver="no (version 4.3.2 or beyond is needed)"
+      has_z3_solver="warning! (version 4.3.2 or beyond is prefered)"
    fi
 
    AC_DEFINE([HAVE_Z3_SOLVER],[1])
