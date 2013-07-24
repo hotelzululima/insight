@@ -75,3 +75,32 @@ X86_32_TRANSLATE_0_OP (RET)
     data.has_prefix = false;
 }
 
+X86_32_TRANSLATE_1_OP (RET)
+{
+  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
+  MicrocodeAddress start = data.start_ma;
+  x86_32_pop (start, data, tmpr0);
+
+
+  int stack_size = data.addr16 ? 16 : 32;
+  LValue *esp = data.get_register (stack_size == 32 ? "esp" : "sp");
+
+  assert (op1->is_Constant ());
+  Expr *inc = op1->extract_bit_vector (0, esp->get_bv_size ());
+
+  data.mc->add_assignment (start, (LValue *) esp->ref(), 
+			   BinaryApp::create (BV_OP_ADD, esp->ref (), 
+					      inc->ref (), 0,
+					      esp->get_bv_size ()));
+
+  MicrocodeNode *start_node = data.mc->get_node (start);
+  start_node->add_annotation (CallRetAnnotation::ID,
+			      CallRetAnnotation::create_ret ());
+  data.mc->add_jump (start, tmpr0->ref ());
+  if (data.has_prefix)
+    data.has_prefix = false;
+  esp->deref ();
+  op1->deref ();
+  inc->deref ();
+}
+
