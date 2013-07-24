@@ -185,7 +185,8 @@ AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s)
     }
   catch (Decoder::Exception &e)
     {
-      logs::warning << "warning: decoder says :" 
+      logs::warning << "warning: decoder says at "
+		    << pp->to_MicrocodeAddress () << ":"
 		    << e.what () << std::endl;
     }
 }
