@@ -80,7 +80,7 @@ SymbolTable::get (address_t a) const
 void 
 SymbolTable::output_text (std::ostream &out) const
 {  
-  std::vector<address_t> addresses (size ());
+  std::vector<address_t> addresses;
 
   for (const_address_iterator i = begin_addresses (); i != end_addresses (); 
        i++)
@@ -91,7 +91,7 @@ SymbolTable::output_text (std::ostream &out) const
     {
       address_t a = addresses[i];
       out << std::hex << std::setw (8) << std::setfill ('0') << a << ':' 
-	  << addrmap.find (a)->first << std::endl;
+	  << addrmap.find (a)->second << std::endl;
     }
 }
 
