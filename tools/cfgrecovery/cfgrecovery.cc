@@ -96,6 +96,7 @@ struct disassembler {
 		  Microcode *);
 } disassemblers[] = {
   /* List must be kept sorted by name */
+  { "none", "no CFG recovery", NULL },
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linear_sweep },
   { "recursive", "recursive traversal", recursive_traversal },
@@ -150,10 +151,11 @@ usage (int status)
 	   << "  -v, --verbose\t\tincrease verbosity level" << endl
 	   << "  -D, --debug\t\tenable debug traces" << endl
 	   << "  -V, --version\t\tdisplay version and exit" << endl
+	   << "  -S, --symbols\t\tdisplay known symbols" << endl
 	   << "assembler output options:" << endl
 	   << " --asm-with-bytes" << endl
 	   << " --asm-with-holes"  << endl
-	   << " --asm-with-labels" <<endl;
+	   << " --asm-with-labels" << endl;
     }
 
   exit (status);
@@ -245,6 +247,7 @@ main (int argc, char *argv[])
   const char *output_filename = NULL;
   const char *preload_filename = NULL;
   string config_filename = CFGRECOVERY_CONFIG_FILENAME;
+  bool display_symbols = false;
 
   /* Default output format (asm, _mc_, dot, asm-dot, xml) */
   list<const OutputFormat *> output_formats;
@@ -261,6 +264,7 @@ main (int argc, char *argv[])
     {"output", required_argument, NULL, 'o'},
     {"help", no_argument, NULL, 'h'},
     {"debug", no_argument, NULL, 'D'},
+    {"symbols", no_argument, NULL, 'S' }, 
     {"verbose", no_argument, NULL, 'v'},
     {"version", no_argument, NULL, 'V'},
     {"asm-with-bytes", no_argument, &asm_with_bytes, 1 }, 
@@ -280,7 +284,7 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "ld:e:f:o:hDvVc:x:", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "ld:e:f:o:hDvVc:x:S", long_opts, NULL)) != -1)
     switch (optc)
       {
       case 'c':		/* Config file name */
@@ -355,6 +359,9 @@ main (int argc, char *argv[])
 
       case 'D':
 	enable_debug = true;
+	break;
+      case 'S':
+	display_symbols = true;
 	break;
 
       case 'V':		/* Display version number and exit */
@@ -476,12 +483,11 @@ main (int argc, char *argv[])
 	logs::display << "Entrypoint: 0x" << hex << *ep << dec << endl;
     }
 
-  /* Getting the decoder */
-  BinutilsDecoder *decoder = new BinutilsDecoder (arch, memory);
-
-  /* Initializing Microcode program */
-  Microcode * mc = NULL;
-
+  if (display_symbols)
+    {
+      logs::display << symboltable->size () << " known symbols:" << endl
+		    << (*symboltable) << endl;
+    }
   /* Starting disassembly with proper disassembler */
   struct disassembler *dis = disassembler_lookup(disassembler);
   if (dis == NULL) {
@@ -492,11 +498,13 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  if (dis->process == NULL) {
-    logs::error << prog_name << ": error: '" << dis->name << " (" << dis->desc
-		<< ")' disassembler is not yet implemented" << endl;
-    usage(EXIT_FAILURE);
-  }
+  BinutilsDecoder *decoder = NULL;
+  Microcode *mc = NULL;
+
+  if (dis->process == NULL) 
+    goto end;
+
+  decoder = new BinutilsDecoder (arch, memory);
 
   if (verbosity > 0)
     logs::display << "Starting " << dis->desc << " disassembly" << endl;
@@ -571,9 +579,10 @@ main (int argc, char *argv[])
 	}
     }
 
-  /* Cleaning all from Insight */
   delete mc;
   delete decoder;
+
+ end:
   delete memory;
   delete arch;
 
