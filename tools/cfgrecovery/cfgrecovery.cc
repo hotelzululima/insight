@@ -88,6 +88,7 @@ const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
 static int asm_with_bytes = 0;
 static int asm_with_holes = 0;
 static int asm_with_labels = 0;
+static int sink_nodes = 0;
 
 struct disassembler {
   const char *name;
@@ -155,7 +156,9 @@ usage (int status)
 	   << "assembler output options:" << endl
 	   << " --asm-with-bytes" << endl
 	   << " --asm-with-holes"  << endl
-	   << " --asm-with-labels" << endl;
+	   << " --asm-with-labels" << endl
+	   << "miscellaneous options:" << endl
+	   << "  --sink-nodes\t\tlist sink nodes" << endl;
     }
 
   exit (status);
@@ -270,6 +273,7 @@ main (int argc, char *argv[])
     {"asm-with-bytes", no_argument, &asm_with_bytes, 1 }, 
     {"asm-with-holes", no_argument, &asm_with_holes, 1 }, 
     {"asm-with-labels", no_argument, &asm_with_labels, 1 }, 
+    {"sink-nodes", no_argument, &sink_nodes, 1 }, 
     {NULL, 0, NULL, 0}
   };
 
@@ -567,6 +571,34 @@ main (int argc, char *argv[])
     {
       logs::display << symboltable->size () << " known symbols:" << endl
 		    << (*symboltable) << endl;
+    }
+
+  if (sink_nodes)
+    {
+      bool first = true;
+      std::vector<MicrocodeNode *> *nodes = mc->get_nodes();
+      int nb_nodes = nodes->size ();
+      for (int i = 0; i < nb_nodes; i++)
+	{
+	  MicrocodeNode *n = nodes->at (i);
+	  if (n->get_successors ()->size () > 0)
+	    continue;
+	  if (first)
+	    {
+	      logs::display << "Sink nodes : " << endl;
+	      first = false;
+	    }
+
+	  MicrocodeAddress ma (n->get_loc ());
+	  logs::display << "\t";
+	  if (ma.getLocal () == 0)
+	    logs::display << hex << "0x" << ma.getGlobal ();
+	  else
+	    logs::display << ma;
+	  logs::display << endl;
+	}
+      if (first)
+	logs::display << "no sink node." << endl;
     }
 
   delete mc;
