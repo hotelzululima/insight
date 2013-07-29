@@ -51,6 +51,12 @@ ExprRewritingRule::visit (const Constant *c)
 }
 
 void 
+ExprRewritingRule::visit (const RandomValue *c)
+{
+  result = rewrite (c);
+}
+
+void 
 ExprRewritingRule::visit (const Variable *v)
 {
   result = rewrite (v);

@@ -20,7 +20,9 @@ namespace SymbStepper {
       int size = F->get_bv_size ();
       Option<SymbolicValue> val;
 
-      if (F->is_RegisterExpr ()) 
+      if (F->is_RandomValue ()) 
+	val = SymbolicValue::unknown_value (size);
+      else if (F->is_RegisterExpr ()) 
 	{
 	  RegisterExpr *regexpr = (RegisterExpr *) F;
 	  const RegisterDesc *rdesc = regexpr->get_descriptor ();
@@ -63,7 +65,8 @@ namespace SymbStepper {
       if (val.hasValue ())
 	{
 	  SymbolicValue sv = 
-	    SymbolicExprSemantics::extract_eval (val.getValue (), offset, size); 
+	    SymbolicExprSemantics::extract_eval (val.getValue (), offset, 
+						 size); 
 	  result = sv.get_Expr ()->ref ();
 	}
 
@@ -259,7 +262,7 @@ SymbolicStepper::eval (const Context *ctx, const Expr *e)
 	break;
       f = aux;
     }
-  
+  exprutils::simplify (&f);
   Constant *c = solver->evaluate (f, sc->get_path_condition ());
   if (c != NULL)
     {

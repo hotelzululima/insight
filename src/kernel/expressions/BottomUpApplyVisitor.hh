@@ -42,6 +42,7 @@ public :
   virtual ~BottomUpApplyVisitor ();
 
   virtual void visit (Constant *);
+  virtual void visit (RandomValue *);
   virtual void visit (Variable *);
   virtual void visit (UnaryApp *); 
   virtual void visit (BinaryApp *);
@@ -63,6 +64,7 @@ public :
   virtual ~ConstBottomUpApplyVisitor ();
 
   virtual void visit (const Constant *);
+  virtual void visit (const RandomValue *);
   virtual void visit (const Variable *);
   virtual void visit (const UnaryApp *); 
   virtual void visit (const BinaryApp *);

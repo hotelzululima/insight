@@ -464,6 +464,108 @@ bit_field_computation (const Expr *e)
   return result;
 }
 
+static Expr *
+s_simplify_extract (const Expr *e)
+{
+  const TernaryApp *ta = dynamic_cast<const TernaryApp *> (e);  
+
+  if (ta == NULL)
+    return NULL;
+
+  Expr *arg = ta->get_arg1 ();
+  Constant *o = dynamic_cast<Constant *> (ta->get_arg2 ());
+  Constant *s = dynamic_cast<Constant *> (ta->get_arg3 ());
+  if (o == NULL || s == NULL)
+    return NULL;
+
+  if (o->get_val () == arg->get_bv_offset () && 
+      s->get_val () == arg->get_bv_size ())
+    return arg->ref ();
+
+  return NULL;
+}
+
+static Expr * 
+s_concat_extract_simplification (const Expr *cc, 
+				 const Expr *op1, const Expr *op2)
+{
+  const TernaryApp *ta1 = dynamic_cast<const TernaryApp *> (op1);
+  const TernaryApp *ta2 = dynamic_cast<const TernaryApp *> (op2);
+
+  if (ta1 == NULL || ta2 == NULL)
+    return NULL;
+
+  Expr *arg = ta1->get_arg1 ();
+  if (arg != ta2->get_arg1 ())
+    return NULL;
+
+  Constant *o1 = dynamic_cast<Constant *> (ta1->get_arg2 ());
+  Constant *s1 = dynamic_cast<Constant *> (ta1->get_arg3 ());
+  Constant *o2 = dynamic_cast<Constant *> (ta2->get_arg2 ());
+  Constant *s2 = dynamic_cast<Constant *> (ta2->get_arg3 ());
+
+  if (o1 == NULL || s1 == NULL || o2 == NULL || o2 == NULL)
+    return NULL;
+
+  if (o1->get_val () == (o2->get_val () + s2->get_val ()))
+    {
+      int offset = o2->get_val ();
+      int size = s1->get_val () + s2->get_val ();
+
+      Expr *result = 
+	TernaryApp::create (BV_OP_EXTRACT,
+			    arg->ref (),
+			    Constant::create (offset, 0, 32),
+			    Constant::create (size, 0, 32));
+      
+      if (cc->get_bv_offset () != 0 || cc->get_bv_size () != size)
+	result = 
+	  TernaryApp::create (BV_OP_EXTRACT,
+			      arg->ref (),
+			      Constant::create (cc->get_bv_offset (), 0, 32),
+			      Constant::create (cc->get_bv_size (), 0, 32));
+      return result;
+    }
+  return NULL;
+}
+
+static Expr *
+s_arithmetic_with_zero (const BinaryApp *e, const Expr *op1, const Expr *op2)
+{  
+  const Constant *c1 = dynamic_cast<const Constant *> (op1);
+  const Constant *c2 = dynamic_cast<const Constant *> (op2);
+
+  if (c1 == NULL && c2 == NULL)
+    return NULL;
+  Expr *result = NULL;
+  if (e->get_op () == BV_OP_ADD)
+    {
+      Expr *a = NULL;
+      if (c1 && c1->get_val () == 0)
+	a = op2->ref ();
+      else if (c2 && c2->get_val () == 0)
+	a = op1->ref ();
+      if (a != NULL)
+	{
+	  if (e->get_bv_size () <= a->get_bv_size ())
+	    result = a->extract_with_bit_vector_of (e);
+	  a->deref ();
+	}
+    }
+  else
+    {
+      assert (e->get_op () == BV_OP_SUB);
+
+      if (c1 && c1->get_val () == 0)
+	result = UnaryApp::create (BV_OP_NEG, op2->ref (), e->get_bv_offset (),
+				   e->get_bv_size ());
+      else if (c2 && c2->get_val () == 0 && 
+	       e->get_bv_size () <= op1->get_bv_size ())
+	result = op1->extract_with_bit_vector_of (e);
+    }
+  return result;
+}
+
 Expr * 
 binary_operations_simplification (const Expr *e)
 {
@@ -476,6 +578,16 @@ binary_operations_simplification (const Expr *e)
   Expr *arg1 = ba->get_arg1 ();
   Expr *arg2 = ba->get_arg2 ();
   BinaryOp op = ba->get_op ();
+
+  if (op == BV_OP_CONCAT)
+    return s_concat_extract_simplification (e, arg1, arg2);
+
+  if (op == BV_OP_ADD || op == BV_OP_SUB)
+    {
+      Expr *result = s_arithmetic_with_zero (ba, arg1, arg2);
+      if (result != NULL)
+	return result;
+    }
 
   const BinaryApp *o = dynamic_cast <const BinaryApp *> (arg1);
   if (o == NULL)
@@ -586,6 +698,7 @@ simplify_expr (const Expr *phi)
     bit_field_computation, 
     binary_operations_simplification,     
     zero_shift_rule, 
+    s_simplify_extract, 
     NULL 
   };
 

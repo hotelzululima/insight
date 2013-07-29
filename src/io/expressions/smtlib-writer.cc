@@ -32,6 +32,7 @@
 
 #include <iomanip>
 #include <cassert>
+#include <utils/logs.hh>
 #include <kernel/expressions/ExprVisitor.hh>
 
 using namespace std;
@@ -72,6 +73,11 @@ public:
 	while (bv_size--)
 	  out << dec << (0x1 & (val >> bv_size));
       }
+  }
+
+  virtual void visit (const RandomValue *val) {
+    logs::error << "RandomValue should not be sent to SMT solver." << endl;
+    abort ();
   }
 
   virtual void visit (const Variable *v) {

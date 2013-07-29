@@ -50,6 +50,10 @@ public:
     out << std::dec << "{" << bv_offset << ";" << bv_size << "}";
   }
 
+  virtual void visit (const RandomValue *c) {
+    out << "RND";
+  }
+
   virtual void visit (const Constant *c) {
     out << "0x" << std::hex << c->get_val ()
 	<< std::dec << "{0;" << c->get_bv_size () << "}";

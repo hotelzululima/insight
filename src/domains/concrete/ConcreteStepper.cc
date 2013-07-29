@@ -1,6 +1,8 @@
+#include "ConcreteStepper.hh"
+#include <utils/bv-manip.hh>
+#include <cstdlib>
 #include <kernel/expressions/exprutils.hh>
 #include <kernel/expressions/ExprRewritingRule.hh>
-#include "ConcreteStepper.hh"
 
 namespace ConcStepper {
   class RewriteWithAssignedValues : public ExprRewritingRule {
@@ -18,7 +20,11 @@ namespace ConcStepper {
       int size = F->get_bv_size ();
       Option<ConcreteValue> val;
 
-      if (F->is_RegisterExpr ()) 
+      if (F->is_RandomValue ()) 
+	{
+	  val = ConcreteValue (F->get_bv_size (), random ());
+	} 
+      else if (F->is_RegisterExpr ()) 
 	{
 	  RegisterExpr *regexpr = (RegisterExpr *) F;
 	  const RegisterDesc *rdesc = regexpr->get_descriptor ();

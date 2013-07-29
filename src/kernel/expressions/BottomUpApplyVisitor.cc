@@ -47,6 +47,13 @@ BottomUpApplyVisitor::visit (Constant *c)
 }
 
 void 
+BottomUpApplyVisitor::visit (RandomValue *c)
+{
+  pre (c);
+  apply (c);
+}
+
+void 
 BottomUpApplyVisitor::visit (Variable *v)
 {
   pre (v);
@@ -120,6 +127,13 @@ ConstBottomUpApplyVisitor::~ConstBottomUpApplyVisitor ()
 
 void 
 ConstBottomUpApplyVisitor::visit (const Constant *c)
+{
+  pre (c);
+  apply (c);
+}
+
+void 
+ConstBottomUpApplyVisitor::visit (const RandomValue *c)
 {
   pre (c);
   apply (c);

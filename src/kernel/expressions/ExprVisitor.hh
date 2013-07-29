@@ -32,6 +32,7 @@
 #define KERNEL_EXPRESSIONS_EXPRVISITOR_HH
 
 class Constant; 
+class RandomValue; 
 class Variable; 
 class UnaryApp; 
 class BinaryApp; 
@@ -49,6 +50,7 @@ public :
   virtual ~ExprVisitor () { }
 
   virtual void visit (Constant *) { } 
+  virtual void visit (RandomValue *) = 0;
   virtual void visit (Variable *) { } 
   virtual void visit (UnaryApp *) { }
   virtual void visit (BinaryApp *) { } 
@@ -67,6 +69,7 @@ public :
   virtual ~ConstExprVisitor () { }
 
   virtual void visit (const Constant *) { } 
+  virtual void visit (const RandomValue *) = 0;
   virtual void visit (const Variable *) { } 
   virtual void visit (const UnaryApp *) { }
   virtual void visit (const BinaryApp *) { } 

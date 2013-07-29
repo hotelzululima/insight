@@ -71,6 +71,18 @@ public:
     result = new PatternMatching ();
   }
 
+  virtual void visit (const RandomValue *C) {
+    const RandomValue *pe = dynamic_cast<const RandomValue *> (F);
+
+    if (pe == NULL ||
+	pe->get_bv_offset() != C->get_bv_offset() || 
+	pe->get_bv_size() != C->get_bv_size() || 
+	pe != C)
+      throw PatternMatching::Failure ();
+
+    result = new PatternMatching ();
+  }
+
   virtual void visit (const Variable *V) {
     const Variable *ve = dynamic_cast<const Variable *> (F);
 

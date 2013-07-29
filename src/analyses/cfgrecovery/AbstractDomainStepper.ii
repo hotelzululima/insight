@@ -36,7 +36,7 @@ AbstractDomainStepper<CTX,PP>::get_successors (const State *s,
 	  MicrocodeAddress tgt = sa->get_target ();
 	  exec (newctx, sa->get_stmt ());
 	  ProgramPoint *to = from->next (tgt);
-	      result->insert (new State (to, newctx));
+	  result->insert (new State (to, newctx));
 	}
       else
 	{

@@ -660,6 +660,11 @@ unsigned int Constant::get_depth() const
   return 1;
 }
 
+unsigned int RandomValue::get_depth() const
+{
+  return 1;
+}
+
 unsigned int UnaryApp::get_depth() const
 {
   return arg1->get_depth() + 1;
@@ -708,6 +713,11 @@ bool Constant::contains(const Expr *o) const
   return equal (o);
 }
 
+bool RandomValue::contains(const Expr *o) const
+{
+  return equal (o);
+}
+
 bool UnaryApp::contains (const Expr *o) const
 {
   return equal (o) || arg1->contains(o);
@@ -751,6 +761,12 @@ bool Expr::is_Constant() const
 {
   Expr *non_const_this = const_cast<Expr *>(this);
   return dynamic_cast<Constant *>(non_const_this);
+}
+
+bool Expr::is_RandomValue () const
+{
+  Expr *non_const_this = const_cast<Expr *>(this);
+  return dynamic_cast<RandomValue *>(non_const_this);
 }
 
 bool Expr::is_UnaryApp() const
@@ -868,6 +884,12 @@ Constant::has_type_of (const Expr *F) const
 }
 
 bool 
+RandomValue::has_type_of (const Expr *F) const
+{
+  return dynamic_cast<const RandomValue *>(F);
+}
+
+bool 
 UnaryApp::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const UnaryApp *>(F);
@@ -944,6 +966,14 @@ bool Constant::equal (const Expr *F) const
   return (e != NULL && val == e->val);
 }
 
+bool 
+RandomValue::equal (const Expr *F) const
+{  
+  const RandomValue *e = s_check_bv<RandomValue> (this, F);
+
+  return (e != NULL && e == this);
+}
+
 bool UnaryApp::equal (const Expr *F) const
 {
   const UnaryApp *e = s_check_bv<UnaryApp> (this, F);
@@ -999,6 +1029,12 @@ Variable::hash () const
 { 
   return (13 * this->Expr::hash() + 51 * std::tr1::hash<string>()(id) + 
 	  73 * size);
+}
+
+size_t 
+RandomValue::hash () const
+{
+  return this->Expr::hash ();
 }
 
 size_t 
@@ -1077,6 +1113,12 @@ Constant::acceptVisitor (ExprVisitor *visitor)
 {
   visitor->visit (this); 
 }
+
+void 
+RandomValue::acceptVisitor (ExprVisitor *visitor)
+{
+  visitor->visit (this); 
+}
  
 void 
 Variable::acceptVisitor (ExprVisitor *visitor)
@@ -1124,6 +1166,12 @@ QuantifiedExpr::acceptVisitor (ExprVisitor *visitor)
 
 void 
 Constant::acceptVisitor (ConstExprVisitor *visitor) const 
+{
+  visitor->visit (this); 
+}
+
+void 
+RandomValue::acceptVisitor (ConstExprVisitor *visitor) const 
 {
   visitor->visit (this); 
 }
@@ -1271,3 +1319,34 @@ Expr::find_or_add_expr (Expr *F)
 
   return F;
 }
+
+
+RandomValue::RandomValue (int bv_size) 
+  : Expr (0, bv_size)
+{
+}
+
+RandomValue::~RandomValue()
+{
+}
+
+Expr *
+RandomValue::change_bit_vector (int new_bv_offset, int new_bv_size) const
+{
+  assert (new_bv_offset == 0);
+
+  return new RandomValue (new_bv_size);
+}
+
+RandomValue *
+RandomValue::create (int bv_size)
+{
+  RandomValue *tmp = new RandomValue (bv_size);
+
+  return find_or_add(tmp);
+
+}
+
+
+
+

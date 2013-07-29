@@ -185,6 +185,7 @@ public:
 
   bool is_Variable() const;
   bool is_Constant() const;
+  bool is_RandomValue() const;
   bool is_UnaryApp() const;
   bool is_BinaryApp() const;
   bool is_TernaryApp() const;
@@ -321,6 +322,29 @@ public:
 
   constant_t get_val() const;
   constant_t get_not_truncated_value() const;
+
+  /*! \brief syntaxic equality of registers */
+  virtual bool equal (const Expr *F) const;
+  virtual size_t hash () const;
+  virtual bool has_type_of (const Expr *F) const;
+
+  bool contains(const Expr *o) const;
+  virtual unsigned int get_depth() const;
+
+  virtual void acceptVisitor (ExprVisitor *visitor);
+  virtual void acceptVisitor (ConstExprVisitor *visitor) const;
+};
+
+class RandomValue : public Expr {
+private:
+  RandomValue (int bv_size);
+  virtual ~RandomValue();
+
+protected:
+  virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
+
+public:
+  static RandomValue *create (int bv_size);
 
   /*! \brief syntaxic equality of registers */
   virtual bool equal (const Expr *F) const;

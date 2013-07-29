@@ -46,6 +46,7 @@ public:
   virtual ~ExprRewritingRule ();
 
   virtual void visit (const Constant *);
+  virtual void visit (const RandomValue *);
   virtual void visit (const Variable *);
   virtual void visit (const UnaryApp *);
   virtual void visit (const BinaryApp *);
