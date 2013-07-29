@@ -159,7 +159,7 @@ s_dump_memory_between (ostream &out, const ConcreteMemory *M,
 	    }
 	  else
 	    {
-	      out << "  ";
+	      out << "   ";
 	    }
 	  a++;
 	  p++;
