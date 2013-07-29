@@ -32,8 +32,8 @@
 
 #include <bfd.h>
 #include <config.h>
-#include <malloc.h>
 
+#include <cstdlib>
 #include <map>
 #include <string>
 
