@@ -42,7 +42,7 @@ class SymbolTable : public Object
 public:
   typedef std::tr1::unordered_map<std::string, address_t> SymbolMap;
   typedef SymbolMap::const_iterator const_symbol_iterator;
-  typedef std::tr1::unordered_map<address_t, std::string> AddressMap;
+  typedef std::tr1::unordered_map<address_t, std::list<std::string> > AddressMap;
   typedef AddressMap::const_iterator const_address_iterator;
 
   SymbolTable ();
@@ -57,7 +57,7 @@ public:
   virtual bool has (const std::string &id) const; 
   virtual bool has (address_t a) const;
   virtual address_t get (const std::string &id) const; 
-  virtual const std::string &get (address_t a) const;
+  virtual const std::list<std::string> &get (address_t a) const;
   virtual void output_text (std::ostream &out) const;
   virtual const_address_iterator find (address_t a) const;
   virtual const_symbol_iterator find (const std::string &id) const;

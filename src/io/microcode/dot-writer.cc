@@ -74,8 +74,8 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	continue;
 
       if (symboltable && symboltable->has (ma.getGlobal ()))
-	{
-	  string s = symboltable->get (ma.getGlobal ());
+	{	  
+	  string s = *symboltable->get (ma.getGlobal ()).begin ();
 	  rgb = 0;
 	  int k = 0;
 	  for (string::size_type i = 0; i < s.length (); i++)

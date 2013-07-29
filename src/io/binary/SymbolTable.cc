@@ -70,10 +70,9 @@ void
 SymbolTable::add_symbol (const string &id, address_t a)
 {
   assert (symbmap.find (id) == symbmap.end ());
-  assert (addrmap.find (a) == addrmap.end ());
 
   symbmap[id] = a;
-  addrmap[a] = id;
+  addrmap[a].push_back (id);
 }
 
 void 
@@ -103,7 +102,7 @@ SymbolTable::get (const string &id) const
   return symbmap.find (id)->second;
 }
  
-const string &
+const std::list<std::string> &
 SymbolTable::get (address_t a) const
 {
   assert (has (a));
@@ -123,8 +122,20 @@ SymbolTable::output_text (ostream &out) const
   for (vector<address_t>::size_type i = 0; i < addresses.size (); i++)
     {
       address_t a = addresses[i];
-      out << hex << setw (8) << setfill ('0') << a << ':' 
-	  << addrmap.find (a)->second << endl;
+      const std::list<std::string> &symbols = addrmap.find (a)->second;
+
+      out << std::hex << std::setw (8) << std::setfill ('0') << a << ':';
+      bool first = true;
+      for (std::list<std::string>::const_iterator s = symbols.begin ();
+	   s != symbols.end (); s++)
+	{
+	  if (first)
+	    first = false;
+	  else
+	    out << ", ";
+	  out << *s;
+	}
+      out << std::endl;
     }
 }
 

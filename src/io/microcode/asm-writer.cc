@@ -174,7 +174,9 @@ asm_writer (ostream &out, const Microcode *mc,
 
   while (i < nb_nodes && ! nodes->at (i)->has_annotation (AsmAnnotation::ID))
     i++;
-  MicrocodeAddress prev = nodes->at (i)->get_loc ();
+  MicrocodeAddress prev;
+  if (i < nb_nodes)
+    prev = nodes->at (i)->get_loc ();
   for (; i < nb_nodes; i++)
     {
       MicrocodeNode *node = nodes->at (i);
@@ -192,11 +194,15 @@ asm_writer (ostream &out, const Microcode *mc,
 
       if (symbtable->has (ma.getGlobal ()))
 	{
-	  out << right << hex << setfill ('0') 
-	      << setw (8) 
-	      << ma.getGlobal () 
-	      << setw (0) 
-	      << " <" << symbtable->get (ma.getGlobal ()) << ">: " << endl;
+	  const std::list<std::string> &symbols = 
+	    symbtable->get (ma.getGlobal ());
+	  for (std::list<std::string>::const_iterator s = symbols.begin ();
+	       s != symbols.end (); s++)
+	    out << right << hex << setfill ('0') 
+		<< setw (8) 
+		<< ma.getGlobal () 
+		<< setw (0)
+		<< " <" << *s << ">: " << endl;
 	}
       AsmAnnotation *a = (AsmAnnotation *) 
 	node->get_annotation (AsmAnnotation::ID);
@@ -229,9 +235,15 @@ asm_writer (ostream &out, const Microcode *mc,
 
 	  if (symbtable->has (saddr))
 	    {
-	      if (first) { out << " # jump to : " ; first = false; }
-	      else { out << ", "; }
-	      out << symbtable->get (saddr);
+	      const std::list<std::string> &symbols = symbtable->get (saddr);
+		
+	      for (std::list<std::string>::const_iterator s = symbols.begin (); 
+		   s != symbols.end (); s++)
+		{
+		  if (first) { out << " # jump to : " ; first = false; }
+		  else { out << ", "; }
+		  out << *s;
+		}
 	    }
 	}
       delete succ;
