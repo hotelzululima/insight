@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * 
@@ -30,8 +30,11 @@
  */
 #include "smtlib-writer.hh"
 
+#include <stdlib.h>
+
 #include <iomanip>
 #include <cassert>
+
 #include <utils/logs.hh>
 #include <kernel/expressions/ExprVisitor.hh>
 
