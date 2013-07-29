@@ -152,8 +152,15 @@ s_dump_memory_between (ostream &out, const ConcreteMemory *M,
       out << right << setw (3 * p) << setfill (' ') << "";
       while (p < 16 && a.get_address () <= end.get_address ())
 	{
-	  ConcreteValue val = M->get (a, 1, Architecture::LittleEndian);
-	  out << hex << setw(2) << setfill ('0') << val.get () << " ";
+	  if (M->is_defined (a))
+	    {
+	      ConcreteValue val = M->get (a, 1, Architecture::LittleEndian);
+	      out << hex << setw(2) << setfill ('0') << val.get () << " ";
+	    }
+	  else
+	    {
+	      out << "  ";
+	    }
 	  a++;
 	  p++;
 	}
