@@ -78,7 +78,7 @@ public:
       }
   }
 
-  virtual void visit (const RandomValue *val) {
+  virtual void visit (const RandomValue *) {
     logs::error << "RandomValue should not be sent to SMT solver." << endl;
     abort ();
   }
