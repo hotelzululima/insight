@@ -1,8 +1,41 @@
-#include <cassert>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
+/*-
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite Bordeaux 1.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS''
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
 #include "SymbolTable.hh"
+
+#include <algorithm>
+#include <cassert>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
 
 SymbolTable::SymbolTable () : symbmap(), addrmap ()
 {
@@ -34,7 +67,7 @@ SymbolTable::empty () const
 }
 
 void
-SymbolTable::add_symbol (const std::string &id, address_t a)
+SymbolTable::add_symbol (const string &id, address_t a)
 {
   assert (symbmap.find (id) == symbmap.end ());
   assert (addrmap.find (a) == addrmap.end ());
@@ -52,7 +85,7 @@ SymbolTable::merge_with (const SymbolTable *table)
 }
 
 bool
-SymbolTable::has (const std::string &id) const
+SymbolTable::has (const string &id) const
 {
   return (find (id) != end_symbols ());
 }
@@ -64,13 +97,13 @@ SymbolTable::has (address_t a) const
 }
 
 address_t
-SymbolTable::get (const std::string &id) const
+SymbolTable::get (const string &id) const
 {
   assert (has (id));
   return symbmap.find (id)->second;
 }
  
-const std::string &
+const string &
 SymbolTable::get (address_t a) const
 {
   assert (has (a));
@@ -78,20 +111,20 @@ SymbolTable::get (address_t a) const
 }
 
 void 
-SymbolTable::output_text (std::ostream &out) const
+SymbolTable::output_text (ostream &out) const
 {  
-  std::vector<address_t> addresses;
+  vector<address_t> addresses;
 
   for (const_address_iterator i = begin_addresses (); i != end_addresses (); 
        i++)
     addresses.push_back (i->first);
   sort (addresses.begin (), addresses.end ());
   
-  for (std::vector<address_t>::size_type i = 0; i < addresses.size (); i++)
+  for (vector<address_t>::size_type i = 0; i < addresses.size (); i++)
     {
       address_t a = addresses[i];
-      out << std::hex << std::setw (8) << std::setfill ('0') << a << ':' 
-	  << addrmap.find (a)->second << std::endl;
+      out << hex << setw (8) << setfill ('0') << a << ':' 
+	  << addrmap.find (a)->second << endl;
     }
 }
 
@@ -102,7 +135,7 @@ SymbolTable::find (address_t a) const
 }
 
 SymbolTable::const_symbol_iterator 
-SymbolTable::find (const std::string &id) const
+SymbolTable::find (const string &id) const
 {
   return symbmap.find (id);
 }
