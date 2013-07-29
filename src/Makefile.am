@@ -219,6 +219,11 @@ io_sources = \
 	io/binary/BinutilsBinaryLoader.hh 	\
 	io/binary/SymbolTable.cc 	 	\
 	io/binary/SymbolTable.hh 	 	\
+	io/binary/StubFactory.hh 		\
+	io/binary/BinutilsStubFactory.hh 	\
+	io/binary/BinutilsStubFactory.cc 	\
+	io/binary/ELF_x86_32_StubFactory.cc 	\
+        \
         io/expressions/expr-writer.hh		\
         io/expressions/expr-writer.cc		\
         io/expressions/smtlib-writer.hh		\

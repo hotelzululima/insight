@@ -76,6 +76,7 @@ public:
 
   virtual bool load_symbol_table (SymbolTable *table) const;
   virtual bool load_memory (ConcreteMemory *memory) const;
+  virtual StubFactory *get_StubFactory () const;
 
   /* BinutilsBinaryLoader specific fields and methods */
 protected:
@@ -85,8 +86,6 @@ protected:
   const Architecture *get_BFD_architecture() const;
   void fill_memory_from_sections(ConcreteMemory *) const;
   int fill_memory_from_ELF_Phdrs(ConcreteMemory *) const;
-private:
-  void add_section_of (ConcreteMemory *memory, bfd *file) const;
 };
 
 

@@ -27,7 +27,6 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
 #include "BinutilsBinaryLoader.hh"
 
 #include <cstdlib>
@@ -37,7 +36,7 @@
 
 #include <utils/logs.hh>
 #include <domains/concrete/ConcreteMemory.hh>
-
+#include "BinutilsStubFactory.hh"
 
 using namespace std;
 
@@ -169,11 +168,26 @@ BinutilsBinaryLoader::~BinutilsBinaryLoader()
 }
 
 void
-BinutilsBinaryLoader::fill_memory_from_sections(ConcreteMemory *memory) const {
+BinutilsBinaryLoader::fill_memory_from_sections (ConcreteMemory *memory) const {
+
   for (struct bfd_section *bfd_section = abfd->sections;
        bfd_section != NULL;
        bfd_section = bfd_section->next)
     {
+
+
+      if(((bfd_section->flags & (SEC_DATA|SEC_CODE)) == 0))
+	{
+	  logs::warning << "ignoring section " 
+			<< bfd_section->name
+			<<" with bad flag." << hex << bfd_section->flags << endl;
+	  continue;
+	}
+	logs::warning << hex <<  bfd_section->flags  << " "
+		      << bfd_section->name 
+		      << " " << bfd_get_reloc_upper_bound (abfd, bfd_section)
+		      << endl;
+
       /* Setting section start address */
       ConcreteAddress start(bfd_section->vma);
 
@@ -295,7 +309,7 @@ BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
   /* Read symbols */
   size_t ssyms = bfd_get_symtab_upper_bound(abfd);
   bool result = (ssyms > 0);
- 
+
   if (ssyms > 0) 
     {
       asymbol **syms = (asymbol **) operator new (ssyms);
@@ -311,10 +325,6 @@ BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
 	  if (table->has (name) && table->get (name) != addr)
 	    logs::error << "error: symbol '" << name << "' already defined "
 			<< "with a different value." << std::endl;
-	  else if (table->has (addr))
-	    logs::error << "error: address '" << std::hex << addr 
-			<< "' already in use with symbol '"
-			<< table->get (addr) << "'." << std::endl;
 	  else
 	    table->add_symbol (name, addr);
 	}
@@ -330,7 +340,7 @@ BinutilsBinaryLoader::load_memory (ConcreteMemory *memory) const
      information for ELF executables */
   if (bfd_get_flavour(abfd) == bfd_target_elf_flavour && abfd->flags & EXEC_P) {
     if (fill_memory_from_ELF_Phdrs(memory) != -1)
-      return memory;
+      return true;
     else
       logs::warning << "Couldn't use ELF Program headers, using sections";
   }
@@ -340,3 +350,18 @@ BinutilsBinaryLoader::load_memory (ConcreteMemory *memory) const
   return true;
 }
 
+StubFactory *
+BinutilsBinaryLoader::get_StubFactory () const 
+{
+  StubFactory *result = NULL;
+  const Architecture *arch = get_BFD_architecture ();
+
+  if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+    {
+      if (arch->get_endian () == Architecture::LittleEndian &&
+	  arch->get_proc () == Architecture::X86_32)
+	result = BinutilsStubFactory::create_ELF_x86_32_StubFactory (abfd);
+    }
+
+  return result;
+}

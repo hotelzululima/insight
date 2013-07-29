@@ -400,60 +400,45 @@ main (int argc, char *argv[])
     }
 
   insight::init (CONFIG);
+
   ConcreteMemory *memory = new ConcreteMemory ();
   SymbolTable *symboltable = new SymbolTable ();
   MicrocodeArchitecture *arch = NULL;
-  string execfile_name;
+  string execfile_name (argv[optind]);
+  StubFactory *stubfactory = NULL;
 
-  for (int i = optind; i < argc; i++)
-    {
-      /* Getting the execfile from command line */
-      string filename (argv[i]);
+  if (verbosity > 0)
+    logs::warning << "loading file " << execfile_name << endl;
 
-      if (execfile_name.empty ())
-	execfile_name = filename;
-      
-      if (verbosity > 0)
-	logs::warning << "loading file " << filename << endl;
-      /* Getting the loader */
+  try {
+    BinaryLoader *loader = new BinutilsBinaryLoader (execfile_name);
 
-      try {
-	BinaryLoader *loader = new BinutilsBinaryLoader (filename);
-	if (arch == NULL)
-	  arch = new MicrocodeArchitecture (loader->get_architecture());
-	else if (arch->get_reference_arch () != loader->get_architecture ())
-	  {
-	    logs::error << "try to load binary files with "
-			<< "different architectures: "
-			<< (*loader->get_architecture()) << " and " 
-			<< (*arch->get_reference_arch ()) << endl;
-	    exit (EXIT_FAILURE);
-	  }
-	  
+    if (verbosity > 0)
+      logs::warning << "Binary format: " << loader->get_format () << endl;
+
+    arch = new MicrocodeArchitecture (loader->get_architecture ());
+    stubfactory = loader->get_StubFactory ();
+
+    if (! loader->load_memory (memory) && verbosity > 0)
+      logs::warning << "nothing to load in file " << execfile_name << endl;
+    if (! loader->load_symbol_table (symboltable) && verbosity > 0)
+      logs::warning << "no symbols in file " << execfile_name << endl;
+
+    if (entrypoint_symbols.empty())
+      {
 	if (verbosity > 0)
-	  logs::warning << "Binary format: " << loader->get_format() << endl;
-
-	if (! loader->load_memory (memory) && verbosity > 0)
-	  logs::warning << "nothing to load in file " << filename << endl;
-	if (! loader->load_symbol_table (symboltable) && verbosity > 0)
-	  logs::warning << "no symbols in file " << execfile_name << endl;
-
-	if (entrypoint_symbols.empty())
-	  {
-	    if (verbosity > 0)
-	      logs::warning << "Adding entrypoint " 
-			    << loader->get_entrypoint() << endl;	    
-	    entrypoints.push_back (ConcreteAddress(loader->get_entrypoint()));
-	  }
-	delete loader;
-      } catch (Architecture::UnsupportedArch &e) {
-	logs::error << execfile_name << ": " << e.what() << endl;
-	exit(EXIT_FAILURE);
-      } catch (std::runtime_error &e) {
-	logs::error << e.what() << endl;
-	exit(EXIT_FAILURE);
+	  logs::warning << "Adding entrypoint " 
+			<< loader->get_entrypoint() << endl;	    
+	entrypoints.push_back (ConcreteAddress(loader->get_entrypoint()));
       }
-    }
+    delete loader;
+  } catch (Architecture::UnsupportedArch &e) {
+    logs::error << execfile_name << ": " << e.what() << endl;
+    exit(EXIT_FAILURE);
+  } catch (std::runtime_error &e) {
+    logs::error << e.what() << endl;
+    exit(EXIT_FAILURE);
+  }
 
   /* Setting the entrypoint */
   for (std::list<const char *>::iterator s = entrypoint_symbols.begin ();
@@ -483,11 +468,6 @@ main (int argc, char *argv[])
 	logs::display << "Entrypoint: 0x" << hex << *ep << dec << endl;
     }
 
-  if (display_symbols)
-    {
-      logs::display << symboltable->size () << " known symbols:" << endl
-		    << (*symboltable) << endl;
-    }
   /* Starting disassembly with proper disassembler */
   struct disassembler *dis = disassembler_lookup(disassembler);
   if (dis == NULL) {
@@ -513,7 +493,11 @@ main (int argc, char *argv[])
   if (preload_filename != NULL)
     mc = xml_parse_mc_program (preload_filename);
   else
-    mc = new Microcode ();
+    {
+      mc = new Microcode ();
+      if (stubfactory)
+	stubfactory->add_stubs (memory, arch, mc, symboltable);
+    }
 
   CTRL_C_HANDLER.output_program = false;
   CTRL_C_HANDLER.memory = memory;
@@ -579,10 +563,18 @@ main (int argc, char *argv[])
 	}
     }
 
+  if (display_symbols)
+    {
+      logs::display << symboltable->size () << " known symbols:" << endl
+		    << (*symboltable) << endl;
+    }
+
   delete mc;
   delete decoder;
-
+  
  end:
+  if (stubfactory)
+    delete stubfactory;
   delete memory;
   delete arch;
 

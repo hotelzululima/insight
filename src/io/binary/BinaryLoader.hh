@@ -40,6 +40,8 @@
 #include <kernel/Architecture.hh>
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
+#include <kernel/Microcode.hh>
+#include <io/binary/StubFactory.hh>
 #include <io/binary/SymbolTable.hh>
 
 /****************** BinaryLoader class definition *********************/
@@ -127,6 +129,8 @@ public:
 
   virtual bool load_symbol_table (SymbolTable *table) const;
   virtual bool load_memory (ConcreteMemory *memory) const;
+
+  virtual StubFactory *get_StubFactory () const = 0;
 
 protected:
   std::string filename;
