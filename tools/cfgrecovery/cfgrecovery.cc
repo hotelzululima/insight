@@ -444,6 +444,12 @@ main (int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
+  if (display_symbols)
+    {
+      logs::display << symboltable->size () << " known symbols:" << endl
+		    << (*symboltable) << endl;
+    }
+
   /* Setting the entrypoint */
   for (std::list<const char *>::iterator s = entrypoint_symbols.begin ();
        s != entrypoint_symbols.end (); s++)
@@ -565,12 +571,6 @@ main (int argc, char *argv[])
 	      output.flush ();
 	    }
 	}
-    }
-
-  if (display_symbols)
-    {
-      logs::display << symboltable->size () << " known symbols:" << endl
-		    << (*symboltable) << endl;
     }
 
   if (sink_nodes)
