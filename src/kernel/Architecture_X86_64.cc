@@ -39,6 +39,7 @@ Architecture_X86_64::Architecture_X86_64() :
   add_register("rcx", 64);
   add_register("rdx", 64);
 
+  add_register("rip", 64);
   add_register("rbp", 64);
   add_register("rsp", 64);
 
@@ -67,6 +68,7 @@ Architecture_X86_64::Architecture_X86_64() :
   add_register_alias("ecx", "rcx", 32, 0);
   add_register_alias("edx", "rdx", 32, 0);
 
+  add_register_alias("eip", "rip", 32, 0);
   add_register_alias("ebp", "rbp", 32, 0);
   add_register_alias("esp", "rsp", 32, 0);
 
