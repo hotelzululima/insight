@@ -161,8 +161,8 @@ if test x$ENABLE_DEBUG = xyes ; then
     CXXFLAGS="${CXXFLAGS} -g -DDEBUG"
 fi
 
-AC_ARG_ENABLE(optimize,
-              AS_HELP_STRING([--enable-optimize],
+AC_ARG_ENABLE(optimization,
+              AS_HELP_STRING([--enable-optimization],
 			     [compile with optimization (default is no)]),
               ENABLE_OPTIMIZE=$enableval,
               ENABLE_OPTIMIZE=no)
