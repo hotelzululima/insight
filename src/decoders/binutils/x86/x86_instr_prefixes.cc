@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,16 +28,16 @@
  * SUCH DAMAGE.
  */
 
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
-X86_32_TRANSLATE_0_OP(DATA16)
+X86_TRANSLATE_0_OP(DATA16)
 {
-  x86_32_skip (data);
+  x86_skip (data);
 }
 
-X86_32_TRANSLATE_PREFIX(ADDR16)
+X86_TRANSLATE_PREFIX(ADDR16)
 {
   if (start)
     {
@@ -50,7 +50,7 @@ X86_32_TRANSLATE_PREFIX(ADDR16)
     }
 }
 
-X86_32_TRANSLATE_PREFIX(ADDR32)
+X86_TRANSLATE_PREFIX(ADDR32)
 {
   if (start)
     {
@@ -63,7 +63,7 @@ X86_32_TRANSLATE_PREFIX(ADDR32)
     }
 }
 
-X86_32_TRANSLATE_PREFIX(DATA32)
+X86_TRANSLATE_PREFIX(DATA32)
 {
   if (start)
     {
@@ -76,7 +76,7 @@ X86_32_TRANSLATE_PREFIX(DATA32)
     }
 }
 
-X86_32_TRANSLATE_PREFIX(DATA16)
+X86_TRANSLATE_PREFIX(DATA16)
 {
   if (start)
     {
@@ -89,14 +89,14 @@ X86_32_TRANSLATE_PREFIX(DATA16)
     }
 }
 
-X86_32_TRANSLATE_PREFIX(LOCK)
+X86_TRANSLATE_PREFIX(LOCK)
 {
   if (start)
     data.lock = true;
 }
 
 static void
-s_start_rep (x86_32::parser_data &data)
+s_start_rep (x86::parser_data &data)
 {
   assert (! data.has_prefix);
 
@@ -105,13 +105,13 @@ s_start_rep (x86_32::parser_data &data)
   Expr *zero = Constant::zero (counter->get_bv_size ());
   Expr *stopcond = BinaryApp::createEquality (counter, zero);
   data.has_prefix = true;
-  x86_32_if_then_else (data.start_ma, data, stopcond,
+  x86_if_then_else (data.start_ma, data, stopcond,
 		       data.next_ma, data.start_ma + 1);
   data.start_ma++;
 }
 
 static void
-s_end_rep (x86_32::parser_data &data, Expr *cond)
+s_end_rep (x86::parser_data &data, Expr *cond)
 {
   if (! data.has_prefix)
     {
@@ -136,14 +136,14 @@ s_end_rep (x86_32::parser_data &data, Expr *cond)
       stopcond = BinaryApp::create (BV_OP_OR, stopcond, cond);
     }
 
-  x86_32_if_then_else (start, data, stopcond, data.next_ma,
+  x86_if_then_else (start, data, stopcond, data.next_ma,
 		       MicrocodeAddress (data.start_ma.getGlobal ()));
   
   data.has_prefix = false;
 }
 
 static void
-s_rep (x86_32::parser_data &data, bool start, Expr *zf_val)
+s_rep (x86::parser_data &data, bool start, Expr *zf_val)
 {
   if (start)
     s_start_rep (data);
@@ -151,27 +151,27 @@ s_rep (x86_32::parser_data &data, bool start, Expr *zf_val)
     s_end_rep (data, zf_val);
 }
 
-X86_32_TRANSLATE_PREFIX(REP)
+X86_TRANSLATE_PREFIX(REP)
 {  
   s_rep (data, start, NULL);
 }
 
-X86_32_TRANSLATE_PREFIX(REPE)
+X86_TRANSLATE_PREFIX(REPE)
 {
   s_rep (data, start, start ? NULL : Constant::zero (1));
 }
 
-X86_32_TRANSLATE_PREFIX(REPZ)
+X86_TRANSLATE_PREFIX(REPZ)
 {
   s_rep (data, start, start ? NULL : Constant::zero (1));
 }
 
-X86_32_TRANSLATE_PREFIX(REPNE)
+X86_TRANSLATE_PREFIX(REPNE)
 {
   s_rep (data, start, start ? NULL : Constant::one (1));
 }
 
-X86_32_TRANSLATE_PREFIX(REPNZ)
+X86_TRANSLATE_PREFIX(REPNZ)
 {
   s_rep (data, start, start ? NULL : Constant::one (1));
 }

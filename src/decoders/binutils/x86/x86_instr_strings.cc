@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,12 +28,12 @@
  * SUCH DAMAGE.
  */
 
-#include "x86_32_translate.hh"
+#include "x86_translate.hh"
 
 using namespace std;
 
 static void
-s_cmps (x86_32::parser_data &data, int size)
+s_cmps (x86::parser_data &data, int size)
 {
   MicrocodeAddress from = data.start_ma;
 
@@ -42,12 +42,12 @@ s_cmps (x86_32::parser_data &data, int size)
   Expr *op1 = MemCell::create (si->ref (), 0, size);
   Expr *op2 = MemCell::create (di->ref (), 0, size);
 
-  x86_32_cmpgen (from, data, op1, op2, NULL);
+  x86_cmpgen (from, data, op1, op2, NULL);
 
   MicrocodeAddress next = data.has_prefix ? from + 5 : data.next_ma;
   Expr *inc = Constant::create (size / 8, 0, si->get_bv_size ());
 
-  x86_32_if_then_else (from, data, data.get_flag ("df"), from + 3, from + 1);
+  x86_if_then_else (from, data, data.get_flag ("df"), from + 3, from + 1);
   from++;
   /* pc = from + 1 */
   data.mc->add_assignment (from, (LValue *) si->ref (), 
@@ -83,43 +83,43 @@ s_cmps (x86_32::parser_data &data, int size)
 
 			/* --------------- */
 
-X86_32_TRANSLATE_0_OP(CMPSB)
+X86_TRANSLATE_0_OP(CMPSB)
 {
   s_cmps (data, 8);
 }
 
-X86_32_TRANSLATE_2_OP(CMPSB)
+X86_TRANSLATE_2_OP(CMPSB)
 {
-  x86_32_translate<X86_32_TOKEN(CMPSB)> (data);
+  x86_translate<X86_TOKEN(CMPSB)> (data);
   op1->deref ();
   op2->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(CMPSW)
+X86_TRANSLATE_0_OP(CMPSW)
 {
   s_cmps (data, 16);
 }
 
-X86_32_TRANSLATE_2_OP(CMPSW)
+X86_TRANSLATE_2_OP(CMPSW)
 {
-  x86_32_translate<X86_32_TOKEN(CMPSW)> (data);
+  x86_translate<X86_TOKEN(CMPSW)> (data);
   op1->deref ();
   op2->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(CMPSD)
+X86_TRANSLATE_0_OP(CMPSD)
 {
   s_cmps (data, 32);
 }
 
-X86_32_TRANSLATE_2_OP(CMPSD)
+X86_TRANSLATE_2_OP(CMPSD)
 {
-  x86_32_translate<X86_32_TOKEN(CMPSD)> (data);
+  x86_translate<X86_TOKEN(CMPSD)> (data);
   op1->deref ();
   op2->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(LODS)
+X86_TRANSLATE_2_OP(LODS)
 {
   op1->deref ();
   Expr *esi = data.get_register (data.addr16 ? "si" : "esi");
@@ -133,7 +133,7 @@ X86_32_TRANSLATE_2_OP(LODS)
   /* pc = start */
   data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
   /* pc = start + 1*/
-  x86_32_if_then_else (from, data, data.get_flag ("df"),
+  x86_if_then_else (from, data, data.get_flag ("df"),
 		       from + 1, from + 2);
   from++;
   /* pc = start + 2*/
@@ -160,7 +160,7 @@ X86_32_TRANSLATE_2_OP(LODS)
   dst->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(STOS) 
+X86_TRANSLATE_2_OP(STOS) 
 {
   op2->deref ();
   Expr *edi = data.get_register (data.addr16 ? "di" : "edi");
@@ -174,7 +174,7 @@ X86_32_TRANSLATE_2_OP(STOS)
   /* pc = start */
   data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
   /* pc = start + 1*/
-  x86_32_if_then_else (from, data, data.get_flag ("df"),
+  x86_if_then_else (from, data, data.get_flag ("df"),
 		       from + 1, from + 2);
   from++;
   /* pc = start + 2 */
@@ -203,7 +203,7 @@ X86_32_TRANSLATE_2_OP(STOS)
 
 
 static void
-s_mov (x86_32::parser_data &data, int nb_bytes)
+s_mov (x86::parser_data &data, int nb_bytes)
 {
   MicrocodeAddress start (data.start_ma);
   MicrocodeAddress next = data.has_prefix ? start + 6 : data.next_ma;
@@ -218,7 +218,7 @@ s_mov (x86_32::parser_data &data, int nb_bytes)
 			   MemCell::create (si, 0, 8 * nb_bytes), 
 			   start + 1);
 
-  x86_32_if_then_else (start + 1, data, data.get_flag ("df"),
+  x86_if_then_else (start + 1, data, data.get_flag ("df"),
 		       start + 4, start + 2);
 
   data.mc->add_assignment (start + 2, (LValue *) si->ref (), 
@@ -249,52 +249,52 @@ s_mov (x86_32::parser_data &data, int nb_bytes)
   inc->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(MOVSB)
+X86_TRANSLATE_0_OP(MOVSB)
 {
   s_mov (data, 1);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSB)
+X86_TRANSLATE_2_OP(MOVSB)
 {
-  x86_32_translate<X86_32_TOKEN(MOVSB)> (data);
+  x86_translate<X86_TOKEN(MOVSB)> (data);
   op1->deref ();
   op2->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(MOVSW)
+X86_TRANSLATE_0_OP(MOVSW)
 {
   s_mov (data, 2);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSW)
+X86_TRANSLATE_2_OP(MOVSW)
 {
-  x86_32_translate<X86_32_TOKEN(MOVSW)> (data);
+  x86_translate<X86_TOKEN(MOVSW)> (data);
   op1->deref ();
   op2->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(MOVSL)
+X86_TRANSLATE_0_OP(MOVSL)
 {
   s_mov (data, 4);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSL)
+X86_TRANSLATE_2_OP(MOVSL)
 {
-  x86_32_translate<X86_32_TOKEN(MOVSL)> (data);
+  x86_translate<X86_TOKEN(MOVSL)> (data);
   op1->deref ();
   op2->deref ();
 }
 
 
-X86_32_TRANSLATE_2_OP(SCAS)
+X86_TRANSLATE_2_OP(SCAS)
 {
   MicrocodeAddress from (data.start_ma);
   
   Expr::extract_bit_vector (op1, 0, op2->get_bv_size ());
 
-  x86_32_cmpgen (from, data, op1, op2, NULL);
+  x86_cmpgen (from, data, op1, op2, NULL);
   MicrocodeAddress next = data.has_prefix ? from + 3 : data.next_ma;
-  x86_32_if_then_else (from, data, data.get_register ("df"),
+  x86_if_then_else (from, data, data.get_register ("df"),
 		       from + 1, from +2);
   from++;
   LValue *di = data.get_register (data.addr16 ? "di" : "edi");

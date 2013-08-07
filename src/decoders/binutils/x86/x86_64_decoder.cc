@@ -35,7 +35,7 @@
 
 #include "decoders/binutils/x86/x86_parser.hh"
 
-#include "x86_32_decoder.hh"
+#include "x86_64_decoder.hh"
 
 using namespace std;
 
@@ -43,7 +43,7 @@ bool x86_scanner_open(const string &instr);
 void x86_scanner_close();
 
 bool
-x86_32_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
+x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
 		    const string &instruction,
                     const ConcreteAddress &start,
                     const ConcreteAddress &next)

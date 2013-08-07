@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,12 +28,12 @@
  * SUCH DAMAGE.
  */
 
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
 static void
-s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift, 
+s_translate_shift (x86::parser_data &data, LValue *dst, Expr *shift, 
 		   bool go_left, bool keep_sign)
 {
   MicrocodeAddress from (data.start_ma);
@@ -69,12 +69,12 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
 					      Constant::one (8), 0, 8),
 			   start_while);
   from++;
-  x86_32_if_then_else (start_while, data, 
+  x86_if_then_else (start_while, data, 
 		       BinaryApp::create (BV_OP_NEQ, tempCount->ref (),
 					  Constant::zero (8), 0, 1),
 		       start_while + 1, from);
 
-  x86_32_if_then_else (from, data, 
+  x86_if_then_else (from, data, 
 		       BinaryApp::createEquality (mshift->ref (),
 						  Constant::one (8)),
 		       from + 1, from + 2);
@@ -88,15 +88,15 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
   else
     ofval = tempDest->extract_bit_vector (cfindex, 1);
 
-  x86_32_if_then_else (from, data, 
+  x86_if_then_else (from, data, 
 		       BinaryApp::createEquality (mshift->ref (),
 						  Constant::zero (8)),
 		       data.next_ma, from + 1);
   from++;
-  x86_32_assign_OF (from, data, ofval);
-  x86_32_compute_SF (from, data, dst);
-  x86_32_compute_ZF (from, data, dst);
-  x86_32_compute_PF (from, data, dst, &data.next_ma);
+  x86_assign_OF (from, data, ofval);
+  x86_compute_SF (from, data, dst);
+  x86_compute_ZF (from, data, dst);
+  x86_compute_PF (from, data, dst, &data.next_ma);
 
   tempCount->deref ();
   tempDest->deref ();
@@ -107,7 +107,7 @@ s_translate_shift (x86_32::parser_data &data, LValue *dst, Expr *shift,
 
 			/* --------------- */
 
-X86_32_TRANSLATE_2_OP(SAL)
+X86_TRANSLATE_2_OP(SAL)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
@@ -115,7 +115,7 @@ X86_32_TRANSLATE_2_OP(SAL)
   s_translate_shift (data, dst, bitcount, true, true);
 }
 
-X86_32_TRANSLATE_2_OP(SHL)
+X86_TRANSLATE_2_OP(SHL)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
@@ -123,7 +123,7 @@ X86_32_TRANSLATE_2_OP(SHL)
   s_translate_shift (data, dst, bitcount, true, false);
 }
 
-X86_32_TRANSLATE_2_OP(SAR)
+X86_TRANSLATE_2_OP(SAR)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
@@ -132,7 +132,7 @@ X86_32_TRANSLATE_2_OP(SAR)
   s_translate_shift (data, dst, bitcount, false, true);
 }
 
-X86_32_TRANSLATE_2_OP(SHR)
+X86_TRANSLATE_2_OP(SHR)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
@@ -144,8 +144,8 @@ X86_32_TRANSLATE_2_OP(SHR)
 			/* --------------- */
 
 #define translate_shift_one_bit(op) \
-X86_32_TRANSLATE_1_OP(op) \
-{ x86_32_translate<X86_32_TOKEN(op)> (data, Constant::one (BV_DEFAULT_SIZE), op1); }
+X86_TRANSLATE_1_OP(op) \
+{ x86_translate<X86_TOKEN(op)> (data, Constant::one (BV_DEFAULT_SIZE), op1); }
 
 
 translate_shift_one_bit (SAL)
@@ -166,13 +166,13 @@ translate_shift_one_bit (SHRL)
 translate_shift_one_bit (SHRW)
 
 #define translate_shift_two_args(op,szc,sz)				\
-X86_32_TRANSLATE_2_OP(op ## szc)					\
+X86_TRANSLATE_2_OP(op ## szc)					\
 {									\
   Expr *aux = TernaryApp::create (BV_OP_EXTRACT, op1,			\
 				  Constant::zero (op2->get_bv_size ()), \
  				  Constant::create (op2->get_bv_size (), \
 				 		    0, BV_DEFAULT_SIZE)); \
-  x86_32_translate<X86_32_TOKEN(op)> (data, aux, op2); \
+  x86_translate<X86_TOKEN(op)> (data, aux, op2); \
 }
 
 translate_shift_two_args(SAL,B,8)
@@ -194,18 +194,18 @@ translate_shift_two_args(SHR,W,16)
 			/* --------------- */
 
 #define translate_rotate_one_bit_wosz(op)				\
-  X86_32_TRANSLATE_1_OP(op)						\
+  X86_TRANSLATE_1_OP(op)						\
   {									\
-    x86_32_translate<X86_32_TOKEN(op)> (data,				\
+    x86_translate<X86_TOKEN(op)> (data,				\
 					Constant::one (BV_DEFAULT_SIZE), \
 					op1);				\
   }
 
 #define translate_rotate_one_bit_wsz(op,sz)				\
-  X86_32_TRANSLATE_1_OP(op)						\
+  X86_TRANSLATE_1_OP(op)						\
   {									\
     Expr::extract_bit_vector (op1, 0, sz);				\
-    x86_32_translate<X86_32_TOKEN(op)> (data,				\
+    x86_translate<X86_TOKEN(op)> (data,				\
 					Constant::one (BV_DEFAULT_SIZE), \
 					op1);				\
   }
@@ -233,10 +233,10 @@ translate_rotate_one_bit_wsz (RORL, 32)
 
 
 #define translate_rotate_two_args(op,szc,sz)			\
-  X86_32_TRANSLATE_2_OP(op ## szc)				\
+  X86_TRANSLATE_2_OP(op ## szc)				\
   {								\
     Expr::extract_bit_vector (op2, 0, sz);			\
-    x86_32_translate<X86_32_TOKEN(op)> (data, op1, op2);	\
+    x86_translate<X86_TOKEN(op)> (data, op1, op2);	\
   }
 
 translate_rotate_two_args (RCL, B, 8)
@@ -256,31 +256,31 @@ translate_rotate_two_args (ROR, W, 16)
 translate_rotate_two_args (ROR, L, 32)
 
 static void
-s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *bitcount, 
+s_translate_rotate (x86::parser_data &data, LValue *dst, Expr *bitcount, 
 		    bool go_left, bool rotate_carry);
 
-X86_32_TRANSLATE_2_OP(RCL)
+X86_TRANSLATE_2_OP(RCL)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
   s_translate_rotate (data, dst, bitcount, true, true);
 }
 
-X86_32_TRANSLATE_2_OP(RCR)
+X86_TRANSLATE_2_OP(RCR)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
   s_translate_rotate (data, dst, bitcount, false, true);
 }
 
-X86_32_TRANSLATE_2_OP(ROL)
+X86_TRANSLATE_2_OP(ROL)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
   s_translate_rotate (data, dst, bitcount, true, false);
 }
 
-X86_32_TRANSLATE_2_OP(ROR)
+X86_TRANSLATE_2_OP(ROR)
 {
   LValue *dst = (LValue *) op2;
   Expr *bitcount = op1;
@@ -288,7 +288,7 @@ X86_32_TRANSLATE_2_OP(ROR)
 }
 
 static void
-s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count, 
+s_translate_rotate (x86::parser_data &data, LValue *dst, Expr *count, 
 		    bool go_left, bool rotate_carry)
 {
   MicrocodeAddress from (data.start_ma);
@@ -302,12 +302,12 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
    */
   if (! go_left && rotate_carry) 
     {
-      x86_32_if_then_else (from, data, counteq1->ref (), from + 1, from + 2);
+      x86_if_then_else (from, data, counteq1->ref (), from + 1, from + 2);
       from++;
       Expr *of = BinaryApp::create (BV_OP_XOR, data.get_flag ("cf"),
 				    dst->extract_bit_vector (dsz - 1, 1), 
 				    0, 1);
-      x86_32_assign_OF (from, data, of);
+      x86_assign_OF (from, data, of);
     }
 
   /* tmpc : adjusted number of bits to be rotated */
@@ -327,7 +327,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
    */
   if (! rotate_carry)
     {
-      x86_32_if_then_else (from, data, cond->ref (), from + 1, data.next_ma);
+      x86_if_then_else (from, data, cond->ref (), from + 1, data.next_ma);
       from++;
     }
 
@@ -375,7 +375,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
 			   start_while);
   from++;
   
-  x86_32_if_then_else (start_while, data, cond, start_while + 1, 
+  x86_if_then_else (start_while, data, cond, start_while + 1, 
 		       (rotate_carry && !go_left) ? data.next_ma : from);
 
   /*
@@ -384,7 +384,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
   if (! rotate_carry)
     {
       int cfindex = go_left ? 0 : dsz - 1;
-      x86_32_assign_CF (from, data, dst->extract_bit_vector (cfindex, 1));
+      x86_assign_CF (from, data, dst->extract_bit_vector (cfindex, 1));
     }
 
   /*
@@ -392,7 +392,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
    */ 
   if (! (!go_left && rotate_carry)) // ! RCR case
     {
-      x86_32_if_then_else (from, data, counteq1->ref (), from + 1, 
+      x86_if_then_else (from, data, counteq1->ref (), from + 1, 
 			   data.next_ma);
       from++;
 
@@ -404,7 +404,7 @@ s_translate_rotate (x86_32::parser_data &data, LValue *dst, Expr *count,
 	of = BinaryApp::create (BV_OP_XOR, dst->extract_bit_vector (dsz - 1, 1), 
 				dst->extract_bit_vector (dsz - 2, 1), 0, 1);
 	  
-      x86_32_assign_OF (from, data, of, &data.next_ma);
+      x86_assign_OF (from, data, of, &data.next_ma);
     }
 
   counteq1->deref ();

@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,14 +28,14 @@
  * SUCH DAMAGE.
  */
 
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
 static void
-s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
+s_bs (x86::parser_data &data, Expr *op1, Expr *op2, bool forward)
 {
-  x86_32_set_operands_size (op2, op1);
+  x86_set_operands_size (op2, op1);
   Expr *src = op1;
   Expr *dst = op2;
   int dst_size = dst->get_bv_size ();
@@ -46,12 +46,12 @@ s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
   MicrocodeAddress if_part (data.start_ma + 1);
   
   MicrocodeAddress from (if_part);
-  x86_32_set_flag (from, data, "zf", &data.next_ma);
+  x86_set_flag (from, data, "zf", &data.next_ma);
   from = if_part + 1;
 
   MicrocodeAddress else_part (from);  
 
-  x86_32_reset_flag (from, data, "zf");
+  x86_reset_flag (from, data, "zf");
   int init_index = forward ? 0 : dst_size - 1;
   
   data.mc->add_assignment (from, (LValue *) temp->ref (), 
@@ -91,12 +91,12 @@ s_bs (x86_32::parser_data &data, Expr *op1, Expr *op2, bool forward)
   src->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(BSF)
+X86_TRANSLATE_2_OP(BSF)
 {  
   s_bs (data, op1, op2, true);
 }
 
-X86_32_TRANSLATE_2_OP(BSR)
+X86_TRANSLATE_2_OP(BSR)
 {
   s_bs (data, op1, op2, false);
 }
@@ -107,7 +107,7 @@ X86_32_TRANSLATE_2_OP(BSR)
 #define BT_COMP   3
 
 static void
-s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
+s_bt (x86::parser_data &data, Expr *op1, Expr *op2, int chg)
 {
   MicrocodeAddress from (data.start_ma);
   Expr *bitbase = op2;
@@ -122,7 +122,7 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
 				 
   op1->deref ();
 
-  x86_32_assign_CF (from, data, 
+  x86_assign_CF (from, data, 
 		    BinaryApp::create (BV_OP_RSH_U, bitbase, bitoffset, 0, 1), 
 		    to);
   if (chg == BT_NO_CHG)
@@ -176,59 +176,59 @@ s_bt (x86_32::parser_data &data, Expr *op1, Expr *op2, int chg)
 
 }
 
-X86_32_TRANSLATE_2_OP(BT)
+X86_TRANSLATE_2_OP(BT)
 {
   s_bt (data, op1, op2, BT_NO_CHG);
 }
 
-X86_32_TRANSLATE_2_OP(BTW)
+X86_TRANSLATE_2_OP(BTW)
 {
-  x86_32_translate<X86_32_TOKEN (BT)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BT)> (data, op1, op2);
 }
-X86_32_TRANSLATE_2_OP(BTL)
+X86_TRANSLATE_2_OP(BTL)
 {
-  x86_32_translate<X86_32_TOKEN (BT)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BT)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(BTC)
+X86_TRANSLATE_2_OP(BTC)
 {
   s_bt (data, op1, op2, BT_COMP);
 }
 
-X86_32_TRANSLATE_2_OP(BTCW)
+X86_TRANSLATE_2_OP(BTCW)
 {
-  x86_32_translate<X86_32_TOKEN (BTC)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BTC)> (data, op1, op2);
 }
-X86_32_TRANSLATE_2_OP(BTCL)
+X86_TRANSLATE_2_OP(BTCL)
 {
-  x86_32_translate<X86_32_TOKEN (BTC)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BTC)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(BTR)
+X86_TRANSLATE_2_OP(BTR)
 {
   s_bt (data, op1, op2, BT_RESET);
 }
 
-X86_32_TRANSLATE_2_OP(BTRW)
+X86_TRANSLATE_2_OP(BTRW)
 {
-  x86_32_translate<X86_32_TOKEN (BTR)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BTR)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(BTRL)
+X86_TRANSLATE_2_OP(BTRL)
 {
-  x86_32_translate<X86_32_TOKEN (BTR)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BTR)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(BTS)
+X86_TRANSLATE_2_OP(BTS)
 {
   s_bt (data, op1, op2, BT_SET);
 }
 
-X86_32_TRANSLATE_2_OP(BTSW)
+X86_TRANSLATE_2_OP(BTSW)
 {
-  x86_32_translate<X86_32_TOKEN (BTS)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BTS)> (data, op1, op2);
 }
-X86_32_TRANSLATE_2_OP(BTSL) 
+X86_TRANSLATE_2_OP(BTSL) 
 {
-  x86_32_translate<X86_32_TOKEN (BTS)> (data, op1, op2);
+  x86_translate<X86_TOKEN (BTS)> (data, op1, op2);
 }

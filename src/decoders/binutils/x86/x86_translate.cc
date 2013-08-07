@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -32,7 +32,7 @@
 #include <string>
 #include <sstream>
 #include <io/expressions/expr-parser.hh>
-#include "x86_32_translate.hh"
+#include "x86_translate.hh"
 
 #define TMPREG(_i) ("tmpr" #_i)
 #define TMP_REGISTERS_SHIFT 100
@@ -42,7 +42,7 @@ using namespace std;
 
 
 LValue *
-x86_32::parser_data::get_tmp_register (const char *id, int size) const
+x86::parser_data::get_tmp_register (const char *id, int size) const
 {
   ostringstream oss;
   assert (id != NULL);
@@ -55,7 +55,7 @@ x86_32::parser_data::get_tmp_register (const char *id, int size) const
 }
 
 LValue *
-x86_32::parser_data::get_register (const char *regname) const
+x86::parser_data::get_register (const char *regname) const
 {
   assert (regname != NULL);
 
@@ -70,14 +70,14 @@ x86_32::parser_data::get_register (const char *regname) const
 }
 
 LValue *
-x86_32::parser_data::get_flag (const char *flagname) const
+x86::parser_data::get_flag (const char *flagname) const
 {
   assert (flagname != NULL);
   return get_register (flagname);
 }
 
 
-x86_32::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out, 
+x86::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out, 
 				  const std::string &inst, 
 				  address_t start, address_t next) {
   arch = a;
@@ -93,10 +93,10 @@ x86_32::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
   code_segment = "cs";
   stack_segment = "ss";
 
-#define X86_32_CC(id,f) \
-  condition_codes[X86_32_CC_ ## id] = expr_parser (f, a);
-#include "x86_32_cc.def"
-#undef X86_32_CC
+#define X86_CC(id,f) \
+  condition_codes[X86_CC_ ## id] = expr_parser (f, a);
+#include "x86_cc.def"
+#undef X86_CC
   segment_registers.insert (a->get_register ("cs"));
   segment_registers.insert (a->get_register ("ds"));
   segment_registers.insert (a->get_register ("es"));
@@ -105,13 +105,13 @@ x86_32::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
   segment_registers.insert (a->get_register ("ss"));
 }
 
-x86_32::parser_data::~parser_data() {
+x86::parser_data::~parser_data() {
   for (int i = 0; i < NB_CC; i++)
     condition_codes[i]->deref ();
 }
 
 bool 
-x86_32::parser_data::is_segment_register (const Expr *expr) 
+x86::parser_data::is_segment_register (const Expr *expr) 
 {
   const RegisterExpr *reg = dynamic_cast<const RegisterExpr *> (expr);
   assert (reg != NULL);
@@ -121,7 +121,7 @@ x86_32::parser_data::is_segment_register (const Expr *expr)
 }
 
 Expr *
-x86_32::parser_data::get_memory_reference (Expr *section, int disp, 
+x86::parser_data::get_memory_reference (Expr *section, int disp, 
 					   Expr *bis) const
 {  
   if (section != NULL)
@@ -147,19 +147,19 @@ x86_32::parser_data::get_memory_reference (Expr *section, int disp,
 /* -------------------------------------------------------------------------- */
 
 void 
-x86_32_skip (x86_32::parser_data &data)
+x86_skip (x86::parser_data &data)
 {
   data.mc->add_skip (data.start_ma, data.next_ma); 
 }
 
 LValue * 
-x86_32_translate_esp (x86_32::parser_data &data)
+x86_translate_esp (x86::parser_data &data)
 {
   return data.get_register ("esp");
 }
 
 void 
-x86_32_set_operands_size (Expr *&dst, Expr *&src)
+x86_set_operands_size (Expr *&dst, Expr *&src)
 {
   if (dst->get_bv_size() < src->get_bv_size())
     Expr::extract_with_bit_vector_size_of (src, dst);
@@ -172,14 +172,14 @@ x86_32_set_operands_size (Expr *&dst, Expr *&src)
 
 static void
 s_assign_flag (const char *flag, MicrocodeAddress &from, 
-	       x86_32::parser_data &data, Expr *value, 
+	       x86::parser_data &data, Expr *value, 
 	       MicrocodeAddress *to = NULL)
 {
   data.mc->add_assignment (from, data.get_flag (flag), value, to);
 }
 
 void 
-x86_32_assign_flag (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_flag (MicrocodeAddress &from, x86::parser_data &data, 
 		 const char *flag, bool value, MicrocodeAddress *to)
 {
   Constant *cst = value ? Constant::one (1) : Constant::zero (1);
@@ -188,96 +188,96 @@ x86_32_assign_flag (MicrocodeAddress &from, x86_32::parser_data &data,
 }
 
 void 
-x86_32_set_flag (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_set_flag (MicrocodeAddress &from, x86::parser_data &data, 
 		 const char *flag, MicrocodeAddress *to)
 {
-  x86_32_assign_flag (from, data, flag, true, to);
+  x86_assign_flag (from, data, flag, true, to);
 }
 
 void 
-x86_32_reset_flag (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_flag (MicrocodeAddress &from, x86::parser_data &data, 
 		   const char *flag, MicrocodeAddress *to)
 {
-  x86_32_assign_flag (from, data, flag, false, to);
+  x86_assign_flag (from, data, flag, false, to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_reset_flags (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_flags (MicrocodeAddress &from, x86::parser_data &data, 
 		    const char **flags, MicrocodeAddress *to)
 {
   for (; flags[1] != NULL; flags++)
-    x86_32_reset_flag (from, data, *flags);
-  x86_32_reset_flag (from, data,*flags, to);
+    x86_reset_flag (from, data, *flags);
+  x86_reset_flag (from, data,*flags, to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_assign_AF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_AF (MicrocodeAddress &from, x86::parser_data &data, 
 		  Expr *expr, MicrocodeAddress *to )
 {
   s_assign_flag ("af", from, data, expr, to);
 }
 
 void 
-x86_32_compute_AF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_compute_AF (MicrocodeAddress &from, x86::parser_data &data, 
 		   const Expr *value, MicrocodeAddress *to)
 {
-  x86_32_assign_AF (from, data, value->extract_bit_vector (4, 1),  to);
+  x86_assign_AF (from, data, value->extract_bit_vector (4, 1),  to);
 }
 
 void 
-x86_32_reset_AF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_AF (MicrocodeAddress &from, x86::parser_data &data, 
 		 const Expr *, MicrocodeAddress *to)
 {
-  x86_32_reset_flag (from, data, "af", to);
+  x86_reset_flag (from, data, "af", to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_assign_CF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_CF (MicrocodeAddress &from, x86::parser_data &data, 
 		  Expr *expr, MicrocodeAddress *to)
 {
   s_assign_flag ("cf", from, data, expr, to);
 }
 
 void 
-x86_32_reset_CF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_CF (MicrocodeAddress &from, x86::parser_data &data, 
 		 const Expr *, MicrocodeAddress *to)
 {
-  x86_32_reset_flag (from, data, "cf", to);
+  x86_reset_flag (from, data, "cf", to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_assign_OF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_OF (MicrocodeAddress &from, x86::parser_data &data, 
 		  Expr *expr, MicrocodeAddress *to)
 {  
   s_assign_flag ("of", from, data, expr, to);
 }
 
 void 
-x86_32_reset_OF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_OF (MicrocodeAddress &from, x86::parser_data &data, 
 		 const Expr *, MicrocodeAddress *to)
 {
-  x86_32_reset_flag (from, data, "of", to);
+  x86_reset_flag (from, data, "of", to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_assign_PF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_PF (MicrocodeAddress &from, x86::parser_data &data, 
 		  Expr *expr, MicrocodeAddress *to )
 {
   s_assign_flag ("pf", from, data, expr, to);
 }
 
 void 
-x86_32_compute_PF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_compute_PF (MicrocodeAddress &from, x86::parser_data &data, 
 		   const Expr *value, MicrocodeAddress *to)
 {
   int i;
@@ -291,16 +291,16 @@ x86_32_compute_PF (MicrocodeAddress &from, x86_32::parser_data &data,
 }
 
 void 
-x86_32_reset_PF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_PF (MicrocodeAddress &from, x86::parser_data &data, 
 		 const Expr *, MicrocodeAddress *to)
 {
-  x86_32_reset_flag (from, data, "pf", to);
+  x86_reset_flag (from, data, "pf", to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_assign_SF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_SF (MicrocodeAddress &from, x86::parser_data &data, 
 		  Expr *expr, MicrocodeAddress *to)
 {
   s_assign_flag ("sf", from, data, expr, to);
@@ -308,7 +308,7 @@ x86_32_assign_SF (MicrocodeAddress &from, x86_32::parser_data &data,
 
 
 void 
-x86_32_compute_SF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_compute_SF (MicrocodeAddress &from, x86::parser_data &data, 
 		   const Expr *value, MicrocodeAddress *to)
 {
   Expr *v = value->extract_bit_vector (value->get_bv_size () -1, 1);
@@ -317,44 +317,44 @@ x86_32_compute_SF (MicrocodeAddress &from, x86_32::parser_data &data,
 
 
 void 
-x86_32_reset_SF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_SF (MicrocodeAddress &from, x86::parser_data &data, 
 		 const Expr *, MicrocodeAddress *to)
 {
-  x86_32_reset_flag (from, data, "sf", to);
+  x86_reset_flag (from, data, "sf", to);
 }
 
 			/* --------------- */
 
 void 
-x86_32_assign_ZF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_assign_ZF (MicrocodeAddress &from, x86::parser_data &data, 
 		  Expr *expr, MicrocodeAddress *to)
 {
   s_assign_flag ("zf", from, data, expr, to);
 }
 
 void 
-x86_32_compute_ZF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_compute_ZF (MicrocodeAddress &from, x86::parser_data &data, 
 		   const Expr *value, MicrocodeAddress *to)
 {
   Expr *v = 
     BinaryApp::createEquality (value->ref (), 
 			       Constant::zero (value->get_bv_size ()));
-  x86_32_assign_ZF (from, data, v, to);
+  x86_assign_ZF (from, data, v, to);
 }
 
 void 
-x86_32_reset_ZF (MicrocodeAddress &from, x86_32::parser_data &data, 
+x86_reset_ZF (MicrocodeAddress &from, x86::parser_data &data, 
 		 const Expr *, MicrocodeAddress *to)
 {
-  x86_32_reset_flag (from, data, "zf", to);
+  x86_reset_flag (from, data, "zf", to);
 }
 
 			/* --------------- */
 
 void
-x86_32_translate_with_size (x86_32::parser_data &DEFAULT_DATA, 
+x86_translate_with_size (x86::parser_data &DEFAULT_DATA, 
 			    Expr *op1, Expr *op2, int size,
-			    void (*tr) (x86_32::parser_data &,Expr *, Expr *))
+			    void (*tr) (x86::parser_data &,Expr *, Expr *))
 {
   Expr::extract_bit_vector (op1, 0, size);
   Expr::extract_bit_vector (op2, 0, size);
@@ -362,9 +362,9 @@ x86_32_translate_with_size (x86_32::parser_data &DEFAULT_DATA,
 }
 
 void
-x86_32_translate_with_size (x86_32::parser_data &DEFAULT_DATA, 
+x86_translate_with_size (x86::parser_data &DEFAULT_DATA, 
 			    Expr *op1, int size,
-			    void (*tr) (x86_32::parser_data &, Expr *))
+			    void (*tr) (x86::parser_data &, Expr *))
 {
   Expr::extract_bit_vector (op1, 0, size);
   tr (data, op1);
@@ -373,7 +373,7 @@ x86_32_translate_with_size (x86_32::parser_data &DEFAULT_DATA,
 			/* --------------- */
 
 void 
-x86_32_if_then_else (MicrocodeAddress start, x86_32::parser_data &data,
+x86_if_then_else (MicrocodeAddress start, x86::parser_data &data,
 		     Expr *cond,
 		     MicrocodeAddress ifaddr, MicrocodeAddress elseaddr)
 {
@@ -382,7 +382,7 @@ x86_32_if_then_else (MicrocodeAddress start, x86_32::parser_data &data,
 		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
 }
 
-X86_32_TRANSLATE_0_OP(BAD)
+X86_TRANSLATE_0_OP(BAD)
 {
   throw Decoder::UnknownMnemonic ("not an opcode at " 
 				  + data.start_ma.to_string ());

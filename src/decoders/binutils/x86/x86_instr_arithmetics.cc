@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -30,15 +30,15 @@
 
 #include <utils/bv-manip.hh>
 #include <io/expressions/expr-parser.hh>
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
 static void
-s_additive_op (MicrocodeAddress &from, x86_32::parser_data &data, 
+s_additive_op (MicrocodeAddress &from, x86::parser_data &data, 
 	       BinaryOp op, Expr *dst, Expr *src, MicrocodeAddress *to)
 {
-  x86_32_set_operands_size ((Expr *&) dst, src);
+  x86_set_operands_size ((Expr *&) dst, src);
 
   LValue *tmpr0 = data.get_tmp_register (TMPREG(0), dst->get_bv_size () + 1);
 
@@ -46,7 +46,7 @@ s_additive_op (MicrocodeAddress &from, x86_32::parser_data &data,
 			   BinaryApp::create (op, dst->ref (), src, 0, 
 					      tmpr0->get_bv_size ()));
 
-  x86_32_assign_CF (from, data, 
+  x86_assign_CF (from, data, 
 		    tmpr0->extract_bit_vector (dst->get_bv_size (), 1), 
 		    NULL);
   Expr *tmp[3];
@@ -62,69 +62,69 @@ s_additive_op (MicrocodeAddress &from, x86_32::parser_data &data,
   tmp[0] = BinaryApp::create (BV_OP_XOR, tmp[0]->ref (), tmp[2], 0, 1); 
   
   tmp[2] = BinaryApp::create (BV_OP_AND, tmp[0], tmp[1], 0, 1);
-  x86_32_assign_OF (from, data, tmp[2]);
+  x86_assign_OF (from, data, tmp[2]);
   data.mc->add_assignment (from, (LValue *) dst->ref (), 
 			   tmpr0->extract_bit_vector (0, dst->get_bv_size ()));
 
-  x86_32_compute_SF (from, data, dst);
-  x86_32_compute_ZF (from, data, dst);
-  x86_32_compute_AF (from, data, dst);
-  x86_32_compute_PF (from, data, dst, to);
+  x86_compute_SF (from, data, dst);
+  x86_compute_ZF (from, data, dst);
+  x86_compute_AF (from, data, dst);
+  x86_compute_PF (from, data, dst, to);
   dst->deref ();
   tmpr0->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(SUB)
+X86_TRANSLATE_2_OP(SUB)
 {
   MicrocodeAddress start (data.start_ma);
 
   s_additive_op (start, data, BV_OP_SUB, op2, op1, &data.next_ma);
 }
 
-X86_32_TRANSLATE_2_OP(SUBB)
+X86_TRANSLATE_2_OP(SUBB)
 {
-  x86_32_translate_with_size (data, op1, op2, 8, 
-			      x86_32_translate<X86_32_TOKEN(SUB)>);
+  x86_translate_with_size (data, op1, op2, 8, 
+			      x86_translate<X86_TOKEN(SUB)>);
 }
 
-X86_32_TRANSLATE_2_OP(SUBW)
+X86_TRANSLATE_2_OP(SUBW)
 {
-  x86_32_translate_with_size (data, op1, op2, 16, 
-			      x86_32_translate<X86_32_TOKEN(SUB)>);
+  x86_translate_with_size (data, op1, op2, 16, 
+			      x86_translate<X86_TOKEN(SUB)>);
 }
 
-X86_32_TRANSLATE_2_OP(SUBL)
+X86_TRANSLATE_2_OP(SUBL)
 {
-  x86_32_translate_with_size (data, op1, op2, 32, 
-			      x86_32_translate<X86_32_TOKEN(SUB)>);
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(SUB)>);
 }
 
-X86_32_TRANSLATE_2_OP(ADD)
+X86_TRANSLATE_2_OP(ADD)
 {
   MicrocodeAddress start (data.start_ma);
   s_additive_op (start, data, BV_OP_ADD, op2, op1, &data.next_ma);
 }
 
-X86_32_TRANSLATE_2_OP(ADDB)
+X86_TRANSLATE_2_OP(ADDB)
 {
-  x86_32_translate_with_size (data, op1, op2, 8, 
-			      x86_32_translate<X86_32_TOKEN(ADD)>);
+  x86_translate_with_size (data, op1, op2, 8, 
+			      x86_translate<X86_TOKEN(ADD)>);
 }
 
-X86_32_TRANSLATE_2_OP(ADDW)
+X86_TRANSLATE_2_OP(ADDW)
 {
-  x86_32_translate_with_size (data, op1, op2, 16, 
-			      x86_32_translate<X86_32_TOKEN(ADD)>);
+  x86_translate_with_size (data, op1, op2, 16, 
+			      x86_translate<X86_TOKEN(ADD)>);
 }
 
-X86_32_TRANSLATE_2_OP(ADDL)
+X86_TRANSLATE_2_OP(ADDL)
 {
-  x86_32_translate_with_size (data, op1, op2, 32, 
-			      x86_32_translate<X86_32_TOKEN(ADD)>);
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(ADD)>);
 }
 
 static void
-s_adc_sbb (x86_32::parser_data &data, Expr *dst, Expr *src, BinaryOp op)
+s_adc_sbb (x86::parser_data &data, Expr *dst, Expr *src, BinaryOp op)
 {
   if (src->is_Constant () && src->get_bv_size () < dst->get_bv_size ())
     {
@@ -147,32 +147,32 @@ s_adc_sbb (x86_32::parser_data &data, Expr *dst, Expr *src, BinaryOp op)
   s_additive_op (start, data, op, dst, src, &data.next_ma);
 }
 
-X86_32_TRANSLATE_2_OP(ADC)
+X86_TRANSLATE_2_OP(ADC)
 {  
   if (op2->is_MemCell () && ! op1->is_Constant ())
     Expr::extract_bit_vector (op2, 0, op1->get_bv_size ());
   s_adc_sbb (data, op2, op1, BV_OP_ADD);
 }
 
-X86_32_TRANSLATE_2_OP(ADCB)
+X86_TRANSLATE_2_OP(ADCB)
 {
-  x86_32_translate_with_size (data, op1, op2, 8, 
-			      x86_32_translate<X86_32_TOKEN(ADC)>);
+  x86_translate_with_size (data, op1, op2, 8, 
+			      x86_translate<X86_TOKEN(ADC)>);
 }
 
-X86_32_TRANSLATE_2_OP(ADCW)
+X86_TRANSLATE_2_OP(ADCW)
 {
-  x86_32_translate_with_size (data, op1, op2, 16, 
-			      x86_32_translate<X86_32_TOKEN(ADC)>);
+  x86_translate_with_size (data, op1, op2, 16, 
+			      x86_translate<X86_TOKEN(ADC)>);
 }
 
-X86_32_TRANSLATE_2_OP(ADCL)
+X86_TRANSLATE_2_OP(ADCL)
 {
-  x86_32_translate_with_size (data, op1, op2, 32, 
-			      x86_32_translate<X86_32_TOKEN(ADC)>);
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(ADC)>);
 }
 
-X86_32_TRANSLATE_1_OP(INC)
+X86_TRANSLATE_1_OP(INC)
 {
   MicrocodeAddress start (data.start_ma);
   s_additive_op (start, data, BV_OP_ADD, op1, 
@@ -180,22 +180,22 @@ X86_32_TRANSLATE_1_OP(INC)
 		 &data.next_ma);
 }
 
-X86_32_TRANSLATE_1_OP(INCB)
+X86_TRANSLATE_1_OP(INCB)
 {
-  x86_32_translate<X86_32_TOKEN(ADD)>(data, Constant::one(8), op1);
+  x86_translate<X86_TOKEN(ADD)>(data, Constant::one(8), op1);
 }
 
-X86_32_TRANSLATE_1_OP(INCW)
+X86_TRANSLATE_1_OP(INCW)
 {
-  x86_32_translate<X86_32_TOKEN(ADD)>(data, Constant::one(16), op1);
+  x86_translate<X86_TOKEN(ADD)>(data, Constant::one(16), op1);
 }
 
-X86_32_TRANSLATE_1_OP(INCL)
+X86_TRANSLATE_1_OP(INCL)
 {
-  x86_32_translate<X86_32_TOKEN(ADD)>(data, Constant::one(32), op1);
+  x86_translate<X86_TOKEN(ADD)>(data, Constant::one(32), op1);
 }
 
-X86_32_TRANSLATE_1_OP(DEC)
+X86_TRANSLATE_1_OP(DEC)
 {
   MicrocodeAddress start (data.start_ma);
   s_additive_op (start, data, BV_OP_SUB, op1, 
@@ -203,25 +203,25 @@ X86_32_TRANSLATE_1_OP(DEC)
 		 &data.next_ma);
 }
 
-X86_32_TRANSLATE_1_OP(DECB)
+X86_TRANSLATE_1_OP(DECB)
 {
-  x86_32_translate<X86_32_TOKEN(SUB)>(data, Constant::one(8), op1);
+  x86_translate<X86_TOKEN(SUB)>(data, Constant::one(8), op1);
 }
 
-X86_32_TRANSLATE_1_OP(DECW)
+X86_TRANSLATE_1_OP(DECW)
 {
-  x86_32_translate<X86_32_TOKEN(SUB)>(data, Constant::one(16), op1);
+  x86_translate<X86_TOKEN(SUB)>(data, Constant::one(16), op1);
 }
 
-X86_32_TRANSLATE_1_OP(DECL)
+X86_TRANSLATE_1_OP(DECL)
 {
-  x86_32_translate<X86_32_TOKEN(SUB)>(data, Constant::one(32), op1);
+  x86_translate<X86_TOKEN(SUB)>(data, Constant::one(32), op1);
 }
 
 			/* --------------- */
 
 static void
-s_aa (x86_32::parser_data &data, BinaryOp op)
+s_aa (x86::parser_data &data, BinaryOp op)
 {
   MicrocodeAddress if_part (data.start_ma + 1);
 
@@ -241,8 +241,8 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
 			   BinaryApp::create (op, 
 					      data.get_register ("ah"), 
 					      1, 0, 8));
-  x86_32_set_flag (from, data, "af");
-  x86_32_set_flag (from, data, "cf");
+  x86_set_flag (from, data, "af");
+  x86_set_flag (from, data, "cf");
   data.mc->add_assignment (from, data.get_register ("al"),
 			   BinaryApp::create (BV_OP_AND, 
 					      data.get_register ("al"),
@@ -252,8 +252,8 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
   MicrocodeAddress else_part (from);
 
 
-  x86_32_reset_flag (from, data, "af");
-  x86_32_reset_flag (from, data, "cf");
+  x86_reset_flag (from, data, "af");
+  x86_reset_flag (from, data, "cf");
   data.mc->add_assignment (from, data.get_register ("al"),
 			   BinaryApp::create (BV_OP_AND, 
 					      data.get_register ("al"),
@@ -264,17 +264,17 @@ s_aa (x86_32::parser_data &data, BinaryOp op)
   data.mc->add_skip (data.start_ma, if_part, cond->ref ());
 }
 
-X86_32_TRANSLATE_0_OP(AAA)
+X86_TRANSLATE_0_OP(AAA)
 {
   s_aa (data, BV_OP_ADD);
 }
 
-X86_32_TRANSLATE_0_OP(AAD)
+X86_TRANSLATE_0_OP(AAD)
 {
-  x86_32_translate<X86_32_TOKEN (AAD)> (data, Constant::create (10, 0, 8));
+  x86_translate<X86_TOKEN (AAD)> (data, Constant::create (10, 0, 8));
 }
 
-X86_32_TRANSLATE_1_OP(AAD)
+X86_TRANSLATE_1_OP(AAD)
 {
   MicrocodeAddress from (data.start_ma);
   LValue *al = data.get_register ("al");
@@ -287,17 +287,17 @@ X86_32_TRANSLATE_1_OP(AAD)
   data.mc->add_assignment (from, al, alvalue);
   data.mc->add_assignment (from, ah, Constant::zero (8));
 
-  x86_32_compute_SF (from, data, al);
-  x86_32_compute_ZF (from, data, al);
-  x86_32_compute_PF (from, data, al, &data.next_ma);
+  x86_compute_SF (from, data, al);
+  x86_compute_ZF (from, data, al);
+  x86_compute_PF (from, data, al, &data.next_ma);
 }
 
-X86_32_TRANSLATE_0_OP(AAM)
+X86_TRANSLATE_0_OP(AAM)
 {
-  x86_32_translate<X86_32_TOKEN (AAM)> (data, Constant::create (10, 0, 8));
+  x86_translate<X86_TOKEN (AAM)> (data, Constant::create (10, 0, 8));
 }
 
-X86_32_TRANSLATE_1_OP(AAM)
+X86_TRANSLATE_1_OP(AAM)
 {
   MicrocodeAddress from (data.start_ma);
   LValue *al = data.get_register ("al");
@@ -318,12 +318,12 @@ X86_32_TRANSLATE_1_OP(AAM)
 			   BinaryApp::create (BV_OP_MODULO, al->ref (), 
 					      op1->ref (), 0, 8));
 
-  x86_32_compute_SF (from, data, al);
-  x86_32_compute_ZF (from, data, al);
-  x86_32_compute_PF (from, data, al, &data.next_ma);
+  x86_compute_SF (from, data, al);
+  x86_compute_ZF (from, data, al);
+  x86_compute_PF (from, data, al, &data.next_ma);
 }
 
-X86_32_TRANSLATE_0_OP(AAS)
+X86_TRANSLATE_0_OP(AAS)
 {
   s_aa (data, BV_OP_SUB);
 }
@@ -331,7 +331,7 @@ X86_32_TRANSLATE_0_OP(AAS)
 			/* --------------- */
 
 static void
-s_daadas (x86_32::parser_data &data, bool add)
+s_daadas (x86::parser_data &data, bool add)
 {
   LValue *old_AL = data.get_tmp_register (TMPREG(0), 8);
   LValue *old_CF = data.get_tmp_register (TMPREG(1), 1);
@@ -341,7 +341,7 @@ s_daadas (x86_32::parser_data &data, bool add)
 			   data.get_register ("al"));
   data.mc->add_assignment (from, (LValue *) old_CF->ref (), 
 			   data.get_flag ("cf"));
-  x86_32_reset_CF (from, data);
+  x86_reset_CF (from, data);
 
   Expr *cond1 = expr_parser ("(OR "
 			     "(GT_U (AND %al 0xF{0;8}){0;8} 0x9{0;8}){0;1} "
@@ -414,9 +414,9 @@ s_daadas (x86_32::parser_data &data, bool add)
 			     data.get_flag ("cf"),
 			     Constant::zero (1));
   LValue *al = data.get_register ("al");
-  x86_32_compute_SF (from, data, al);
-  x86_32_compute_ZF (from, data, al);  
-  x86_32_compute_PF (from, data, al, &data.next_ma);
+  x86_compute_SF (from, data, al);
+  x86_compute_ZF (from, data, al);  
+  x86_compute_PF (from, data, al, &data.next_ma);
 
   al->deref ();
   old_AL->deref ();
@@ -428,12 +428,12 @@ s_daadas (x86_32::parser_data &data, bool add)
 
 			/* --------------- */
 
-X86_32_TRANSLATE_0_OP(DAA)
+X86_TRANSLATE_0_OP(DAA)
 {  
   s_daadas (data, true);
 }
 
-X86_32_TRANSLATE_0_OP(DAS)
+X86_TRANSLATE_0_OP(DAS)
 {
   s_daadas (data, false);
 }
@@ -441,7 +441,7 @@ X86_32_TRANSLATE_0_OP(DAS)
 			/* --------------- */
 
 static void
-s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
+s_div (x86::parser_data &data, Expr *op1, bool udiv)
 {
   Expr *src = op1;
   int srcsize = src->get_bv_size ();
@@ -538,7 +538,7 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
 			      BinaryApp::create (BV_OP_LT_S, 
 						 temp->ref (), aux, 0, 1));
     }
-  x86_32_if_then_else (from, data, cond, data.next_ma, from + 1);
+  x86_if_then_else (from, data, cond, data.next_ma, from + 1);
   from++;
   data.mc->add_assignment (from, (LValue *) temp2->ref (),
 			   BinaryApp::create (BV_OP_MODULO, op->ref (), 
@@ -558,54 +558,54 @@ s_div (x86_32::parser_data &data, Expr *op1, bool udiv)
   src2->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(DIV)
+X86_TRANSLATE_1_OP(DIV)
 {
   s_div (data, op1, true);
 }
 
-X86_32_TRANSLATE_1_OP(DIVB)
+X86_TRANSLATE_1_OP(DIVB)
 {
-  x86_32_translate_with_size (data, op1, 8, 
-			      x86_32_translate<X86_32_TOKEN(DIV)>);
+  x86_translate_with_size (data, op1, 8, 
+			      x86_translate<X86_TOKEN(DIV)>);
 }
 
-X86_32_TRANSLATE_1_OP(DIVL)
+X86_TRANSLATE_1_OP(DIVL)
 {
-  x86_32_translate_with_size (data, op1, 32, 
-			      x86_32_translate<X86_32_TOKEN(DIV)>);
+  x86_translate_with_size (data, op1, 32, 
+			      x86_translate<X86_TOKEN(DIV)>);
 }
 
-X86_32_TRANSLATE_1_OP(DIVW)
+X86_TRANSLATE_1_OP(DIVW)
 {
-  x86_32_translate_with_size (data, op1, 16, 
-			      x86_32_translate<X86_32_TOKEN(DIV)>);
+  x86_translate_with_size (data, op1, 16, 
+			      x86_translate<X86_TOKEN(DIV)>);
 }
 
-X86_32_TRANSLATE_1_OP(IDIV)
+X86_TRANSLATE_1_OP(IDIV)
 {
   s_div (data, op1, false);
 }
 
-X86_32_TRANSLATE_1_OP(IDIVB)
+X86_TRANSLATE_1_OP(IDIVB)
 {
-  x86_32_translate_with_size (data, op1, 8, 
-			      x86_32_translate<X86_32_TOKEN(IDIV)>);
+  x86_translate_with_size (data, op1, 8, 
+			      x86_translate<X86_TOKEN(IDIV)>);
 }
 
-X86_32_TRANSLATE_1_OP(IDIVL)
+X86_TRANSLATE_1_OP(IDIVL)
 {
-  x86_32_translate_with_size (data, op1, 32, 
-			      x86_32_translate<X86_32_TOKEN(IDIV)>);
+  x86_translate_with_size (data, op1, 32, 
+			      x86_translate<X86_TOKEN(IDIV)>);
 }
 
-X86_32_TRANSLATE_1_OP(IDIVW)
+X86_TRANSLATE_1_OP(IDIVW)
 {
-  x86_32_translate_with_size (data, op1, 16, 
-			      x86_32_translate<X86_32_TOKEN(IDIV)>);
+  x86_translate_with_size (data, op1, 16, 
+			      x86_translate<X86_TOKEN(IDIV)>);
 }
 			/* --------------- */
 
-X86_32_TRANSLATE_1_OP(IMUL)
+X86_TRANSLATE_1_OP(IMUL)
 {
   Expr *src = op1;
   int srcsz = src->get_bv_size ();
@@ -660,7 +660,7 @@ X86_32_TRANSLATE_1_OP(IMUL)
 					Constant::zero (32));
     }
 
-  x86_32_if_then_else (from, data, cond, from + 1, from + 3);
+  x86_if_then_else (from, data, cond, from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::zero (1));
   data.mc->add_assignment (from, data.get_flag ("of"), Constant::zero (1), 
@@ -671,7 +671,7 @@ X86_32_TRANSLATE_1_OP(IMUL)
 			   data.next_ma);
 }
 
-X86_32_TRANSLATE_2_OP(IMUL)
+X86_TRANSLATE_2_OP(IMUL)
 {
   MicrocodeAddress from (data.start_ma);
   Expr *dst = op2;
@@ -691,7 +691,7 @@ X86_32_TRANSLATE_2_OP(IMUL)
 			   temp->extract_bit_vector (0, dstsz));
 
   Expr *aux = temp->extract_bit_vector (dstsz, dstsz);
-  x86_32_if_then_else (from, data,
+  x86_if_then_else (from, data,
 		       BinaryApp::createDisequality (Constant::zero (dstsz),
 						     aux),
 		       from + 1, from + 3);
@@ -710,7 +710,7 @@ X86_32_TRANSLATE_2_OP(IMUL)
   dst->deref ();
 }
 
-X86_32_TRANSLATE_3_OP(IMUL)
+X86_TRANSLATE_3_OP(IMUL)
 {
   MicrocodeAddress from (data.start_ma);
   Expr *dst = op3;
@@ -743,7 +743,7 @@ X86_32_TRANSLATE_3_OP(IMUL)
 			   temp->extract_bit_vector (0, dstsz));
 
   Expr *aux = temp->extract_bit_vector (dstsz, dstsz);
-  x86_32_if_then_else (from, data,
+  x86_if_then_else (from, data,
 		       BinaryApp::createDisequality (Constant::zero (dstsz),
 						     aux),
 		       from + 1, from + 3);
@@ -763,67 +763,67 @@ X86_32_TRANSLATE_3_OP(IMUL)
   dst->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(IMULB)
+X86_TRANSLATE_1_OP(IMULB)
 {
-  x86_32_translate_with_size (data, op1, 8, 
-			      x86_32_translate<X86_32_TOKEN(IMUL)>);
+  x86_translate_with_size (data, op1, 8, 
+			      x86_translate<X86_TOKEN(IMUL)>);
 }
 
-X86_32_TRANSLATE_2_OP(IMULB)
+X86_TRANSLATE_2_OP(IMULB)
 {
-  x86_32_translate_with_size (data, op1, op2, 8, 
-			      x86_32_translate<X86_32_TOKEN(IMUL)>);
+  x86_translate_with_size (data, op1, op2, 8, 
+			      x86_translate<X86_TOKEN(IMUL)>);
 }
 
-X86_32_TRANSLATE_3_OP(IMULB)
+X86_TRANSLATE_3_OP(IMULB)
 {
   Expr::extract_bit_vector (op1, 0, 8);
   Expr::extract_bit_vector (op2, 0, 8);
   
-  x86_32_translate<X86_32_TOKEN(IMUL)> (data, op1, op2, op3);
+  x86_translate<X86_TOKEN(IMUL)> (data, op1, op2, op3);
 }
 
-X86_32_TRANSLATE_1_OP(IMULW)
+X86_TRANSLATE_1_OP(IMULW)
 {
-  x86_32_translate_with_size (data, op1, 16, 
-			      x86_32_translate<X86_32_TOKEN(IMUL)>);
+  x86_translate_with_size (data, op1, 16, 
+			      x86_translate<X86_TOKEN(IMUL)>);
 }
 
-X86_32_TRANSLATE_2_OP(IMULW)
+X86_TRANSLATE_2_OP(IMULW)
 {
-  x86_32_translate_with_size (data, op1, op2, 16,
-			      x86_32_translate<X86_32_TOKEN(IMUL)>);
+  x86_translate_with_size (data, op1, op2, 16,
+			      x86_translate<X86_TOKEN(IMUL)>);
 }
 
-X86_32_TRANSLATE_3_OP(IMULW)
+X86_TRANSLATE_3_OP(IMULW)
 {
   Expr::extract_bit_vector (op1, 0, 16);
   Expr::extract_bit_vector (op2, 0, 16);
   
-  x86_32_translate<X86_32_TOKEN(IMUL)> (data, op1, op2, op3);
+  x86_translate<X86_TOKEN(IMUL)> (data, op1, op2, op3);
 }
 
-X86_32_TRANSLATE_1_OP(IMULL)
+X86_TRANSLATE_1_OP(IMULL)
 {
-  x86_32_translate_with_size (data, op1, 32,
-			      x86_32_translate<X86_32_TOKEN(IMUL)>);
+  x86_translate_with_size (data, op1, 32,
+			      x86_translate<X86_TOKEN(IMUL)>);
 }
 
-X86_32_TRANSLATE_2_OP(IMULL)
+X86_TRANSLATE_2_OP(IMULL)
 {
-  x86_32_translate_with_size (data, op1, op2, 32,
-			      x86_32_translate<X86_32_TOKEN(IMUL)>);
+  x86_translate_with_size (data, op1, op2, 32,
+			      x86_translate<X86_TOKEN(IMUL)>);
 }
 
-X86_32_TRANSLATE_3_OP(IMULL)
+X86_TRANSLATE_3_OP(IMULL)
 {
   Expr::extract_bit_vector (op1, 0, 32);
   Expr::extract_bit_vector (op2, 0, 32);
   
-  x86_32_translate<X86_32_TOKEN(IMUL)> (data, op1, op2, op3);
+  x86_translate<X86_TOKEN(IMUL)> (data, op1, op2, op3);
 }
 
-X86_32_TRANSLATE_1_OP(MUL)
+X86_TRANSLATE_1_OP(MUL)
 {
   Expr *upper;
   Expr *lower;
@@ -859,7 +859,7 @@ X86_32_TRANSLATE_1_OP(MUL)
   Expr *cond = 
     BinaryApp::createEquality (upper->ref (),
 			       Constant::zero (upper->get_bv_size ()));
-  x86_32_if_then_else (from, data, cond, from + 1, from + 3);
+  x86_if_then_else (from, data, cond, from + 1, from + 3);
   from++;
   data.mc->add_assignment (from, data.get_flag ("cf"), Constant::zero (1));
   data.mc->add_assignment (from, data.get_flag ("of"), Constant::zero (1), 
@@ -875,25 +875,25 @@ X86_32_TRANSLATE_1_OP(MUL)
   lower->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(MULB)
+X86_TRANSLATE_1_OP(MULB)
 {
   Expr::extract_bit_vector (op1, 0, 8);
-  x86_32_translate<X86_32_TOKEN(MUL)> (data, op1); 
+  x86_translate<X86_TOKEN(MUL)> (data, op1); 
 }
 
-X86_32_TRANSLATE_1_OP(MULW)
+X86_TRANSLATE_1_OP(MULW)
 {
   Expr::extract_bit_vector (op1, 0, 16);
-  x86_32_translate<X86_32_TOKEN(MUL)> (data, op1); 
+  x86_translate<X86_TOKEN(MUL)> (data, op1); 
 }
 
-X86_32_TRANSLATE_1_OP(MULL)
+X86_TRANSLATE_1_OP(MULL)
 {
   Expr::extract_bit_vector (op1, 0, 32);
-  x86_32_translate<X86_32_TOKEN(MUL)> (data, op1); 
+  x86_translate<X86_TOKEN(MUL)> (data, op1); 
 }
 
-X86_32_TRANSLATE_1_OP(NEG)
+X86_TRANSLATE_1_OP(NEG)
 {
   MicrocodeAddress from (data.start_ma);
   int op1size = op1->get_bv_size ();
@@ -906,50 +906,50 @@ X86_32_TRANSLATE_1_OP(NEG)
 			   data.next_ma);
 }
 
-X86_32_TRANSLATE_1_OP(NEGB)
+X86_TRANSLATE_1_OP(NEGB)
 {
   Expr::extract_bit_vector (op1, 0, 8);
-  x86_32_translate<X86_32_TOKEN(NEG)> (data, op1);   
+  x86_translate<X86_TOKEN(NEG)> (data, op1);   
 }
 
-X86_32_TRANSLATE_1_OP(NEGW)
+X86_TRANSLATE_1_OP(NEGW)
 {
   Expr::extract_bit_vector (op1, 0, 16);
-  x86_32_translate<X86_32_TOKEN(NEG)> (data, op1);   
+  x86_translate<X86_TOKEN(NEG)> (data, op1);   
 }
 
-X86_32_TRANSLATE_1_OP(NEGL)
+X86_TRANSLATE_1_OP(NEGL)
 {
   Expr::extract_bit_vector (op1, 0, 32);
-  x86_32_translate<X86_32_TOKEN(NEG)> (data, op1);   
+  x86_translate<X86_TOKEN(NEG)> (data, op1);   
 }
 
-X86_32_TRANSLATE_2_OP(SBB)
+X86_TRANSLATE_2_OP(SBB)
 {
   if (op2->is_MemCell () && ! op1->is_Constant ())
     Expr::extract_bit_vector (op2, 0, op1->get_bv_size ());
   s_adc_sbb (data, op2, op1, BV_OP_SUB);
 }
 
-X86_32_TRANSLATE_2_OP(SBBB)
+X86_TRANSLATE_2_OP(SBBB)
 {
   Expr::extract_bit_vector (op2, 0, 8);
-  x86_32_translate<X86_32_TOKEN(SBB)> (data, op1, op2);
+  x86_translate<X86_TOKEN(SBB)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(SBBW)
+X86_TRANSLATE_2_OP(SBBW)
 {
   Expr::extract_bit_vector (op2, 0, 16);
-  x86_32_translate<X86_32_TOKEN(SBB)> (data, op1, op2);
+  x86_translate<X86_TOKEN(SBB)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(SBBL)
+X86_TRANSLATE_2_OP(SBBL)
 {
   Expr::extract_bit_vector (op2, 0, 32);
-  x86_32_translate<X86_32_TOKEN(SBB)> (data, op1, op2);
+  x86_translate<X86_TOKEN(SBB)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(XADD)
+X86_TRANSLATE_2_OP(XADD)
 {
   Expr *dst = op2;
   Expr *src = op1;
@@ -963,7 +963,7 @@ X86_32_TRANSLATE_2_OP(XADD)
 					      dst->ref (), src->ref (), 0, 
 					      temp->get_bv_size ()));
 
-  x86_32_assign_CF (from, data, 
+  x86_assign_CF (from, data, 
 		    temp->extract_bit_vector (dst->get_bv_size (), 1), 
 		    NULL);
   Expr *tmp[3];
@@ -978,16 +978,16 @@ X86_32_TRANSLATE_2_OP(XADD)
   tmp[0] = BinaryApp::create (BV_OP_XOR, tmp[0]->ref (), tmp[2], 0, 1); 
   
   tmp[2] = BinaryApp::create (BV_OP_AND, tmp[0], tmp[1], 0, 1);
-  x86_32_assign_OF (from, data, tmp[2]);
+  x86_assign_OF (from, data, tmp[2]);
 
   data.mc->add_assignment (from, (LValue *) dst->ref (), src->ref ());
   data.mc->add_assignment (from, (LValue *) src->ref (), 
 			   temp->extract_bit_vector (0, src->get_bv_size ()));
 
-  x86_32_compute_SF (from, data, dst);
-  x86_32_compute_ZF (from, data, dst);
-  x86_32_compute_AF (from, data, dst);
-  x86_32_compute_PF (from, data, dst, &data.next_ma);
+  x86_compute_SF (from, data, dst);
+  x86_compute_ZF (from, data, dst);
+  x86_compute_AF (from, data, dst);
+  x86_compute_PF (from, data, dst, &data.next_ma);
 
   dst->deref ();
   temp->deref ();

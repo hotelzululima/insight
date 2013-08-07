@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  *
@@ -30,12 +30,12 @@
  */
 #include <cassert>
 #include <utils/bv-manip.hh>
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
 
-X86_32_TRANSLATE_2_OP(ENTER)
+X86_TRANSLATE_2_OP(ENTER)
 {
   Constant *nesting_level = dynamic_cast<Constant *> (op2);
   Constant *frame_size = dynamic_cast<Constant *> (op1);
@@ -49,7 +49,7 @@ X86_32_TRANSLATE_2_OP(ENTER)
   Expr *esp = data.get_register (stack_size == 32 ? "esp" : "sp");
   Expr *frame_temp = esp->ref ();
 
-  x86_32_push (from, data, ebp->ref ());
+  x86_push (from, data, ebp->ref ());
 
   int nl = nesting_level->get_val () % 32;
   if (nl > 1)
@@ -63,11 +63,11 @@ X86_32_TRANSLATE_2_OP(ENTER)
 						      ebp->ref (),
 						      dec->ref (),
 						      0, ebp->get_bv_size ()));
-	  x86_32_push (from, data, 
+	  x86_push (from, data, 
 		       MemCell::create (ebp->ref (), 0, stack_size));
 	}
       dec->deref ();
-      x86_32_push (from, data, frame_temp->ref ());     
+      x86_push (from, data, frame_temp->ref ());     
     }
 
   data.mc->add_assignment (from, (LValue *) ebp->ref (), frame_temp->ref ());
@@ -85,47 +85,47 @@ X86_32_TRANSLATE_2_OP(ENTER)
   frame_size->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(ENTERW)
+X86_TRANSLATE_2_OP(ENTERW)
 {
   data.data16 = true;
-  x86_32_translate<X86_32_TOKEN(ENTER)> (data, op1, op2);
+  x86_translate<X86_TOKEN(ENTER)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(ENTERL)
+X86_TRANSLATE_2_OP(ENTERL)
 {
   data.data16 = false;
-  x86_32_translate<X86_32_TOKEN(ENTER)> (data, op1, op2);
+  x86_translate<X86_TOKEN(ENTER)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_0_OP(LEAVE)
+X86_TRANSLATE_0_OP(LEAVE)
 {
   MicrocodeAddress from (data.start_ma);
   LValue *ebp = data.get_register (data.addr16 ? "bp" : "ebp");
   LValue *esp = data.get_register (data.addr16 ? "sp" : "esp");
 
   data.mc->add_assignment (from, (LValue *) esp->ref (), ebp->ref ());
-  x86_32_pop (from, data, (LValue *) ebp->ref (), &data.next_ma);
+  x86_pop (from, data, (LValue *) ebp->ref (), &data.next_ma);
   esp->deref ();
   ebp->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(LEAVEW)
+X86_TRANSLATE_0_OP(LEAVEW)
 {
   data.data16 = true;
-  x86_32_translate<X86_32_TOKEN(LEAVE)> (data);
+  x86_translate<X86_TOKEN(LEAVE)> (data);
 }
 
-X86_32_TRANSLATE_0_OP(LEAVEL)
+X86_TRANSLATE_0_OP(LEAVEL)
 {
   data.data16 = false;
-  x86_32_translate<X86_32_TOKEN(LEAVE)> (data);
+  x86_translate<X86_TOKEN(LEAVE)> (data);
 }
 
 static void
 s_pop_all(MicrocodeAddress start, MicrocodeAddress end, 
-	  x86_32::parser_data &data, const char *regs[]);
+	  x86::parser_data &data, const char *regs[]);
 
-X86_32_TRANSLATE_0_OP(POPA)
+X86_TRANSLATE_0_OP(POPA)
 {
   const char *regs[] = { "edi", "esi", "ebp", "esp", 
 			 "ebx", "edx", "ecx", "eax" };
@@ -133,48 +133,48 @@ X86_32_TRANSLATE_0_OP(POPA)
   s_pop_all (data.start_ma, data.next_ma, data, regs);
 }
 
-X86_32_TRANSLATE_0_OP(POPAW)
+X86_TRANSLATE_0_OP(POPAW)
 {
   const char *regs[] = { "di", "si", "bp", "sp", 
 			 "bx", "dx", "cx", "ax" };
   s_pop_all (data.start_ma, data.next_ma, data, regs);
 }
 
-X86_32_TRANSLATE_0_OP(POPAL)
+X86_TRANSLATE_0_OP(POPAL)
 {
-  x86_32_translate<X86_32_TOKEN(POPA)> (data);
+  x86_translate<X86_TOKEN(POPA)> (data);
 }
 
 
-X86_32_TRANSLATE_1_OP(POP)
+X86_TRANSLATE_1_OP(POP)
 {
   assert (op1->get_bv_size () == 64 ||
           op1->get_bv_size () == 32 ||
           op1->get_bv_size () == 16);
 
-  x86_32_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
+  x86_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
 }
 
 
-X86_32_TRANSLATE_1_OP(POPW)
+X86_TRANSLATE_1_OP(POPW)
 {
   data.data16 = true;
   Expr *tmp = op1->extract_bit_vector (0, 16);
-  x86_32_pop (data.start_ma, data, (LValue *) tmp, &data.next_ma);
+  x86_pop (data.start_ma, data, (LValue *) tmp, &data.next_ma);
   op1->deref ();
 }
 
 			/* --------------- */
 
-X86_32_TRANSLATE_1_OP(POPL)
+X86_TRANSLATE_1_OP(POPL)
 {
-  x86_32_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
+  x86_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
 }
 
 			/* --------------- */
 
 void
-x86_32_pop (MicrocodeAddress &start, x86_32::parser_data &data, LValue *op,
+x86_pop (MicrocodeAddress &start, x86::parser_data &data, LValue *op,
 	    MicrocodeAddress *end)
 {
   int stack_size = data.addr16 ? 16 : 32;
@@ -201,7 +201,7 @@ x86_32_pop (MicrocodeAddress &start, x86_32::parser_data &data, LValue *op,
 
 static void
 s_pop_all(MicrocodeAddress start, MicrocodeAddress end, 
-	  x86_32::parser_data &data, const char *regs[])
+	  x86::parser_data &data, const char *regs[])
 {
   int i;
   LValue *reg;
@@ -209,7 +209,7 @@ s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
   for (i = 0; i < 3; i++)
     {
       reg = data.get_register (regs[i]);
-      x86_32_pop (start, data, reg);
+      x86_pop (start, data, reg);
     }
 
   reg = data.get_register (regs[i]); // should be (E)SP
@@ -220,14 +220,14 @@ s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
   for (i++; i < 7; i++)
     {
       reg = data.get_register (regs[i]);
-      x86_32_pop (start, data, reg);
+      x86_pop (start, data, reg);
     }
   reg = data.get_register (regs[i]);
-  x86_32_pop (start, data, reg, &end);
+  x86_pop (start, data, reg, &end);
 }
 
 void
-x86_32_push (MicrocodeAddress &start, x86_32::parser_data &data, Expr *op,
+x86_push (MicrocodeAddress &start, x86::parser_data &data, Expr *op,
 	     MicrocodeAddress *end)
 {
   Expr *temp = NULL;
@@ -265,28 +265,28 @@ x86_32_push (MicrocodeAddress &start, x86_32::parser_data &data, Expr *op,
   esp->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(PUSH)
+X86_TRANSLATE_1_OP(PUSH)
 {  
-  x86_32_push (data.start_ma, data, (LValue *) op1, &data.next_ma);
+  x86_push (data.start_ma, data, (LValue *) op1, &data.next_ma);
 }
 
-X86_32_TRANSLATE_1_OP(PUSHW)
+X86_TRANSLATE_1_OP(PUSHW)
 {
   data.data16 = true;
-  x86_32_translate_with_size (data, op1, 16, 
-			      x86_32_translate<X86_32_TOKEN(PUSH)>);
+  x86_translate_with_size (data, op1, 16, 
+			      x86_translate<X86_TOKEN(PUSH)>);
 }
 
-X86_32_TRANSLATE_1_OP(PUSHL)
+X86_TRANSLATE_1_OP(PUSHL)
 {
-  x86_32_translate<X86_32_TOKEN(PUSH)> (data, op1);
+  x86_translate<X86_TOKEN(PUSH)> (data, op1);
 }
 
 
-X86_32_TRANSLATE_0_OP(POPF)
+X86_TRANSLATE_0_OP(POPF)
 {
   MicrocodeAddress from (data.start_ma);
-#ifdef X86_32_USE_EFLAGS
+#ifdef X86_USE_EFLAGS
   Expr *eflags = data.get_register ("eflags");
 #else
   Expr *eflags = data.get_tmp_register (TMPREG (0), 32);
@@ -294,10 +294,10 @@ X86_32_TRANSLATE_0_OP(POPF)
   if (data.data16)
     Expr::extract_bit_vector (eflags, 0, 16);
   
-#ifdef X86_32_USE_EFLAGS
-  x86_32_pop (from, data, (LValue *) eflags->ref (), &data.next_ma);
+#ifdef X86_USE_EFLAGS
+  x86_pop (from, data, (LValue *) eflags->ref (), &data.next_ma);
 #else
-  x86_32_pop (from, data, (LValue *) eflags->ref ());
+  x86_pop (from, data, (LValue *) eflags->ref ());
 
   const char *flags[] = { "cf", "pf", "af", "zf", "sf", "tf", "if", 
 			  "df", "of", "iopl", "nt", "rf", "vm", "ac", "vif",
@@ -331,16 +331,16 @@ X86_32_TRANSLATE_0_OP(POPF)
   eflags->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(POPFW)
+X86_TRANSLATE_0_OP(POPFW)
 {
   data.data16 = true;
-  x86_32_translate<X86_32_TOKEN(POPF)> (data);
+  x86_translate<X86_TOKEN(POPF)> (data);
 }
 
-X86_32_TRANSLATE_0_OP(PUSHF)
+X86_TRANSLATE_0_OP(PUSHF)
 {
   MicrocodeAddress from (data.start_ma);  
-#ifdef X86_32_USE_EFLAGS
+#ifdef X86_USE_EFLAGS
   Expr *eflags = data.get_register ("eflags");
 #else
   const char *flags[] = { "cf", 0, "pf", 0, "af", 0, "zf", "sf", "tf", "if", 
@@ -368,16 +368,16 @@ X86_32_TRANSLATE_0_OP(PUSHF)
 				     0, eflags->get_bv_size ());
       eflags = tmp;
     }
-  x86_32_push (from, data, eflags, &data.next_ma);
+  x86_push (from, data, eflags, &data.next_ma);
 }
 
-X86_32_TRANSLATE_0_OP(PUSHFW)
+X86_TRANSLATE_0_OP(PUSHFW)
 {
   data.data16 = true;
-  x86_32_translate<X86_32_TOKEN(PUSHF)> (data);
+  x86_translate<X86_TOKEN(PUSHF)> (data);
 }
 
-X86_32_TRANSLATE_0_OP(PUSHA)
+X86_TRANSLATE_0_OP(PUSHA)
 {
   LValue *temp = data.get_tmp_register (TMPREG (0), data.data16 ? 16 : 32);
   MicrocodeAddress from (data.start_ma);
@@ -390,25 +390,25 @@ X86_32_TRANSLATE_0_OP(PUSHA)
   data.mc->add_assignment (from, (LValue *) temp->ref (), 
 			   data.get_register (regs[0]));
   
-  x86_32_push (from, data, data.get_register (regs[1]));
-  x86_32_push (from, data, data.get_register (regs[2]));
-  x86_32_push (from, data, data.get_register (regs[3]));
-  x86_32_push (from, data, data.get_register (regs[4]));
-  x86_32_push (from, data, temp->ref ());
-  x86_32_push (from, data, data.get_register (regs[5]));
-  x86_32_push (from, data, data.get_register (regs[6]));
-  x86_32_push (from, data, data.get_register (regs[7]), &data.next_ma); 
+  x86_push (from, data, data.get_register (regs[1]));
+  x86_push (from, data, data.get_register (regs[2]));
+  x86_push (from, data, data.get_register (regs[3]));
+  x86_push (from, data, data.get_register (regs[4]));
+  x86_push (from, data, temp->ref ());
+  x86_push (from, data, data.get_register (regs[5]));
+  x86_push (from, data, data.get_register (regs[6]));
+  x86_push (from, data, data.get_register (regs[7]), &data.next_ma); 
   temp->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(PUSHAW)
+X86_TRANSLATE_0_OP(PUSHAW)
 {
   data.data16 = true;
-  x86_32_translate<X86_32_TOKEN(PUSHA)> (data);
+  x86_translate<X86_TOKEN(PUSHA)> (data);
 }
 
-X86_32_TRANSLATE_0_OP(PUSHAL)
+X86_TRANSLATE_0_OP(PUSHAL)
 {
-  x86_32_translate<X86_32_TOKEN(PUSHA)> (data);
+  x86_translate<X86_TOKEN(PUSHA)> (data);
 }
 

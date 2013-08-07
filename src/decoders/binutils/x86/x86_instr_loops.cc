@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -29,12 +29,12 @@
  */
 
 #include <cassert>
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
 static void
-s_loop (x86_32::parser_data &data, Expr *op1, Expr *cond)
+s_loop (x86::parser_data &data, Expr *op1, Expr *cond)
 {
   MicrocodeAddress from (data.start_ma);
   Expr *counter = data.get_register (data.addr16 ? "cx" : "ecx");
@@ -57,7 +57,7 @@ s_loop (x86_32::parser_data &data, Expr *op1, Expr *cond)
   MicrocodeAddress ja = 
     dynamic_cast<Constant *>(jmpaddr->get_addr ())->get_val ();
 
-  x86_32_if_then_else (from, data, cond->ref (), ja, data.next_ma);
+  x86_if_then_else (from, data, cond->ref (), ja, data.next_ma);
 
   op1->deref ();
   cond->deref ();			   
@@ -65,34 +65,34 @@ s_loop (x86_32::parser_data &data, Expr *op1, Expr *cond)
   counter->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(LOOP)
+X86_TRANSLATE_1_OP(LOOP)
 {
   s_loop (data, op1, NULL);
 }
 
-X86_32_TRANSLATE_1_OP(LOOPE)
+X86_TRANSLATE_1_OP(LOOPE)
 {
   s_loop (data, op1, data.get_flag ("zf"));
 }
 
-X86_32_TRANSLATE_1_OP(LOOPNE)
+X86_TRANSLATE_1_OP(LOOPNE)
 {
   s_loop (data, op1, UnaryApp::create (BV_OP_NOT, data.get_flag ("zf"), 0, 1));
 }
 
-X86_32_TRANSLATE_1_OP(LOOPW)
+X86_TRANSLATE_1_OP(LOOPW)
 {
   data.addr16 = true;
   s_loop (data, op1, NULL);
 }
 
-X86_32_TRANSLATE_1_OP(LOOPEW)
+X86_TRANSLATE_1_OP(LOOPEW)
 {
   data.addr16 = true;
   s_loop (data, op1, data.get_flag ("zf"));
 }
 
-X86_32_TRANSLATE_1_OP(LOOPNEW)
+X86_TRANSLATE_1_OP(LOOPNEW)
 {
   data.addr16 = true;
   s_loop (data, op1, UnaryApp::create (BV_OP_NOT, data.get_flag ("zf"), 0, 1));

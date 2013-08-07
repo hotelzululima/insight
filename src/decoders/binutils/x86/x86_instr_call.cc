@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,11 +28,11 @@
  * SUCH DAMAGE.
  */
 #include <kernel/annotations/CallRetAnnotation.hh>
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
  
 using namespace std;
 
-X86_32_TRANSLATE_1_OP (CALL)
+X86_TRANSLATE_1_OP (CALL)
 {
   address_t next = data.next_ma.getGlobal ();
   MicrocodeAddress start = data.start_ma;
@@ -40,7 +40,7 @@ X86_32_TRANSLATE_1_OP (CALL)
 
   assert (mc != NULL);
 
-  x86_32_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
+  x86_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
 
   Expr *addr = mc->get_addr ();
   MicrocodeAddress here (start);
@@ -61,11 +61,11 @@ X86_32_TRANSLATE_1_OP (CALL)
 
 			/* --------------- */
 
-X86_32_TRANSLATE_0_OP (RET)
+X86_TRANSLATE_0_OP (RET)
 {
   LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
   MicrocodeAddress start = data.start_ma;
-  x86_32_pop (start, data, tmpr0);
+  x86_pop (start, data, tmpr0);
 
   MicrocodeNode *start_node = data.mc->get_node (start);
   start_node->add_annotation (CallRetAnnotation::ID,
@@ -75,11 +75,11 @@ X86_32_TRANSLATE_0_OP (RET)
     data.has_prefix = false;
 }
 
-X86_32_TRANSLATE_1_OP (RET)
+X86_TRANSLATE_1_OP (RET)
 {
   LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
   MicrocodeAddress start = data.start_ma;
-  x86_32_pop (start, data, tmpr0);
+  x86_pop (start, data, tmpr0);
 
 
   int stack_size = data.addr16 ? 16 : 32;

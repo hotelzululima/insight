@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,12 +28,11 @@
  * SUCH DAMAGE.
  */
 
-#include "x86_32_translate.hh"
+#include "x86_translate.hh"
 
 using namespace std;
-using x86_32::parser_data;
 
-X86_32_TRANSLATE_2_OP(MOV)
+X86_TRANSLATE_2_OP(MOV)
 {
   Expr *src = op1;
   LValue *dst = (LValue *) op2;
@@ -46,30 +45,30 @@ X86_32_TRANSLATE_2_OP(MOV)
   data.mc->add_assignment (data.start_ma, dst, src, data.next_ma);
 }
 
-X86_32_TRANSLATE_2_OP(MOVB)
+X86_TRANSLATE_2_OP(MOVB)
 {
   Expr::extract_bit_vector (op1, 0, 8);
   Expr::extract_bit_vector (op2, 0, 8);
 
-  x86_32_translate<X86_32_TOKEN(MOV)> (data, op1, op2);
+  x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(MOVW)
+X86_TRANSLATE_2_OP(MOVW)
 {
 
   Expr::extract_bit_vector (op2, 0, 16);
 
-  x86_32_translate<X86_32_TOKEN(MOV)> (data, op1, op2);
+  x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(MOVL)
+X86_TRANSLATE_2_OP(MOVL)
 {
   assert (op1->get_bv_size () == 32);
 
-  x86_32_translate<X86_32_TOKEN(MOV)> (data, op1, op2);
+  x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
 }
 
-X86_32_TRANSLATE_2_OP(MOVBE)
+X86_TRANSLATE_2_OP(MOVBE)
 {
   Expr *dst = op2;
   Expr *src = op1;
@@ -127,7 +126,7 @@ X86_32_TRANSLATE_2_OP(MOVBE)
 }
 
 static void
-s_mov_on_cc (MicrocodeAddress from, x86_32::parser_data &data, 
+s_mov_on_cc (MicrocodeAddress from, x86::parser_data &data, 
 	     Expr *op1, Expr *op2, Expr *cond, MicrocodeAddress to)
 {
   Expr *src = op1;
@@ -146,82 +145,82 @@ s_mov_on_cc (MicrocodeAddress from, x86_32::parser_data &data,
   data.mc->add_assignment (from, dst, src, to);
 }
 
-#define X86_32_CC(cc, f) \
-X86_32_TRANSLATE_2_OP (CMOV ## cc) \
+#define X86_CC(cc, f) \
+X86_TRANSLATE_2_OP (CMOV ## cc) \
 { s_mov_on_cc (data.start_ma, data, op1, op2, \
-	       data.condition_codes[parser_data::X86_32_CC_ ## cc]->ref (), \
+	       data.condition_codes[x86::parser_data::X86_CC_ ## cc]->ref (), \
 	       data.next_ma); }
 
-#include "x86_32_cc.def"
-#undef X86_32_CC
+#include "x86_cc.def"
+#undef X86_CC
 
-X86_32_TRANSLATE_2_OP (CMOVC)
+X86_TRANSLATE_2_OP (CMOVC)
 { 
   s_mov_on_cc (data.start_ma, data, op1, op2, 
-	       data.condition_codes[parser_data::X86_32_CC_B]->ref (), 
+	       data.condition_codes[x86::parser_data::X86_CC_B]->ref (), 
 	       data.next_ma); 
 }
 
-X86_32_TRANSLATE_2_OP (CMOVNC)
+X86_TRANSLATE_2_OP (CMOVNC)
 { 
   s_mov_on_cc (data.start_ma, data, op1, op2, 
-	       data.condition_codes[parser_data::X86_32_CC_NB]->ref (), 
+	       data.condition_codes[x86::parser_data::X86_CC_NB]->ref (), 
 	       data.next_ma); 
 }
 
 static void 
-s_movx (x86_32::parser_data &data, Expr *op1, Expr *op2, BinaryOp op, int size)
+s_movx (x86::parser_data &data, Expr *op1, Expr *op2, BinaryOp op, int size)
 {
   Expr *val = BinaryApp::createExtend (op, op1, size);
   assert (op2->get_bv_size () == size);
 
-  x86_32_translate<X86_32_TOKEN(MOV)> (data, val, op2);
+  x86_translate<X86_TOKEN(MOV)> (data, val, op2);
   
 }
 
 static void 
-s_movs (x86_32::parser_data &data, Expr *op1, Expr *op2, int size)
+s_movs (x86::parser_data &data, Expr *op1, Expr *op2, int size)
 {
   s_movx (data, op1, op2, BV_OP_EXTEND_S, size);
 }
 
 static void 
-s_movz (x86_32::parser_data &data, Expr *op1, Expr *op2, int size)
+s_movz (x86::parser_data &data, Expr *op1, Expr *op2, int size)
 {
   s_movx (data, op1, op2, BV_OP_EXTEND_U, size);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSBW)
+X86_TRANSLATE_2_OP(MOVSBW)
 {
   Expr::extract_bit_vector (op1, 0, 8);
   s_movs (data, op1, op2, 16);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSBL)
+X86_TRANSLATE_2_OP(MOVSBL)
 {
   Expr::extract_bit_vector (op1, 0, 8);
   s_movs (data, op1, op2, 32);
 }
 
-X86_32_TRANSLATE_2_OP(MOVSWL)
+X86_TRANSLATE_2_OP(MOVSWL)
 {
   Expr::extract_bit_vector (op1, 0, 16);
   s_movs (data, op1, op2, 32);
 }
 
-X86_32_TRANSLATE_2_OP(MOVZBW)
+X86_TRANSLATE_2_OP(MOVZBW)
 {
   Expr::extract_bit_vector (op1, 0, 8);
   s_movz (data, op1, op2, 16);
 }
 
-X86_32_TRANSLATE_2_OP(MOVZBL)
+X86_TRANSLATE_2_OP(MOVZBL)
 {
   Expr::extract_bit_vector (op1, 0, 8);
   s_movz (data, op1, op2, 32);
 }
 
-X86_32_TRANSLATE_2_OP(MOVZWL)
+X86_TRANSLATE_2_OP(MOVZWL)
 {
   Expr::extract_bit_vector (op1, 0, 16);
   s_movz (data, op1, op2, 32);

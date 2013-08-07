@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -28,12 +28,12 @@
  * SUCH DAMAGE.
  */
 
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
  
 using namespace std;
 
 static void
-s_jcc (MicrocodeAddress &from, x86_32::parser_data &data, 
+s_jcc (MicrocodeAddress &from, x86::parser_data &data, 
        Expr *jmp, Expr *cond, MicrocodeAddress *to = NULL)
 {
   MemCell *mc = dynamic_cast<MemCell *> (jmp);  
@@ -59,21 +59,21 @@ s_jcc (MicrocodeAddress &from, x86_32::parser_data &data,
   jmp->deref ();
 }
 
-#define X86_32_CC(cc, f) \
-  X86_32_TRANSLATE_1_OP (J ## cc) \
+#define X86_CC(cc, f) \
+  X86_TRANSLATE_1_OP (J ## cc) \
   { s_jcc (data.start_ma, data, op1, \
-	   data.condition_codes[x86_32::parser_data::X86_32_CC_ ## cc]->ref (), \
+	   data.condition_codes[x86::parser_data::X86_CC_ ## cc]->ref (), \
 	   &data.next_ma); }
 
-#include "x86_32_cc.def"
-#undef X86_32_CC
+#include "x86_cc.def"
+#undef X86_CC
 
-X86_32_TRANSLATE_1_OP(JC)
+X86_TRANSLATE_1_OP(JC)
 {
   s_jcc (data.start_ma, data, op1, data.get_flag ("cf"), &data.next_ma); 
 }
 
-X86_32_TRANSLATE_1_OP(JCXZ)
+X86_TRANSLATE_1_OP(JCXZ)
 {
   s_jcc (data.start_ma, data, op1, 
 	 BinaryApp::createEquality (data.get_register ("cx"), 
@@ -81,7 +81,7 @@ X86_32_TRANSLATE_1_OP(JCXZ)
 	 &data.next_ma); 
 }
 
-X86_32_TRANSLATE_1_OP(JECXZ)
+X86_TRANSLATE_1_OP(JECXZ)
 {
   s_jcc (data.start_ma, data, op1, 
 	 BinaryApp::createEquality (data.get_register ("ecx"), 
@@ -89,7 +89,7 @@ X86_32_TRANSLATE_1_OP(JECXZ)
 	 &data.next_ma); 
 }
 
-X86_32_TRANSLATE_1_OP (JMP)
+X86_TRANSLATE_1_OP (JMP)
 {
   MemCell *mc = dynamic_cast<MemCell *> (op1);  
   
@@ -108,8 +108,8 @@ X86_32_TRANSLATE_1_OP (JMP)
   op1->deref ();
 }
 
-X86_32_TRANSLATE_1_OP (JMPW)
+X86_TRANSLATE_1_OP (JMPW)
 {
-  x86_32_translate_with_size (data, op1, BV_DEFAULT_SIZE,
-			      x86_32_translate<X86_32_TOKEN(JMP)>);
+  x86_translate_with_size (data, op1, BV_DEFAULT_SIZE,
+			      x86_translate<X86_TOKEN(JMP)>);
 }

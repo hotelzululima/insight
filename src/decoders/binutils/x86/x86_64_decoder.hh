@@ -28,35 +28,20 @@
  * SUCH DAMAGE.
  */
 
-#include <config.h>
+#ifndef X86_64_DECODER_HH
+#define X86_64_DECODER_HH
 
-#include <bfd.h>
-#include <dis-asm.h>
+#include <vector>
 
-#include "decoders/binutils/x86/x86_parser.hh"
+#include <decoders/binutils/BinutilsDecoder.hh>
+#include <domains/concrete/ConcreteAddress.hh>
+#include <kernel/Microcode.hh>
 
-#include "x86_32_decoder.hh"
-
-using namespace std;
-
-bool x86_scanner_open(const string &instr);
-void x86_scanner_close();
-
+/* Decoding function for x86-64 architecture */
 bool
-x86_32_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
-		    const string &instruction,
+x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
+		    const std::string &instruction,
                     const ConcreteAddress &start,
-                    const ConcreteAddress &next)
-{
-  if (!x86_scanner_open (instruction))
-    return false;
+                    const ConcreteAddress &next);
 
-  x86::parser_data data (arch, mc, instruction, start.get_address (), 
-			    next.get_address ());
-
-  x86::parser parser(data);  
-  bool result = (parser.parse() == 0);
-  x86_scanner_close();
-
-  return result;
-}
+#endif /* X86_64_DECODER_HH */

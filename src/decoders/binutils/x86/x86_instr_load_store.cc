@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  *
@@ -27,12 +27,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
 static Expr *
-s_flag_at_position (x86_32::parser_data &data, const char *flagname, int pos)
+s_flag_at_position (x86::parser_data &data, const char *flagname, int pos)
 {
   Expr *flag = BinaryApp::create (BV_OP_LSH, 
 				  Expr::createExtend (BV_OP_EXTEND_U,
@@ -43,7 +43,7 @@ s_flag_at_position (x86_32::parser_data &data, const char *flagname, int pos)
   return flag;
 }
 
-X86_32_TRANSLATE_0_OP(LAHF)
+X86_TRANSLATE_0_OP(LAHF)
 {
   Expr *alvalue = 
     BinaryApp::create (BV_OP_OR, 
@@ -64,20 +64,20 @@ X86_32_TRANSLATE_0_OP(LAHF)
 			   data.next_ma);
 }
 
-X86_32_TRANSLATE_0_OP(SAHF)
+X86_TRANSLATE_0_OP(SAHF)
 {
   MicrocodeAddress from (data.start_ma);
   Expr *ah = data.get_register ("ah");
 
-  x86_32_assign_CF (from, data, ah->extract_bit_vector (0,1));
-  x86_32_assign_PF (from, data, ah->extract_bit_vector (2,1));
-  x86_32_assign_AF (from, data, ah->extract_bit_vector (4,1));
-  x86_32_assign_ZF (from, data, ah->extract_bit_vector (6,1));
-  x86_32_assign_SF (from, data, ah->extract_bit_vector (7,1), &data.next_ma);
+  x86_assign_CF (from, data, ah->extract_bit_vector (0,1));
+  x86_assign_PF (from, data, ah->extract_bit_vector (2,1));
+  x86_assign_AF (from, data, ah->extract_bit_vector (4,1));
+  x86_assign_ZF (from, data, ah->extract_bit_vector (6,1));
+  x86_assign_SF (from, data, ah->extract_bit_vector (7,1), &data.next_ma);
   ah->deref ();
 }
 
-X86_32_TRANSLATE_2_OP(LEA)
+X86_TRANSLATE_2_OP(LEA)
 {
   LValue *dst = (LValue *) op2;
   Expr *src;
@@ -97,37 +97,37 @@ X86_32_TRANSLATE_2_OP(LEA)
   op1->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(LGDT)
+X86_TRANSLATE_1_OP(LGDT)
 {
-  x86_32_skip (data);
+  x86_skip (data);
   op1->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(LIDT)
+X86_TRANSLATE_1_OP(LIDT)
 {
-  x86_32_skip (data);
+  x86_skip (data);
   op1->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(LLDT)
+X86_TRANSLATE_1_OP(LLDT)
 {
-  x86_32_skip (data);
+  x86_skip (data);
   op1->deref ();
 }
 
-X86_32_TRANSLATE_1_OP(LMSW)
+X86_TRANSLATE_1_OP(LMSW)
 {
-  x86_32_skip (data);
+  x86_skip (data);
   op1->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(STC)
+X86_TRANSLATE_0_OP(STC)
 {
   data.mc->add_assignment (data.start_ma, data.get_flag ("cf"),
 			   Constant::one (1), data.next_ma);
 }
 
-X86_32_TRANSLATE_0_OP(STD)
+X86_TRANSLATE_0_OP(STD)
 {
   data.mc->add_assignment (data.start_ma, data.get_flag ("df"),
 			   Constant::one (1), data.next_ma);

@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  *
@@ -27,23 +27,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "x86_32_translation_functions.hh"
+#include "x86_translation_functions.hh"
 
 using namespace std;
 
-X86_32_TRANSLATE_1_OP(INT)
+X86_TRANSLATE_1_OP(INT)
 {
   data.mc->add_skip (data.start_ma, data.next_ma, Constant::zero (1));
   op1->deref ();
 }
 
-X86_32_TRANSLATE_0_OP(INTO)
+X86_TRANSLATE_0_OP(INTO)
 {
   data.mc->add_skip (data.start_ma, data.next_ma, 
 		     UnaryApp::create (BV_OP_NOT, data.get_flag ("of"), 0, 1));
 }
 
-X86_32_TRANSLATE_0_OP(INT3)
+X86_TRANSLATE_0_OP(INT3)
 {
   data.mc->add_skip (data.start_ma, data.next_ma, Constant::zero (1));
 }

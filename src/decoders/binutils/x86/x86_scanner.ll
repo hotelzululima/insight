@@ -1,6 +1,6 @@
 %{                      /* -*- C++ -*- */
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -37,12 +37,12 @@
 #include <string>
 #include <unistd.h>
 
-#include "x86_32_parser.hh"
+#include "x86_parser.hh"
 
 #define YY_DECL					 \
-  x86_32::parser::token_type			 \
-    yylex(x86_32::parser::semantic_type *yylval, \
-	  x86_32::parser::location_type *yylloc)
+  x86::parser::token_type			 \
+    yylex(x86::parser::semantic_type *yylval, \
+	  x86::parser::location_type *yylloc)
 
 /* Work around an incompatibility in flex (at least versions 2.5.31
  * through 2.5.33): it generates code that does not conform to C89. */
@@ -63,7 +63,7 @@
 #define YY_USER_ACTION yylloc->columns(yyleng);
 
 using namespace std;
-using namespace x86_32;
+using namespace x86;
 
 typedef parser::token token;
 
@@ -72,12 +72,12 @@ typedef parser::token token;
 
  /* Flex efficiency tuning */
 %option 7bit noyywrap nounput batch full align
-%option prefix="x86_32_"
+%option prefix="x86_"
 
  /* Getting the scanner to share with other architectures */
  // %option reentrant
  // %option bison-bridge
- // %option prefix="x86_32_"
+ // %option prefix="x86_"
 
  /* Custom macros */
 hexvalue  [0-9a-f]+
@@ -954,12 +954,12 @@ optype    [bswlqt]
 %% /***** Lexer subroutines *****/
 
 
-bool x86_32_scanner_open(const string &instr)
+bool x86_scanner_open(const string &instr)
 {
   return yy_scan_string (instr.c_str ());
 }
 
-void x86_32_scanner_close()
+void x86_scanner_close()
 {
   yy_delete_buffer (YY_CURRENT_BUFFER);
 }
