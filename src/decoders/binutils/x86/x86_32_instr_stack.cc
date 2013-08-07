@@ -148,7 +148,9 @@ X86_32_TRANSLATE_0_OP(POPAL)
 
 X86_32_TRANSLATE_1_OP(POP)
 {
-  assert (op1->get_bv_size () == 32 || op1->get_bv_size () == 16);
+  assert (op1->get_bv_size () == 64 ||
+          op1->get_bv_size () == 32 ||
+          op1->get_bv_size () == 16);
 
   x86_32_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
 }

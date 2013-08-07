@@ -41,7 +41,7 @@
 #include "arm/arm_decoder.hh"
 #include "sparc/sparc_decoder.hh"
 #include "x86-32/x86_32_decoder.hh"
-#include "x86-64/x86_64_decoder.hh"
+#include "x86-32/x86_64_decoder.hh"
 
 #include "BinutilsDecoder.hh"
 
