@@ -33,7 +33,7 @@
 #include <bfd.h>
 #include <dis-asm.h>
 
-#include "decoders/binutils/x86-32/x86_32_parser.hh"
+#include "decoders/binutils/x86/x86_32_parser.hh"
 
 #include "x86_32_decoder.hh"
 

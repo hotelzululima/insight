@@ -344,41 +344,41 @@ BUILT_SOURCES+= \
 	decoders/binutils/sparc/sparc_parser.cc 
 
 x86_32_decoder= \
-	decoders/binutils/x86-32/x86_32_cc.def \
-	decoders/binutils/x86-32/x86_32_decoder.hh \
-	decoders/binutils/x86-32/x86_32_decoder.cc \
-	decoders/binutils/x86-32/x86_64_decoder.hh \
-	decoders/binutils/x86-32/x86_64_decoder.cc \
+	decoders/binutils/x86/x86_32_cc.def \
+	decoders/binutils/x86/x86_32_decoder.hh \
+	decoders/binutils/x86/x86_32_decoder.cc \
+	decoders/binutils/x86/x86_64_decoder.hh \
+	decoders/binutils/x86/x86_64_decoder.cc \
         \
-	decoders/binutils/x86-32/x86_32_instr_arithmetics.cc \
-	decoders/binutils/x86-32/x86_32_instr_bits.cc \
-	decoders/binutils/x86-32/x86_32_instr_boolean.cc \
-	decoders/binutils/x86-32/x86_32_instr_call.cc \
-	decoders/binutils/x86-32/x86_32_instr_interrupts.cc \
-	decoders/binutils/x86-32/x86_32_instr_jump.cc \
-	decoders/binutils/x86-32/x86_32_instr_load_store.cc \
-	decoders/binutils/x86-32/x86_32_instr_loops.cc \
-	decoders/binutils/x86-32/x86_32_instr_misc.cc \
-	decoders/binutils/x86-32/x86_32_instr_mov.cc \
-	decoders/binutils/x86-32/x86_32_instr_prefixes.cc \
-	decoders/binutils/x86-32/x86_32_instr_shift.cc \
-	decoders/binutils/x86-32/x86_32_instr_stack.cc \
-	decoders/binutils/x86-32/x86_32_instr_strings.cc \
+	decoders/binutils/x86/x86_32_instr_arithmetics.cc \
+	decoders/binutils/x86/x86_32_instr_bits.cc \
+	decoders/binutils/x86/x86_32_instr_boolean.cc \
+	decoders/binutils/x86/x86_32_instr_call.cc \
+	decoders/binutils/x86/x86_32_instr_interrupts.cc \
+	decoders/binutils/x86/x86_32_instr_jump.cc \
+	decoders/binutils/x86/x86_32_instr_load_store.cc \
+	decoders/binutils/x86/x86_32_instr_loops.cc \
+	decoders/binutils/x86/x86_32_instr_misc.cc \
+	decoders/binutils/x86/x86_32_instr_mov.cc \
+	decoders/binutils/x86/x86_32_instr_prefixes.cc \
+	decoders/binutils/x86/x86_32_instr_shift.cc \
+	decoders/binutils/x86/x86_32_instr_stack.cc \
+	decoders/binutils/x86/x86_32_instr_strings.cc \
         \
-	decoders/binutils/x86-32/x86_32_translate.cc  \
-	decoders/binutils/x86-32/x86_32_translate.hh  \
-	decoders/binutils/x86-32/x86_32_translation_functions.hh \
-        decoders/binutils/x86-32/x86_32_parser.yy  \
-        decoders/binutils/x86-32/x86_32_scanner.ll 
+	decoders/binutils/x86/x86_32_translate.cc  \
+	decoders/binutils/x86/x86_32_translate.hh  \
+	decoders/binutils/x86/x86_32_translation_functions.hh \
+        decoders/binutils/x86/x86_32_parser.yy  \
+        decoders/binutils/x86/x86_32_scanner.ll 
 
 BUILT_SOURCES+= \
-	decoders/binutils/x86-32/stack.hh 	      	\
-	decoders/binutils/x86-32/location.hh       	\
-	decoders/binutils/x86-32/position.hh       	\
-	decoders/binutils/x86-32/x86_32_scanner.hh 	\
-	decoders/binutils/x86-32/x86_32_scanner.cc 	\
-	decoders/binutils/x86-32/x86_32_parser.hh  	\
-	decoders/binutils/x86-32/x86_32_parser.cc 
+	decoders/binutils/x86/stack.hh 	      	\
+	decoders/binutils/x86/location.hh       \
+	decoders/binutils/x86/position.hh       \
+	decoders/binutils/x86/x86_32_scanner.hh \
+	decoders/binutils/x86/x86_32_scanner.cc \
+	decoders/binutils/x86/x86_32_parser.hh  \
+	decoders/binutils/x86/x86_32_parser.cc 
 
 decoders_sources = \
 	decoders/Decoder.hh        \
@@ -393,11 +393,11 @@ decoders_sources = \
         ${x86_64_decoder}
 
 
-decoders/binutils/arm/stack.hh	\
-decoders/binutils/arm/location.hh 	\
-decoders/binutils/arm/position.hh 	\
-decoders/binutils/arm/arm_parser.hh 	\
-decoders/binutils/arm/arm_parser.cc:	\
+decoders/binutils/arm/stack.hh	    \
+decoders/binutils/arm/location.hh   \
+decoders/binutils/arm/position.hh   \
+decoders/binutils/arm/arm_parser.hh \
+decoders/binutils/arm/arm_parser.cc:\
   decoders/binutils/arm/arm_parser.yy
 	$(YACC) --output=decoders/binutils/arm/arm_parser.cc \
 		${srcdir}/decoders/binutils/arm/arm_parser.yy
@@ -413,8 +413,8 @@ decoders/binutils/arm/arm_scanner.cc : 	\
 decoders/binutils/sparc/stack.hh	\
 decoders/binutils/sparc/location.hh 	\
 decoders/binutils/sparc/position.hh 	\
-decoders/binutils/sparc/sparc_parser.hh 	\
-decoders/binutils/sparc/sparc_parser.cc:	\
+decoders/binutils/sparc/sparc_parser.hh \
+decoders/binutils/sparc/sparc_parser.cc:\
   decoders/binutils/sparc/sparc_parser.yy
 	$(YACC) --output=decoders/binutils/sparc/sparc_parser.cc \
 		${srcdir}/decoders/binutils/sparc/sparc_parser.yy
@@ -427,22 +427,22 @@ decoders/binutils/sparc/sparc_scanner.cc : 	\
 	       --header-file=decoders/binutils/sparc/sparc_scanner.hh \
 		${srcdir}/decoders/binutils/sparc/sparc_scanner.ll
 
-decoders/binutils/x86-32/stack.hh		\
-decoders/binutils/x86-32/location.hh 		\
-decoders/binutils/x86-32/position.hh 		\
-decoders/binutils/x86-32/x86_32_parser.hh 	\
-decoders/binutils/x86-32/x86_32_parser.cc:	\
-  decoders/binutils/x86-32/x86_32_parser.yy
-	$(YACC) --output=decoders/binutils/x86-32/x86_32_parser.cc \
-		${srcdir}/decoders/binutils/x86-32/x86_32_parser.yy
+decoders/binutils/x86/stack.hh		\
+decoders/binutils/x86/location.hh 	\
+decoders/binutils/x86/position.hh 	\
+decoders/binutils/x86/x86_32_parser.hh 	\
+decoders/binutils/x86/x86_32_parser.cc:	\
+  decoders/binutils/x86/x86_32_parser.yy
+	$(YACC) --output=decoders/binutils/x86/x86_32_parser.cc \
+		${srcdir}/decoders/binutils/x86/x86_32_parser.yy
 
-decoders/binutils/x86-32/x86_32_scanner.hh 		\
-decoders/binutils/x86-32/x86_32_scanner.cc : 		\
-       decoders/binutils/x86-32/x86_32_scanner.ll 	\
-       decoders/binutils/x86-32/x86_32_parser.hh
-	$(LEX) --outfile=decoders/binutils/x86-32/x86_32_scanner.cc \
-	       --header-file=decoders/binutils/x86-32/x86_32_scanner.hh \
-		${srcdir}/decoders/binutils/x86-32/x86_32_scanner.ll
+decoders/binutils/x86/x86_32_scanner.hh 	\
+decoders/binutils/x86/x86_32_scanner.cc : 	\
+       decoders/binutils/x86/x86_32_scanner.ll 	\
+       decoders/binutils/x86/x86_32_parser.hh
+	$(LEX) --outfile=decoders/binutils/x86/x86_32_scanner.cc \
+	       --header-file=decoders/binutils/x86/x86_32_scanner.hh \
+		${srcdir}/decoders/binutils/x86/x86_32_scanner.ll
 
 
 ## libinsight

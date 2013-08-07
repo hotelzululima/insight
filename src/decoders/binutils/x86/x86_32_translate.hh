@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -39,7 +39,7 @@
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
 
-#include "decoders/binutils/x86-32/x86_32_parser.hh"
+#include "decoders/binutils/x86/x86_32_parser.hh"
 
 typedef x86_32::parser::token_type TokenType;
 

@@ -1,6 +1,6 @@
 %code requires {		  /*  -*- C++ -*- */
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -47,7 +47,7 @@ namespace x86_32 {
   {
     typedef enum {
 #define X86_32_CC(id,f) X86_32_CC_ ## id,
-#include "decoders/binutils/x86-32/x86_32_cc.def"
+#include "decoders/binutils/x86/x86_32_cc.def"
 #undef X86_32_CC
       NB_CC
     } condition_code_t;
@@ -121,7 +121,7 @@ namespace x86_32 {
 using namespace std;
 using namespace x86_32;
 
-#include "decoders/binutils/x86-32/x86_32_translate.hh"
+#include "decoders/binutils/x86/x86_32_translate.hh"
 
 #undef yylex
 #define yylex x86_32_lex
