@@ -468,4 +468,5 @@ MAINTAINERCLEANFILES = \
 	compile.log
 
 maintainer-clean-local:
-	rm -fr Makefile.in config.h.in
+	rm -fr $(top_srcdir)/src/Makefile.in \
+	       $(top_srcdir)/src/config.h.in

@@ -29,4 +29,4 @@ distclean-local:
 	rm -fr api/ *.pdf
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/doc/Makefile.in

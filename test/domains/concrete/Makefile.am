@@ -13,4 +13,4 @@ concrete_value_test_SOURCES = value_test.cc
 concrete_simulator_test_SOURCES = simulator_test_cases.hh simulator_test.cc
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/test/domains/concrete/Makefile.in

@@ -13,4 +13,4 @@ kernel_expr_solver_test_SOURCES = expr_solver_test.cc
 kernel_expression_test_SOURCES = expression_test.cc
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/test/kernel/Makefile.in

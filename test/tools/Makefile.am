@@ -1,4 +1,4 @@
 SUBDIRS = cfgrecovery
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/test/tools/Makefile.in

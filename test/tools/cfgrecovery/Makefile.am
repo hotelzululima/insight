@@ -980,4 +980,4 @@ save: ${TESTS}
           done
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/test/tools/cfgrecovery/Makefile.in

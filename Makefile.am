@@ -16,7 +16,9 @@ distclean-local:
 	rm -fr lib bin
 
 maintainer-clean-local:
-	rm -fr Makefile.in aclocal.m4 autotools-files/
+	rm -fr $(top_srcdir)/Makefile.in \
+	       $(top_srcdir)/aclocal.m4  \
+	       $(top_srcdir)/autotools-files/
 
 EXTRA_DIST =      \
         AUTHORS   \

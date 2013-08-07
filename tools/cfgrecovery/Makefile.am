@@ -16,4 +16,4 @@ cfgrecovery_LDADD = $(top_builddir)/src/libinsight.la
 all:
 
 MAINTAINERCLEANFILES = \
-	Makefile.in
+	$(top_srcdir)/tools/cfgrecovery/Makefile.in

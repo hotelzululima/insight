@@ -10,4 +10,4 @@ distclean-local:
 	rm -fr Makefile
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/test/bugs/Makefile.in

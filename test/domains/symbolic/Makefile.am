@@ -15,4 +15,4 @@ symbolic_simulator_test_SOURCES = \
 symbolic_simulator_test_CPPFLAGS=${AM_CPPFLAGS} -DINSIGHT_CONFIG_FILE=\"${abs_top_srcdir}/test/domains/symbolic/config\"
 
 maintainer-clean-local:
-	rm -fr Makefile.in
+	rm -fr $(top_srcdir)/test/domains/symbolic/Makefile.in

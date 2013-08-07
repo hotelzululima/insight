@@ -3,7 +3,5 @@ SUBDIRS = cfgrecovery
 
 all:
 
-
-
 MAINTAINERCLEANFILES = \
-	Makefile.in
+	$(top_srcdir)/tools/Makefile.in
