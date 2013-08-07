@@ -41,12 +41,12 @@ X86_32_TRANSLATE_PREFIX(ADDR16)
 {
   if (start)
     {
-      data.addr_size = data.addr16;
+      data.saved_addr16 = data.addr16;
       data.addr16 = true;
     }
   else
     {
-      data.addr16 = data.addr_size;
+      data.addr16 = data.saved_addr16;
     }
 }
 
@@ -54,12 +54,12 @@ X86_32_TRANSLATE_PREFIX(ADDR32)
 {
   if (start)
     {
-      data.addr_size = data.addr16;
+      data.saved_addr16 = data.addr16;
       data.addr16 = false;
     }
   else
     {
-      data.addr16 = data.addr_size;
+      data.addr16 = data.saved_addr16;
     }
 }
 
@@ -67,12 +67,12 @@ X86_32_TRANSLATE_PREFIX(DATA32)
 {
   if (start)
     {
-      data.data_size = data.data16;
+      data.saved_data16 = data.data16;
       data.data16 = false;
     }
   else
     {
-      data.data16 = data.data_size;
+      data.data16 = data.saved_data16;
     }
 }
 
@@ -80,12 +80,12 @@ X86_32_TRANSLATE_PREFIX(DATA16)
 {
   if (start)
     {
-      data.data_size = data.data16;
+      data.saved_data16 = data.data16;
       data.data16 = true;
     }
   else
     {
-      data.data16 = data.data_size;
+      data.data16 = data.saved_data16;
     }
 }
 

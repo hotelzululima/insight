@@ -69,11 +69,11 @@ namespace x86_32 {
     MicrocodeAddress start_ma;
     MicrocodeAddress next_ma;
     Microcode *mc;
-    bool lock;
-    bool data16;
-    bool data_size;
-    bool addr16;
-    bool addr_size;
+    bool lock; /* Used to take care of the LOCK prefix (not used yet) */
+    bool data16;       /* 16 bits data mode */
+    bool saved_data16; /* store original value of data16 */
+    bool addr16;       /* 16 bits address mode */
+    bool saved_addr16; /* store original value of addr16 */
     const char *data_segment;
     const char *code_segment;
     const char *stack_segment;
