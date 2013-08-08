@@ -107,6 +107,16 @@ X86_TRANSLATE_0_OP(CBTW)
   x86_translate<X86_TOKEN (CBW)> (data);
 }
 
+X86_TRANSLATE_0_OP(CDQE)
+{
+  data.mc->add_assignment (data.start_ma,
+			   data.get_register ("rax"),
+			   Expr::createExtend (BV_OP_EXTEND_S,
+					       data.get_register ("eax"),
+					       64),
+			   data.next_ma);
+}
+
 X86_TRANSLATE_0_OP(CLC)
 {
   x86_reset_CF (data.start_ma, data, NULL, &data.next_ma);
@@ -222,9 +232,24 @@ X86_TRANSLATE_2_OP(CMPXCHG)
 {
   Expr *dst = op2;
   Expr *src = op1;
-  Expr *eax = data.get_register ("eax");
 
-  Expr::extract_bit_vector (eax, 0, op2->get_bv_size ());
+  Expr *_ax = NULL;
+  switch (data.data_mode)
+    {
+    case x86::parser_data::MODE_32:
+      _ax = data.get_register ("eax");
+      break;
+
+    case x86::parser_data::MODE_64:
+      _ax = data.get_register ("rax");
+      break;
+
+    default:
+      assert(true);
+      _ax = data.get_register ("eax");
+    }
+  
+  Expr::extract_bit_vector (_ax, 0, op2->get_bv_size ());
 
   MicrocodeAddress from (data.start_ma + 1);
   MicrocodeAddress ifaddr (from);
@@ -234,10 +259,10 @@ X86_TRANSLATE_2_OP(CMPXCHG)
   from++;
   MicrocodeAddress elseaddr (from);
   x86_reset_ZF (from, data);
-  data.mc->add_assignment (from, (LValue *) eax->ref (), dst->ref (), 
+  data.mc->add_assignment (from, (LValue *) _ax->ref (), dst->ref (), 
 			   data.next_ma);
   
-  Expr *cond = BinaryApp::createEquality (eax->ref (), dst->ref ());
+  Expr *cond = BinaryApp::createEquality (_ax->ref (), dst->ref ());
   data.mc->add_skip (data.start_ma, elseaddr,
 		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
   data.mc->add_skip (data.start_ma, ifaddr, cond->ref ());
@@ -245,7 +270,7 @@ X86_TRANSLATE_2_OP(CMPXCHG)
   cond->deref ();
   dst->deref ();
   src->deref ();
-  eax->deref ();
+  _ax->deref ();
 }
 
 X86_TRANSLATE_0_OP(CMC)

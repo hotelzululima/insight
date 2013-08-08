@@ -99,17 +99,33 @@ X86_TRANSLATE_1_OP (RET)
   MicrocodeAddress start = data.start_ma;
   x86_pop (start, data, tmpr0);
 
+  int stack_size = data.addr_mode;
 
-  int stack_size = data.addr16 ? 16 : 32;
-  LValue *esp = data.get_register (stack_size == 32 ? "esp" : "sp");
+  LValue *_sp = NULL;
+  switch (stack_size)
+    {
+    case x86::parser_data::MODE_16:
+      _sp = data.get_register ("sp");
+      break;
+
+    case x86::parser_data::MODE_32:
+      _sp = data.get_register ("esp");
+      break;
+
+    case x86::parser_data::MODE_64:
+      _sp = data.get_register ("rsp");
+      break;
+    }
+
+  assert (_sp != NULL);
 
   assert (op1->is_Constant ());
-  Expr *inc = op1->extract_bit_vector (0, esp->get_bv_size ());
+  Expr *inc = op1->extract_bit_vector (0, _sp->get_bv_size ());
 
-  data.mc->add_assignment (start, (LValue *) esp->ref(), 
-			   BinaryApp::create (BV_OP_ADD, esp->ref (), 
+  data.mc->add_assignment (start, (LValue *) _sp->ref(), 
+			   BinaryApp::create (BV_OP_ADD, _sp->ref (), 
 					      inc->ref (), 0,
-					      esp->get_bv_size ()));
+					      _sp->get_bv_size ()));
 
   MicrocodeNode *start_node = data.mc->get_node (start);
   start_node->add_annotation (CallRetAnnotation::ID,
@@ -117,7 +133,7 @@ X86_TRANSLATE_1_OP (RET)
   data.mc->add_jump (start, tmpr0->ref ());
   if (data.has_prefix)
     data.has_prefix = false;
-  esp->deref ();
+  _sp->deref ();
   op1->deref ();
   inc->deref ();
 }

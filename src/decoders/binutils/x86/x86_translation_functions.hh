@@ -112,24 +112,21 @@ X86_TRANSLATE_2_OP(BTCL); // x86_instr_bits.cc
 X86_TRANSLATE_2_OP(BTRL); // x86_instr_bits.cc
 X86_TRANSLATE_2_OP(BTSL); // x86_instr_bits.cc
 
-X86_TRANSLATE_1_OP(CALL); // x86_instr_call.cc
+X86_TRANSLATE_1_OP(CALL);  // x86_instr_call.cc
 X86_TRANSLATE_1_OP(CALLQ); // x86_instr_call.cc
 
-X86_TRANSLATE_0_OP(CBW); // x86_instr_misc.cc
+X86_TRANSLATE_0_OP(CBW);  // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CBTW); // x86_instr_misc.cc
-
+X86_TRANSLATE_0_OP(CDQE); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CWDE); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CWTL); // x86_instr_misc.cc
 
 X86_TRANSLATE_0_OP(CLC); // x86_instr_misc.cc
-
 X86_TRANSLATE_0_OP(CLD); // x86_instr_misc.cc
 
 X86_TRANSLATE_1_OP(CLFLUSH); // NOP / x86_instr_misc.cc
-
-X86_TRANSLATE_0_OP(CLI);  // NOP / x86_instr_misc.cc
-
-X86_TRANSLATE_0_OP(CLTS);  // NOP / x86_instr_misc.cc
+X86_TRANSLATE_0_OP(CLI);     // NOP / x86_instr_misc.cc
+X86_TRANSLATE_0_OP(CLTS);    // NOP / x86_instr_misc.cc
 
 X86_TRANSLATE_0_OP(CMC); // x86_instr_misc.cc
 
@@ -138,20 +135,20 @@ X86_TRANSLATE_0_OP(CMC); // x86_instr_misc.cc
 #include "x86_cc.def"
 #undef  X86_CC
 
-X86_TRANSLATE_2_OP(CMOVC); // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(CMOVC);  // x86_instr_mov.cc
 X86_TRANSLATE_2_OP(CMOVNC); // x86_instr_mov.cc
 
-X86_TRANSLATE_2_OP(CMP); // x86_instr_misc.cc 
+X86_TRANSLATE_2_OP(CMP);  // x86_instr_misc.cc 
 X86_TRANSLATE_2_OP(CMPB); // x86_instr_misc.cc 
 X86_TRANSLATE_2_OP(CMPL); // x86_instr_misc.cc 
 X86_TRANSLATE_2_OP(CMPW); // x86_instr_misc.cc 
 
-X86_TRANSLATE_0_OP(CMPSB);  // x86_instr_strings.cc 
-X86_TRANSLATE_2_OP(CMPSB);  // x86_instr_strings.cc 
-X86_TRANSLATE_0_OP(CMPSW);  // x86_instr_strings.cc 
-X86_TRANSLATE_2_OP(CMPSW);  // x86_instr_strings.cc 
-X86_TRANSLATE_0_OP(CMPSD);  // x86_instr_strings.cc 
-X86_TRANSLATE_2_OP(CMPSD);  // x86_instr_strings.cc 
+X86_TRANSLATE_0_OP(CMPSB); // x86_instr_strings.cc 
+X86_TRANSLATE_2_OP(CMPSB); // x86_instr_strings.cc 
+X86_TRANSLATE_0_OP(CMPSW); // x86_instr_strings.cc 
+X86_TRANSLATE_2_OP(CMPSW); // x86_instr_strings.cc 
+X86_TRANSLATE_0_OP(CMPSD); // x86_instr_strings.cc 
+X86_TRANSLATE_2_OP(CMPSD); // x86_instr_strings.cc 
 
 X86_TRANSLATE_2_OP(CMPXCHG); // x86_instr_misc.cc 
 
@@ -607,19 +604,18 @@ X86_TRANSLATE_2_OP(XORL); // x86_instr_booleans.cc
 // X86_TRANSLATE_4_OP(BLENDVPD); /* FP instruction */
 // X86_TRANSLATE_3_OP(BLENDVPS); /* FP instruction */
 // X86_TRANSLATE_4_OP(BLENDVPS); /* FP instruction */
-// X86_TRANSLATE_0_OP(CDQE);  // 64-bit insctruction
 
-// X86_TRANSLATE_0_OP(CMPSQ);  // 64bits mode
-// X86_TRANSLATE_2_OP(CMPSQ);  // 64 bits mode
+// X86_TRANSLATE_0_OP(CMPSQ);  /* 64-bits mode */
+// X86_TRANSLATE_2_OP(CMPSQ);  /* 64-bits mode */
 // X86_TRANSLATE_3_OP(CMPPD); /* FP instruction */
 // X86_TRANSLATE_3_OP(CMPPS); /* FP instruction */
 // X86_TRANSLATE_3_OP(CMPSS); /* FP instruction */
-// X86_TRANSLATE_1_OP(CMPXCHG8B);  // 64 bits mode
-// X86_TRANSLATE_1_OP(CMPXCHG16B); // 64 bits mode
+// X86_TRANSLATE_1_OP(CMPXCHG8B);  /* 64-bits mode */
+// X86_TRANSLATE_1_OP(CMPXCHG16B); /* 64-bits mode */
 
 // X86_TRANSLATE_2_OP(COMISD); /* FP instruction */
 // X86_TRANSLATE_2_OP(COMISS); /* FP instruction */
-// X86_TRANSLATE_0_OP(CQO); // 64 bits mode
+// X86_TRANSLATE_0_OP(CQO);  /* 64-bits mode */
 
 // X86_TRANSLATE_2_OP(CVTDQ2PD); /* FP instruction */
 // X86_TRANSLATE_2_OP(CVTDQ2PS); /* FP instruction */
@@ -836,7 +832,7 @@ X86_TRANSLATE_2_OP(XORL); // x86_instr_booleans.cc
 // X86_TRANSLATE_1_OP(JRCXZ);
 // X86_TRANSLATE_2_OP(LDDQU);
 // X86_TRANSLATE_1_OP(LDMXCSR);
-// X86_TRANSLATE_0_OP(LODSQ); //64 bits mode
+// X86_TRANSLATE_0_OP(LODSQ); /* 64-bits mode */
 // X86_TRANSLATE_2_OP(MASKMOVDQU);
 // X86_TRANSLATE_3_OP(VMASKMOV);
 // X86_TRANSLATE_2_OP(MASKMOVQ);

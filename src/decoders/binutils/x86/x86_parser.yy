@@ -51,6 +51,9 @@ namespace x86 {
 #undef X86_CC
       NB_CC
     } condition_code_t;
+
+    /* Memory modes: 16, 32, 64 (bits) */
+    typedef enum { MODE_16 = 16, MODE_32 = 32, MODE_64 = 64 } mode_t;
     
     parser_data (MicrocodeArchitecture *arch, Microcode *out, 
 		 const std::string &inst, address_t start, 
@@ -69,11 +72,11 @@ namespace x86 {
     MicrocodeAddress start_ma;
     MicrocodeAddress next_ma;
     Microcode *mc;
-    bool lock; /* Used to take care of the LOCK prefix (not used yet) */
-    bool data16;       /* 16 bits data mode */
-    bool saved_data16; /* store original value of data16 */
-    bool addr16;       /* 16 bits address mode */
-    bool saved_addr16; /* store original value of addr16 */
+    bool lock; /* Used to take care of the LOCK prefix */
+    mode_t data_mode;       /* Data mode: 16, 32 or 64 (bits) */
+    mode_t saved_data_mode; /* Saved data mode */
+    mode_t addr_mode;       /* Addressing mode: 16, 32 or 64 (bits) */
+    mode_t saved_addr_mode; /* Saved addressing mode */
     const char *data_segment;
     const char *code_segment;
     const char *stack_segment;

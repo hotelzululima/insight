@@ -82,7 +82,8 @@ X86_TRANSLATE_2_OP(LEA)
   LValue *dst = (LValue *) op2;
   Expr *src;
 
-  if (dst->get_bv_size () == 16 && ! data.addr16)
+  if ((dst->get_bv_size () == 16) &&
+      (data.addr_mode != x86::parser_data::MODE_16))
     src = op1->extract_bit_vector (0, 16);
   else 
     src = op1->ref ();

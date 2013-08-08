@@ -87,8 +87,23 @@ x86::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
   start_ma = MicrocodeAddress(start);
   next_ma = MicrocodeAddress(next);
   lock = false;
-  data16 = false;
-  addr16 = false;
+
+  switch (a->get_word_size())
+    {
+    case 64:
+      data_mode = MODE_64;
+      addr_mode = MODE_64;
+      break;
+
+    case 32:
+      data_mode = MODE_32;
+      addr_mode = MODE_32;
+      break;
+
+    default:
+      assert(true);
+    }
+
   data_segment = "ds";
   code_segment = "cs";
   stack_segment = "ss";

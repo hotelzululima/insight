@@ -453,7 +453,7 @@ s_div (x86::parser_data &data, Expr *op1, bool udiv)
   const char *Qname;
   const char *Rname;
   
-  if (srcsize == 8)
+  if (srcsize == 8) /* 8-bits mode */
     {
       op = data.get_register ("ax");
       if (udiv) 
@@ -469,7 +469,7 @@ s_div (x86::parser_data &data, Expr *op1, bool udiv)
       Qname = "al";
       Rname = "ah";
     }
-  else if (srcsize == 16)
+  else if (srcsize == 16) /* 16-bits mode */
     {
       op = BinaryApp::create (BV_OP_CONCAT, 
 			      data.get_register ("dx"),
@@ -488,7 +488,7 @@ s_div (x86::parser_data &data, Expr *op1, bool udiv)
       Qname = "ax";
       Rname = "dx";
     }
-  else
+  else if (srcsize == 32) /* 32-bits mode */
     {
       op = BinaryApp::create (BV_OP_CONCAT, 
 			      data.get_register ("edx"),
@@ -506,6 +506,27 @@ s_div (x86::parser_data &data, Expr *op1, bool udiv)
 	}
       Qname = "eax";
       Rname = "edx";
+    }
+  else  /* 64-bits mode */
+    {
+      assert (srcsize == 64);
+
+      op = BinaryApp::create (BV_OP_CONCAT,
+			      data.get_register ("rdx"),
+			      data.get_register ("rax"),
+			      0, 64);
+      if (udiv)
+	{
+	  min = 0x0000000000000000;
+	  max = 0xFFFFFFFFFFFFFFFF;
+	}
+      else
+	{
+	  min = 0x8000000000000000;
+	  max = 0X7FFFFFFFFFFFFFFF;
+	}
+      Qname = "rax";
+      Rname = "rdx";
     }
 
   data.mc->add_skip (from, from + 1, 
@@ -612,7 +633,7 @@ X86_TRANSLATE_1_OP(IMUL)
   MicrocodeAddress from (data.start_ma);
   Expr *cond;
 
-  if (srcsz == 8)
+  if (srcsz == 8) /* 8-bits mode */
     {
       data.mc->add_assignment (from, data.get_register ("ax"),
 			       BinaryApp::create (BV_OP_MUL_S, 
@@ -622,7 +643,7 @@ X86_TRANSLATE_1_OP(IMUL)
       cond = BinaryApp::createEquality (data.get_register ("ah"), 
 					Constant::zero (8));
     }
-  else if (srcsz == 16)
+  else if (srcsz == 16) /* 16-bits mode */
     {
       LValue *tmpr = data.get_tmp_register (TMPREG (0), 32);
 
@@ -642,22 +663,39 @@ X86_TRANSLATE_1_OP(IMUL)
       tmp = Expr::createExtract (tmp, 16, 16);
       cond = BinaryApp::createEquality (tmp, data.get_register ("dx"));
     }
-  else
+  else if (srcsz == 32) /* 32-bits mode */
     {
       LValue *tmpr = data.get_tmp_register (TMPREG (0), 64);
 
       data.mc->add_assignment (from, tmpr,
-			       BinaryApp::create (BV_OP_MUL_S, 
+			       BinaryApp::create (BV_OP_MUL_S,
 						  data.get_register ("eax"),
 						  src, 0, 64));
 
-      data.mc->add_assignment (from, data.get_register ("edx"), 
+      data.mc->add_assignment (from, data.get_register ("edx"),
 			       tmpr->extract_bit_vector (32, 32));
-      data.mc->add_assignment (from, data.get_register ("eax"), 
+      data.mc->add_assignment (from, data.get_register ("eax"),
 			       tmpr->extract_bit_vector (0, 32));
 
       cond = BinaryApp::createEquality (data.get_register ("edx"), 
 					Constant::zero (32));
+    }
+  else /* 64-bits mode */
+    {
+      LValue *tmpr = data.get_tmp_register (TMPREG (0), 128);
+
+      data.mc->add_assignment (from, tmpr,
+			       BinaryApp::create (BV_OP_MUL_S,
+						  data.get_register ("rax"),
+						  src, 0, 128));
+
+      data.mc->add_assignment (from, data.get_register ("rdx"),
+			       tmpr->extract_bit_vector (64, 64));
+      data.mc->add_assignment (from, data.get_register ("rax"),
+			       tmpr->extract_bit_vector (0, 64));
+
+      cond = BinaryApp::createEquality (data.get_register ("rdx"),
+					Constant::zero (64));
     }
 
   x86_if_then_else (from, data, cond, from + 1, from + 3);
@@ -831,20 +869,25 @@ X86_TRANSLATE_1_OP(MUL)
   MicrocodeAddress from (data.start_ma);
   Expr *temp = data.get_tmp_register (TMPREG (0), 2 * op1size);
 
-  if (op1size == 8)
+  if (op1size == 8) /* 8-bits mode */
    {
      upper = data.get_register ("ah");
      lower = data.get_register ("al");
     }
-  else if (op1size == 16)
+  else if (op1size == 16) /* 16-bits mode */
     {
      upper = data.get_register ("dx");
      lower = data.get_register ("ax");
     }
-  else
+  else if (op1size == 32) /* 32-bits mode */
     {
      upper = data.get_register ("edx");
      lower = data.get_register ("eax");
+    }
+  else /* 64-bits mode */
+    {
+     upper = data.get_register ("rdx");
+     lower = data.get_register ("rax");
     }
 
   data.mc->add_assignment (from, (LValue *) temp->ref (), 

@@ -41,12 +41,14 @@ X86_TRANSLATE_PREFIX(ADDR16)
 {
   if (start)
     {
-      data.saved_addr16 = data.addr16;
-      data.addr16 = true;
+      /* Saving current addressing mode and setting local mode to 16 */
+      data.saved_addr_mode = data.addr_mode;
+      data.addr_mode = x86::parser_data::MODE_16;
     }
   else
     {
-      data.addr16 = data.saved_addr16;
+      /* Restoring the addressing mode after the instruction */
+      data.addr_mode = data.saved_addr_mode;
     }
 }
 
@@ -54,25 +56,14 @@ X86_TRANSLATE_PREFIX(ADDR32)
 {
   if (start)
     {
-      data.saved_addr16 = data.addr16;
-      data.addr16 = false;
+      /* Saving current addressing mode and setting local mode to 32 */
+      data.saved_addr_mode = data.addr_mode;
+      data.addr_mode = x86::parser_data::MODE_32;
     }
   else
     {
-      data.addr16 = data.saved_addr16;
-    }
-}
-
-X86_TRANSLATE_PREFIX(DATA32)
-{
-  if (start)
-    {
-      data.saved_data16 = data.data16;
-      data.data16 = false;
-    }
-  else
-    {
-      data.data16 = data.saved_data16;
+      /* Restoring the addressing mode after the instruction */
+      data.addr_mode = data.saved_addr_mode;
     }
 }
 
@@ -80,12 +71,29 @@ X86_TRANSLATE_PREFIX(DATA16)
 {
   if (start)
     {
-      data.saved_data16 = data.data16;
-      data.data16 = true;
+      /* Saving current data mode and setting local mode to 16 */
+      data.saved_data_mode = data.data_mode;
+      data.data_mode = x86::parser_data::MODE_16;
     }
   else
     {
-      data.data16 = data.saved_data16;
+      /* Restoring the data mode after the instruction */
+      data.data_mode = data.saved_data_mode;
+    }
+}
+
+X86_TRANSLATE_PREFIX(DATA32)
+{
+  if (start)
+    {
+      /* Saving current data mode and setting local mode to 32 */
+      data.saved_data_mode = data.data_mode;
+      data.data_mode = x86::parser_data::MODE_32;
+    }
+  else
+    {
+      /* Restoring the data mode after the instruction */
+      data.data_mode = data.saved_data_mode;
     }
 }
 
@@ -100,10 +108,27 @@ s_start_rep (x86::parser_data &data)
 {
   assert (! data.has_prefix);
 
-  const char *regname = data.addr16 ? "cx" : "ecx";
-  LValue *counter = data.get_register (regname);
-  Expr *zero = Constant::zero (counter->get_bv_size ());
-  Expr *stopcond = BinaryApp::createEquality (counter, zero);
+  LValue *_cx = NULL;
+
+  switch (data.addr_mode)
+    {
+    case x86::parser_data::MODE_16:
+      _cx =  data.get_register ("cx");
+      break;
+
+    case x86::parser_data::MODE_32:
+      _cx = data.get_register ("ecx");
+      break;
+
+    case x86::parser_data::MODE_64:
+      _cx = data.get_register ("rcx");
+      break;
+    }
+
+  assert(_cx != NULL);
+
+  Expr *zero = Constant::zero (_cx->get_bv_size ());
+  Expr *stopcond = BinaryApp::createEquality (_cx, zero);
   data.has_prefix = true;
   x86_if_then_else (data.start_ma, data, stopcond,
 		       data.next_ma, data.start_ma + 1);
@@ -119,14 +144,31 @@ s_end_rep (x86::parser_data &data, Expr *cond)
       return;
     }
   MicrocodeAddress start (data.start_ma);
-  const char *regname = data.addr16 ? "cx" : "ecx";
-  LValue *counter = data.get_register (regname);
-  int csize = counter->get_bv_size ();
-  Expr *stopcond = BinaryApp::createEquality (counter->ref (), 
+
+  LValue *_cx = NULL;
+  switch (data.addr_mode)
+    {
+    case x86::parser_data::MODE_16:
+      _cx =  data.get_register ("cx");
+      break;
+
+    case x86::parser_data::MODE_32:
+      _cx = data.get_register ("ecx");
+      break;
+
+    case x86::parser_data::MODE_64:
+      _cx = data.get_register ("rcx");
+      break;
+    }
+
+  assert(_cx != NULL);
+
+  int csize = _cx->get_bv_size ();
+  Expr *stopcond = BinaryApp::createEquality (_cx->ref (), 
 					      Constant::zero (csize));
 
-  data.mc->add_assignment (start, counter, 
-			   BinaryApp::create (BV_OP_SUB, counter->ref (),
+  data.mc->add_assignment (start, _cx, 
+			   BinaryApp::create (BV_OP_SUB, _cx->ref (),
 					      Constant::one (csize), 0,
 					      csize));
 
