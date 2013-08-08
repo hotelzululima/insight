@@ -61,6 +61,15 @@ X86_TRANSLATE_1_OP (CALL)
 
 			/* --------------- */
 
+X86_TRANSLATE_1_OP (CALLQ)
+{
+  assert (op1->get_bv_size() == 64);
+
+  x86_translate<X86_TOKEN(CALL)> (data, op1);
+}
+
+			/* --------------- */
+
 X86_TRANSLATE_0_OP (RET)
 {
   LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
@@ -74,6 +83,15 @@ X86_TRANSLATE_0_OP (RET)
   if (data.has_prefix)
     data.has_prefix = false;
 }
+
+			/* --------------- */
+
+X86_TRANSLATE_0_OP (RETQ)
+{
+  x86_translate<X86_TOKEN(RET)> (data);
+}
+
+			/* --------------- */
 
 X86_TRANSLATE_1_OP (RET)
 {
@@ -104,3 +122,11 @@ X86_TRANSLATE_1_OP (RET)
   inc->deref ();
 }
 
+			/* --------------- */
+
+X86_TRANSLATE_1_OP (RETQ)
+{
+  assert (op1->get_bv_size() == 64);
+
+  x86_translate<X86_TOKEN(RET)> (data, op1);
+}

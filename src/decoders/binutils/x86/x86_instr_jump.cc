@@ -108,6 +108,13 @@ X86_TRANSLATE_1_OP (JMP)
   op1->deref ();
 }
 
+X86_TRANSLATE_1_OP (JMPQ)
+{
+  assert (op1->get_bv_size() == 64);
+
+  x86_translate<X86_TOKEN(JMP)> (data, op1);
+}
+
 X86_TRANSLATE_1_OP (JMPW)
 {
   x86_translate_with_size (data, op1, BV_DEFAULT_SIZE,

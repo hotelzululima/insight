@@ -218,6 +218,7 @@ using namespace x86;
 %token  TOK_BTSW             "BTSW"
 %token  TOK_BTSL             "BTSL"
 %token  TOK_CALL             "CALL"
+%token  TOK_CALLQ            "CALLQ"
 %token  TOK_CBW              "CBW"
 %token  TOK_CBTW             "CBTW"
 %token  TOK_CWDE             "CWDE"
@@ -514,6 +515,7 @@ using namespace x86;
 %token  TOK_JZ               "JZ"
 %token  TOK_LJMP              "LJMP"
 %token  TOK_JMP              "JMP"
+%token  TOK_JMPQ             "JMPQ"
 %token  TOK_JMPW             "JMPW"
 %token  TOK_LAHF             "LAHF"
 %token  TOK_LAR              "LAR"
@@ -801,6 +803,7 @@ using namespace x86;
 %token  TOK_REPNE            "REPNE"
 %token  TOK_REPNZ            "REPNZ"
 %token  TOK_RET              "RET"
+%token  TOK_RETQ             "RETQ"
 %token  TOK_ROUNDPD          "ROUNDPD"
 %token  TOK_ROUNDPS          "ROUNDPS"
 %token  TOK_ROUNDSD          "ROUNDSD"
@@ -1122,6 +1125,7 @@ instruction:
 | TOK_BTSW operand TOK_COMMA operand { x86_translate<X86_TOKEN(BTSW)> (data, $2, $4); }
 | TOK_BTSL operand TOK_COMMA operand { x86_translate<X86_TOKEN(BTSL)> (data, $2, $4); }
 | TOK_CALL operand { x86_translate<X86_TOKEN(CALL)> (data, $2); }
+| TOK_CALLQ operand { x86_translate<X86_TOKEN(CALLQ)> (data, $2); }
 | TOK_CBW  { x86_translate<X86_TOKEN(CBW)> (data); }
 | TOK_CBTW  { x86_translate<X86_TOKEN(CBTW)> (data); }
 | TOK_CWDE  { x86_translate<X86_TOKEN(CWDE)> (data); }
@@ -1496,6 +1500,7 @@ instruction:
   $2->deref ();
   }
 | TOK_JMP operand { x86_translate<X86_TOKEN(JMP)> (data, $2); }
+| TOK_JMPQ operand { x86_translate<X86_TOKEN(JMPQ)> (data, $2); }
 | TOK_JMPW operand { x86_translate<X86_TOKEN(JMPW)> (data, $2); }
 | TOK_LAHF  { x86_translate<X86_TOKEN(LAHF)> (data); }
 | TOK_LAR operand TOK_COMMA operand { x86_translate<X86_TOKEN(LAR)> (data, $2, $4); }
@@ -1911,7 +1916,9 @@ instruction:
 | TOK_REPNE { x86_translate<X86_TOKEN(REPNE)> (data, true); } instruction { x86_translate<X86_TOKEN(REPNE)> (data, false); }
 | TOK_REPNZ { x86_translate<X86_TOKEN(REPNZ)> (data, true); } instruction { x86_translate<X86_TOKEN(REPNZ)> (data, false); }
 | TOK_RET  { x86_translate<X86_TOKEN(RET)> (data); }
+| TOK_RETQ  { x86_translate<X86_TOKEN(RETQ)> (data); }
 | TOK_RET operand { x86_translate<X86_TOKEN(RET)> (data, $2); }
+| TOK_RETQ operand { x86_translate<X86_TOKEN(RETQ)> (data, $2); }
 | TOK_ROUNDPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ROUNDPD)> (data, $2, $4, $6); }
 | TOK_ROUNDPS operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ROUNDPS)> (data, $2, $4, $6); }
 | TOK_ROUNDSD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ROUNDSD)> (data, $2, $4, $6); }

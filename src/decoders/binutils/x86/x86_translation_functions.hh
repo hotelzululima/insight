@@ -112,13 +112,14 @@ X86_TRANSLATE_2_OP(BTCL); // x86_instr_bits.cc
 X86_TRANSLATE_2_OP(BTRL); // x86_instr_bits.cc
 X86_TRANSLATE_2_OP(BTSL); // x86_instr_bits.cc
 
-X86_TRANSLATE_1_OP(CALL); // x86_operators_proc_call.cc
+X86_TRANSLATE_1_OP(CALL); // x86_instr_call.cc
+X86_TRANSLATE_1_OP(CALLQ); // x86_instr_call.cc
 
-X86_TRANSLATE_0_OP(CBW); // x86_misc_instructions.cc
-X86_TRANSLATE_0_OP(CBTW); // x86_misc_instructions.cc
+X86_TRANSLATE_0_OP(CBW); // x86_instr_misc.cc
+X86_TRANSLATE_0_OP(CBTW); // x86_instr_misc.cc
 
-X86_TRANSLATE_0_OP(CWDE); // x86_misc_instructions.cc
-X86_TRANSLATE_0_OP(CWTL); // x86_misc_instructions.cc
+X86_TRANSLATE_0_OP(CWDE); // x86_instr_misc.cc
+X86_TRANSLATE_0_OP(CWTL); // x86_instr_misc.cc
 
 X86_TRANSLATE_0_OP(CLC); // x86_instr_misc.cc
 
@@ -234,6 +235,7 @@ X86_TRANSLATE_1_OP(JC);    // x86_instr_jump.cc
 X86_TRANSLATE_1_OP(JCXZ);  // x86_instr_jump.cc
 X86_TRANSLATE_1_OP(JECXZ); // x86_instr_jump.cc
 X86_TRANSLATE_1_OP(JMP);   // x86_instr_jump.cc
+X86_TRANSLATE_1_OP(JMPQ);  // x86_instr_jump.cc
 X86_TRANSLATE_1_OP(JMPW);  // x86_instr_jump.cc
 
 X86_TRANSLATE_0_OP(LAHF);  // x86_instr_load_store.cc
@@ -247,7 +249,7 @@ X86_TRANSLATE_0_OP(LAHF);  // x86_instr_load_store.cc
 
 X86_TRANSLATE_2_OP(LEA);    // x86_instr_load_store.cc
 
-X86_TRANSLATE_0_OP(LEAVE); // x86_instr_stack.cc
+X86_TRANSLATE_0_OP(LEAVE);  // x86_instr_stack.cc
 X86_TRANSLATE_0_OP(LEAVEW); // x86_instr_stack.cc
 X86_TRANSLATE_0_OP(LEAVEL); // x86_instr_stack.cc
 
