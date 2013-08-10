@@ -1,0 +1,72 @@
+	rcrb	%cl, 0x1111
+	rcrb	$0x7 , 0x1111
+	rcrw	$1 , 0x1111
+	rcrw	%cl , 0x1111
+	rcrw	$0x7 , 0x1111
+	rcrl	$1 , 0x1111
+	rcrl	%cl , 0x1111
+	rcrl	$0x7 , 0x1111
+
+	rcr	%cl , %bh
+	rcr	$0x7 , %bh
+	rcr	$1 , %bx
+	rcr	%cl , %bx
+	rcr	$0x7 , %bx
+	rcr	$1 , %ebx
+	rcr	%cl , %ebx
+	rcr	$0x7 , %ebx
+
+	rclb	%cl, 0x1111
+	rclb	$0x7 , 0x1111
+	rclw	$1 , 0x1111
+	rclw	%cl , 0x1111
+	rclw	$0x7 , 0x1111
+	rcll	$1 , 0x1111
+	rcll	%cl , 0x1111
+	rcll	$0x7 , 0x1111
+
+	rcl	%cl , %bh
+	rcl	$0x7 , %bh
+	rcl	$1 , %bx
+	rcl	%cl , %bx
+	rcl	$0x7 , %bx
+	rcl	$1 , %ebx
+	rcl	%cl , %ebx
+	rcl	$0x7 , %ebx
+
+	rorb	%cl, 0x1111
+	rorb	$0x7 , 0x1111
+	rorw	$1 , 0x1111
+	rorw	%cl , 0x1111
+	rorw	$0x7 , 0x1111
+	rorl	$1 , 0x1111
+	rorl	%cl , 0x1111
+	rorl	$0x7 , 0x1111
+
+	ror	%cl , %bh
+	ror	$0x7 , %bh
+	ror	$1 , %bx
+	ror	%cl , %bx
+	ror	$0x7 , %bx
+	ror	$1 , %ebx
+	ror	%cl , %ebx
+	ror	$0x7 , %ebx
+
+	rolb	%cl, 0x1111
+	rolb	$0x7 , 0x1111
+	rolw	$1 , 0x1111
+	rolw	%cl , 0x1111
+	rolw	$0x7 , 0x1111
+	roll	$1 , 0x1111
+	roll	%cl , 0x1111
+	roll	$0x7 , 0x1111
+
+	rol	%cl , %bh
+	rol	$0x7 , %bh
+	rol	$1 , %bx
+	rol	%cl , %bx
+	rol	$0x7 , %bx
+	rol	$1 , %ebx
+	rol	%cl , %ebx
+	rol	$0x7 , %ebx
+	

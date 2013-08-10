@@ -27,14 +27,14 @@
 	push %cs
 	push %ss
 	push %ds
-	push %ds
+	push %es
 	push %fs
 	push %gs
 
 	pushw %cs
 	pushw %ss
 	pushw %ds
-	pushw %ds
+	pushw %es
 	pushw %fs
 	pushw %gs
 

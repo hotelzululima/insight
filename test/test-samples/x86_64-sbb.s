@@ -1,0 +1,35 @@
+	sbb $0x12, %al
+	sbb $0x1234, %ax
+	sbb $0x12345678, %eax
+	
+	sbb $0x12, %bh
+	sbbb $0x12, 0x1111
+	
+	sbb $0x1234, %bx
+	sbbw $0x1234, 0x1111
+	
+	sbb $0x12345678, %ebx
+	sbbl $0x12345678, 0x1111
+	
+	sbb $0x12, %bx
+	sbbb $0x12, 0x1111
+	
+	sbb $0x12, %ebx
+	sbbb $0x12, 0x1111
+	
+	sbb %al, %bh
+	sbb %al, 0x1111
+	
+	sbb %ax, %bx
+	sbb %ax, 0x1111
+	
+	sbb %eax, %ebx
+	sbb %eax, 0x1111
+	
+	sbb %ah, %bl
+	sbb 0x1111, %bl	
+	sbb %ax, %bx
+	sbb 0x1111, %bx 	
+	sbb %eax, %ebx
+	sbb 0x1111, %ebx	
+	

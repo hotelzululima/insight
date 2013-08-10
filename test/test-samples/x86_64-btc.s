@@ -1,0 +1,9 @@
+	btc	%ax, %bx
+	btc	%eax, %ebx
+	btc	%ax,  0x12345678
+	btc	%eax, 0x12345678
+	btc	$0x13, %ax
+	btc	$0x13, %eax
+	btcw	$0x13, 0x12345678
+	btc	$0x13, 0x12345678
+	
