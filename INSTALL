@@ -64,7 +64,7 @@ Possibly unusual configure flags are available:
 
  --enable-werror         compile with -Werror flag (default is no)
  --enable-debug          compile with debug (default is no)
- --enable-optimize       compile with optimization (default is no)
+ --enable-optimization   compile with optimization (default is no)
 
 
 3 - Building in a separate directory
