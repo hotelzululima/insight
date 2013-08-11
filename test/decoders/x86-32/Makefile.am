@@ -206,4 +206,4 @@ save: ${TESTS}
           done
 
 maintainer-clean-local:
-	rm -fr $(top_srcdir)/test/decoders/Makefile.in
+	rm -fr $(top_srcdir)/test/decoders/x86-32/Makefile.in

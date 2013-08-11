@@ -348,6 +348,7 @@ AC_CONFIG_FILES([
 	test/tools/Makefile
 	test/tools/cfgrecovery/Makefile
 	test/decoders/Makefile
+	test/decoders/x86-32/Makefile
 	test/slicing/Makefile
 	test/utils/Makefile
 	tools/Makefile
