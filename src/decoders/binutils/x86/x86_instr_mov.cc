@@ -55,7 +55,6 @@ X86_TRANSLATE_2_OP(MOVB)
 
 X86_TRANSLATE_2_OP(MOVW)
 {
-
   Expr::extract_bit_vector (op2, 0, 16);
 
   x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
@@ -63,8 +62,20 @@ X86_TRANSLATE_2_OP(MOVW)
 
 X86_TRANSLATE_2_OP(MOVL)
 {
-  assert (op1->get_bv_size () == 32);
+  Expr::extract_bit_vector (op1, 0, 32);
 
+  x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
+}
+
+X86_TRANSLATE_2_OP(MOVQ)
+{
+  Expr::extract_bit_vector (op1, 0, 64);
+
+  x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
+}
+
+X86_TRANSLATE_2_OP(MOVABS)
+{
   x86_translate<X86_TOKEN(MOV)> (data, op1, op2);
 }
 

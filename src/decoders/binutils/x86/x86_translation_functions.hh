@@ -284,11 +284,13 @@ X86_TRANSLATE_1_OP(LOOPNEWL); // x86_instr_loops.cc
 
 // X86_TRANSLATE_0_OP(MONITOR);
 
-X86_TRANSLATE_2_OP(MOV);  // x86_instr_mov.cc
-X86_TRANSLATE_2_OP(MOVB); // x86_instr_mov.cc
-X86_TRANSLATE_2_OP(MOVW); // x86_instr_mov.cc
-X86_TRANSLATE_2_OP(MOVL); // x86_instr_mov.cc
-X86_TRANSLATE_2_OP(MOVBE); // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOV);    // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOVB);   // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOVW);   // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOVL);   // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOVQ);   // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOVABS); // x86_instr_mov.cc
+X86_TRANSLATE_2_OP(MOVBE);  // x86_instr_mov.cc
 
 X86_TRANSLATE_0_OP(MOVSB); // x86_instr_strings.cc
 X86_TRANSLATE_2_OP(MOVSB); // x86_instr_strings.cc
@@ -871,7 +873,6 @@ X86_TRANSLATE_2_OP(XORQ); // x86_instr_booleans.cc
 // X86_TRANSLATE_2_OP(MOVDQU);
 // X86_TRANSLATE_2_OP(MOVDQ2Q);
 // X86_TRANSLATE_2_OP(MOVD);
-// X86_TRANSLATE_2_OP(MOVQ);
 // X86_TRANSLATE_2_OP(MOVHLPS);
 // X86_TRANSLATE_3_OP(MOVHLPS);
 // X86_TRANSLATE_2_OP(MOVHPD);

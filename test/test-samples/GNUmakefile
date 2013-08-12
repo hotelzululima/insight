@@ -215,6 +215,7 @@ X86_64_OBJECTS= \
   x86_64-not.bin \
   x86_64-or.bin \
   \
+  x86_64-pop.bin \
   x86_64-pop16.bin \
   x86_64-popcnt.bin \
   x86_64-push.bin \

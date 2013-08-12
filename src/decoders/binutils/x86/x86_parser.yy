@@ -573,6 +573,7 @@ using namespace x86;
 %token  TOK_MOVB             "MOVB"
 %token  TOK_MOVW             "MOVW"
 %token  TOK_MOVL             "MOVL"
+%token  TOK_MOVABS           "MOVABS"
 %token  TOK_MOVAPD           "MOVAPD"
 %token  TOK_MOVAPS           "MOVAPS"
 %token  TOK_MOVBE            "MOVBE"
@@ -1579,6 +1580,7 @@ instruction:
 | TOK_MOVB operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVB)> (data, $2, $4); }
 | TOK_MOVW operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVW)> (data, $2, $4); }
 | TOK_MOVL operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVL)> (data, $2, $4); }
+| TOK_MOVABS operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVABS)> (data, $2, $4); }
 | TOK_MOVAPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVAPD)> (data, $2, $4); }
 | TOK_MOVAPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVAPS)> (data, $2, $4); }
 | TOK_MOVBE operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVBE)> (data, $2, $4); }
