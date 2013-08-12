@@ -102,27 +102,27 @@ Architecture_X86_64::Architecture_X86_64() :
   add_register_alias("r14l", "r14", 8, 0);
   add_register_alias("r15l", "r15", 8, 0);
   
-  add_register_alias("ax", "eax", 16, 0);
-  add_register_alias("al", "eax", 8, 0);
-  add_register_alias("ah", "eax", 8, 8);
+  add_register_alias("ax", "rax", 16, 0);
+  add_register_alias("al", "rax", 8, 0);
+  add_register_alias("ah", "rax", 8, 8);
 
-  add_register_alias("bx", "ebx", 16, 0);
-  add_register_alias("bl", "ebx", 8, 0);
-  add_register_alias("bh", "ebx", 8, 8);
+  add_register_alias("bx", "rbx", 16, 0);
+  add_register_alias("bl", "rbx", 8, 0);
+  add_register_alias("bh", "rbx", 8, 8);
 
-  add_register_alias("cx", "ecx", 16, 0);
-  add_register_alias("cl", "ecx", 8, 0);
-  add_register_alias("ch", "ecx", 8, 8);
+  add_register_alias("cx", "rcx", 16, 0);
+  add_register_alias("cl", "rcx", 8, 0);
+  add_register_alias("ch", "rcx", 8, 8);
 
-  add_register_alias("dx", "edx", 16, 0);
-  add_register_alias("dl", "edx", 8, 0);
-  add_register_alias("dh", "edx", 8, 8);
+  add_register_alias("dx", "rdx", 16, 0);
+  add_register_alias("dl", "rdx", 8, 0);
+  add_register_alias("dh", "rdx", 8, 8);
 
-  add_register_alias("bp", "ebp", 16, 0);
-  add_register_alias("sp", "esp", 16, 0);
+  add_register_alias("bp", "rbp", 16, 0);
+  add_register_alias("sp", "rsp", 16, 0);
 
-  add_register_alias("si", "esi", 16, 0);
-  add_register_alias("di", "edi", 16, 0);
+  add_register_alias("si", "rsi", 16, 0);
+  add_register_alias("di", "rdi", 16, 0);
 
 #ifdef X86_64_USE_RFLAGS
   add_register("rflags", 64);
