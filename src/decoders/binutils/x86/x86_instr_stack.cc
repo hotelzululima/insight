@@ -245,14 +245,15 @@ X86_TRANSLATE_1_OP(POPW)
   op1->deref ();
 }
 
-			/* --------------- */
-
 X86_TRANSLATE_1_OP(POPL)
 {
   x86_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
 }
 
-			/* --------------- */
+X86_TRANSLATE_1_OP(POPQ)
+{
+  x86_pop (data.start_ma, data, (LValue *) op1, &data.next_ma);
+}
 
 void
 x86_pop (MicrocodeAddress &start,
@@ -398,6 +399,10 @@ X86_TRANSLATE_1_OP(PUSHL)
   x86_translate<X86_TOKEN(PUSH)> (data, op1);
 }
 
+X86_TRANSLATE_1_OP(PUSHQ)
+{
+  x86_translate<X86_TOKEN(PUSH)> (data, op1);
+}
 
 X86_TRANSLATE_0_OP(POPF)
 {

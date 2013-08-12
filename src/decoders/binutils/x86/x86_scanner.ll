@@ -690,6 +690,7 @@ optype    [bswlqt]
 "pop"              { return token::TOK_POP; }
 "popw"             { return token::TOK_POPW; }
 "popl"             { return token::TOK_POPL; }
+"popq"             { return token::TOK_POPQ; }
 "popa"             { return token::TOK_POPA; }
 "popaw"            { return token::TOK_POPAW; }
 "popal"            { return token::TOK_POPAL; }
@@ -739,9 +740,10 @@ optype    [bswlqt]
 "punpcklwd"        { return token::TOK_PUNPCKLWD; }
 "punpckldq"        { return token::TOK_PUNPCKLDQ; }
 "punpcklqdq"       { return token::TOK_PUNPCKLQDQ; }
-"push"             { return token::TOK_PUSH; }
+"push"             { return token::TOK_PUSH;  }
 "pushw"            { return token::TOK_PUSHW; }
 "pushl"            { return token::TOK_PUSHL; }
+"pushq"            { return token::TOK_PUSHQ; }
 "pusha"            { return token::TOK_PUSHA; }
 "pushaw"           { return token::TOK_PUSHAW; }
 "pushaL"           { return token::TOK_PUSHAL; }

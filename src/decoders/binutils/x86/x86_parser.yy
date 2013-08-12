@@ -731,6 +731,7 @@ using namespace x86;
 %token  TOK_POP              "POP"
 %token  TOK_POPW             "POPW"
 %token  TOK_POPL             "POPL"
+%token  TOK_POPQ             "POPQ"
 %token  TOK_POPA             "POPA"
 %token  TOK_POPAW            "POPAW"
 %token  TOK_POPAL            "POPAL"
@@ -783,6 +784,7 @@ using namespace x86;
 %token  TOK_PUSH             "PUSH"
 %token  TOK_PUSHW            "PUSHW"
 %token  TOK_PUSHL            "PUSHL"
+%token  TOK_PUSHQ            "PUSHQ"
 %token  TOK_PUSHA            "PUSHA"
 %token  TOK_PUSHAW           "PUSHAW"
 %token  TOK_PUSHAL           "PUSHAL"
@@ -1810,6 +1812,7 @@ instruction:
 | TOK_POP operand { x86_translate<X86_TOKEN(POP)> (data, $2); }
 | TOK_POPW operand { x86_translate<X86_TOKEN(POPW)> (data, $2); }
 | TOK_POPL operand { x86_translate<X86_TOKEN(POPL)> (data, $2); }
+| TOK_POPQ operand { x86_translate<X86_TOKEN(POPQ)> (data, $2); }
 | TOK_POPA  { x86_translate<X86_TOKEN(POPA)> (data); }
 | TOK_POPAW  { x86_translate<X86_TOKEN(POPAW)> (data); }
 | TOK_POPAL  { x86_translate<X86_TOKEN(POPAL)> (data); }
@@ -1892,6 +1895,7 @@ instruction:
 | TOK_PUSH operand { x86_translate<X86_TOKEN(PUSH)> (data, $2); }
 | TOK_PUSHW operand { x86_translate<X86_TOKEN(PUSHW)> (data, $2); }
 | TOK_PUSHL operand { x86_translate<X86_TOKEN(PUSHL)> (data, $2); }
+| TOK_PUSHQ operand { x86_translate<X86_TOKEN(PUSHQ)> (data, $2); }
 | TOK_PUSHA  { x86_translate<X86_TOKEN(PUSHA)> (data); }
 | TOK_PUSHAW  { x86_translate<X86_TOKEN(PUSHAW)> (data); }
 | TOK_PUSHAL  { x86_translate<X86_TOKEN(PUSHAL)> (data); }

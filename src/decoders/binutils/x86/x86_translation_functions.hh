@@ -349,12 +349,13 @@ X86_TRANSLATE_2_OP(ORQ); // x86_instr_booleans.cc
 
 X86_TRANSLATE_0_OP(PAUSE); // NOP / x86_instr_misc.cc
 
-X86_TRANSLATE_1_OP(POP); // x86_instr_stack.cc
-X86_TRANSLATE_1_OP(POPW); // x86_instr_stack.cc
-X86_TRANSLATE_1_OP(POPL); // x86_instr_stack.cc
+X86_TRANSLATE_1_OP(POP);   // x86_instr_stack.cc
+X86_TRANSLATE_1_OP(POPW);  // x86_instr_stack.cc
+X86_TRANSLATE_1_OP(POPL);  // x86_instr_stack.cc
+X86_TRANSLATE_1_OP(POPQ);  // x86_instr_stack.cc
 X86_TRANSLATE_0_OP(POPA);  // x86_instr_stack.cc
-X86_TRANSLATE_0_OP(POPAW);  // x86_instr_stack.cc
-X86_TRANSLATE_0_OP(POPAL);  // x86_instr_stack.cc
+X86_TRANSLATE_0_OP(POPAW); // x86_instr_stack.cc
+X86_TRANSLATE_0_OP(POPAL); // x86_instr_stack.cc
 
 X86_TRANSLATE_2_OP(POPCNT); // x86_instr_misc.cc
 
@@ -370,6 +371,7 @@ X86_TRANSLATE_1_OP(PREFETCHNTA); // NOP / x86_instr_misc.cc
 X86_TRANSLATE_1_OP(PUSH);  // x86_instr_stack.cc
 X86_TRANSLATE_1_OP(PUSHW); // x86_instr_stack.cc
 X86_TRANSLATE_1_OP(PUSHL); // x86_instr_stack.cc
+X86_TRANSLATE_1_OP(PUSHQ); // x86_instr_stack.cc
 
 X86_TRANSLATE_0_OP(PUSHA);  // x86_instr_stack.cc
 X86_TRANSLATE_0_OP(PUSHAW); // x86_instr_stack.cc
