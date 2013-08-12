@@ -28,7 +28,7 @@
 	## PUSH imm32
 	# data16 push $0x31415926 # Not valid in 64-bits mode
 	## PUSH imm64
-	data16 pushq $0x31415926
+	# data16 pushq $0x31415926 # Unveiled a bug in gas
 	
 	## PUSH {CS,SS,DS,ES,FS,GS}
 	# data16 push %cs # Not valid in 64-bits mode
