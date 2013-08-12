@@ -631,6 +631,7 @@ using namespace x86;
 %token  TOK_NOTB             "NOTB"
 %token  TOK_NOTW             "NOTW"
 %token  TOK_NOTL             "NOTL"
+%token  TOK_NOTQ             "NOTQ"
 %token  TOK_OR               "OR"
 %token  TOK_ORB              "ORB"
 %token  TOK_ORW              "ORW"
@@ -1641,6 +1642,7 @@ instruction:
 | TOK_NOTB operand { x86_translate<X86_TOKEN(NOTB)> (data, $2); }
 | TOK_NOTW operand { x86_translate<X86_TOKEN(NOTW)> (data, $2); }
 | TOK_NOTL operand { x86_translate<X86_TOKEN(NOTL)> (data, $2); }
+| TOK_NOTQ operand { x86_translate<X86_TOKEN(NOTQ)> (data, $2); }
 | TOK_OR operand TOK_COMMA operand { x86_translate<X86_TOKEN(OR)> (data, $2, $4); }
 | TOK_ORB operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORB)> (data, $2, $4); }
 | TOK_ORW operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORW)> (data, $2, $4); }

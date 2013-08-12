@@ -7,7 +7,7 @@ loop:
 	jnz	loop
 	callq	*%rdi
 	hlt
-	.	= 0x19
+	.	= 0x1d
 func:	
 	callq	0x12345
 	retq
