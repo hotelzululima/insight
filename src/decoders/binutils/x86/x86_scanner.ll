@@ -279,6 +279,7 @@ optype    [bswlqt]
 "enter"            { return token::TOK_ENTER; }
 "enterw"           { return token::TOK_ENTERW; }
 "enterl"           { return token::TOK_ENTERL; }
+"enterq"           { return token::TOK_ENTERQ; }
 "extractps"        { return token::TOK_EXTRACTPS; }
 "f2xm1"            { return token::TOK_F2XM1; }
 "fabs"             { return token::TOK_FABS; }
@@ -486,6 +487,7 @@ optype    [bswlqt]
 "leave"            { return token::TOK_LEAVE; }
 "leavew"           { return token::TOK_LEAVEW; }
 "leavel"           { return token::TOK_LEAVEL; }
+"leaveq"           { return token::TOK_LEAVEQ; }
 "lfence"           { return token::TOK_LFENCE; }
 "lgdt"             { return token::TOK_LGDT; }
 "lidt"             { return token::TOK_LIDT; }

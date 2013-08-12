@@ -176,6 +176,7 @@ X86_TRANSLATE_1_OP(DIVW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(ENTER); // x86_instr_stack.cc
 X86_TRANSLATE_2_OP(ENTERW); // x86_instr_stack.cc
 X86_TRANSLATE_2_OP(ENTERL); // x86_instr_stack.cc
+X86_TRANSLATE_2_OP(ENTERQ); // x86_instr_stack.cc
 
 X86_TRANSLATE_0_OP(HLT); // SINK / x86_instr_misc.cc
 
@@ -249,6 +250,7 @@ X86_TRANSLATE_2_OP(LEA);    // x86_instr_load_store.cc
 X86_TRANSLATE_0_OP(LEAVE);  // x86_instr_stack.cc
 X86_TRANSLATE_0_OP(LEAVEW); // x86_instr_stack.cc
 X86_TRANSLATE_0_OP(LEAVEL); // x86_instr_stack.cc
+X86_TRANSLATE_0_OP(LEAVEQ); // x86_instr_stack.cc
 
 // X86_TRANSLATE_0_OP(LFENCE);
 

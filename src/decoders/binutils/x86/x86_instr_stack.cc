@@ -120,6 +120,12 @@ X86_TRANSLATE_2_OP(ENTERL)
   x86_translate<X86_TOKEN(ENTER)> (data, op1, op2);
 }
 
+X86_TRANSLATE_2_OP(ENTERQ)
+{
+  data.data_mode = x86::parser_data::MODE_64;
+  x86_translate<X86_TOKEN(ENTER)> (data, op1, op2);
+}
+
 X86_TRANSLATE_0_OP(LEAVE)
 {
   MicrocodeAddress from (data.start_ma);
@@ -164,6 +170,12 @@ X86_TRANSLATE_0_OP(LEAVEW)
 X86_TRANSLATE_0_OP(LEAVEL)
 {
   data.data_mode = x86::parser_data::MODE_32;
+  x86_translate<X86_TOKEN(LEAVE)> (data);
+}
+
+X86_TRANSLATE_0_OP(LEAVEQ)
+{
+  data.data_mode = x86::parser_data::MODE_64;
   x86_translate<X86_TOKEN(LEAVE)> (data);
 }
 

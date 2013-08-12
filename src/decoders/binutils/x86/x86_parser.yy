@@ -327,6 +327,7 @@ using namespace x86;
 %token  TOK_ENTER            "ENTER"
 %token  TOK_ENTERW           "ENTERW"
 %token  TOK_ENTERL           "ENTERL"
+%token  TOK_ENTERQ           "ENTERQ"
 %token  TOK_EXTRACTPS        "EXTRACTPS"
 %token  TOK_F2XM1            "F2XM1"
 %token  TOK_FABS             "FABS"
@@ -534,6 +535,7 @@ using namespace x86;
 %token  TOK_LEAVE            "LEAVE"
 %token  TOK_LEAVEW           "LEAVEW"
 %token  TOK_LEAVEL           "LEAVEL"
+%token  TOK_LEAVEQ           "LEAVEQ"
 %token  TOK_LFENCE           "LFENCE"
 %token  TOK_LGDT             "LGDT"
 %token  TOK_LIDT             "LIDT"
@@ -1256,6 +1258,7 @@ instruction:
 | TOK_ENTER operand TOK_COMMA operand { x86_translate<X86_TOKEN(ENTER)> (data, $2, $4); }
 | TOK_ENTERW operand TOK_COMMA operand { x86_translate<X86_TOKEN(ENTERW)> (data, $2, $4); }
 | TOK_ENTERL operand TOK_COMMA operand { x86_translate<X86_TOKEN(ENTERL)> (data, $2, $4); }
+| TOK_ENTERQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(ENTERQ)> (data, $2, $4); }
 | TOK_EXTRACTPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(EXTRACTPS)> (data, $2, $4); }
 | TOK_F2XM1  { x86_translate<X86_TOKEN(F2XM1)> (data); }
 | TOK_FABS  { x86_translate<X86_TOKEN(FABS)> (data); }
@@ -1521,9 +1524,10 @@ instruction:
 | TOK_LGS operand TOK_COMMA operand { x86_translate<X86_TOKEN(LGS)> (data, $2, $4); }
 | TOK_LSS operand TOK_COMMA operand { x86_translate<X86_TOKEN(LSS)> (data, $2, $4); }
 | TOK_LEA operand TOK_COMMA operand { x86_translate<X86_TOKEN(LEA)> (data, $2, $4); }
-| TOK_LEAVE  { x86_translate<X86_TOKEN(LEAVE)> (data); }
+| TOK_LEAVE   { x86_translate<X86_TOKEN(LEAVE)>  (data); }
 | TOK_LEAVEW  { x86_translate<X86_TOKEN(LEAVEW)> (data); }
 | TOK_LEAVEL  { x86_translate<X86_TOKEN(LEAVEL)> (data); }
+| TOK_LEAVEQ  { x86_translate<X86_TOKEN(LEAVEQ)> (data); }
 | TOK_LFENCE  { x86_translate<X86_TOKEN(LFENCE)> (data); }
 | TOK_LGDT operand { x86_translate<X86_TOKEN(LGDT)> (data, $2); }
 | TOK_LIDT operand { x86_translate<X86_TOKEN(LIDT)> (data, $2); }
