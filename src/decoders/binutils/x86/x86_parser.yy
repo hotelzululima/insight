@@ -192,6 +192,7 @@ using namespace x86;
 %token  TOK_ANDB             "ANDB"
 %token  TOK_ANDW             "ANDW"
 %token  TOK_ANDL             "ANDL"
+%token  TOK_ANDQ             "ANDQ"
 %token  TOK_ANDPD            "ANDPD"
 %token  TOK_ANDPS            "ANDPS"
 %token  TOK_ANDNPD           "ANDNPD"
@@ -634,6 +635,7 @@ using namespace x86;
 %token  TOK_ORB              "ORB"
 %token  TOK_ORW              "ORW"
 %token  TOK_ORL              "ORL"
+%token  TOK_ORQ              "ORQ"
 %token  TOK_ORPD             "ORPD"
 %token  TOK_ORPS             "ORPS"
 %token  TOK_OUT              "OUT"
@@ -905,6 +907,7 @@ using namespace x86;
 %token  TOK_TESTB            "TESTB"
 %token  TOK_TESTW            "TESTW"
 %token  TOK_TESTL            "TESTL"
+%token  TOK_TESTQ            "TESTQ"
 %token  TOK_UCOMISD          "UCOMISD"
 %token  TOK_UCOMISS          "UCOMISS"
 %token  TOK_UD2              "UD2"
@@ -938,6 +941,7 @@ using namespace x86;
 %token  TOK_XORB             "XORB"
 %token  TOK_XORW             "XORW"
 %token  TOK_XORL             "XORL"
+%token  TOK_XORQ             "XORQ"
 %token  TOK_XORPD            "XORPD"
 %token  TOK_XORPS            "XORPS"
 %token  TOK_XRSTOR           "XRSTOR"
@@ -1094,6 +1098,7 @@ instruction:
 | TOK_ANDB operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDB)> (data, $2, $4); }
 | TOK_ANDW operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDW)> (data, $2, $4); }
 | TOK_ANDL operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDL)> (data, $2, $4); }
+| TOK_ANDQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDQ)> (data, $2, $4); }
 | TOK_ANDPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDPD)> (data, $2, $4); }
 | TOK_ANDPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDPD)> (data, $2, $4, $6); }
 | TOK_ANDPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(ANDPS)> (data, $2, $4); }
@@ -1640,6 +1645,7 @@ instruction:
 | TOK_ORB operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORB)> (data, $2, $4); }
 | TOK_ORW operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORW)> (data, $2, $4); }
 | TOK_ORL operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORL)> (data, $2, $4); }
+| TOK_ORQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORQ)> (data, $2, $4); }
 | TOK_ORPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORPD)> (data, $2, $4); }
 | TOK_ORPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORPD)> (data, $2, $4, $6); }
 | TOK_ORPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORPS)> (data, $2, $4); }
@@ -2048,6 +2054,7 @@ instruction:
 | TOK_TESTB operand TOK_COMMA operand { x86_translate<X86_TOKEN(TESTB)> (data, $2, $4); }
 | TOK_TESTW operand TOK_COMMA operand { x86_translate<X86_TOKEN(TESTW)> (data, $2, $4); }
 | TOK_TESTL operand TOK_COMMA operand { x86_translate<X86_TOKEN(TESTL)> (data, $2, $4); }
+| TOK_TESTQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(TESTQ)> (data, $2, $4); }
 | TOK_UCOMISD operand TOK_COMMA operand { x86_translate<X86_TOKEN(UCOMISD)> (data, $2, $4); }
 | TOK_UCOMISS operand TOK_COMMA operand { x86_translate<X86_TOKEN(UCOMISS)> (data, $2, $4); }
 | TOK_UD2  { x86_translate<X86_TOKEN(UD2)> (data); }
@@ -2089,6 +2096,7 @@ instruction:
 | TOK_XORB operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORB)> (data, $2, $4); }
 | TOK_XORW operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORW)> (data, $2, $4); }
 | TOK_XORL operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORL)> (data, $2, $4); }
+| TOK_XORQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORQ)> (data, $2, $4); }
 | TOK_XORPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORPD)> (data, $2, $4); }
 | TOK_XORPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORPD)> (data, $2, $4, $6); }
 | TOK_XORPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(XORPS)> (data, $2, $4); }

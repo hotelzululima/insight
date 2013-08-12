@@ -83,11 +83,11 @@ X86_TRANSLATE_2_OP(ADDB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(ADDW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(ADDL); // x86_instr_arithmetics.cc
 
-
-X86_TRANSLATE_2_OP(AND); // x86_instr_booleans.cc
+X86_TRANSLATE_2_OP(AND);  // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ANDB); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ANDW); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ANDL); // x86_instr_booleans.cc
+X86_TRANSLATE_2_OP(ANDQ); // x86_instr_booleans.cc
 
 X86_TRANSLATE_2_OP(BOUND); // x86_instr_misc.cc
 X86_TRANSLATE_2_OP(BOUND); // x86_instr_misc.cc
@@ -318,11 +318,13 @@ X86_TRANSLATE_1_OP(NOT);  // x86_instr_booleans.cc
 X86_TRANSLATE_1_OP(NOTB); // x86_instr_booleans.cc
 X86_TRANSLATE_1_OP(NOTW); // x86_instr_booleans.cc
 X86_TRANSLATE_1_OP(NOTL); // x86_instr_booleans.cc
+X86_TRANSLATE_1_OP(NOTQ); // x86_instr_booleans.cc
 
 X86_TRANSLATE_2_OP(OR);  // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ORB); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ORW); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ORL); // x86_instr_booleans.cc
+X86_TRANSLATE_2_OP(ORQ); // x86_instr_booleans.cc
 
 // X86_TRANSLATE_0_OP(OUT);
 // X86_TRANSLATE_1_OP(OUT);
@@ -521,6 +523,7 @@ X86_TRANSLATE_2_OP(TEST);  // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(TESTB); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(TESTW); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(TESTL); // x86_instr_booleans.cc
+X86_TRANSLATE_2_OP(TESTQ); // x86_instr_booleans.cc
 
 // X86_TRANSLATE_0_OP(UD2);
 
@@ -550,6 +553,7 @@ X86_TRANSLATE_2_OP(XOR);  // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(XORB); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(XORW); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(XORL); // x86_instr_booleans.cc
+X86_TRANSLATE_2_OP(XORQ); // x86_instr_booleans.cc
 
 // X86_TRANSLATE_1_OP(XRSTOR);
 

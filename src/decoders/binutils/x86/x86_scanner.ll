@@ -142,6 +142,7 @@ optype    [bswlqt]
 "andb"             { return token::TOK_ANDB; }
 "andw"             { return token::TOK_ANDW; }
 "andl"             { return token::TOK_ANDL; }
+"andq"             { return token::TOK_ANDQ; }
 "andpd"            { return token::TOK_ANDPD; }
 "andps"            { return token::TOK_ANDPS; }
 "andnpd"           { return token::TOK_ANDNPD; }
@@ -589,10 +590,12 @@ optype    [bswlqt]
 "notb"             { return token::TOK_NOTB; }
 "notw"             { return token::TOK_NOTW; }
 "notl"             { return token::TOK_NOTL; }
+"notq"             { return token::TOK_NOTQ; }
 "or"               { return token::TOK_OR; }
 "orb"              { return token::TOK_ORB; }
 "orw"              { return token::TOK_ORW; }
 "orl"              { return token::TOK_ORL; }
+"orq"              { return token::TOK_ORQ; }
 "orpd"             { return token::TOK_ORPD; }
 "orps"             { return token::TOK_ORPS; }
 "out"              { return token::TOK_OUT; }
@@ -864,6 +867,7 @@ optype    [bswlqt]
 "testb"            { return token::TOK_TESTB; }
 "testw"            { return token::TOK_TESTW; }
 "testl"            { return token::TOK_TESTL; }
+"testq"            { return token::TOK_TESTQ; }
 "ucomisd"          { return token::TOK_UCOMISD; }
 "ucomiss"          { return token::TOK_UCOMISS; }
 "ud2"              { return token::TOK_UD2; }
@@ -897,6 +901,7 @@ optype    [bswlqt]
 "xorb"             { return token::TOK_XORB; }
 "xorw"             { return token::TOK_XORW; }
 "xorl"             { return token::TOK_XORL; }
+"xorq"             { return token::TOK_XORQ; }
 "xorpd"            { return token::TOK_XORPD; }
 "xorps"            { return token::TOK_XORPS; }
 "xrstor"           { return token::TOK_XRSTOR; }

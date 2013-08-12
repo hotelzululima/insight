@@ -79,6 +79,12 @@ X86_TRANSLATE_2_OP(ANDL)
 			      x86_translate<X86_TOKEN(AND)>);
 }
 
+X86_TRANSLATE_2_OP(ANDQ)
+{
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(AND)>);
+}
+
 X86_TRANSLATE_2_OP(OR)
 {
   s_binary_op (data, BV_OP_OR, op1, op2);
@@ -97,6 +103,12 @@ X86_TRANSLATE_2_OP(ORW)
 }
 
 X86_TRANSLATE_2_OP(ORL)
+{
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(OR)>);
+}
+
+X86_TRANSLATE_2_OP(ORQ)
 {
   x86_translate_with_size (data, op1, op2, 32, 
 			      x86_translate<X86_TOKEN(OR)>);
@@ -126,6 +138,12 @@ X86_TRANSLATE_1_OP(NOTW)
 }
 
 X86_TRANSLATE_1_OP(NOTL)
+{
+  x86_translate_with_size (data, op1, 32, 
+			      x86_translate<X86_TOKEN(NOT)>);
+}
+
+X86_TRANSLATE_1_OP(NOTQ)
 {
   x86_translate_with_size (data, op1, 32, 
 			      x86_translate<X86_TOKEN(NOT)>);
@@ -168,6 +186,12 @@ X86_TRANSLATE_2_OP(TESTL)
 			      x86_translate<X86_TOKEN(TEST)>);
 }
 
+X86_TRANSLATE_2_OP(TESTQ)
+{
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(TEST)>);
+}
+
 X86_TRANSLATE_2_OP(XOR)
 {
   s_binary_op (data, BV_OP_XOR, op1, op2);
@@ -186,6 +210,12 @@ X86_TRANSLATE_2_OP(XORW)
 }
 
 X86_TRANSLATE_2_OP(XORL)
+{
+  x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(XOR)>);
+}
+
+X86_TRANSLATE_2_OP(XORQ)
 {
   x86_translate_with_size (data, op1, op2, 32, 
 			      x86_translate<X86_TOKEN(XOR)>);
