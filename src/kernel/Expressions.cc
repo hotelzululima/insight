@@ -384,10 +384,10 @@ BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset, 
 		   int bv_size)
 {
-  assert ((op == BV_OP_CONCAT || op == BV_OP_EXTEND_S || 
-	   op == BV_OP_EXTEND_U || op == BV_OP_EQ  || op == BV_OP_NEQ ) ||
-	  
-	  arg1->get_bv_size () == arg2->get_bv_size ());
+  assert ((op == BV_OP_CONCAT   || op == BV_OP_EXTEND_S ||
+           op == BV_OP_EXTEND_U || op == BV_OP_EQ       ||
+           op == BV_OP_NEQ )    ||
+          arg1->get_bv_size () == arg2->get_bv_size ());
 
   return find_or_add (new BinaryApp (op, arg1, arg2, bv_offset, bv_size));
 }
