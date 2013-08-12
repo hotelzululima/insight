@@ -965,7 +965,7 @@ using namespace x86;
 start: instruction;
 
 operand:
-  immediate { $$ = Constant::create ($1, 0, 32); }
+  immediate { $$ = Constant::create ($1, 0, data.arch->get_word_size ()); }
 | register { $$ = $1; }
 | register TOK_LPAR integer TOK_RPAR  
   { throw std::runtime_error ("unsupported register"); } 
