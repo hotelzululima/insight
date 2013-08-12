@@ -1,0 +1,62 @@
+**** Decode instruction: loop   0x2
+[(0x0,0)] @{asm:=loop   0x2}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x0,1)] StaticArrow (0x0,1) Skip << (NEQ %rcx{0;64} 0x0{0;64}){0;1} >> --> (0x2,0)StaticArrow (0x0,1) Skip << (NOT (NEQ %rcx{0;64} 0x0{0;64}){0;1}){0;1} >> --> (0x2,0)
+[(0x2,0)] 
+
+**** Decode instruction: loope  0x4
+[(0x2,0)] @{asm:=loope  0x4}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x2,1)] StaticArrow (0x2,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1} >> --> (0x4,0)StaticArrow (0x2,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x4,0)
+[(0x4,0)] 
+
+**** Decode instruction: loopne 0x6
+[(0x4,0)] @{asm:=loopne 0x6}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x4,1)] StaticArrow (0x4,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x6,0)StaticArrow (0x4,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x6,0)
+[(0x6,0)] 
+
+**** Decode instruction: loope  0x8
+[(0x6,0)] @{asm:=loope  0x8}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x6,1)] StaticArrow (0x6,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1} >> --> (0x8,0)StaticArrow (0x6,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x8,0)
+[(0x8,0)] 
+
+**** Decode instruction: loopne 0xa
+[(0x8,0)] @{asm:=loopne 0xa}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x8,1)] StaticArrow (0x8,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0xa,0)StaticArrow (0x8,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0xa,0)
+[(0xa,0)] 
+
+**** Decode instruction: loop   0x0
+[(0x0,0)] 
+[(0xa,0)] @{asm:=loop   0x0}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0xa,1)] StaticArrow (0xa,1) Skip << (NEQ %rcx{0;64} 0x0{0;64}){0;1} >> --> (0x0,0)StaticArrow (0xa,1) Skip << (NOT (NEQ %rcx{0;64} 0x0{0;64}){0;1}){0;1} >> --> (0xc,0)
+[(0xc,0)] 
+
+**** Decode instruction: loopl  0xf
+[(0xc,0)] @{asm:=loopl  0xf}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0xc,1)] StaticArrow (0xc,1) Skip << (NEQ %rcx{0;64} 0x0{0;64}){0;1} >> --> (0xf,0)StaticArrow (0xc,1) Skip << (NOT (NEQ %rcx{0;64} 0x0{0;64}){0;1}){0;1} >> --> (0xf,0)
+[(0xf,0)] 
+
+**** Decode instruction: loopel 0x12
+[(0xf,0)] @{asm:=loopel 0x12}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0xf,1)] StaticArrow (0xf,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1} >> --> (0x12,0)StaticArrow (0xf,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x12,0)
+[(0x12,0)] 
+
+**** Decode instruction: loopnel 0x15
+[(0x12,0)] @{asm:=loopnel 0x15}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x12,1)] StaticArrow (0x12,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x15,0)StaticArrow (0x12,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x15,0)
+[(0x15,0)] 
+
+**** Decode instruction: loopel 0x18
+[(0x15,0)] @{asm:=loopel 0x18}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x15,1)] StaticArrow (0x15,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1} >> --> (0x18,0)StaticArrow (0x15,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x18,0)
+[(0x18,0)] 
+
+**** Decode instruction: loopnel 0x1b
+[(0x18,0)] @{asm:=loopnel 0x1b}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x18,1)] StaticArrow (0x18,1) Skip << (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1} >> --> (0x1b,0)StaticArrow (0x18,1) Skip << (NOT (AND (NEQ %rcx{0;64} 0x0{0;64}){0;1} (NOT %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x1b,0)
+[(0x1b,0)] 
+
+**** Decode instruction: loopl  0x0
+[(0x0,0)] 
+[(0x1b,0)] @{asm:=loopl  0x0}@ %rcx{0;64} := (SUB %rcx{0;64} 0x1{0;64}){0;64}
+[(0x1b,1)] StaticArrow (0x1b,1) Skip << (NEQ %rcx{0;64} 0x0{0;64}){0;1} >> --> (0x0,0)StaticArrow (0x1b,1) Skip << (NOT (NEQ %rcx{0;64} 0x0{0;64}){0;1}){0;1} >> --> (0x1e,0)
+[(0x1e,0)] 
+

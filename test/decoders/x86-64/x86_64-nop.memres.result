@@ -1,0 +1,4 @@
+**** Decode instruction: nop
+[(0x0,0)] @{asm:=nop}@ StaticArrow (0x0,0) Skip  --> (0x1,0)
+[(0x1,0)] 
+

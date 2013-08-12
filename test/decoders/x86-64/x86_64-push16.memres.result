@@ -1,0 +1,60 @@
+**** Decode instruction: push   %ax
+[(0x0,0)] @{asm:=push   %ax}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x0,1)] StaticArrow (0x0,1) [%rsp{0;64}]{0;16} := %rax{0;16}  --> (0x2,0)
+[(0x2,0)] 
+
+**** Decode instruction: pushw  0x31415926
+[(0x2,0)] @{asm:=pushw  0x31415926}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x2,1)] StaticArrow (0x2,1) [%rsp{0;64}]{0;16} := [0x31415926{0;32}]{0;16}  --> (0xa,0)
+[(0xa,0)] 
+
+**** Decode instruction: push   %rax
+[(0xa,0)] @{asm:=push   %rax}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
+[(0xa,1)] StaticArrow (0xa,1) [%rsp{0;64}]{0;64} := %rax{0;64}  --> (0xb,0)
+[(0xb,0)] 
+
+**** Decode instruction: push   %rax
+[(0xb,0)] @{asm:=push   %rax}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
+[(0xb,1)] StaticArrow (0xb,1) [%rsp{0;64}]{0;64} := %rax{0;64}  --> (0xc,0)
+[(0xc,0)] 
+
+**** Decode instruction: pushq  0x31415926
+[(0xc,0)] @{asm:=pushq  0x31415926}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
+[(0xc,1)] StaticArrow (0xc,1) [%rsp{0;64}]{0;64} := [0x31415926{0;32}]{0;64}  --> (0x13,0)
+[(0x13,0)] 
+
+**** Decode instruction: push   %bp
+[(0x13,0)] @{asm:=push   %bp}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x13,1)] StaticArrow (0x13,1) [%rsp{0;64}]{0;16} := %rbp{0;16}  --> (0x15,0)
+[(0x15,0)] 
+
+**** Decode instruction: push   %rsp
+[(0x15,0)] @{asm:=push   %rsp}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
+[(0x15,1)] StaticArrow (0x15,1) [%rsp{0;64}]{0;64} := %rsp{0;64}  --> (0x16,0)
+[(0x16,0)] 
+
+**** Decode instruction: push   %rsp
+[(0x16,0)] @{asm:=push   %rsp}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
+[(0x16,1)] StaticArrow (0x16,1) [%rsp{0;64}]{0;64} := %rsp{0;64}  --> (0x17,0)
+[(0x17,0)] 
+
+**** Decode instruction: pushw  $0x31
+[(0x17,0)] @{asm:=pushw  $0x31}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x17,1)] StaticArrow (0x17,1) [%rsp{0;64}]{0;16} := 0x31{0;16}  --> (0x1a,0)
+[(0x1a,0)] 
+
+**** Decode instruction: pushw  $0x3141
+[(0x1a,0)] @{asm:=pushw  $0x3141}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x1a,1)] StaticArrow (0x1a,1) [%rsp{0;64}]{0;16} := 0x3141{0;16}  --> (0x1e,0)
+[(0x1e,0)] 
+
+**** Decode instruction: pushw  %fs
+[(0x1e,0)] @{asm:=pushw  %fs}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x1e,1)] StaticArrow (0x1e,1) [%rsp{0;64}]{0;16} := %fs{0;16}  --> (0x21,0)
+[(0x21,0)] 
+
+**** Decode instruction: pushw  %gs
+[(0x21,0)] @{asm:=pushw  %gs}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
+[(0x21,1)] StaticArrow (0x21,1) [%rsp{0;64}]{0;16} := %gs{0;16}  --> (0x24,0)
+[(0x24,0)] 
+

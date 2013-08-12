@@ -1,0 +1,33 @@
+**** Decode instruction: retq   
+[(0x0,0)] @{asm:=retq   }@ %tmpr0_32{0;32} := [%rsp{0;64}]{0;32}
+[(0x0,1)] %rsp{0;64} := (ADD %rsp{0;64} 0x4{0;64}){0;64}
+[(0x0,2)] @{callret:=RET}@ DynamicArrow (0x0,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+
+**** Decode instruction: retq   
+[(0x1,0)] @{asm:=retq   }@ %tmpr0_32{0;32} := [%rsp{0;64}]{0;32}
+[(0x1,1)] %rsp{0;64} := (ADD %rsp{0;64} 0x4{0;64}){0;64}
+[(0x1,2)] @{callret:=RET}@ DynamicArrow (0x1,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+
+**** Decode instruction: retw   
+[(0x2,0)] @{asm:=retw   }@ %tmpr0_32{0;32} := [%rsp{0;64}]{0;32}
+[(0x2,1)] %rsp{0;64} := (ADD %rsp{0;64} 0x4{0;64}){0;64}
+[(0x2,2)] @{callret:=RET}@ DynamicArrow (0x2,2) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+
+**** Decode instruction: retq   $0x14
+[(0x4,0)] @{asm:=retq   $0x14}@ %tmpr0_32{0;32} := [%rsp{0;64}]{0;32}
+[(0x4,1)] %rsp{0;64} := (ADD %rsp{0;64} 0x4{0;64}){0;64}
+[(0x4,2)] %rsp{0;64} := (ADD %rsp{0;64} 0x14{0;64}){0;64}
+[(0x4,3)] @{callret:=RET}@ DynamicArrow (0x4,3) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+
+**** Decode instruction: retq   $0x14
+[(0x7,0)] @{asm:=retq   $0x14}@ %tmpr0_32{0;32} := [%rsp{0;64}]{0;32}
+[(0x7,1)] %rsp{0;64} := (ADD %rsp{0;64} 0x4{0;64}){0;64}
+[(0x7,2)] %rsp{0;64} := (ADD %rsp{0;64} 0x14{0;64}){0;64}
+[(0x7,3)] @{callret:=RET}@ DynamicArrow (0x7,3) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+
+**** Decode instruction: retw   $0x14
+[(0xa,0)] @{asm:=retw   $0x14}@ %tmpr0_32{0;32} := [%rsp{0;64}]{0;32}
+[(0xa,1)] %rsp{0;64} := (ADD %rsp{0;64} 0x4{0;64}){0;64}
+[(0xa,2)] %rsp{0;64} := (ADD %rsp{0;64} 0x14{0;64}){0;64}
+[(0xa,3)] @{callret:=RET}@ DynamicArrow (0xa,3) Jmp %tmpr0_32{0;32}  --> << %tmpr0_32{0;32} >>
+

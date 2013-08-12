@@ -1,0 +1,180 @@
+**** Decode instruction: mov    %al,%bl
+[(0x0,0)] @{asm:=mov    %al,%bl}@ StaticArrow (0x0,0) %rbx{0;8} := %rax{0;8}  --> (0x2,0)
+[(0x2,0)] 
+
+**** Decode instruction: mov    %ah,%bl
+[(0x2,0)] @{asm:=mov    %ah,%bl}@ StaticArrow (0x2,0) %rbx{0;8} := %rax{8;8}  --> (0x4,0)
+[(0x4,0)] 
+
+**** Decode instruction: mov    0x72190111,%bl
+[(0x4,0)] @{asm:=mov    0x72190111,%bl}@ StaticArrow (0x4,0) %rbx{0;8} := [0x72190111{0;32}]{0;8}  --> (0xb,0)
+[(0xb,0)] 
+
+**** Decode instruction: mov    0x72190111,%bh
+[(0xb,0)] @{asm:=mov    0x72190111,%bh}@ StaticArrow (0xb,0) %rbx{8;8} := [0x72190111{0;32}]{0;8}  --> (0x12,0)
+[(0x12,0)] 
+
+**** Decode instruction: mov    %ax,%bx
+[(0x12,0)] @{asm:=mov    %ax,%bx}@ StaticArrow (0x12,0) %rbx{0;16} := %rax{0;16}  --> (0x15,0)
+[(0x15,0)] 
+
+**** Decode instruction: mov    0x72190111,%bx
+[(0x15,0)] @{asm:=mov    0x72190111,%bx}@ StaticArrow (0x15,0) %rbx{0;16} := [0x72190111{0;32}]{0;16}  --> (0x1d,0)
+[(0x1d,0)] 
+
+**** Decode instruction: mov    %eax,%ebx
+[(0x1d,0)] @{asm:=mov    %eax,%ebx}@ StaticArrow (0x1d,0) %rbx{0;32} := %rax{0;32}  --> (0x1f,0)
+[(0x1f,0)] 
+
+**** Decode instruction: mov    0x72190111,%ebx
+[(0x1f,0)] @{asm:=mov    0x72190111,%ebx}@ StaticArrow (0x1f,0) %rbx{0;32} := [0x72190111{0;32}]{0;32}  --> (0x26,0)
+[(0x26,0)] 
+
+**** Decode instruction: mov    %rax,%rbx
+[(0x26,0)] @{asm:=mov    %rax,%rbx}@ StaticArrow (0x26,0) %rbx{0;64} := %rax{0;64}  --> (0x29,0)
+[(0x29,0)] 
+
+**** Decode instruction: mov    0x72190111,%rbx
+[(0x29,0)] @{asm:=mov    0x72190111,%rbx}@ StaticArrow (0x29,0) %rbx{0;64} := [0x72190111{0;32}]{0;64}  --> (0x31,0)
+[(0x31,0)] 
+
+**** Decode instruction: mov    %cl,%bl
+[(0x31,0)] @{asm:=mov    %cl,%bl}@ StaticArrow (0x31,0) %rbx{0;8} := %rcx{0;8}  --> (0x33,0)
+[(0x33,0)] 
+
+**** Decode instruction: mov    %cl,%bh
+[(0x33,0)] @{asm:=mov    %cl,%bh}@ StaticArrow (0x33,0) %rbx{8;8} := %rcx{0;8}  --> (0x35,0)
+[(0x35,0)] 
+
+**** Decode instruction: mov    %ch,%bl
+[(0x35,0)] @{asm:=mov    %ch,%bl}@ StaticArrow (0x35,0) %rbx{0;8} := %rcx{8;8}  --> (0x37,0)
+[(0x37,0)] 
+
+**** Decode instruction: mov    %al,0x72190111
+[(0x37,0)] @{asm:=mov    %al,0x72190111}@ StaticArrow (0x37,0) [0x72190111{0;32}]{0;8} := %rax{0;8}  --> (0x3e,0)
+[(0x3e,0)] 
+
+**** Decode instruction: mov    %cx,%bx
+[(0x3e,0)] @{asm:=mov    %cx,%bx}@ StaticArrow (0x3e,0) %rbx{0;16} := %rcx{0;16}  --> (0x41,0)
+[(0x41,0)] 
+
+**** Decode instruction: mov    %ax,0x72190111
+[(0x41,0)] @{asm:=mov    %ax,0x72190111}@ StaticArrow (0x41,0) [0x72190111{0;32}]{0;16} := %rax{0;16}  --> (0x49,0)
+[(0x49,0)] 
+
+**** Decode instruction: mov    %ecx,%ebx
+[(0x49,0)] @{asm:=mov    %ecx,%ebx}@ StaticArrow (0x49,0) %rbx{0;32} := %rcx{0;32}  --> (0x4b,0)
+[(0x4b,0)] 
+
+**** Decode instruction: mov    %eax,0x72190111
+[(0x4b,0)] @{asm:=mov    %eax,0x72190111}@ StaticArrow (0x4b,0) [0x72190111{0;32}]{0;32} := %rax{0;32}  --> (0x52,0)
+[(0x52,0)] 
+
+**** Decode instruction: mov    %rcx,%rbx
+[(0x52,0)] @{asm:=mov    %rcx,%rbx}@ StaticArrow (0x52,0) %rbx{0;64} := %rcx{0;64}  --> (0x55,0)
+[(0x55,0)] 
+
+**** Decode instruction: mov    %rax,0x72190111
+[(0x55,0)] @{asm:=mov    %rax,0x72190111}@ StaticArrow (0x55,0) [0x72190111{0;32}]{0;64} := %rax{0;64}  --> (0x5d,0)
+[(0x5d,0)] 
+
+**** Decode instruction: mov    %ss,%cx
+[(0x5d,0)] @{asm:=mov    %ss,%cx}@ StaticArrow (0x5d,0) %rcx{0;16} := %ss{0;16}  --> (0x60,0)
+[(0x60,0)] 
+
+**** Decode instruction: mov    %ss,0x72190111
+[(0x60,0)] @{asm:=mov    %ss,0x72190111}@ StaticArrow (0x60,0) [0x72190111{0;32}]{0;16} := %ss{0;16}  --> (0x67,0)
+[(0x67,0)] 
+
+**** Decode instruction: mov    %ecx,%ss
+[(0x67,0)] @{asm:=mov    %ecx,%ss}@ StaticArrow (0x67,0) %ss{0;16} := %rcx{0;16}  --> (0x69,0)
+[(0x69,0)] 
+
+**** Decode instruction: mov    0x72190111,%ss
+[(0x69,0)] @{asm:=mov    0x72190111,%ss}@ StaticArrow (0x69,0) %ss{0;16} := [0x72190111{0;32}]{0;16}  --> (0x70,0)
+[(0x70,0)] 
+
+**** Decode instruction: movabs 0x89abcedf,%al
+[(0x70,0)] @{asm:=movabs 0x89abcedf,%al}@ StaticArrow (0x70,0) %rax{0;8} := [0x89abcedf{0;32}]{0;8}  --> (0x79,0)
+[(0x79,0)] 
+
+**** Decode instruction: addr32 mov 0x89abcedf,%al
+[(0x79,0)] @{asm:=addr32 mov 0x89abcedf,%al}@ StaticArrow (0x79,0) %rax{0;8} := [0x89abcedf{0;32}]{0;8}  --> (0x7f,0)
+[(0x7f,0)] 
+
+**** Decode instruction: movabs 0x89abcedf,%ax
+[(0x7f,0)] @{asm:=movabs 0x89abcedf,%ax}@ StaticArrow (0x7f,0) %rax{0;16} := [0x89abcedf{0;32}]{0;16}  --> (0x89,0)
+[(0x89,0)] 
+
+**** Decode instruction: addr32 mov 0x89abcedf,%ax
+[(0x89,0)] @{asm:=addr32 mov 0x89abcedf,%ax}@ StaticArrow (0x89,0) %rax{0;16} := [0x89abcedf{0;32}]{0;16}  --> (0x90,0)
+[(0x90,0)] 
+
+**** Decode instruction: movabs 0x89abcedf,%eax
+[(0x90,0)] @{asm:=movabs 0x89abcedf,%eax}@ StaticArrow (0x90,0) %rax{0;32} := [0x89abcedf{0;32}]{0;32}  --> (0x99,0)
+[(0x99,0)] 
+
+**** Decode instruction: addr32 mov 0x89abcedf,%eax
+[(0x99,0)] @{asm:=addr32 mov 0x89abcedf,%eax}@ StaticArrow (0x99,0) %rax{0;32} := [0x89abcedf{0;32}]{0;32}  --> (0x9f,0)
+[(0x9f,0)] 
+
+**** Decode instruction: movabs 0x89abcedf,%rax
+[(0x9f,0)] @{asm:=movabs 0x89abcedf,%rax}@ StaticArrow (0x9f,0) %rax{0;64} := [0x89abcedf{0;32}]{0;64}  --> (0xa9,0)
+[(0xa9,0)] 
+
+**** Decode instruction: movabs %al,0x89abcedf
+[(0xa9,0)] @{asm:=movabs %al,0x89abcedf}@ StaticArrow (0xa9,0) [0x89abcedf{0;32}]{0;8} := %rax{0;8}  --> (0xb2,0)
+[(0xb2,0)] 
+
+**** Decode instruction: addr32 mov %al,0x89abcedf
+[(0xb2,0)] @{asm:=addr32 mov %al,0x89abcedf}@ StaticArrow (0xb2,0) [0x89abcedf{0;32}]{0;8} := %rax{0;8}  --> (0xb8,0)
+[(0xb8,0)] 
+
+**** Decode instruction: movabs %ax,0x89abcedf
+[(0xb8,0)] @{asm:=movabs %ax,0x89abcedf}@ StaticArrow (0xb8,0) [0x89abcedf{0;32}]{0;16} := %rax{0;16}  --> (0xc2,0)
+[(0xc2,0)] 
+
+**** Decode instruction: addr32 mov %ax,0x89abcedf
+[(0xc2,0)] @{asm:=addr32 mov %ax,0x89abcedf}@ StaticArrow (0xc2,0) [0x89abcedf{0;32}]{0;16} := %rax{0;16}  --> (0xc9,0)
+[(0xc9,0)] 
+
+**** Decode instruction: movabs %eax,0x89abcedf
+[(0xc9,0)] @{asm:=movabs %eax,0x89abcedf}@ StaticArrow (0xc9,0) [0x89abcedf{0;32}]{0;32} := %rax{0;32}  --> (0xd2,0)
+[(0xd2,0)] 
+
+**** Decode instruction: addr32 mov %eax,0x89abcedf
+[(0xd2,0)] @{asm:=addr32 mov %eax,0x89abcedf}@ StaticArrow (0xd2,0) [0x89abcedf{0;32}]{0;32} := %rax{0;32}  --> (0xd8,0)
+[(0xd8,0)] 
+
+**** Decode instruction: movabs %rax,0x89abcedf
+[(0xd8,0)] @{asm:=movabs %rax,0x89abcedf}@ StaticArrow (0xd8,0) [0x89abcedf{0;32}]{0;64} := %rax{0;64}  --> (0xe2,0)
+[(0xe2,0)] 
+
+**** Decode instruction: mov    $0x72,%dl
+[(0xe2,0)] @{asm:=mov    $0x72,%dl}@ StaticArrow (0xe2,0) %rdx{0;8} := 0x72{0;8}  --> (0xe4,0)
+[(0xe4,0)] 
+
+**** Decode instruction: mov    $0x7219,%dx
+[(0xe4,0)] @{asm:=mov    $0x7219,%dx}@ StaticArrow (0xe4,0) %rdx{0;16} := 0x7219{0;16}  --> (0xe8,0)
+[(0xe8,0)] 
+
+**** Decode instruction: mov    $0x72190111,%edx
+[(0xe8,0)] @{asm:=mov    $0x72190111,%edx}@ StaticArrow (0xe8,0) %rdx{0;32} := 0x72190111{0;32}  --> (0xed,0)
+[(0xed,0)] 
+
+**** Decode instruction: movb   $0x72,0x72190111
+[(0xed,0)] @{asm:=movb   $0x72,0x72190111}@ StaticArrow (0xed,0) [0x72190111{0;32}]{0;8} := 0x72{0;8}  --> (0xf5,0)
+[(0xf5,0)] 
+
+**** Decode instruction: movw   $0x7219,0x72190111
+[(0xf5,0)] @{asm:=movw   $0x7219,0x72190111}@ StaticArrow (0xf5,0) [0x72190111{0;32}]{0;16} := 0x7219{0;16}  --> (0xff,0)
+[(0xff,0)] 
+
+**** Decode instruction: movl   $0x72190111,0x72190111
+[(0xff,0)] @{asm:=movl   $0x72190111,0x72190111}@ StaticArrow (0xff,0) [0x72190111{0;32}]{0;32} := 0x72190111{0;32}  --> (0x10a,0)
+[(0x10a,0)] 
+
+**** Decode instruction: movq   $0x72190111,0x72190111
+[(0x10a,0)] @{asm:=movq   $0x72190111,0x72190111}@ StaticArrow (0x10a,0) [0x72190111{0;32}]{0;64} := 0x72190111{0;64}  --> (0x116,0)
+[(0x116,0)] 
+
