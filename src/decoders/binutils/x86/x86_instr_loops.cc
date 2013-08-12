@@ -90,14 +90,29 @@ X86_TRANSLATE_1_OP(LOOP)
   s_loop (data, op1, NULL);
 }
 
+X86_TRANSLATE_1_OP(LOOPL)
+{
+  x86_translate<X86_TOKEN(LOOP)> (data, op1);
+}
+
 X86_TRANSLATE_1_OP(LOOPE)
 {
   s_loop (data, op1, data.get_flag ("zf"));
 }
 
+X86_TRANSLATE_1_OP(LOOPEL)
+{
+  x86_translate<X86_TOKEN(LOOPE)> (data, op1);
+}
+
 X86_TRANSLATE_1_OP(LOOPNE)
 {
   s_loop (data, op1, UnaryApp::create (BV_OP_NOT, data.get_flag ("zf"), 0, 1));
+}
+
+X86_TRANSLATE_1_OP(LOOPNEL)
+{
+  x86_translate<X86_TOKEN(LOOPNE)> (data, op1);
 }
 
 X86_TRANSLATE_1_OP(LOOPW)
@@ -106,15 +121,30 @@ X86_TRANSLATE_1_OP(LOOPW)
   s_loop (data, op1, NULL);
 }
 
+X86_TRANSLATE_1_OP(LOOPWL)
+{
+  x86_translate<X86_TOKEN(LOOPW)> (data, op1);
+}
+
 X86_TRANSLATE_1_OP(LOOPEW)
 {
   data.addr_mode = x86::parser_data::MODE_16;
   s_loop (data, op1, data.get_flag ("zf"));
 }
 
+X86_TRANSLATE_1_OP(LOOPEWL)
+{
+  x86_translate<X86_TOKEN(LOOPEW)> (data, op1);
+}
+
 X86_TRANSLATE_1_OP(LOOPNEW)
 {
   data.addr_mode = x86::parser_data::MODE_16;
   s_loop (data, op1, UnaryApp::create (BV_OP_NOT, data.get_flag ("zf"), 0, 1));
+}
+
+X86_TRANSLATE_1_OP(LOOPNEWL)
+{
+  x86_translate<X86_TOKEN(LOOPNEW)> (data, op1);
 }
 

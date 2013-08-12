@@ -263,12 +263,18 @@ X86_TRANSLATE_PREFIX(LOCK); // NOP / x86_instr_prefixes.cc
 
 X86_TRANSLATE_2_OP(LODS);  // x86_instr_strings.cc
 
-X86_TRANSLATE_1_OP(LOOP);    // x86_instr_loops.cc
-X86_TRANSLATE_1_OP(LOOPE);   // x86_instr_loops.cc
-X86_TRANSLATE_1_OP(LOOPNE);  // x86_instr_loops.cc
-X86_TRANSLATE_1_OP(LOOPW);   // x86_instr_loops.cc
-X86_TRANSLATE_1_OP(LOOPEW);  // x86_instr_loops.cc
-X86_TRANSLATE_1_OP(LOOPNEW); // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOP);     // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPL);    // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPE);    // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPEL);   // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPNE);   // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPNEL);  // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPW);    // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPWL);   // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPEW);   // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPEWL);  // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPNEW);  // x86_instr_loops.cc
+X86_TRANSLATE_1_OP(LOOPNEWL); // x86_instr_loops.cc
 
 // X86_TRANSLATE_2_OP(LSL);
 

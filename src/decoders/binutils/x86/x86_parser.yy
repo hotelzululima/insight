@@ -544,11 +544,17 @@ using namespace x86;
 %token  TOK_LOCK             "LOCK"
 %token  TOK_LODS             "LODS"
 %token  TOK_LOOP             "LOOP"
+%token  TOK_LOOPL            "LOOPL"
 %token  TOK_LOOPE            "LOOPE"
+%token  TOK_LOOPEL           "LOOPEL"
 %token  TOK_LOOPNE           "LOOPNE"
+%token  TOK_LOOPNEL          "LOOPNEL"
 %token  TOK_LOOPW            "LOOPW"
+%token  TOK_LOOPWL           "LOOPWL"
 %token  TOK_LOOPEW           "LOOPEW"
+%token  TOK_LOOPEWL          "LOOPEWL"
 %token  TOK_LOOPNEW          "LOOPNEW"
+%token  TOK_LOOPNEWL         "LOOPNEWL"
 %token  TOK_LSL              "LSL"
 %token  TOK_LTR              "LTR"
 %token  TOK_MASKMOVDQU       "MASKMOVDQU"
@@ -1535,12 +1541,18 @@ instruction:
 | TOK_LMSW operand { x86_translate<X86_TOKEN(LMSW)> (data, $2); }
 | TOK_LOCK { x86_translate<X86_TOKEN(LOCK)> (data, true); } instruction { x86_translate<X86_TOKEN(LOCK)> (data, false); }
 | TOK_LODS operand TOK_COMMA operand { x86_translate<X86_TOKEN(LODS)> (data, $2, $4); }
-| TOK_LOOP operand { x86_translate<X86_TOKEN(LOOP)> (data, $2); }
-| TOK_LOOPE operand { x86_translate<X86_TOKEN(LOOPE)> (data, $2); }
-| TOK_LOOPNE operand { x86_translate<X86_TOKEN(LOOPNE)> (data, $2); }
-| TOK_LOOPW operand { x86_translate<X86_TOKEN(LOOPW)> (data, $2); }
-| TOK_LOOPEW operand { x86_translate<X86_TOKEN(LOOPEW)> (data, $2); }
-| TOK_LOOPNEW operand { x86_translate<X86_TOKEN(LOOPNEW)> (data, $2); }
+| TOK_LOOP     operand { x86_translate<X86_TOKEN(LOOP)>     (data, $2); }
+| TOK_LOOPL    operand { x86_translate<X86_TOKEN(LOOPL)>    (data, $2); }
+| TOK_LOOPE    operand { x86_translate<X86_TOKEN(LOOPE)>    (data, $2); }
+| TOK_LOOPEL   operand { x86_translate<X86_TOKEN(LOOPEL)>   (data, $2); }
+| TOK_LOOPNE   operand { x86_translate<X86_TOKEN(LOOPNE)>   (data, $2); }
+| TOK_LOOPNEL  operand { x86_translate<X86_TOKEN(LOOPNEL)>  (data, $2); }
+| TOK_LOOPW    operand { x86_translate<X86_TOKEN(LOOPW)>    (data, $2); }
+| TOK_LOOPWL   operand { x86_translate<X86_TOKEN(LOOPWL)>   (data, $2); }
+| TOK_LOOPEW   operand { x86_translate<X86_TOKEN(LOOPEW)>   (data, $2); }
+| TOK_LOOPEWL  operand { x86_translate<X86_TOKEN(LOOPEWL)>  (data, $2); }
+| TOK_LOOPNEW  operand { x86_translate<X86_TOKEN(LOOPNEW)>  (data, $2); }
+| TOK_LOOPNEWL operand { x86_translate<X86_TOKEN(LOOPNEWL)> (data, $2); }
 | TOK_LSL operand TOK_COMMA operand { x86_translate<X86_TOKEN(LSL)> (data, $2, $4); }
 | TOK_LTR operand { x86_translate<X86_TOKEN(LTR)> (data, $2); }
 | TOK_MASKMOVDQU operand TOK_COMMA operand { x86_translate<X86_TOKEN(MASKMOVDQU)> (data, $2, $4); }
