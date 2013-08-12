@@ -219,6 +219,7 @@ X86_64_OBJECTS= \
   x86_64-pop16.bin \
   x86_64-popcnt.bin \
   x86_64-push.bin \
+  x86_64-push16.bin \
   \
   x86_64-rep.bin \
   x86_64-ret.bin \
