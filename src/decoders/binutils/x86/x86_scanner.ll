@@ -780,6 +780,7 @@ optype    [bswlqt]
 "repnz"            { return token::TOK_REPNZ; }
 "ret"              { return token::TOK_RET; }
 "retq"             { return token::TOK_RETQ; }
+"retw"             { return token::TOK_RETW; }
 "roundpd"          { return token::TOK_ROUNDPD; }
 "roundps"          { return token::TOK_ROUNDPS; }
 "roundsd"          { return token::TOK_ROUNDSD; }

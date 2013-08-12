@@ -821,6 +821,7 @@ using namespace x86;
 %token  TOK_REPNZ            "REPNZ"
 %token  TOK_RET              "RET"
 %token  TOK_RETQ             "RETQ"
+%token  TOK_RETW             "RETW"
 %token  TOK_ROUNDPD          "ROUNDPD"
 %token  TOK_ROUNDPS          "ROUNDPS"
 %token  TOK_ROUNDSD          "ROUNDSD"
@@ -1949,9 +1950,11 @@ instruction:
 | TOK_REPNE { x86_translate<X86_TOKEN(REPNE)> (data, true); } instruction { x86_translate<X86_TOKEN(REPNE)> (data, false); }
 | TOK_REPNZ { x86_translate<X86_TOKEN(REPNZ)> (data, true); } instruction { x86_translate<X86_TOKEN(REPNZ)> (data, false); }
 | TOK_RET  { x86_translate<X86_TOKEN(RET)> (data); }
-| TOK_RETQ  { x86_translate<X86_TOKEN(RETQ)> (data); }
 | TOK_RET operand { x86_translate<X86_TOKEN(RET)> (data, $2); }
+| TOK_RETQ  { x86_translate<X86_TOKEN(RETQ)> (data); }
 | TOK_RETQ operand { x86_translate<X86_TOKEN(RETQ)> (data, $2); }
+| TOK_RETW  { x86_translate<X86_TOKEN(RETW)> (data); }
+| TOK_RETW operand { x86_translate<X86_TOKEN(RETW)> (data, $2); }
 | TOK_ROUNDPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ROUNDPD)> (data, $2, $4, $6); }
 | TOK_ROUNDPS operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ROUNDPS)> (data, $2, $4, $6); }
 | TOK_ROUNDSD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ROUNDSD)> (data, $2, $4, $6); }
