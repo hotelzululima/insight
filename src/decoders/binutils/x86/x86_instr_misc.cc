@@ -225,6 +225,19 @@ X86_TRANSLATE_2_OP(CMPW)
 
 X86_TRANSLATE_2_OP(CMPL)
 {
+  if (op1->get_bv_size () != 32)
+    Expr::extract_bit_vector (op1, 0, 32);
+  if (op2->get_bv_size () != 32)
+    Expr::extract_bit_vector (op2, 0, 32);
+  x86_translate<X86_TOKEN(CMP)> (data, op1, op2);
+}
+
+X86_TRANSLATE_2_OP(CMPQ)
+{
+  if (op1->get_bv_size () != 64)
+    Expr::extract_bit_vector (op1, 0, 64);
+  if (op2->get_bv_size () != 64)
+    Expr::extract_bit_vector (op2, 0, 64);
   x86_translate<X86_TOKEN(CMP)> (data, op1, op2);
 }
 

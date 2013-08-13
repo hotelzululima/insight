@@ -268,6 +268,7 @@ using namespace x86;
 %token  TOK_CMPB             "CMPB"
 %token  TOK_CMPL             "CMPL"
 %token  TOK_CMPW             "CMPW"
+%token  TOK_CMPQ             "CMPQ"
 %token  TOK_CMPPD            "CMPPD"
 %token  TOK_CMPPS            "CMPPS"
 %token  TOK_CMPSB            "CMPSB"
@@ -1192,6 +1193,7 @@ instruction:
 | TOK_CMPB operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMPB)> (data, $2, $4); }
 | TOK_CMPL operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMPL)> (data, $2, $4); }
 | TOK_CMPW operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMPW)> (data, $2, $4); }
+| TOK_CMPQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMPQ)> (data, $2, $4); }
 | TOK_CMPPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMPPD)> (data, $2, $4, $6); }
 | TOK_CMPPS operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMPPS)> (data, $2, $4, $6); }
 | TOK_CMPSB  { x86_translate<X86_TOKEN(CMPSB)> (data); }

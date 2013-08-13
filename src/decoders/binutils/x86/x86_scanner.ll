@@ -214,6 +214,7 @@ optype    [bswlqt]
 "cmpb"             { return token::TOK_CMPB; }
 "cmpl"             { return token::TOK_CMPL; }
 "cmpw"             { return token::TOK_CMPW; }
+"cmpq"             { return token::TOK_CMPQ; }
 "cmppd"            { return token::TOK_CMPPD; }
 "cmpps"            { return token::TOK_CMPPS; }
 "cmpsb"            { return token::TOK_CMPSB; }

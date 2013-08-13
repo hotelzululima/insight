@@ -142,6 +142,7 @@ X86_TRANSLATE_2_OP(CMP);  // x86_instr_misc.cc
 X86_TRANSLATE_2_OP(CMPB); // x86_instr_misc.cc 
 X86_TRANSLATE_2_OP(CMPL); // x86_instr_misc.cc 
 X86_TRANSLATE_2_OP(CMPW); // x86_instr_misc.cc 
+X86_TRANSLATE_2_OP(CMPQ); // x86_instr_misc.cc 
 
 X86_TRANSLATE_0_OP(CMPSB); // x86_instr_strings.cc 
 X86_TRANSLATE_2_OP(CMPSB); // x86_instr_strings.cc 
