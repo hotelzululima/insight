@@ -514,7 +514,7 @@ s_div (x86::parser_data &data, Expr *op1, bool udiv)
       op = BinaryApp::create (BV_OP_CONCAT,
 			      data.get_register ("rdx"),
 			      data.get_register ("rax"),
-			      0, 64);
+			      0, 128);
       if (udiv)
 	{
 	  min = 0x0000000000000000;
