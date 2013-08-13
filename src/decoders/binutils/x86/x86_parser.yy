@@ -1035,7 +1035,7 @@ TOK_REGISTER
 }
 | TOK_EIZ
 {
-  $$ = Constant::zero(BV_DEFAULT_SIZE);
+  $$ = Constant::zero(data.arch->get_word_size ());
 }
  ;
 
