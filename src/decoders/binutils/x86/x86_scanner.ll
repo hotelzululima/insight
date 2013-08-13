@@ -922,13 +922,16 @@ optype    [bswlqt]
 "xsetbv"           { return token::TOK_XSETBV; }
 
 "," { return token::TOK_COMMA;     }
-":" { return token::TOK_COLON; }
+":" { return token::TOK_COLON;     }
 "(" { return token::TOK_LPAR;      }
 ")" { return token::TOK_RPAR;      }
 "+" { return token::TOK_PLUS;      }
 "-" { return token::TOK_MINUS;     }
 "*" { return token::TOK_STAR;      }
 "$" { return token::TOK_DOLLAR;    }
+
+ /* Comments */
+\#.*
 
  /* Spaces and end of lines */
 [ \t]+ { yylloc->lines(yyleng); yylloc->step(); }
