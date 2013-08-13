@@ -93,14 +93,14 @@ Architecture_X86_64::Architecture_X86_64() :
   add_register_alias("r14w", "r14", 16, 0);
   add_register_alias("r15w", "r15", 16, 0);
 
-  add_register_alias("r8l",   "r8", 8, 0);
-  add_register_alias("r9l",   "r9", 8, 0);
-  add_register_alias("r10l", "r10", 8, 0);
-  add_register_alias("r11l", "r11", 8, 0);
-  add_register_alias("r12l", "r12", 8, 0);
-  add_register_alias("r13l", "r13", 8, 0);
-  add_register_alias("r14l", "r14", 8, 0);
-  add_register_alias("r15l", "r15", 8, 0);
+  add_register_alias("r8b",   "r8", 8, 0);
+  add_register_alias("r9b",   "r9", 8, 0);
+  add_register_alias("r10b", "r10", 8, 0);
+  add_register_alias("r11b", "r11", 8, 0);
+  add_register_alias("r12b", "r12", 8, 0);
+  add_register_alias("r13b", "r13", 8, 0);
+  add_register_alias("r14b", "r14", 8, 0);
+  add_register_alias("r15b", "r15", 8, 0);
   
   add_register_alias("ax", "rax", 16, 0);
   add_register_alias("al", "rax", 8, 0);
