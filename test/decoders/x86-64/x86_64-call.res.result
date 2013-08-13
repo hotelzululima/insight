@@ -7,7 +7,7 @@
 **** Decode instruction: callq  *0x1234
 [(0x5,0)] @{asm:=callq  *0x1234}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
 [(0x5,1)] [%rsp{0;64}]{0;64} := 0xc{0;64}
-[(0x5,2)] @{callret:=CALL}@ DynamicArrow (0x5,2) Jmp [0x1234{0;32}]{0;64}  --> << [0x1234{0;32}]{0;64} >>
+[(0x5,2)] @{callret:=CALL}@ DynamicArrow (0x5,2) Jmp [0x1234{0;64}]{0;64}  --> << [0x1234{0;64}]{0;64} >>
 
 **** Decode instruction: callq  *-0x4d2(%ebx)
 [(0xc,0)] @{asm:=callq  *-0x4d2(%ebx)}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
@@ -17,7 +17,7 @@
 **** Decode instruction: callq  *0xf012002
 [(0x13,0)] @{asm:=callq  *0xf012002}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
 [(0x13,1)] [%rsp{0;64}]{0;64} := 0x1a{0;64}
-[(0x13,2)] @{callret:=CALL}@ DynamicArrow (0x13,2) Jmp [0xf012002{0;32}]{0;64}  --> << [0xf012002{0;32}]{0;64} >>
+[(0x13,2)] @{callret:=CALL}@ DynamicArrow (0x13,2) Jmp [0xf012002{0;64}]{0;64}  --> << [0xf012002{0;64}]{0;64} >>
 
 **** Decode instruction: callq  *%rax
 [(0x1a,0)] @{asm:=callq  *%rax}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
@@ -33,7 +33,7 @@
 **** Decode instruction: callq  *0x1234
 [(0x21,0)] @{asm:=callq  *0x1234}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
 [(0x21,1)] [%rsp{0;64}]{0;64} := 0x28{0;64}
-[(0x21,2)] @{callret:=CALL}@ DynamicArrow (0x21,2) Jmp [0x1234{0;32}]{0;64}  --> << [0x1234{0;32}]{0;64} >>
+[(0x21,2)] @{callret:=CALL}@ DynamicArrow (0x21,2) Jmp [0x1234{0;64}]{0;64}  --> << [0x1234{0;64}]{0;64} >>
 
 **** Decode instruction: callq  *-0x4d2(%rbx)
 [(0x28,0)] @{asm:=callq  *-0x4d2(%rbx)}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
@@ -43,7 +43,7 @@
 **** Decode instruction: callq  *0xf012002
 [(0x2e,0)] @{asm:=callq  *0xf012002}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
 [(0x2e,1)] [%rsp{0;64}]{0;64} := 0x35{0;64}
-[(0x2e,2)] @{callret:=CALL}@ DynamicArrow (0x2e,2) Jmp [0xf012002{0;32}]{0;64}  --> << [0xf012002{0;32}]{0;64} >>
+[(0x2e,2)] @{callret:=CALL}@ DynamicArrow (0x2e,2) Jmp [0xf012002{0;64}]{0;64}  --> << [0xf012002{0;64}]{0;64} >>
 
 **** Decode instruction: callq  *%rax
 [(0x35,0)] @{asm:=callq  *%rax}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}

@@ -145,7 +145,7 @@ X86_TRANSLATE_2_OP(SHR)
 
 #define translate_shift_one_bit(op) \
 X86_TRANSLATE_1_OP(op) \
-{ x86_translate<X86_TOKEN(op)> (data, Constant::one (BV_DEFAULT_SIZE), op1); }
+{ x86_translate<X86_TOKEN(op)> (data, Constant::one (data.arch->get_word_size ()), op1); }
 
 
 translate_shift_one_bit (SAL)
@@ -170,8 +170,8 @@ X86_TRANSLATE_2_OP(op ## szc)					\
 {									\
   Expr *aux = TernaryApp::create (BV_OP_EXTRACT, op1,			\
 				  Constant::zero (op2->get_bv_size ()), \
- 				  Constant::create (op2->get_bv_size (), \
-				 		    0, BV_DEFAULT_SIZE)); \
+ 				  Constant::create (op2->get_bv_size (), 0, \
+				 		    data.arch->get_word_size ())); \
   x86_translate<X86_TOKEN(op)> (data, aux, op2); \
 }
 
@@ -197,7 +197,7 @@ translate_shift_two_args(SHR,W,16)
   X86_TRANSLATE_1_OP(op)						\
   {									\
     x86_translate<X86_TOKEN(op)> (data,				\
-					Constant::one (BV_DEFAULT_SIZE), \
+					Constant::one (data.arch->get_word_size ()), \
 					op1);				\
   }
 
@@ -206,7 +206,7 @@ translate_shift_two_args(SHR,W,16)
   {									\
     Expr::extract_bit_vector (op1, 0, sz);				\
     x86_translate<X86_TOKEN(op)> (data,				\
-					Constant::one (BV_DEFAULT_SIZE), \
+					Constant::one (data.arch->get_word_size ()), \
 					op1);				\
   }
 

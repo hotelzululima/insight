@@ -5,7 +5,7 @@
 
 **** Decode instruction: pushw  0x31415926
 [(0x2,0)] @{asm:=pushw  0x31415926}@ %rsp{0;64} := (SUB %rsp{0;64} 0x2{0;64}){0;64}
-[(0x2,1)] StaticArrow (0x2,1) [%rsp{0;64}]{0;16} := [0x31415926{0;32}]{0;16}  --> (0xa,0)
+[(0x2,1)] StaticArrow (0x2,1) [%rsp{0;64}]{0;16} := [0x31415926{0;64}]{0;16}  --> (0xa,0)
 [(0xa,0)] 
 
 **** Decode instruction: push   %rax
@@ -20,7 +20,7 @@
 
 **** Decode instruction: pushq  0x31415926
 [(0xc,0)] @{asm:=pushq  0x31415926}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
-[(0xc,1)] StaticArrow (0xc,1) [%rsp{0;64}]{0;64} := [0x31415926{0;32}]{0;64}  --> (0x13,0)
+[(0xc,1)] StaticArrow (0xc,1) [%rsp{0;64}]{0;64} := [0x31415926{0;64}]{0;64}  --> (0x13,0)
 [(0x13,0)] 
 
 **** Decode instruction: push   %bp

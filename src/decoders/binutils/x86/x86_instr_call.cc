@@ -40,7 +40,7 @@ X86_TRANSLATE_1_OP (CALL)
 
   assert (mc != NULL);
 
-  x86_push (start, data, Constant::create (next,0, BV_DEFAULT_SIZE));
+  x86_push (start, data, Constant::create (next,0, data.arch->get_word_size ()));
 
   Expr *addr = mc->get_addr ();
   MicrocodeAddress here (start);
@@ -68,7 +68,7 @@ X86_TRANSLATE_1_OP (CALLQ)
 
 X86_TRANSLATE_0_OP (RET)
 {
-  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
+  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), data.arch->get_word_size ());
   MicrocodeAddress start = data.start_ma;
   x86_pop (start, data, tmpr0);
 
@@ -92,7 +92,7 @@ X86_TRANSLATE_0_OP (RETW)
 
 X86_TRANSLATE_1_OP (RET)
 {
-  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), BV_DEFAULT_SIZE);
+  LValue *tmpr0 = data.get_tmp_register (TMPREG (0), data.arch->get_word_size ());
   MicrocodeAddress start = data.start_ma;
   x86_pop (start, data, tmpr0);
 

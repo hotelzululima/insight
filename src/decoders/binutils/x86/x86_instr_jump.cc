@@ -117,6 +117,6 @@ X86_TRANSLATE_1_OP (JMPQ)
 
 X86_TRANSLATE_1_OP (JMPW)
 {
-  x86_translate_with_size (data, op1, BV_DEFAULT_SIZE,
+  x86_translate_with_size (data, op1, data.arch->get_word_size (),
 			      x86_translate<X86_TOKEN(JMP)>);
 }

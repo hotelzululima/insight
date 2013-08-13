@@ -152,7 +152,7 @@ x86::parser_data::get_memory_reference (Expr *section, int disp,
     bis = BinaryApp::create (BV_OP_ADD, bis, 
 			     Constant::create (disp, 0, bis->get_bv_size ()));
   else
-    bis = Constant::create (disp, 0, BV_DEFAULT_SIZE);
+    bis = Constant::create (disp, 0, arch->get_word_size ());
   
   //  return MemCell::create (BinaryApp::create (BV_OP_ADD, MemCell::create(section,
   // std::string ("segment")), bis));
