@@ -143,11 +143,15 @@ X86_TRANSLATE_0_OP(CLI)
   x86_translate<X86_TOKEN (NOP)> (data);
 }
 
-
 X86_TRANSLATE_0_OP(CLTS)
 {
   logs::warning << "CLTS translated in NOP" << endl;
   x86_translate<X86_TOKEN (NOP)> (data);
+}
+
+X86_TRANSLATE_0_OP(CLTQ)
+{
+  x86_translate<X86_TOKEN (CDQE)> (data);
 }
 
 void

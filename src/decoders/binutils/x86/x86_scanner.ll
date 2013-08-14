@@ -179,6 +179,7 @@ optype    [bswlqt]
 "clflush"          { return token::TOK_CLFLUSH; }
 "cli"              { return token::TOK_CLI; }
 "clts"             { return token::TOK_CLTS; }
+"cltq"             { return token::TOK_CLTQ; }
 "cmc"              { return token::TOK_CMC; }
 "cmova"            { return token::TOK_CMOVA; }
 "cmovae"           { return token::TOK_CMOVAE; }

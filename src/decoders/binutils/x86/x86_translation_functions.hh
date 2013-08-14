@@ -120,6 +120,7 @@ X86_TRANSLATE_0_OP(CBTW); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CDQE); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CWDE); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CWTL); // x86_instr_misc.cc
+X86_TRANSLATE_0_OP(CLTQ); // x86_instr_misc.cc
 
 X86_TRANSLATE_0_OP(CLC); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CLD); // x86_instr_misc.cc

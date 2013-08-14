@@ -233,6 +233,7 @@ using namespace x86;
 %token  TOK_CLFLUSH          "CLFLUSH"
 %token  TOK_CLI              "CLI"
 %token  TOK_CLTS             "CLTS"
+%token  TOK_CLTQ             "CLTQ"
 %token  TOK_CMC              "CMC"
 %token  TOK_CMOVA            "CMOVA"
 %token  TOK_CMOVAE           "CMOVAE"
@@ -1158,6 +1159,7 @@ instruction:
 | TOK_CLFLUSH operand { x86_translate<X86_TOKEN(CLFLUSH)> (data, $2); }
 | TOK_CLI  { x86_translate<X86_TOKEN(CLI)> (data); }
 | TOK_CLTS  { x86_translate<X86_TOKEN(CLTS)> (data); }
+| TOK_CLTQ  { x86_translate<X86_TOKEN(CLTQ)> (data); }
 | TOK_CMC  { x86_translate<X86_TOKEN(CMC)> (data); }
 | TOK_CMOVA operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMOVA)> (data, $2, $4); }
 | TOK_CMOVAE operand TOK_COMMA operand { x86_translate<X86_TOKEN(CMOVAE)> (data, $2, $4); }
