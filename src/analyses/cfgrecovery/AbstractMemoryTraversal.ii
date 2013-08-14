@@ -74,7 +74,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 	
 	      if (da != NULL && succ->size () == 0)
 		{
-		  logs::warning << "unable to solve dynmic jump " 
+		  logs::warning << "unable to solve dynamic jump "
 				<< da->pp() << std::endl;
 		}
 	      else
