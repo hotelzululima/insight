@@ -118,11 +118,15 @@ Architecture_X86_64::Architecture_X86_64() :
   add_register_alias("dl", "rdx", 8, 0);
   add_register_alias("dh", "rdx", 8, 8);
 
-  add_register_alias("bp", "rbp", 16, 0);
-  add_register_alias("sp", "rsp", 16, 0);
+  add_register_alias("bp",  "rbp", 16, 0);
+  add_register_alias("bpl", "rbp",  8, 0);
+  add_register_alias("sp",  "rsp", 16, 0);
+  add_register_alias("spl", "rsp",  8, 0);
 
-  add_register_alias("si", "rsi", 16, 0);
-  add_register_alias("di", "rdi", 16, 0);
+  add_register_alias("si",  "rsi", 16, 0);
+  add_register_alias("sil", "rsi",  8, 0);
+  add_register_alias("di",  "rdi", 16, 0);
+  add_register_alias("dil", "rdi",  8, 0);
 
 #ifdef X86_64_USE_RFLAGS
   add_register("rflags", 64);
