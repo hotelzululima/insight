@@ -176,6 +176,7 @@ using namespace x86;
 %token  TOK_ADDB             "ADDB"
 %token  TOK_ADDW             "ADDW"
 %token  TOK_ADDL             "ADDL"
+%token  TOK_ADDQ             "ADDQ"
 %token  TOK_ADDPD            "ADDPD"
 %token  TOK_ADDPS            "ADDPS"
 %token  TOK_ADDSD            "ADDSD"
@@ -315,10 +316,12 @@ using namespace x86;
 %token  TOK_DECB             "DECB"
 %token  TOK_DECW             "DECW"
 %token  TOK_DECL             "DECL"
+%token  TOK_DECQ             "DECQ"
 %token  TOK_DIV              "DIV"
 %token  TOK_DIVB             "DIVB"
-%token  TOK_DIVL             "DIVL"
 %token  TOK_DIVW             "DIVW"
+%token  TOK_DIVL             "DIVL"
+%token  TOK_DIVQ             "DIVQ"
 %token  TOK_DIVPD            "DIVPD"
 %token  TOK_DIVPS            "DIVPS"
 %token  TOK_DIVSD            "DIVSD"
@@ -465,15 +468,18 @@ using namespace x86;
 %token  TOK_IDIVB            "IDIVB"
 %token  TOK_IDIVW            "IDIVW"
 %token  TOK_IDIVL            "IDIVL"
+%token  TOK_IDIVQ            "IDIVQ"
 %token  TOK_IMUL             "IMUL"
 %token  TOK_IMULB            "IMULB"
 %token  TOK_IMULW            "IMULW"
 %token  TOK_IMULL            "IMULL"
+%token  TOK_IMULQ            "IMULQ"
 %token  TOK_IN               "IN"
 %token  TOK_INC              "INC"
 %token  TOK_INCB             "INCB"
 %token  TOK_INCW             "INCW"
 %token  TOK_INCL             "INCL"
+%token  TOK_INCQ             "INCQ"
 %token  TOK_INSB             "INSB"
 %token  TOK_INSW             "INSW"
 %token  TOK_INSL             "INSL"
@@ -626,6 +632,7 @@ using namespace x86;
 %token  TOK_MULB             "MULB"
 %token  TOK_MULW             "MULW"
 %token  TOK_MULL             "MULL"
+%token  TOK_MULQ             "MULQ"
 %token  TOK_MULPD            "MULPD"
 %token  TOK_MULPS            "MULPS"
 %token  TOK_MULSD            "MULSD"
@@ -635,6 +642,7 @@ using namespace x86;
 %token  TOK_NEGB             "NEGB"
 %token  TOK_NEGW             "NEGW"
 %token  TOK_NEGL             "NEGL"
+%token  TOK_NEGQ             "NEGQ"
 %token  TOK_NOP              "NOP"
 %token  TOK_NOPB             "NOPB"
 %token  TOK_NOPW             "NOPW"
@@ -853,6 +861,7 @@ using namespace x86;
 %token  TOK_SBBB             "SBBB"
 %token  TOK_SBBW             "SBBW"
 %token  TOK_SBBL             "SBBL"
+%token  TOK_SBBQ             "SBBQ"
 %token  TOK_SCAS             "SCAS"
 %token  TOK_SCASB            "SCASB"
 %token  TOK_SCASW            "SCASW"
@@ -910,6 +919,7 @@ using namespace x86;
 %token  TOK_SUBB             "SUBB"
 %token  TOK_SUBW             "SUBW"
 %token  TOK_SUBL             "SUBL"
+%token  TOK_SUBQ             "SUBQ"
 %token  TOK_SUBPD            "SUBPD"
 %token  TOK_SUBPS            "SUBPS"
 %token  TOK_SUBSD            "SUBSD"
@@ -1088,6 +1098,7 @@ instruction:
 | TOK_ADDB operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDB)> (data, $2, $4); }
 | TOK_ADDW operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDW)> (data, $2, $4); }
 | TOK_ADDL operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDL)> (data, $2, $4); }
+| TOK_ADDQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDQ)> (data, $2, $4); }
 | TOK_ADDPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDPD)> (data, $2, $4); }
 | TOK_ADDPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDPD)> (data, $2, $4, $6); }
 | TOK_ADDPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(ADDPS)> (data, $2, $4); }
@@ -1251,14 +1262,17 @@ instruction:
 | TOK_DECB operand { x86_translate<X86_TOKEN(DECB)> (data, $2); }
 | TOK_DECW operand { x86_translate<X86_TOKEN(DECW)> (data, $2); }
 | TOK_DECL operand { x86_translate<X86_TOKEN(DECL)> (data, $2); }
+| TOK_DECQ operand { x86_translate<X86_TOKEN(DECQ)> (data, $2); }
 | TOK_DIV operand { x86_translate<X86_TOKEN(DIV)> (data, $2); }
 | TOK_DIV operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIV)> (data, $2, $4); }
 | TOK_DIVB operand { x86_translate<X86_TOKEN(DIVB)> (data, $2); }
 | TOK_DIVB operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVB)> (data, $2, $4); }
-| TOK_DIVL operand { x86_translate<X86_TOKEN(DIVL)> (data, $2); }
-| TOK_DIVL operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVL)> (data, $2, $4); }
 | TOK_DIVW operand { x86_translate<X86_TOKEN(DIVW)> (data, $2); }
 | TOK_DIVW operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVW)> (data, $2, $4); }
+| TOK_DIVL operand { x86_translate<X86_TOKEN(DIVL)> (data, $2); }
+| TOK_DIVL operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVL)> (data, $2, $4); }
+| TOK_DIVQ operand { x86_translate<X86_TOKEN(DIVQ)> (data, $2); }
+| TOK_DIVQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVQ)> (data, $2, $4); }
 | TOK_DIVPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVPD)> (data, $2, $4); }
 | TOK_DIVPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVPD)> (data, $2, $4, $6); }
 | TOK_DIVPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(DIVPS)> (data, $2, $4); }
@@ -1453,6 +1467,7 @@ instruction:
 | TOK_IDIVB operand { x86_translate<X86_TOKEN(IDIVB)> (data, $2); }
 | TOK_IDIVW operand { x86_translate<X86_TOKEN(IDIVW)> (data, $2); }
 | TOK_IDIVL operand { x86_translate<X86_TOKEN(IDIVL)> (data, $2); }
+| TOK_IDIVQ operand { x86_translate<X86_TOKEN(IDIVQ)> (data, $2); }
 | TOK_IMUL operand { x86_translate<X86_TOKEN(IMUL)> (data, $2); }
 | TOK_IMUL operand TOK_COMMA operand { x86_translate<X86_TOKEN(IMUL)> (data, $2, $4); }
 | TOK_IMUL operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(IMUL)> (data, $2, $4, $6); }
@@ -1465,11 +1480,15 @@ instruction:
 | TOK_IMULL operand { x86_translate<X86_TOKEN(IMULL)> (data, $2); }
 | TOK_IMULL operand TOK_COMMA operand { x86_translate<X86_TOKEN(IMULL)> (data, $2, $4); }
 | TOK_IMULL operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(IMULL)> (data, $2, $4, $6); }
+| TOK_IMULQ operand { x86_translate<X86_TOKEN(IMULQ)> (data, $2); }
+| TOK_IMULQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(IMULQ)> (data, $2, $4); }
+| TOK_IMULQ operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(IMULQ)> (data, $2, $4, $6); }
 | TOK_IN operand TOK_COMMA operand { x86_translate<X86_TOKEN(IN)> (data, $2, $4); }
 | TOK_INC operand { x86_translate<X86_TOKEN(INC)> (data, $2); }
 | TOK_INCB operand { x86_translate<X86_TOKEN(INCB)> (data, $2); }
 | TOK_INCW operand { x86_translate<X86_TOKEN(INCW)> (data, $2); }
 | TOK_INCL operand { x86_translate<X86_TOKEN(INCL)> (data, $2); }
+| TOK_INCQ operand { x86_translate<X86_TOKEN(INCQ)> (data, $2); }
 | TOK_INSB  { x86_translate<X86_TOKEN(INSB)> (data); }
 | TOK_INSB operand TOK_COMMA operand { x86_translate<X86_TOKEN(INSB)> (data, $2, $4); }
 | TOK_INSW  { x86_translate<X86_TOKEN(INSW)> (data); }
@@ -1644,6 +1663,7 @@ instruction:
 | TOK_MULB operand { x86_translate<X86_TOKEN(MULB)> (data, $2); }
 | TOK_MULW operand { x86_translate<X86_TOKEN(MULW)> (data, $2); }
 | TOK_MULL operand { x86_translate<X86_TOKEN(MULL)> (data, $2); }
+| TOK_MULQ operand { x86_translate<X86_TOKEN(MULQ)> (data, $2); }
 | TOK_MULPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(MULPD)> (data, $2, $4); }
 | TOK_MULPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(MULPD)> (data, $2, $4, $6); }
 | TOK_MULPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(MULPS)> (data, $2, $4); }
@@ -1657,6 +1677,7 @@ instruction:
 | TOK_NEGB operand { x86_translate<X86_TOKEN(NEGB)> (data, $2); }
 | TOK_NEGW operand { x86_translate<X86_TOKEN(NEGW)> (data, $2); }
 | TOK_NEGL operand { x86_translate<X86_TOKEN(NEGL)> (data, $2); }
+| TOK_NEGQ operand { x86_translate<X86_TOKEN(NEGQ)> (data, $2); }
 | TOK_NOP  { x86_translate<X86_TOKEN(NOP)> (data); }
 | TOK_NOP operand { x86_translate<X86_TOKEN(NOP)> (data, $2); }
 | TOK_NOPB  { x86_translate<X86_TOKEN(NOPB)> (data); }
@@ -2006,6 +2027,7 @@ instruction:
 | TOK_SBBB operand TOK_COMMA operand { x86_translate<X86_TOKEN(SBBB)> (data, $2, $4); }
 | TOK_SBBW operand TOK_COMMA operand { x86_translate<X86_TOKEN(SBBW)> (data, $2, $4); }
 | TOK_SBBL operand TOK_COMMA operand { x86_translate<X86_TOKEN(SBBL)> (data, $2, $4); }
+| TOK_SBBQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(SBBQ)> (data, $2, $4); }
 | TOK_SCAS  { x86_translate<X86_TOKEN(SCAS)> (data); }
 | TOK_SCAS operand TOK_COMMA operand { x86_translate<X86_TOKEN(SCAS)> (data, $2, $4); }
 | TOK_SCASB  { x86_translate<X86_TOKEN(SCASB)> (data); }
@@ -2070,6 +2092,7 @@ instruction:
 | TOK_SUBB operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBB)> (data, $2, $4); }
 | TOK_SUBW operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBW)> (data, $2, $4); }
 | TOK_SUBL operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBL)> (data, $2, $4); }
+| TOK_SUBQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBQ)> (data, $2, $4); }
 | TOK_SUBPD operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBPD)> (data, $2, $4); }
 | TOK_SUBPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBPD)> (data, $2, $4, $6); }
 | TOK_SUBPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(SUBPS)> (data, $2, $4); }

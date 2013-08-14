@@ -126,6 +126,7 @@ optype    [bswlqt]
 "addb"             { return token::TOK_ADDB; }
 "addw"             { return token::TOK_ADDW; }
 "addl"             { return token::TOK_ADDL; }
+"addq"             { return token::TOK_ADDQ; }
 "addpd"            { return token::TOK_ADDPD; }
 "addps"            { return token::TOK_ADDPS; }
 "addsd"            { return token::TOK_ADDSD; }
@@ -267,10 +268,12 @@ optype    [bswlqt]
 "decb"             { return token::TOK_DECB; }
 "decw"             { return token::TOK_DECW; }
 "decl"             { return token::TOK_DECL; }
+"decq"             { return token::TOK_DECQ; }
 "div"              { return token::TOK_DIV; }
 "divb"             { return token::TOK_DIVB; }
-"divl"             { return token::TOK_DIVL; }
 "divw"             { return token::TOK_DIVW; }
+"divl"             { return token::TOK_DIVL; }
+"divq"             { return token::TOK_DIVQ; }
 "divpd"            { return token::TOK_DIVPD; }
 "divps"            { return token::TOK_DIVPS; }
 "divsd"            { return token::TOK_DIVSD; }
@@ -417,15 +420,18 @@ optype    [bswlqt]
 "idivb"            { return token::TOK_IDIVB; }
 "idivw"            { return token::TOK_IDIVW; }
 "idivl"            { return token::TOK_IDIVL; }
+"idivq"            { return token::TOK_IDIVQ; }
 "imul"             { return token::TOK_IMUL; }
 "imulb"            { return token::TOK_IMULB; }
 "imulw"            { return token::TOK_IMULW; }
 "imull"            { return token::TOK_IMULL; }
+"imulq"            { return token::TOK_IMULQ; }
 "in"               { return token::TOK_IN; }
 "inc"              { return token::TOK_INC; }
 "incb"             { return token::TOK_INCB; }
 "incw"             { return token::TOK_INCW; }
 "incl"             { return token::TOK_INCL; }
+"incq"             { return token::TOK_INCQ; }
 "insb"             { return token::TOK_INSB; }
 "insw"             { return token::TOK_INSW; }
 "insl"             { return token::TOK_INSL; }
@@ -585,6 +591,7 @@ optype    [bswlqt]
 "mulb"             { return token::TOK_MULB; }
 "mulw"             { return token::TOK_MULW; }
 "mull"             { return token::TOK_MULL; }
+"mulq"             { return token::TOK_MULQ; }
 "mulpd"            { return token::TOK_MULPD; }
 "mulps"            { return token::TOK_MULPS; }
 "mulsd"            { return token::TOK_MULSD; }
@@ -594,6 +601,7 @@ optype    [bswlqt]
 "negb"             { return token::TOK_NEGB; }
 "negw"             { return token::TOK_NEGW; }
 "negl"             { return token::TOK_NEGL; }
+"negq"             { return token::TOK_NEGQ; }
 "nop"              { return token::TOK_NOP; }
 "nopb"             { return token::TOK_NOPB; }
 "nopw"             { return token::TOK_NOPW; }
@@ -812,6 +820,7 @@ optype    [bswlqt]
 "sbbb"             { return token::TOK_SBBB; }
 "sbbw"             { return token::TOK_SBBW; }
 "sbbl"             { return token::TOK_SBBL; }
+"sbbq"             { return token::TOK_SBBQ; }
 "scas"             { return token::TOK_SCAS; }
 "scasb"            { return token::TOK_SCASB; }
 "scasw"            { return token::TOK_SCASW; }
@@ -869,6 +878,7 @@ optype    [bswlqt]
 "subb"             { return token::TOK_SUBB; }
 "subw"             { return token::TOK_SUBW; }
 "subl"             { return token::TOK_SUBL; }
+"subq"             { return token::TOK_SUBQ; }
 "subpd"            { return token::TOK_SUBPD; }
 "subps"            { return token::TOK_SUBPS; }
 "subsd"            { return token::TOK_SUBSD; }

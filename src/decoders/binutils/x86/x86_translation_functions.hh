@@ -82,6 +82,7 @@ X86_TRANSLATE_2_OP(ADD); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(ADDB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(ADDW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(ADDL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_2_OP(ADDQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_2_OP(AND);  // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ANDB); // x86_instr_booleans.cc
@@ -169,11 +170,13 @@ X86_TRANSLATE_1_OP(DEC); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(DECB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(DECW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(DECL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(DECQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_1_OP(DIV);  // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(DIVB); // x86_instr_arithmetics.cc
-X86_TRANSLATE_1_OP(DIVL); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(DIVW); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(DIVL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(DIVQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_2_OP(ENTER); // x86_instr_stack.cc
 X86_TRANSLATE_2_OP(ENTERW); // x86_instr_stack.cc
@@ -186,6 +189,7 @@ X86_TRANSLATE_1_OP(IDIV); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(IDIVB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(IDIVW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(IDIVL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(IDIVQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_1_OP(IMUL); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(IMUL); // x86_instr_arithmetics.cc
@@ -199,6 +203,9 @@ X86_TRANSLATE_3_OP(IMULW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(IMULL); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(IMULL); // x86_instr_arithmetics.cc
 X86_TRANSLATE_3_OP(IMULL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(IMULQ); // x86_instr_arithmetics.cc
+X86_TRANSLATE_2_OP(IMULQ); // x86_instr_arithmetics.cc
+X86_TRANSLATE_3_OP(IMULQ); // x86_instr_arithmetics.cc
 
 // X86_TRANSLATE_2_OP(IN);
 
@@ -206,6 +213,7 @@ X86_TRANSLATE_1_OP(INC); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(INCB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(INCW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(INCL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(INCQ); // x86_instr_arithmetics.cc
 
 // X86_TRANSLATE_0_OP(INSB);
 // X86_TRANSLATE_2_OP(INSB);
@@ -314,6 +322,7 @@ X86_TRANSLATE_1_OP(MUL);  // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(MULB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(MULW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(MULL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(MULQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_0_OP(MWAIT); // NOP / x86_instr_misc.cc
 
@@ -321,6 +330,7 @@ X86_TRANSLATE_1_OP(NEG);  // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(NEGB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(NEGW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(NEGL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_1_OP(NEGQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_0_OP(NOP);  // NOP / x86_instr_misc.cc
 X86_TRANSLATE_1_OP(NOP);  // NOP / x86_instr_misc.cc
@@ -486,6 +496,7 @@ X86_TRANSLATE_2_OP(SBB);  // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(SBBB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(SBBW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(SBBL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_2_OP(SBBQ); // x86_instr_arithmetics.cc
 
 X86_TRANSLATE_2_OP(SCAS); // x86_instr_strings.cc
 
@@ -526,6 +537,7 @@ X86_TRANSLATE_2_OP(SUB);  // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(SUBB); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(SUBW); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(SUBL); // x86_instr_arithmetics.cc
+X86_TRANSLATE_2_OP(SUBQ); // x86_instr_arithmetics.cc
 
 // X86_TRANSLATE_0_OP(SWAPGS);
 

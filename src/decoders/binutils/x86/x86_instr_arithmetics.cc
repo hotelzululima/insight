@@ -99,6 +99,12 @@ X86_TRANSLATE_2_OP(SUBL)
 			      x86_translate<X86_TOKEN(SUB)>);
 }
 
+X86_TRANSLATE_2_OP(SUBQ)
+{
+  x86_translate_with_size (data, op1, op2, 64, 
+			      x86_translate<X86_TOKEN(SUB)>);
+}
+
 X86_TRANSLATE_2_OP(ADD)
 {
   MicrocodeAddress start (data.start_ma);
@@ -120,6 +126,12 @@ X86_TRANSLATE_2_OP(ADDW)
 X86_TRANSLATE_2_OP(ADDL)
 {
   x86_translate_with_size (data, op1, op2, 32, 
+			      x86_translate<X86_TOKEN(ADD)>);
+}
+
+X86_TRANSLATE_2_OP(ADDQ)
+{
+  x86_translate_with_size (data, op1, op2, 64, 
 			      x86_translate<X86_TOKEN(ADD)>);
 }
 
@@ -195,6 +207,11 @@ X86_TRANSLATE_1_OP(INCL)
   x86_translate<X86_TOKEN(ADD)>(data, Constant::one(32), op1);
 }
 
+X86_TRANSLATE_1_OP(INCQ)
+{
+  x86_translate<X86_TOKEN(ADD)>(data, Constant::one(64), op1);
+}
+
 X86_TRANSLATE_1_OP(DEC)
 {
   MicrocodeAddress start (data.start_ma);
@@ -216,6 +233,11 @@ X86_TRANSLATE_1_OP(DECW)
 X86_TRANSLATE_1_OP(DECL)
 {
   x86_translate<X86_TOKEN(SUB)>(data, Constant::one(32), op1);
+}
+
+X86_TRANSLATE_1_OP(DECQ)
+{
+  x86_translate<X86_TOKEN(SUB)>(data, Constant::one(64), op1);
 }
 
 			/* --------------- */
@@ -590,15 +612,21 @@ X86_TRANSLATE_1_OP(DIVB)
 			      x86_translate<X86_TOKEN(DIV)>);
 }
 
+X86_TRANSLATE_1_OP(DIVW)
+{
+  x86_translate_with_size (data, op1, 16, 
+			      x86_translate<X86_TOKEN(DIV)>);
+}
+
 X86_TRANSLATE_1_OP(DIVL)
 {
   x86_translate_with_size (data, op1, 32, 
 			      x86_translate<X86_TOKEN(DIV)>);
 }
 
-X86_TRANSLATE_1_OP(DIVW)
+X86_TRANSLATE_1_OP(DIVQ)
 {
-  x86_translate_with_size (data, op1, 16, 
+  x86_translate_with_size (data, op1, 64, 
 			      x86_translate<X86_TOKEN(DIV)>);
 }
 
@@ -613,15 +641,21 @@ X86_TRANSLATE_1_OP(IDIVB)
 			      x86_translate<X86_TOKEN(IDIV)>);
 }
 
+X86_TRANSLATE_1_OP(IDIVW)
+{
+  x86_translate_with_size (data, op1, 16, 
+			      x86_translate<X86_TOKEN(IDIV)>);
+}
+
 X86_TRANSLATE_1_OP(IDIVL)
 {
   x86_translate_with_size (data, op1, 32, 
 			      x86_translate<X86_TOKEN(IDIV)>);
 }
 
-X86_TRANSLATE_1_OP(IDIVW)
+X86_TRANSLATE_1_OP(IDIVQ)
 {
-  x86_translate_with_size (data, op1, 16, 
+  x86_translate_with_size (data, op1, 64, 
 			      x86_translate<X86_TOKEN(IDIV)>);
 }
 			/* --------------- */
@@ -861,6 +895,26 @@ X86_TRANSLATE_3_OP(IMULL)
   x86_translate<X86_TOKEN(IMUL)> (data, op1, op2, op3);
 }
 
+X86_TRANSLATE_1_OP(IMULQ)
+{
+  x86_translate_with_size (data, op1, 64,
+			      x86_translate<X86_TOKEN(IMUL)>);
+}
+
+X86_TRANSLATE_2_OP(IMULQ)
+{
+  x86_translate_with_size (data, op1, op2, 64,
+			      x86_translate<X86_TOKEN(IMUL)>);
+}
+
+X86_TRANSLATE_3_OP(IMULQ)
+{
+  Expr::extract_bit_vector (op1, 0, 64);
+  Expr::extract_bit_vector (op2, 0, 64);
+  
+  x86_translate<X86_TOKEN(IMUL)> (data, op1, op2, op3);
+}
+
 X86_TRANSLATE_1_OP(MUL)
 {
   Expr *upper;
@@ -936,6 +990,12 @@ X86_TRANSLATE_1_OP(MULL)
   x86_translate<X86_TOKEN(MUL)> (data, op1); 
 }
 
+X86_TRANSLATE_1_OP(MULQ)
+{
+  Expr::extract_bit_vector (op1, 0, 64);
+  x86_translate<X86_TOKEN(MUL)> (data, op1); 
+}
+
 X86_TRANSLATE_1_OP(NEG)
 {
   MicrocodeAddress from (data.start_ma);
@@ -967,6 +1027,12 @@ X86_TRANSLATE_1_OP(NEGL)
   x86_translate<X86_TOKEN(NEG)> (data, op1);   
 }
 
+X86_TRANSLATE_1_OP(NEGQ)
+{
+  Expr::extract_bit_vector (op1, 0, 64);
+  x86_translate<X86_TOKEN(NEG)> (data, op1);   
+}
+
 X86_TRANSLATE_2_OP(SBB)
 {
   if (op2->is_MemCell () && ! op1->is_Constant ())
@@ -989,6 +1055,12 @@ X86_TRANSLATE_2_OP(SBBW)
 X86_TRANSLATE_2_OP(SBBL)
 {
   Expr::extract_bit_vector (op2, 0, 32);
+  x86_translate<X86_TOKEN(SBB)> (data, op1, op2);
+}
+
+X86_TRANSLATE_2_OP(SBBQ)
+{
+  Expr::extract_bit_vector (op2, 0, 64);
   x86_translate<X86_TOKEN(SBB)> (data, op1, op2);
 }
 
