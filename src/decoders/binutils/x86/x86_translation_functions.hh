@@ -300,6 +300,7 @@ X86_TRANSLATE_0_OP(MOVSW); // x86_instr_strings.cc
 X86_TRANSLATE_2_OP(MOVSW); // x86_instr_strings.cc
 X86_TRANSLATE_0_OP(MOVSL); // x86_instr_strings.cc
 X86_TRANSLATE_2_OP(MOVSL); // x86_instr_strings.cc
+X86_TRANSLATE_2_OP(MOVSLQ);// x86_instr_strings.cc
 
 X86_TRANSLATE_2_OP(MOVSBW); // x86_instr_mov.cc
 X86_TRANSLATE_2_OP(MOVSBL); // x86_instr_mov.cc

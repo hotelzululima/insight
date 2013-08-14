@@ -565,6 +565,7 @@ optype    [bswlqt]
 "movsw"            { return token::TOK_MOVSW; }
 "movsl"            { return token::TOK_MOVSL; }
 "movsd"            { return token::TOK_MOVSL; }
+"movslq"           { return token::TOK_MOVSLQ; }
 
 
 "movshdup"         { return token::TOK_MOVSHDUP; }

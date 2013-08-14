@@ -603,6 +603,7 @@ using namespace x86;
 %token  TOK_MOVSB            "MOVSB"
 %token  TOK_MOVSW            "MOVSW"
 %token  TOK_MOVSL            "MOVSL"
+%token  TOK_MOVSLQ           "MOVSLQ"
 
 %token  TOK_MOVSBW           "MOVSBW"
 %token  TOK_MOVSBL           "MOVSBL"
@@ -1624,6 +1625,7 @@ instruction:
 | TOK_MOVSW operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSW)> (data, $2, $4); }
 | TOK_MOVSWL operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSWL)> (data, $2, $4); }
 | TOK_MOVSL operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSL)> (data, $2, $4); }
+| TOK_MOVSLQ operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSLQ)> (data, $2, $4); }
 | TOK_MOVSHDUP operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSHDUP)> (data, $2, $4); }
 | TOK_MOVSLDUP operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSLDUP)> (data, $2, $4); }
 | TOK_MOVSS operand TOK_COMMA operand { x86_translate<X86_TOKEN(MOVSS)> (data, $2, $4); }

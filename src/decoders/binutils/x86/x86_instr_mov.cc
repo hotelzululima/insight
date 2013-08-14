@@ -219,6 +219,12 @@ X86_TRANSLATE_2_OP(MOVSWL)
   s_movs (data, op1, op2, 32);
 }
 
+X86_TRANSLATE_2_OP(MOVSLQ)
+{
+  Expr::extract_bit_vector (op1, 0, 32);
+  s_movs (data, op1, op2, 64);
+}
+
 X86_TRANSLATE_2_OP(MOVZBW)
 {
   Expr::extract_bit_vector (op1, 0, 8);
