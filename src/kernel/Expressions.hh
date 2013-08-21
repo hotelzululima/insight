@@ -298,7 +298,7 @@ public:
 
 /*****************************************************************************/
 /*! \brief
- *  Encoding of concret word values.
+ *  Encoding of concrete word values.
  *****************************************************************************/
 class Constant : public Expr {
 private:
@@ -323,7 +323,7 @@ public:
   constant_t get_val() const;
   constant_t get_not_truncated_value() const;
 
-  /*! \brief syntaxic equality of registers */
+  /*! \brief syntactic equality of registers */
   virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
@@ -382,8 +382,8 @@ protected:
 
 public:
   static UnaryApp *create (UnaryOp op, Expr *arg1);
-  static UnaryApp *create (UnaryOp op, Expr *arg1, int bv_offset, 
-			   int bv_size = BV_DEFAULT_SIZE);
+  static UnaryApp *create (UnaryOp op, Expr *arg1,
+			   int bv_offset, int bv_size);
 
   UnaryOp get_op() const;
   Expr *get_arg1() const;
@@ -466,10 +466,12 @@ protected:
   virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
 
 public:
-  static TernaryApp *create(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3);
+  static TernaryApp *create(TernaryOp op,
+			    Expr *arg1, Expr *arg2, Expr *arg3);
 
-  static TernaryApp *create(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3,
-      int bv_offset, int bv_size = BV_DEFAULT_SIZE);
+  static TernaryApp *create(TernaryOp op,
+			    Expr *arg1, Expr *arg2, Expr *arg3,
+			    int bv_offset, int bv_size);
   Expr *get_arg1() const;
   Expr *get_arg2() const;
   Expr *get_arg3() const;
