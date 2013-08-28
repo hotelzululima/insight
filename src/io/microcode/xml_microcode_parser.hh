@@ -39,14 +39,7 @@
 #include <kernel/Microcode.hh>
 
 /** \brief Main interface of the XML microcode parser */
-Microcode *xml_parse_mc_program(const std::string filename);
-
-typedef std::tr1::unordered_map<std::string, RegisterExpr *> XmlRegisterStore;
-extern XmlRegisterStore xml_register_store;
-
-void xml_delete_register_store();
-RegisterExpr * xml_get_register(std::string ident);
-void xml_reset_register_store();
-void xml_declare_register(const std::string ident, int size);
+extern Microcode *
+xml_parse_mc_program (const std::string &filename, MicrocodeArchitecture *arch);
 
 #endif /* IO_XML_MICROCODE_PARSER_HH */

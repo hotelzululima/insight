@@ -46,5 +46,5 @@ MicrocodeLoader::~MicrocodeLoader()
 Microcode *
 MicrocodeLoader::read_xml_file(const string &filename) const
 {
-  return xml_parse_mc_program(filename);
+  return xml_parse_mc_program(filename, new MicrocodeArchitecture (NULL));
 }

@@ -501,7 +501,7 @@ main (int argc, char *argv[])
 
 
   if (preload_filename != NULL)
-    mc = xml_parse_mc_program (preload_filename);
+    mc = xml_parse_mc_program (preload_filename, arch);
   else
     {
       mc = new Microcode ();
