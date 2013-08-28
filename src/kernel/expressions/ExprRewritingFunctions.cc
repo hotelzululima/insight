@@ -516,14 +516,16 @@ s_concat_extract_simplification (const Expr *cc,
 	TernaryApp::create (BV_OP_EXTRACT,
 			    arg->ref (),
 			    Constant::create (offset, 0, 32),
-			    Constant::create (size, 0, 32));
+			    Constant::create (size, 0, 32),
+			    0, size);
       
       if (cc->get_bv_offset () != 0 || cc->get_bv_size () != size)
 	result = 
 	  TernaryApp::create (BV_OP_EXTRACT,
-			      arg->ref (),
+			      result,
 			      Constant::create (cc->get_bv_offset (), 0, 32),
-			      Constant::create (cc->get_bv_size (), 0, 32));
+			      Constant::create (cc->get_bv_size (), 0, 32),
+			      0, cc->get_bv_size ());
       return result;
     }
   return NULL;
