@@ -161,7 +161,14 @@ xml_of_binary_op (BinaryOp op)
     case BV_OP_LT_U: opname = "ltu"; break;
     case BV_OP_LEQ_S: opname = "leqs"; break;
     case BV_OP_LT_S: opname = "lts"; break;
-    default: opname = NULL;
+    case BV_OP_NEQ: opname = "nq"; break;
+    case BV_OP_GEQ_U: opname = "gequ"; break;
+    case BV_OP_GT_U: opname = "gtu"; break;
+    case BV_OP_GEQ_S: opname = "geqs"; break;
+    case BV_OP_GT_S: opname = "gts"; break;
+    case BV_OP_EXTEND_S: opname = "exts"; break;
+    case BV_OP_EXTEND_U: opname = "extu"; break;
+    default: opname = NULL; break;
     }
  
   if (opname == NULL)
@@ -176,7 +183,7 @@ xml_of_binaryapp(const BinaryApp *b)
 {
   xmlNodePtr arg1 = xml_of_expr(b->get_arg1());
   xmlNodePtr arg2 = xml_of_expr(b->get_arg2());
-  xmlNodePtr op = xml_of_binary_op(b->get_op());
+  xmlNodePtr op = xml_of_binary_op (b->get_op ());
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "apply");
   xmlAddChild (result, op);
   xmlAddChild (result, arg1);
@@ -231,11 +238,11 @@ xml_of_memcell (const MemCell *m)
   xmlNodePtr addr = xml_of_expr (m->get_addr());
 
   xmlAddChild (result, addr);
-  string mem = string(m->get_tag());
+  string mem = string (m->get_tag ());
 
   if (mem.length() > 0)
     s_add_prop (result, "mem", mem);
-
+  
   return result;
 }
 
