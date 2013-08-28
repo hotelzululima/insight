@@ -266,7 +266,10 @@ X86_TRANSLATE_2_OP(CMPXCHG)
       _ax = data.get_register ("eax");
     }
   
-  Expr::extract_bit_vector (_ax, 0, op2->get_bv_size ());
+  if (dst->get_bv_size () != src->get_bv_size ())
+    Expr::extract_bit_vector (dst, 0, src->get_bv_size ());
+
+  Expr::extract_bit_vector (_ax, 0, dst->get_bv_size ());
 
   MicrocodeAddress from (data.start_ma + 1);
   MicrocodeAddress ifaddr (from);
