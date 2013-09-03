@@ -107,9 +107,6 @@ public:
   void output_text(std::ostream &out) const;
 
   virtual bool equals (const IntervalValue &v) const;
-
-private:
-  bool operator==(const IntervalValue &o) const;
 };
 
 #endif /* DOMAINS_INTERVAL_INTERVAL_VALUE_HH */

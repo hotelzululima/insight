@@ -141,10 +141,6 @@ public:
 
   /*! \brief Term-to-term equality */
   virtual bool equals (const SetsValue &v) const;
-
-private:
-  /*! \brief term-to-term Equality */
-  bool operator==(const SetsValue &other) const;
 };
 
 #endif /* DOMAINS_SETS_SETS_VALUE_HH */
