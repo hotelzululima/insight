@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -84,23 +84,19 @@ IntervalValue::of_constant(Constant *c)
 }
 
 bool
-IntervalValue::operator==(const IntervalValue &o) const
+IntervalValue::equals (const IntervalValue &v) const
 {
-  return get_size() == o.get_size() &&
-         o.getMin() == getMin() && o.getMax() == getMax();
+  return get_size() == v.get_size() &&
+         v.getMin() == getMin() && v.getMax() == getMax();
 }
 
-string
-IntervalValue::pp() const
-{
-  ostringstream buf;
+void
+IntervalValue::output_text(std::ostream &os) const{
 
   if (this->is_top)
-    buf << "TOP";
+    os << "TOP";
   else
-    buf << "[ " << getMin() << ", " << getMax() << "]";
+    os << "[ " << getMin() << ", " << getMax() << "]";
 
-  buf << " (" << get_size() << " bits)";
-
-  return buf.str();
+  os << " (" << get_size() << " bits)";
 }

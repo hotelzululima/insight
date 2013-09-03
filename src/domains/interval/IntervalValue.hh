@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -100,11 +100,16 @@ public:
   virtual IntervalValue *clone() const;
 
   virtual void of_constant(Constant *c);
-  bool operator==(const IntervalValue &o) const;
+
   static IntervalValue join(const IntervalValue &v1,
                             const IntervalValue &v2);
 
-  virtual std::string pp() const;
+  void output_text(std::ostream &out) const;
+
+  virtual bool equals (const IntervalValue &v) const;
+
+private:
+  bool operator==(const IntervalValue &o) const;
 };
 
 #endif /* DOMAINS_INTERVAL_INTERVAL_VALUE_HH */

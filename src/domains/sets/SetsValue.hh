@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -71,11 +71,11 @@ class SetsValue : public Value
   bool is_TOP;
 
 public:
-
   /*! \brief size is fixed to BV_DEFAULT_SIZE */
   SetsValue();
 
-  /*! \brief Constructs a value containing just nothing, size is given in bits */
+  /*! \brief Constructs a value containing just nothing, size is given
+   *  in bits */
   SetsValue(int size);
   SetsValue(int size, word_t val);
 
@@ -102,19 +102,19 @@ public:
       singleton, otherwise returns None */
   Option<ConcreteValue> extract_value() const;
 
-  /*! \brief Return the default value. This is used when some read access is done to an
-    unknown value */
+  /*! \brief Return the default value. This is used when some read
+   *  access is done to an unknown value */
   static SetsValue unknown_value(int size);
 
-  /*! \brief None means ANY value, i.e. TOP. Otherwise, this returns the list of
-   *  all the possible values.
+  /*! \brief None means ANY value, i.e. TOP. Otherwise, this returns
+   *  the list of all the possible values.
    *  \todo Optim : avoid the copy of the result */
   Option< std::list<ConcreteValue> > get_values();
 
   /*! \brief Adds a new value to the set. If the size is different,
-    raise an exception. If the set is empty, then the size is fixed to
-    the size of v. Caution the value maybe TOP.
-    \return true iff v was not in the current set. */
+   * raise an exception. If the set is empty, then the size is fixed
+   * to the size of v. Caution the value maybe TOP.
+   * \return true iff v was not in the current set. */
   bool add_value(Option<ConcreteValue> v);
 
   /*! \brief Tells whether the set contains v or not. */
@@ -132,16 +132,19 @@ public:
   /*! \brief Tells whether the value is top or not */
   bool is_any() const;
 
+  /*! \brief Output to text */
+  void output_text(std::ostream &out) const;
+
   /*! \brief extract a bool value from the set; all the value of the
-      set should produce the same boolean */
+   *  set should produce the same boolean */
   Option<bool> to_bool() const;
 
+  /*! \brief Term-to-term equality */
+  virtual bool equals (const SetsValue &v) const;
+
+private:
   /*! \brief term-to-term Equality */
   bool operator==(const SetsValue &other) const;
-
-  /*! \brief Pretty Print */
-  virtual std::string pp() const;
-
 };
 
 #endif /* DOMAINS_SETS_SETS_VALUE_HH */

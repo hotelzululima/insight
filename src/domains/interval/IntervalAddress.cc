@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -53,12 +53,13 @@ IntervalAddress::equals(const Address &o) const
   const IntervalAddress *ia = dynamic_cast<const IntervalAddress *>(&o);
   assert(ia != NULL);
 
-  return ia->address == address;
+  return address.equals(ia->address);
 }
 
-std::string IntervalAddress::pp() const
+void
+IntervalAddress::output_text(std::ostream &os) const
 {
-  return address.pp();
+  os << address;
 }
 
 Address *

@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -212,20 +212,20 @@ Option<MicrocodeAddress> SetsValue::to_MicrocodeAddress() const
     return MicrocodeAddress ();
 }
 
-bool SetsValue::operator==(const SetsValue &other) const
+bool
+SetsValue::equals (const SetsValue &v) const
 {
-
   if (is_TOP)
-    return other.is_any();
+    return v.is_any();
 
-  if (other.is_any())
+  if (v.is_any())
     return is_TOP;
 
-  if (the_set.size() != other.the_set.size())
+  if (the_set.size() != v.the_set.size())
     return false;
 
   ConcreteValueSet::iterator v1 = the_set.begin();
-  ConcreteValueSet::iterator v2 = other.the_set.begin();
+  ConcreteValueSet::iterator v2 = v.the_set.begin();
   while ((v1 != the_set.end()) && (v1->equals (*v2)))
     {
       v1++;
@@ -235,33 +235,33 @@ bool SetsValue::operator==(const SetsValue &other) const
   return (v1 == the_set.end());
 }
 
-std::string SetsValue::pp() const
+void
+SetsValue::output_text(std::ostream &os) const
 {
-  std::ostringstream oss;
-  if (is_TOP) oss << "{TOP}";
+  if (is_TOP) os << "{TOP}";
   else
     {
       if (the_set.size() == 0)
         {
-          oss << "{}";
+          os << "{}";
         }
       else
         {
           ConcreteValueSet::iterator elt = the_set.begin();
-          ConcreteValue v = *elt; // copy the element not to discard qualifier (set iterator are const),
+	  // copy the element not to discard qualifier (set iterator are const),
+          ConcreteValue v = *elt;
           // \todo the good way should be to make 'to_bool' function const
-          oss << "{";
-	  v.output_text(oss);
+          os << "{";
+	  v.output_text(os);
           elt++;
           for (; elt != the_set.end(); elt++)
             {
               v = *elt;
-              oss << ";";
-	      v.output_text(oss);
+              os << ";";
+	      v.output_text(os);
             }
-          oss << "}";
+          os << "}";
         }
     }
-  return oss.str();
 }
 

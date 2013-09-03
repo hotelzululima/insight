@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -52,9 +52,10 @@ public:
   SetsValue get() const;
 
   virtual bool equals(const Address &o) const;
-  virtual std::string pp() const ;
+
   virtual Address *clone() const ;
 
+  void output_text(std::ostream &out) const;
 };
 
 #endif /* DOMAINS_SETS_SETS_ADDRESS_HH */

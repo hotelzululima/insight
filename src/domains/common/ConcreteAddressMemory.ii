@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -133,7 +133,7 @@ void ConcreteAddressMemory<Value>::put(const ConcreteAddress &a,
           ConcreteAddressMemoryValue *tmp;
           cell = it->second;
           tmp = cell.mvalue;
-          if (cell.offset == i && tmp->value == v && tmp->endianness == e)
+          if (cell.offset == i && tmp->value.equals(v) && tmp->endianness == e)
             goto already;
           else
             {

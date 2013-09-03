@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -58,12 +58,12 @@ bool SetsAddress::equals(const Address &o) const
 
   assert(ia != NULL);
 
-  return ia->address == address;
+  return address.equals(ia->address);
 }
 
-std::string SetsAddress::pp() const
+void SetsAddress::output_text(std::ostream &os) const
 {
-  return address.pp();
+  os << address;
 }
 
 Address *SetsAddress::clone() const
