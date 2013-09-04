@@ -45,15 +45,3 @@ Address::Address(const Address &a) : Object(a)
 Address::~Address()
 {
 }
-
-bool
-operator== (const Address &, const Address &)
-{
-  throw logic_error("Found caller of operator== on Address");
-}
-
-bool
-operator!= (const Address &, const Address &)
-{
-  throw logic_error("Found caller of operator!= on Address");
-}

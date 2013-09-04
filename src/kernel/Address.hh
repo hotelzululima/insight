@@ -44,10 +44,6 @@ public:
   virtual ~Address();
   virtual Address *clone() const = 0;
   virtual bool equals(const Address &) const = 0;
-
-private:
-  bool operator== (const Address &);
-  bool operator!= (const Address &);
 };
 
 #endif /* KERNEL_ADDRESS_HH */

@@ -71,8 +71,8 @@ private:
   /* computed during the optimization step */
   std::vector<StmtArrow *> * predecessors;
   Microcode * father;
-  // CHANTIER *** CHANTIER *** CHANTIER *** CHANTIER ***
-  // OPTIMIZATION : fixer le father ˆ la construction !
+  // TODO *** TODO *** TODO *** TODO ***
+  // OPTIMIZATION : set-up the father at initialization !
 
 public:
   MicrocodeNode(MicrocodeAddress loc);

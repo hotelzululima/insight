@@ -69,10 +69,6 @@ public:
   bool equals(const MicrocodeAddress &other) const;
   bool lessThan(const MicrocodeAddress &other) const;
   MicrocodeAddress &operator = (const MicrocodeAddress &other);
-
-private:
-  bool operator==(const MicrocodeAddress &other) const;
-  bool operator<(const MicrocodeAddress &other) const;
 };
 
 MicrocodeAddress operator +(const MicrocodeAddress &a, int loffset);

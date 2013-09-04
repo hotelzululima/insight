@@ -104,17 +104,6 @@ MicrocodeAddress::operator = (const MicrocodeAddress &other)
   return *this;
 }
 
-bool MicrocodeAddress::operator==(const MicrocodeAddress &other) const
-{
-  return ((global == other.global) && (local == other.local));
-}
-
-bool MicrocodeAddress::operator<(const MicrocodeAddress &other) const
-{
-  return ((global < other.global) ||
-          ((global == other.global) && (local < other.local)));
-}
-
 MicrocodeAddress MicrocodeAddress::null_addr()
 {
   return MicrocodeAddress(NULL_ADDRESS);
