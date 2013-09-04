@@ -7,11 +7,11 @@
 [(0x3,0)] 
 
 **** Decode instruction: cmpxchg %bh,0x1232
-[(0x3,0)] @{asm:=cmpxchg %bh,0x1232}@ StaticArrow (0x3,0) Skip << (NOT (EQ %rax{0;64} [0x1232{0;64}]{0;64}){0;1}){0;1} >> --> (0x3,3)StaticArrow (0x3,0) Skip << (EQ %rax{0;64} [0x1232{0;64}]{0;64}){0;1} >> --> (0x3,1)
+[(0x3,0)] @{asm:=cmpxchg %bh,0x1232}@ StaticArrow (0x3,0) Skip << (NOT (EQ %rax{0;8} [0x1232{0;64}]{0;8}){0;1}){0;1} >> --> (0x3,3)StaticArrow (0x3,0) Skip << (EQ %rax{0;8} [0x1232{0;64}]{0;8}){0;1} >> --> (0x3,1)
 [(0x3,1)] %zf{0;1} := 0x1{0;1}
-[(0x3,2)] StaticArrow (0x3,2) [0x1232{0;64}]{0;64} := %rbx{8;8}  --> (0xb,0)
+[(0x3,2)] StaticArrow (0x3,2) [0x1232{0;64}]{0;8} := %rbx{8;8}  --> (0xb,0)
 [(0x3,3)] %zf{0;1} := 0x0{0;1}
-[(0x3,4)] StaticArrow (0x3,4) %rax{0;64} := [0x1232{0;64}]{0;64}  --> (0xb,0)
+[(0x3,4)] StaticArrow (0x3,4) %rax{0;8} := [0x1232{0;64}]{0;8}  --> (0xb,0)
 [(0xb,0)] 
 
 **** Decode instruction: cmpxchg %bx,%cx
@@ -23,11 +23,11 @@
 [(0xf,0)] 
 
 **** Decode instruction: cmpxchg %bx,0x1232
-[(0xf,0)] @{asm:=cmpxchg %bx,0x1232}@ StaticArrow (0xf,0) Skip << (NOT (EQ %rax{0;64} [0x1232{0;64}]{0;64}){0;1}){0;1} >> --> (0xf,3)StaticArrow (0xf,0) Skip << (EQ %rax{0;64} [0x1232{0;64}]{0;64}){0;1} >> --> (0xf,1)
+[(0xf,0)] @{asm:=cmpxchg %bx,0x1232}@ StaticArrow (0xf,0) Skip << (NOT (EQ %rax{0;16} [0x1232{0;64}]{0;16}){0;1}){0;1} >> --> (0xf,3)StaticArrow (0xf,0) Skip << (EQ %rax{0;16} [0x1232{0;64}]{0;16}){0;1} >> --> (0xf,1)
 [(0xf,1)] %zf{0;1} := 0x1{0;1}
-[(0xf,2)] StaticArrow (0xf,2) [0x1232{0;64}]{0;64} := %rbx{0;16}  --> (0x18,0)
+[(0xf,2)] StaticArrow (0xf,2) [0x1232{0;64}]{0;16} := %rbx{0;16}  --> (0x18,0)
 [(0xf,3)] %zf{0;1} := 0x0{0;1}
-[(0xf,4)] StaticArrow (0xf,4) %rax{0;64} := [0x1232{0;64}]{0;64}  --> (0x18,0)
+[(0xf,4)] StaticArrow (0xf,4) %rax{0;16} := [0x1232{0;64}]{0;16}  --> (0x18,0)
 [(0x18,0)] 
 
 **** Decode instruction: cmpxchg %ebx,%ecx
@@ -39,10 +39,10 @@
 [(0x1b,0)] 
 
 **** Decode instruction: cmpxchg %ebx,0x1232
-[(0x1b,0)] @{asm:=cmpxchg %ebx,0x1232}@ StaticArrow (0x1b,0) Skip << (NOT (EQ %rax{0;64} [0x1232{0;64}]{0;64}){0;1}){0;1} >> --> (0x1b,3)StaticArrow (0x1b,0) Skip << (EQ %rax{0;64} [0x1232{0;64}]{0;64}){0;1} >> --> (0x1b,1)
+[(0x1b,0)] @{asm:=cmpxchg %ebx,0x1232}@ StaticArrow (0x1b,0) Skip << (NOT (EQ %rax{0;32} [0x1232{0;64}]{0;32}){0;1}){0;1} >> --> (0x1b,3)StaticArrow (0x1b,0) Skip << (EQ %rax{0;32} [0x1232{0;64}]{0;32}){0;1} >> --> (0x1b,1)
 [(0x1b,1)] %zf{0;1} := 0x1{0;1}
-[(0x1b,2)] StaticArrow (0x1b,2) [0x1232{0;64}]{0;64} := %rbx{0;32}  --> (0x23,0)
+[(0x1b,2)] StaticArrow (0x1b,2) [0x1232{0;64}]{0;32} := %rbx{0;32}  --> (0x23,0)
 [(0x1b,3)] %zf{0;1} := 0x0{0;1}
-[(0x1b,4)] StaticArrow (0x1b,4) %rax{0;64} := [0x1232{0;64}]{0;64}  --> (0x23,0)
+[(0x1b,4)] StaticArrow (0x1b,4) %rax{0;32} := [0x1232{0;64}]{0;32}  --> (0x23,0)
 [(0x23,0)] 
 
