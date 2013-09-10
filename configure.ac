@@ -342,6 +342,7 @@ AC_CONFIG_FILES([
 	test/bugs/Makefile
 	test/domains/Makefile
 	test/domains/concrete/Makefile
+	test/domains/sets/Makefile
 	test/domains/symbolic/Makefile
 	test/io/Makefile
 	test/kernel/Makefile
