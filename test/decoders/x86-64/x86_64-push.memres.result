@@ -65,12 +65,12 @@
 
 **** Decode instruction: pushq  %fs
 [(0x2f,0)] @{asm:=pushq  %fs}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
-[(0x2f,1)] StaticArrow (0x2f,1) [%rsp{0;64}]{0;64} := (EXTEND_U %fs{0;16} 0x40{0;32}){0;64}  --> (0x31,0)
+[(0x2f,1)] StaticArrow (0x2f,1) [%rsp{0;64}]{0;64} := (EXTEND_U %fs{0;16} 0x40{0;64}){0;64}  --> (0x31,0)
 [(0x31,0)] 
 
 **** Decode instruction: pushq  %gs
 [(0x31,0)] @{asm:=pushq  %gs}@ %rsp{0;64} := (SUB %rsp{0;64} 0x8{0;64}){0;64}
-[(0x31,1)] StaticArrow (0x31,1) [%rsp{0;64}]{0;64} := (EXTEND_U %gs{0;16} 0x40{0;32}){0;64}  --> (0x33,0)
+[(0x31,1)] StaticArrow (0x31,1) [%rsp{0;64}]{0;64} := (EXTEND_U %gs{0;16} 0x40{0;64}){0;64}  --> (0x33,0)
 [(0x33,0)] 
 
 **** Decode instruction: pushw  %fs

@@ -1,48 +1,48 @@
 **** Decode instruction: movsbw 0x11,%cx
-[(0x0,0)] @{asm:=movsbw 0x11,%cx}@ StaticArrow (0x0,0) %rcx{0;16} := (EXTEND_S [0x11{0;64}]{0;8} 0x10{0;32}){0;16}  --> (0x9,0)
+[(0x0,0)] @{asm:=movsbw 0x11,%cx}@ StaticArrow (0x0,0) %rcx{0;16} := (EXTEND_S [0x11{0;64}]{0;8} 0x10{0;64}){0;16}  --> (0x9,0)
 [(0x9,0)] 
 
 **** Decode instruction: movsbw %bh,%cx
-[(0x9,0)] @{asm:=movsbw %bh,%cx}@ StaticArrow (0x9,0) %rcx{0;16} := (EXTEND_S %rbx{8;8} 0x10{0;32}){0;16}  --> (0xd,0)
+[(0x9,0)] @{asm:=movsbw %bh,%cx}@ StaticArrow (0x9,0) %rcx{0;16} := (EXTEND_S %rbx{8;8} 0x10{0;64}){0;16}  --> (0xd,0)
 [(0xd,0)] 
 
 **** Decode instruction: movsbl 0x11,%ecx
-[(0xd,0)] @{asm:=movsbl 0x11,%ecx}@ StaticArrow (0xd,0) %rcx{0;32} := (EXTEND_S [0x11{0;64}]{0;8} 0x20{0;32}){0;32}  --> (0x15,0)
+[(0xd,0)] @{asm:=movsbl 0x11,%ecx}@ StaticArrow (0xd,0) %rcx{0;32} := (EXTEND_S [0x11{0;64}]{0;8} 0x20{0;64}){0;32}  --> (0x15,0)
 [(0x15,0)] 
 
 **** Decode instruction: movsbl %bh,%ecx
-[(0x15,0)] @{asm:=movsbl %bh,%ecx}@ StaticArrow (0x15,0) %rcx{0;32} := (EXTEND_S %rbx{8;8} 0x20{0;32}){0;32}  --> (0x18,0)
+[(0x15,0)] @{asm:=movsbl %bh,%ecx}@ StaticArrow (0x15,0) %rcx{0;32} := (EXTEND_S %rbx{8;8} 0x20{0;64}){0;32}  --> (0x18,0)
 [(0x18,0)] 
 
 **** Decode instruction: movswl 0x11,%ecx
-[(0x18,0)] @{asm:=movswl 0x11,%ecx}@ StaticArrow (0x18,0) %rcx{0;32} := (EXTEND_S [0x11{0;64}]{0;16} 0x20{0;32}){0;32}  --> (0x20,0)
+[(0x18,0)] @{asm:=movswl 0x11,%ecx}@ StaticArrow (0x18,0) %rcx{0;32} := (EXTEND_S [0x11{0;64}]{0;16} 0x20{0;64}){0;32}  --> (0x20,0)
 [(0x20,0)] 
 
 **** Decode instruction: movswl %bx,%ecx
-[(0x20,0)] @{asm:=movswl %bx,%ecx}@ StaticArrow (0x20,0) %rcx{0;32} := (EXTEND_S %rbx{0;16} 0x20{0;32}){0;32}  --> (0x23,0)
+[(0x20,0)] @{asm:=movswl %bx,%ecx}@ StaticArrow (0x20,0) %rcx{0;32} := (EXTEND_S %rbx{0;16} 0x20{0;64}){0;32}  --> (0x23,0)
 [(0x23,0)] 
 
 **** Decode instruction: movzbw 0x11,%cx
-[(0x23,0)] @{asm:=movzbw 0x11,%cx}@ StaticArrow (0x23,0) %rcx{0;16} := (EXTEND_U [0x11{0;64}]{0;8} 0x10{0;32}){0;16}  --> (0x2c,0)
+[(0x23,0)] @{asm:=movzbw 0x11,%cx}@ StaticArrow (0x23,0) %rcx{0;16} := (EXTEND_U [0x11{0;64}]{0;8} 0x10{0;64}){0;16}  --> (0x2c,0)
 [(0x2c,0)] 
 
 **** Decode instruction: movzbw %bh,%cx
-[(0x2c,0)] @{asm:=movzbw %bh,%cx}@ StaticArrow (0x2c,0) %rcx{0;16} := (EXTEND_U %rbx{8;8} 0x10{0;32}){0;16}  --> (0x30,0)
+[(0x2c,0)] @{asm:=movzbw %bh,%cx}@ StaticArrow (0x2c,0) %rcx{0;16} := (EXTEND_U %rbx{8;8} 0x10{0;64}){0;16}  --> (0x30,0)
 [(0x30,0)] 
 
 **** Decode instruction: movzbl 0x11,%ecx
-[(0x30,0)] @{asm:=movzbl 0x11,%ecx}@ StaticArrow (0x30,0) %rcx{0;32} := (EXTEND_U [0x11{0;64}]{0;8} 0x20{0;32}){0;32}  --> (0x38,0)
+[(0x30,0)] @{asm:=movzbl 0x11,%ecx}@ StaticArrow (0x30,0) %rcx{0;32} := (EXTEND_U [0x11{0;64}]{0;8} 0x20{0;64}){0;32}  --> (0x38,0)
 [(0x38,0)] 
 
 **** Decode instruction: movzbl %bh,%ecx
-[(0x38,0)] @{asm:=movzbl %bh,%ecx}@ StaticArrow (0x38,0) %rcx{0;32} := (EXTEND_U %rbx{8;8} 0x20{0;32}){0;32}  --> (0x3b,0)
+[(0x38,0)] @{asm:=movzbl %bh,%ecx}@ StaticArrow (0x38,0) %rcx{0;32} := (EXTEND_U %rbx{8;8} 0x20{0;64}){0;32}  --> (0x3b,0)
 [(0x3b,0)] 
 
 **** Decode instruction: movzwl 0x11,%ecx
-[(0x3b,0)] @{asm:=movzwl 0x11,%ecx}@ StaticArrow (0x3b,0) %rcx{0;32} := (EXTEND_U [0x11{0;64}]{0;16} 0x20{0;32}){0;32}  --> (0x43,0)
+[(0x3b,0)] @{asm:=movzwl 0x11,%ecx}@ StaticArrow (0x3b,0) %rcx{0;32} := (EXTEND_U [0x11{0;64}]{0;16} 0x20{0;64}){0;32}  --> (0x43,0)
 [(0x43,0)] 
 
 **** Decode instruction: movzwl %bx,%ecx
-[(0x43,0)] @{asm:=movzwl %bx,%ecx}@ StaticArrow (0x43,0) %rcx{0;32} := (EXTEND_U %rbx{0;16} 0x20{0;32}){0;32}  --> (0x46,0)
+[(0x43,0)] @{asm:=movzwl %bx,%ecx}@ StaticArrow (0x43,0) %rcx{0;32} := (EXTEND_U %rbx{0;16} 0x20{0;64}){0;32}  --> (0x46,0)
 [(0x46,0)] 
 

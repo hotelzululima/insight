@@ -20,7 +20,7 @@
 [(0x9,0)] @{asm:=imul   %bx}@ %tmpr0_32{0;32} := (MUL_S %rax{0;16} %rbx{0;16}){0;32}
 [(0x9,1)] %rdx{0;16} := %tmpr0_32{16;16}
 [(0x9,2)] %rax{0;16} := %tmpr0_32{0;16}
-[(0x9,3)] StaticArrow (0x9,3) Skip << (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;32}){0;32} 0x10{0;32} 0x10{0;32}){0;16} %rdx{0;16}){0;1} >> --> (0x9,4)StaticArrow (0x9,3) Skip << (NOT (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;32}){0;32} 0x10{0;32} 0x10{0;32}){0;16} %rdx{0;16}){0;1}){0;1} >> --> (0x9,6)
+[(0x9,3)] StaticArrow (0x9,3) Skip << (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;64}){0;32} 0x10{0;64} 0x10{0;64}){0;16} %rdx{0;16}){0;1} >> --> (0x9,4)StaticArrow (0x9,3) Skip << (NOT (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;64}){0;32} 0x10{0;64} 0x10{0;64}){0;16} %rdx{0;16}){0;1}){0;1} >> --> (0x9,6)
 [(0x9,4)] %cf{0;1} := 0x0{0;1}
 [(0x9,5)] StaticArrow (0x9,5) %of{0;1} := 0x0{0;1}  --> (0xc,0)
 [(0x9,6)] %cf{0;1} := 0x1{0;1}
@@ -31,7 +31,7 @@
 [(0xc,0)] @{asm:=imulw  0x12345678}@ %tmpr0_32{0;32} := (MUL_S %rax{0;16} [0x12345678{0;64}]{0;16}){0;32}
 [(0xc,1)] %rdx{0;16} := %tmpr0_32{16;16}
 [(0xc,2)] %rax{0;16} := %tmpr0_32{0;16}
-[(0xc,3)] StaticArrow (0xc,3) Skip << (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;32}){0;32} 0x10{0;32} 0x10{0;32}){0;16} %rdx{0;16}){0;1} >> --> (0xc,4)StaticArrow (0xc,3) Skip << (NOT (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;32}){0;32} 0x10{0;32} 0x10{0;32}){0;16} %rdx{0;16}){0;1}){0;1} >> --> (0xc,6)
+[(0xc,3)] StaticArrow (0xc,3) Skip << (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;64}){0;32} 0x10{0;64} 0x10{0;64}){0;16} %rdx{0;16}){0;1} >> --> (0xc,4)StaticArrow (0xc,3) Skip << (NOT (EQ (EXTRACT (EXTEND_S %rax{0;16} 0x20{0;64}){0;32} 0x10{0;64} 0x10{0;64}){0;16} %rdx{0;16}){0;1}){0;1} >> --> (0xc,6)
 [(0xc,4)] %cf{0;1} := 0x0{0;1}
 [(0xc,5)] StaticArrow (0xc,5) %of{0;1} := 0x0{0;1}  --> (0x14,0)
 [(0xc,6)] %cf{0;1} := 0x1{0;1}

@@ -89,12 +89,15 @@ private:
   /*! \brief The size in bit of the interval of bits. */
   int bv_size;
 
+  /*! \brief The default size in bits of a vector (default is 32). */
+  static int bv_default_size;
+
   /*****************************************************************************/
 
 
 protected:
   /*! \brief Default constructor. Caution, this is an abstract class,
-      it is called by inherited constructor explicitely */
+   *  it is called by inherited constructor explicitely */
   Expr(int bv_offset, int bv_size);
 
   virtual ~Expr();
@@ -136,13 +139,17 @@ public:
   static Expr *createExtract (Expr *A, int offset, int size);
   static Expr *createConcat (Expr *A, Expr *B);
 
-  /*! \brief the size of the bit vector. */
-  int get_bv_size() const;
-  /*! \brief define the index of the first bit position of the bit vector */
+  /*! \brief Set the default size of the bitvectors for an expression. */
+  static void set_bv_default_size(int);
 
-  /*! \brief the index of the first bit of the bit vector. */
+  /*! \brief Get the default size for an expression. */
+  static int get_bv_default_size();
+
+  /*! \brief The size of the bit vector. */
+  int get_bv_size() const;
+
+  /*! \brief The index of the first bit of the bit vector. */
   int get_bv_offset() const;
-  /*! \brief define the index of the first bit position of the bit vector */
 
 protected:
   virtual Expr *
@@ -169,7 +176,8 @@ public:
 
   /*! \brief simplification of lower level:
    *  - simplify syntactic equality
-   *  - compute expression when possible (\todo: not complete, at the moment: just NOT operator)
+   * - compute expression when possible (\todo: not complete, at the
+        moment: just NOT operator)
    *  - delete trivial clauses in conjunction and disjunction.
    */
   /*! \brief simple syntaxic evaluation: try to transform a true

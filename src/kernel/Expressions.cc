@@ -121,7 +121,8 @@ Expr::createExtend (BinaryOp op, Expr *A, int newsize)
   assert (A->get_bv_size () <= newsize);
   assert (op == BV_OP_EXTEND_S || op == BV_OP_EXTEND_U);
   return BinaryApp::create (op, A, 
-			    Constant::create (newsize, 0, BV_DEFAULT_SIZE),
+			    Constant::create (newsize, 0,
+					      Expr::get_bv_default_size()),
 			    0, newsize);
 }
 
@@ -129,10 +130,11 @@ Expr *
 Expr::createExtract (Expr *A, int offset, int size)
 {
   assert (offset + size - 1 < A->get_bv_size ());
-  return TernaryApp::create (BV_OP_EXTRACT, 
-			     A, 
-			     Constant::create (offset, 0, BV_DEFAULT_SIZE),
-			     Constant::create (size, 0, BV_DEFAULT_SIZE),
+  return TernaryApp::create (BV_OP_EXTRACT, A, 
+			     Constant::create (offset, 0,
+					       Expr::get_bv_default_size()),
+			     Constant::create (size, 0,
+					       Expr::get_bv_default_size()),
 			     0, size);
 }
 
@@ -171,6 +173,18 @@ Expr::eval_level0() const
 
 
 /*****************************************************************************/
+
+int Expr::bv_default_size = 32;
+
+void Expr::set_bv_default_size(int bv_size)
+{
+  Expr::bv_default_size = bv_size;
+}
+
+int Expr::get_bv_default_size()
+{
+  return Expr::bv_default_size;
+}
 
 int Expr::get_bv_size() const
 {

@@ -105,7 +105,8 @@ Expr *
 cancel_lnot_not (const Expr *phi) 
 {
   Expr *pattern = 
-    Expr::createLNot (Expr::createLNot (Variable::create ("X", BV_DEFAULT_SIZE)));
+    Expr::createLNot (Expr::createLNot (Variable::create ("X",
+							  Expr::get_bv_default_size())));
   Expr *result = exprutils::extract_v_pattern ("X", phi, pattern);
   pattern->deref ();
 

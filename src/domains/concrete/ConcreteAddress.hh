@@ -31,8 +31,6 @@
 #ifndef DOMAINS_CONCRETE_CONCRETEADDRESS_HH
 #define DOMAINS_CONCRETE_CONCRETEADDRESS_HH
 
-#include <inttypes.h>
-
 #include <domains/concrete/ConcreteValue.hh>
 
 #include <kernel/Address.hh>

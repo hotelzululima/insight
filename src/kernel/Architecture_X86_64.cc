@@ -30,9 +30,14 @@
 
 #include "Architecture_X86_64.hh"
 
+#include <kernel/Expressions.hh>
+
 Architecture_X86_64::Architecture_X86_64() : 
   Architecture (X86_64, LittleEndian, 64, 64)
 {
+  /* Changing default bitvector size to 64 */
+  Expr::set_bv_default_size(64);
+
   /* Setting regular registers */
   add_register("rax", 64);
   add_register("rbx", 64);

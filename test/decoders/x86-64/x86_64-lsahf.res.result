@@ -1,5 +1,5 @@
 **** Decode instruction: lahf   
-[(0x0,0)] @{asm:=lahf   }@ StaticArrow (0x0,0) %rax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %cf{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %pf{0;1} 0x8{0;32}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %af{0;1} 0x8{0;32}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %zf{0;1} 0x8{0;32}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %sf{0;1} 0x8{0;32}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x1,0)
+[(0x0,0)] @{asm:=lahf   }@ StaticArrow (0x0,0) %rax{8;8} := (OR (OR (OR (OR (OR (EXTEND_U %cf{0;1} 0x8{0;64}){0;8} 0x2{0;8}){0;8} (LSH (EXTEND_U %pf{0;1} 0x8{0;64}){0;8} 0x2{0;8}){0;8}){0;8} (LSH (EXTEND_U %af{0;1} 0x8{0;64}){0;8} 0x4{0;8}){0;8}){0;8} (LSH (EXTEND_U %zf{0;1} 0x8{0;64}){0;8} 0x6{0;8}){0;8}){0;8} (LSH (EXTEND_U %sf{0;1} 0x8{0;64}){0;8} 0x7{0;8}){0;8}){0;8}  --> (0x1,0)
 [(0x1,0)] 
 
 **** Decode instruction: sahf   

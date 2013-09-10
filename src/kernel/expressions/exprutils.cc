@@ -157,7 +157,7 @@ exprutils::extract_v_pattern (std::string var_id, const Expr *phi,
 			      const Expr *pattern)
 {
   Expr *result = NULL;
-  Variable *v = Variable::create (var_id, BV_DEFAULT_SIZE); 
+  Variable *v = Variable::create (var_id, Expr::get_bv_default_size()); 
   try
     {
       PatternMatching::VarList fv;

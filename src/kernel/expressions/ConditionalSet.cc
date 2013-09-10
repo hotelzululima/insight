@@ -88,7 +88,7 @@ public:
 
   void apply (const Expr *e) 
   {
-    Variable *X = Variable::create ("X", BV_DEFAULT_SIZE); 
+    Variable *X = Variable::create ("X", Expr::get_bv_default_size()); 
     Expr * elt_def_pattern = 
       Expr::createEquality(ConditionalSet::EltSymbol (X->get_bv_size ()), X->ref ());
     std::list<const Variable *> free_variables; 
