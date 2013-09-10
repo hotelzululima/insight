@@ -90,7 +90,7 @@ public:
 
   SetsValue(Constant *c);
 
-  /*! \brief Destructor. RAS */
+  /*! \brief Destructor. */
   virtual ~SetsValue();
 
   /*! \brief Clone the set */

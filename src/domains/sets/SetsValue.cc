@@ -128,7 +128,6 @@ bool SetsValue::contains(ConcreteValue v)
 
 bool SetsValue::add_value(Option<ConcreteValue> v)
 {
-
   if (is_TOP) return false;
 
   if (!(v.hasValue()))

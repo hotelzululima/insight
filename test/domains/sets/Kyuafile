@@ -2,6 +2,5 @@ syntax("kyuafile", 1)
 
 test_suite("Insight")
 
-atf_test_program{name="set_test"}
-atf_test_program{name="kset_test"}
+atf_test_program{name="sets_test"}
 

@@ -32,36 +32,23 @@
 
 #include <domains/sets/SetsValue.hh>
 
-ATF_TEST_CASE(set_test)
-ATF_TEST_CASE_HEAD(set_test)
+ATF_TEST_CASE(sets_test)
+ATF_TEST_CASE_HEAD(sets_test)
 {
   set_md_var("descr",
 	     "Check the Set operations");
 }
-ATF_TEST_CASE_BODY(set_test)
+ATF_TEST_CASE_BODY(sets_test)
 {
   /* Checking addition operation */
-  SetsValue my_set();
+  SetsValue my_set;
+  
   ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 2)), true);
-  ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 2)), true);
-  ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 2)), true);
-
-  delete my_set;
-}
-
-ATF_TEST_CASE(kset_test)
-ATF_TEST_CASE_HEAD(kset_test)
-{
-  set_md_var("descr",
-	     "Check the KSet operations");
-}
-ATF_TEST_CASE_BODY(kset_test)
-{
-
+  ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 4)), true);
+  ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 6)), true);
 }
 
 ATF_INIT_TEST_CASES(tcs)
 {
-  ATF_ADD_TEST_CASE(tcs, set_test);
-  ATF_ADD_TEST_CASE(tcs, kset_test);
+  ATF_ADD_TEST_CASE(tcs, sets_test);
 }
