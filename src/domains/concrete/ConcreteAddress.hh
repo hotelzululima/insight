@@ -63,25 +63,21 @@ public:
 
   virtual Address *clone() const;
 
+  /** \brief Retrieves the actual value of the address */
+  address_t get_address() const;
+
+  /** \brief Equality */
+  virtual bool equals(const Address &addr) const;
+
+  void output_text(std::ostream &) const;
+
   /** \brief Postfix ++ */
   ConcreteAddress operator++(int);
 
   /** \brief Prefix ++ */
   ConcreteAddress &operator++();
 
-
-  /** \brief Retrieves the actual value of the address */
-  address_t get_address() const;
-
-  /** \brief Equality */
-  bool operator==(const ConcreteAddress &a) const
-  {
-    return address == a.address;
-  };
-
-  virtual bool equals(const Address &addr) const;
-
-  void output_text(std::ostream &) const;
+  bool operator==(const ConcreteAddress &) const;
 };
 
 #endif /* DOMAINS_CONCRETE_CONCRETEADDRESS_HH */

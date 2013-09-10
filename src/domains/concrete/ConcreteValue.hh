@@ -78,9 +78,6 @@ public:
   Option<bool> to_bool () const;
 
   virtual bool equals (const ConcreteValue &v) const;
-
-private:
-  bool operator==(const ConcreteValue &) const;
 };
 
 #endif /* DOMAINS_CONCRETE_CONCRETEVALUE_HH */
