@@ -334,7 +334,7 @@ dnl ********************************************************************
 AC_CONFIG_FILES([
 	Makefile
 	doc/Makefile
-	doc/doxygen.cfg
+	doc/doxygen/doxygen.cfg
 	doc/manuals/common-macros.texi
 	src/Makefile
 	test/Makefile

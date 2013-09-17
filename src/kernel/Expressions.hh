@@ -165,31 +165,25 @@ public:
   virtual Expr *
   extract_with_bit_vector_size_of (const Expr *e) const;
 
-  static void 
+  static void
   extract_bit_vector (Expr *&e,int new_bv_offset, int new_bv_size);
 
-  static void 
+  static void
   extract_with_bit_vector_of (Expr *&e, const Expr *other);
 
   static void
   extract_with_bit_vector_size_of (Expr *&e, const Expr *other);
 
-  /*! \brief simplification of lower level:
-   *  - simplify syntactic equality
-   * - compute expression when possible (\todo: not complete, at the
-        moment: just NOT operator)
-   *  - delete trivial clauses in conjunction and disjunction.
-   */
   /*! \brief simple syntaxic evaluation: try to transform a true
-      expr into a bool. */
+   *   expr into a bool. */
   Option<bool> try_eval_level0() const;
 
   /*! \brief return true iff the expr can be reduce to true. */
   bool eval_level0() const;
 
-  /*****************************************************************************/
+  /***************************************************************************/
   // Type checking
-  /*****************************************************************************/
+  /***************************************************************************/
 
   bool is_Variable() const;
   bool is_Constant() const;
@@ -213,9 +207,9 @@ public:
 
   virtual bool has_type_of (const Expr *F) const = 0;
 
-  /*****************************************************************************/
+  /***************************************************************************/
   // Basic Queries
-  /*****************************************************************************/
+  /***************************************************************************/
 
   /*! \brief true if o is a sub-expression of this expression */
   virtual bool contains(const Expr *o) const = 0;
@@ -223,9 +217,9 @@ public:
   /*! \brief return the depth of the expression as a tree (or a term) */
   virtual unsigned int get_depth() const = 0;
 
-  /*****************************************************************************/
+  /***************************************************************************/
   // Pretty printing
-  /*****************************************************************************/
+  /***************************************************************************/
 
   virtual void output_text (std::ostream &out) const;
 
@@ -261,7 +255,7 @@ private:
   mutable int refcount;
 };
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  General use Symbols
  *
@@ -269,7 +263,7 @@ private:
  *  Variables are used for term operations. A variable is just
  *  a leaf defined by an identifier (a string). They can be used to define
  *  parameters of some piece of code for instance, or of a logical expr.
- *****************************************************************************/
+ ***************************************************************************/
 class Variable : public Expr {
 private:
   /*! A Variable is defined by a string identifier */
@@ -304,10 +298,10 @@ public:
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  Encoding of concrete word values.
- *****************************************************************************/
+ ***************************************************************************/
 class Constant : public Expr {
 private:
   constant_t val;
@@ -366,18 +360,19 @@ public:
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  Application of a unary operator to an expression.
  *  Operators are defined in kernel/expressions/Operators.hh
- *****************************************************************************/
+ ***************************************************************************/
 class UnaryApp : public Expr {
 private:
   /*! \brief The operator */
   UnaryOp op;
 
   /*! \brief The expression on which the operator is applied
-   *  \caution arg1 belongs to the instance and in particular
+   *
+   *  \warning arg1 belongs to the instance and in particular
    *  is deleted when the instance is deleted. arg1 should not
    *  be used by any other term, for this, it must be duplicated. */
   Expr *arg1;
@@ -408,23 +403,24 @@ public:
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  Application of a binary operator to an expression.
  *  Operators are defined in kernel/expressions/Operators.hh
- *****************************************************************************/
+ ***************************************************************************/
 class BinaryApp : public Expr {
 private:
   /*! \brief The applied operator */
   BinaryOp op;
 
   /*! \brief The expressions on which the operator is applied
-   *  \caution arg1 and arg2 belongs to the instance and in particular
+   *
+   *  \warning arg1 and arg2 belongs to the instance and in particular
    *  is deleted when the instance is deleted. arg1 and arg2 should not
    *  be used by any other term, for this, it must be duplicated. */
   Expr *arg1, *arg2;
 
-  BinaryApp(BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset, 
+  BinaryApp(BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset,
 	    int bv_size);
 
   virtual ~BinaryApp();
@@ -436,10 +432,10 @@ public:
   static BinaryApp *create (BinaryOp op, Expr *arg1, Expr *arg2);
   static BinaryApp *create (BinaryOp op, Expr *arg1, int arg2);
 
-  static BinaryApp *create (BinaryOp op, Expr *arg1, Expr *arg2, 
-  			    int bv_offset, int bv_size);
+  static BinaryApp *create (BinaryOp op, Expr *arg1, Expr *arg2,
+			    int bv_offset, int bv_size);
   static BinaryApp *create (BinaryOp op, Expr *arg1, int arg2,
-  			    int bv_offset, int bv_size);
+			    int bv_offset, int bv_size);
 
   BinaryOp get_op() const;
   Expr *get_arg1() const;
@@ -458,7 +454,7 @@ public:
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
-/******************************************************************************/
+/****************************************************************************/
 class TernaryApp: public Expr {
 
 private:
@@ -532,14 +528,14 @@ public:
 };
 
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  Left-values: define the modifiable expressions of the microcode language:
  *  memory cells and registers.
  *
  *  Note that like Expr class, the class LValue is abstract and thus can not be
  *  instanciated directly.
- *****************************************************************************/
+ ***************************************************************************/
 class LValue : public Expr   /* Abstract class */ {
 public:
   LValue(int bv_offset, int bv_size);
@@ -551,11 +547,11 @@ public:
 typedef std::string Tag;
 #define DEFAULT_TAG ""
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  A memory cell is defined by a term indicating the address of the
  *  cell.
- *****************************************************************************/
+ ***************************************************************************/
 class MemCell : public LValue {
 private:
   /*!\brief The address of the cell. Note that the The effective
@@ -573,9 +569,9 @@ protected:
   virtual Expr *change_bit_vector (int new_bv_offset, int new_bv_size) const;
 
 public:
-  static MemCell *create (Expr *addr, Tag tag, int bv_offset, 
+  static MemCell *create (Expr *addr, Tag tag, int bv_offset,
 			  int bv_size);
-  static MemCell *create (Expr *addr, int bv_offset, 
+  static MemCell *create (Expr *addr, int bv_offset,
 			  int bv_size);
 
   /*! \brief The tag define the address space in which is defined the
@@ -598,15 +594,15 @@ public:
   virtual void acceptVisitor (ConstExprVisitor *visitor) const;
 };
 
-/*****************************************************************************/
+/***************************************************************************/
 
-/*****************************************************************************/
+/***************************************************************************/
 /*! \brief
  *  A register is uniquely defined by an integer index. It is supposed
  *  to contain a word.
  *
- * \todo replacer RegisterExpr par variable et variable par symbole.
- *****************************************************************************/
+ * \todo replace RegisterExpr by variable and variable by symbol.
+ ***************************************************************************/
 class RegisterExpr : public LValue {
 private:
   const RegisterDesc *regdesc;

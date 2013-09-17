@@ -130,19 +130,6 @@ public:
 
   /***************************************************************************/
 
-  /*! \brief extract a subgraph (defined by the <subset> nodes)
-   *  from this graph. Those nodes will be removed from current graph.
-   *  Arrows linking both graphs will be deleted.
-   *  \param  subset the nodes of the subgraph to extract
-   *  \returns a new graph */
-  //virtual Microcode * extract_subgraph(std::list<MicrocodeNode *> * subset);
-
-  /*! \brief get a subgraph (consisting of the <subset> nodes)
-   *  from this graph. Those nodes will NOT be removed from current graph.
-   *  \param  subset the nodes of the subgraph to extract
-   *  \returns  a new graph */
-  //virtual Microcode * get_subgraph(std::list<MicrocodeNode *>* subset);
-
   /*! \brief Replace a set of MicrocodeNodes with another
    *  MicrocodeNode. StaticArrows are redirected, while dynamic
    *  ones are not modified, so be careful. The element nvo will not

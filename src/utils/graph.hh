@@ -318,7 +318,7 @@ public:
   /* ***************************************************/
   /**
    * \brief  Get all nodes located on a path starting from
-   * <start> and ending in <end>.
+   * \code start  and ending in \code end.
    * The caller must delete himself the resulting list
    * \param  start starting node of path
    * \param  end ending node of path

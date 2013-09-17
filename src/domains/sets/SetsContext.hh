@@ -56,7 +56,7 @@ public:
   /*! \brief basic constructor */
   SetsContext(SetsMemory *mem);
 
-  /*! \brief \tSetsodo destructor */
+  /*! \brief \todo Sets destructor */
   virtual ~SetsContext();
 
   /*! \brief clone the context. */
@@ -126,12 +126,12 @@ public:
 
   /*! \brief gets the specialized value corresponding to a given address. Launch
    *   an internal error if the address has not been specialized.
-   * \raise SpecializedContextNotSpecialized if the addr is not specialized */
+   * \throw SpecializedContextNotSpecialized if the addr is not specialized */
   Option<ConcreteValue> get_specialized(ConcreteAddress addr);
 
   /*! \brief gets the specialized value corresponding to a given register. Launch
    *  an internal error if the address has not been specialized.
-   * \raise SpecializedContextNotSpecialized if the addr is not specialized */
+   * \throw SpecializedContextNotSpecialized if the addr is not specialized */
   Option<ConcreteValue> get_specialized(const RegisterDesc *reg);
 
   /*! \brief once contexts have been specialized and selected
@@ -154,8 +154,10 @@ public:
  *  context. The specialized context record all the choices of value
  *  in any l-value set (even if there is only one choice!)
  *
- *  TODO: differencier les comportements sur TOP, ici, tout calcul sur TOP retourne TOP,
- *  a l'exception du produit par 0. Pour ce faire, le mieux est d'implementer SetsExprSemantic
+ *  TODO: For now, any computation on TOP will return TOP. But, for
+ *  example, when TOP is multiplied by zero is should return zero. The
+ *  best way to take this case into account would be implement
+ *  SetSExprSemantic.
  */
 ND_eval_result ND_eval(SpecializedContext *s_ctxt, const Expr *e);
 

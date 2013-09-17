@@ -915,9 +915,6 @@ bool GraphInterface<Node, Edge>::contains(Node *n) const
   return false;
 }
 
-/*
- * J'ai été obligé de recoder replaceAll, vraiment ? TT
- */
 template<typename Node, typename Edge>
 void formatDot(std::string &pp)
 {

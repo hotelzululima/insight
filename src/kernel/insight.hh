@@ -33,6 +33,33 @@
 
 # include <utils/ConfigTable.hh>
 
+/*!
+ * \mainpage The Insight Project
+ *
+ * The Insight project is devoted to binary analysis to serve several
+ * purposes such as:
+ *
+ *   \li Binary verification
+ *   \li Reverse engineering
+ *   \li Binary test cases extraction
+ *   \li Decompilation to higher-level languages
+ *
+ * We aim to have a full and efficient platform to easily try out
+ * novel algorithms or techniques. For this, we provide a full C++
+ * framework designed for Unix systems (*BSD, Linux, MacOS X, ...)
+ * which contains a wide-spectrum binary format loaders (ELF, PE,
+ * Mach-O, ...), a decoder translating from assembly code (x86-32 and
+ * ARM for now others will come) into our intermediate language, an
+ * interpreter to execute the program over a (potentially abstract)
+ * domain and several facilities to simplify, manipulate or transform
+ * the graph and the expressions extracted from the original program.
+ *
+ * \b Warning: The insight framework is still not feature complete and
+ * is a work in progress. Yet, one can try the tool cfgrecovery in
+ * \c insight/tools/cfgrecovery/ directory once you have compiled
+ * everything.
+ */
+
 namespace insight
 {
   void init (const ConfigTable &cfg = ConfigTable ());

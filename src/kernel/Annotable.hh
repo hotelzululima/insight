@@ -69,15 +69,15 @@ public:
   void add_annotation(const char id[], Annotation *a);
   /*! \brief returns true if contains at least one annotation */
   bool is_annotated() const;
-  /*! \brief returns true if contains an annotation of id <id> */
+  /*! \brief returns true if contains an annotation of id \code id */
   bool has_annotation(const AnnotationId &id) const;
 
-  /*! \brief returns true if contains an annotation of id <id> */
+  /*! \brief returns true if contains an annotation of id \code id */
   bool has_annotation(const char *id) const;
 
-  /*! \brief delete an annotation of id <id> */
+  /*! \brief delete an annotation of id \code id */
   void del_annotation(const char *id);
-  /*! \brief delete an annotation of id <id> */
+  /*! \brief delete an annotation of id \code id  */
   void del_annotation(const AnnotationId &id);
 
   void output_annotations (std::ostream &) const;

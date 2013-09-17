@@ -8,7 +8,7 @@ all:
 
 docs: manuals api
 
-api: doxygen.cfg
+api: doxygen/doxygen.cfg
 	@doxygen $< || \
 	echo "error: 'doxygen' is needed to build the API documentation"
 
