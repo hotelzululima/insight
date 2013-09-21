@@ -322,7 +322,7 @@ s_binutils_sprintf(stringstream *sstream, const char *format, ...)
       if (tmp == NULL)
         {
           free(xbuffer);
-	  free (buffer);
+	  delete (buffer);
           throw Decoder::DecoderUnexpectedError("out of memory");
         }
       else
