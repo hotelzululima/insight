@@ -30,8 +30,6 @@
 
 #include "Address.hh"
 
-#include <stdexcept>
-
 using namespace std;
 
 Address::Address()
