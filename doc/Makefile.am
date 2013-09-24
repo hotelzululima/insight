@@ -9,8 +9,8 @@ all:
 docs: manuals api
 
 api: doxygen/doxygen.cfg
-	@doxygen $< || \
-	echo "error: 'doxygen' is needed to build the API documentation"
+	@(cd doxygen && (doxygen doxygen.cfg || \
+	echo "error: 'doxygen' is needed to build the API documentation"))
 
 manuals: insight-user-manual.pdf insight-dev-manual.pdf
 
