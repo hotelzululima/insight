@@ -1037,7 +1037,7 @@ TOK_REGISTER
   $$ = data.get_register ($1->c_str ()); 
   if ($$ == NULL)
     {
-      error (yylloc, ": error: unknown register " + *$1);
+      error (@1, ": error: unknown register " + *$1);
       delete $1;
       YYERROR;
     }

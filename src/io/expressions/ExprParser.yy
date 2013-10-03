@@ -134,7 +134,7 @@ expr :
 | TOK_LPAR TOK_COMPARE_OP expr expr TOK_RPAR 
   { 
     if ($3->get_bv_size () != $4->get_bv_size ()) {
-      Parser::error (yyloc, "comparison of BV with different sizes.");
+      Parser::error (@$, "comparison of BV with different sizes.");
       YYERROR;
     }
     $$ = BinaryApp::create ($2, $3, $4, 0, 1); 

@@ -34,6 +34,8 @@
 
 #include <kernel/Microcode.hh>
 
+#include "arm_parser.hh"
+
 namespace arm {
   typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
   struct parser_data
@@ -686,7 +688,7 @@ register:
 		$$ = data.get_register ($1->c_str ()); 
 		if ($$ == NULL)
 		{
-		  error (yylloc, ": error: unknown register " + *$1);
+		  error (@1, ": error: unknown register " + *$1);
 		  delete $1;
 		  YYERROR;
 		}
