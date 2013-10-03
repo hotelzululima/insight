@@ -93,7 +93,6 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca,
 	{
 	  delete (result);
 	  result = NULL;
-	  throw;
 	}
     }
 
