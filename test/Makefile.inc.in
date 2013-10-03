@@ -8,5 +8,9 @@ EXTRA_DIST = Kyuafile
 check : kyua-tests
 
 kyua-tests: ${check_PROGRAMS}
-	@ kyua test --kyuafile=${srcdir}/Kyuafile --build-root=${builddir}
+	@ if ! test -r Kyuafile; then \
+		kyua test --kyuafile=${srcdir}/Kyuafile --build-root=${builddir}; \
+	else \
+		kyua test --kyuafile=Kyuafile --build-root=${builddir}; \
+	fi
 
