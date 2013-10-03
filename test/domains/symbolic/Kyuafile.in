@@ -1,0 +1,8 @@
+syntax("kyuafile", 1)
+
+test_suite("Insight")
+
+  atf_test_program{name="symbolic_memory_test"}
+if "@HAVE_SOLVER@" == "yes" then
+  atf_test_program{name="symbolic_simulator_test"}
+end

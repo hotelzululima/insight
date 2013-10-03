@@ -223,6 +223,20 @@ if test "${Z3_VERSION}" = ""; then
    Z3_VERSION="	"
 fi
 
+if test "${has_z3_solver}" = yes; then
+	default_solver=z3
+	have_solver=yes
+elif test "${has_mathsat_solver}" != no; then
+	default_solver=mathsat
+	have_solver=yes
+else
+	default_solver=
+	have_solver=no
+fi
+
+AC_SUBST(HAVE_SOLVER, ${have_solver})
+AC_SUBST(default_solver, ${default_solver})
+
 dnl Checking for binutils (libbfd, libopcodes)
 AC_ARG_WITH([binutils-header],
 	    AS_HELP_STRING(
@@ -344,6 +358,7 @@ AC_CONFIG_FILES([
 	test/domains/concrete/Makefile
 	test/domains/sets/Makefile
 	test/domains/symbolic/Makefile
+	test/domains/symbolic/Kyuafile
 	test/io/Makefile
 	test/kernel/Makefile
 	test/tools/Makefile

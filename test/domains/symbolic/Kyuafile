@@ -1,6 +1,0 @@
-syntax("kyuafile", 1)
-
-test_suite("Insight")
-
-atf_test_program{name="symbolic_memory_test"}
-atf_test_program{name="symbolic_simulator_test"}
