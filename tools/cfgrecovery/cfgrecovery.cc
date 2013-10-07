@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -101,7 +101,6 @@ struct disassembler {
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linear_sweep },
   { "recursive", "recursive traversal", recursive_traversal },
-  { "symsim", "symbolic simulation", symbolic_simulator },
   { "sim=symbolic", "symbolic simulation", symbolic_simulator },
   { "sim=concrete", "simulation within concrete domain", concrete_simulator },
   /* List must be kept sorted by name */
