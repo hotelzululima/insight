@@ -152,6 +152,9 @@ usage (int status)
 	   << "  -D, --debug\t\tenable debug traces" << endl
 	   << "  -V, --version\t\tdisplay version and exit" << endl
 	   << "  -S, --symbols\t\tdisplay known symbols" << endl
+	   << "  -EB|-EL, --endian\tselect endianness" << endl
+	   << "  -b, --target TARG\tselect BFD target" << endl
+	   << "  -m, --architecture ARCH\tselect BFD architecture" << endl
 	   << "assembler output options:" << endl
 	   << " --asm-with-bytes" << endl
 	   << " --asm-with-holes"  << endl
@@ -248,6 +251,9 @@ main (int argc, char *argv[])
   int optc;
   const char *output_filename = NULL;
   const char *preload_filename = NULL;
+  const char *architecture = NULL;
+  const char *target = NULL;
+  const char *endianness = NULL;
   string config_filename = CFGRECOVERY_CONFIG_FILENAME;
   bool display_symbols = false;
 
@@ -260,13 +266,16 @@ main (int argc, char *argv[])
     {"config", required_argument, NULL, 'c'},
     {"disas", required_argument, NULL, 'd'},
     {"list", no_argument, NULL, 'l'},
+    {"endian", required_argument, NULL, 'E'},
     {"entrypoint", required_argument, NULL, 'e'},
     {"format", required_argument, NULL, 'f'},
     {"in", required_argument, NULL, 'x'},
     {"output", required_argument, NULL, 'o'},
+    {"architecture", required_argument, NULL, 'm'},
     {"help", no_argument, NULL, 'h'},
     {"debug", no_argument, NULL, 'D'},
     {"symbols", no_argument, NULL, 'S' }, 
+    {"target", required_argument, NULL, 'b' },
     {"verbose", no_argument, NULL, 'v'},
     {"version", no_argument, NULL, 'V'},
     {"asm-with-bytes", no_argument, &asm_with_bytes, 1 }, 
@@ -287,9 +296,14 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "ld:e:f:o:hDvVc:x:S", long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, "b:ld:e:E:f:o:hDm:vVc:x:S",
+		       long_opts, NULL)) != -1)
     switch (optc)
       {
+      case 'b':
+	target = optarg;
+	break;
+
       case 'c':		/* Config file name */
 	{
 	  fstream f (optarg, fstream::in);
@@ -319,10 +333,17 @@ main (int argc, char *argv[])
 	exit (EXIT_SUCCESS);
 	break;
 
+      case 'm':
+	architecture = optarg;
+	break;
+
       case 'e':		/* Force entrypoint */
 	entrypoint_symbols.push_back (optarg);	
 	break;
 
+      case 'E':
+	endianness = optarg;
+	break;
       case 'f':		/* Output file format */	
 	{
 	  string fmt (optarg);
@@ -414,8 +435,26 @@ main (int argc, char *argv[])
     logs::warning << "loading file " << execfile_name << endl;
 
   try {
-    BinaryLoader *loader = new BinutilsBinaryLoader (execfile_name, "", "",
-      Architecture::UnknownEndian);
+    Architecture::endianness_t endian = Architecture::UnknownEndian;
+    if (endianness != NULL) {
+      switch (endianness[0]) {
+      case 'b': case 'B':
+	endian = Architecture::BigEndian;
+	break;
+      case 'l': case 'L':
+	endian = Architecture::LittleEndian;
+	break;
+      default:
+	logs::error << "unknown endianness: " << endianness << endl;
+	exit(EXIT_FAILURE);
+      }
+    }
+
+    BinaryLoader *loader =
+      new BinutilsBinaryLoader (execfile_name,
+				target != NULL? target : "",
+				architecture != NULL? architecture : "",
+				endian);
 
     if (verbosity > 0)
       logs::warning << "Binary format: " << loader->get_format () << endl;
