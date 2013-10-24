@@ -93,7 +93,6 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
 
   /* Initialization of libbfd framework */
   bfd_init();
-  bfd_set_default_target("elf32-i386");
 
   /* Opening of the given file 'filename' */
   bfd_file = bfd_openr(filename.c_str(), NULL);
