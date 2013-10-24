@@ -64,7 +64,7 @@ static int s_binutils_read_memory(bfd_vma memaddr,
 /* Custom 'print_address()' function for our decoders */
 static void s_binutils_print_address(bfd_vma, struct disassemble_info *);
 
-/* This function return a new _fake_ BFD structure. */
+/* This function returns a new _fake_ BFD structure. */
 bfd* new_bfd(void)
 {
   bfd *nbfd = new bfd;
