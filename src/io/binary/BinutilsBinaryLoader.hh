@@ -71,7 +71,9 @@ public:
 			 bfd_errmsg(bfd_get_error())) { }
   };
 
-  BinutilsBinaryLoader(const std::string filename);
+  BinutilsBinaryLoader(const std::string filename, const std::string target,
+		       const std::string machine,
+		       Architecture::endianness_t endianness);
   virtual ~BinutilsBinaryLoader();
 
   virtual bool load_symbol_table (SymbolTable *table) const;
@@ -83,7 +85,8 @@ protected:
   bfd *abfd;
 
   std::string get_BFD_format() const;
-  const Architecture *get_BFD_architecture() const;
+  const Architecture *compute_BFD_architecture(const std::string machine,
+			       Architecture::endianness_t endianness) const;
   void fill_memory_from_sections(ConcreteMemory *) const;
   int fill_memory_from_ELF_Phdrs(ConcreteMemory *) const;
 };

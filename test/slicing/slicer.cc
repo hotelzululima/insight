@@ -80,7 +80,8 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
        << "lvalue: " << target_lv << endl
        << endl;
   
-  BinaryLoader *loader = new BinutilsBinaryLoader (filename);
+  BinaryLoader *loader =
+    new BinutilsBinaryLoader (filename, "", "", Architecture::UnknownEndian);
   MicrocodeArchitecture *mcarch = 
     new MicrocodeArchitecture (loader->get_architecture ());
 

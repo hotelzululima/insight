@@ -59,7 +59,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_64)
   insight::init (ct);
 
   BinaryLoader * loader =
-    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-amd64");
+    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-amd64", "", "",
+			     Architecture::UnknownEndian);
 
   /* Checking various (non-critical) fields from the loader */
   ATF_REQUIRE_EQ(loader->get_filename(),
@@ -103,7 +104,8 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_x86_32)
   insight::init (ct);
 
   BinaryLoader * loader =
-    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-i386");
+    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-i386", "", "",
+      Architecture::UnknownEndian);
 
   /* Checking various (non-critical) fields from the loader */
   ATF_REQUIRE_EQ(loader->get_filename(),
@@ -146,7 +148,9 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
 
   insight::init (ct);
   BinaryLoader * loader =
-    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel");
+    new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel",
+			     "", "",
+			     Architecture::UnknownEndian);
 
   /* Checking various (non-critical) fields from the loader */
   ATF_REQUIRE_EQ(loader->get_filename(),

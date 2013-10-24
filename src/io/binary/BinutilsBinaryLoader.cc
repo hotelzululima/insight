@@ -49,15 +49,17 @@ string BinutilsBinaryLoader::get_BFD_format() const
 }
 
 /* Translating BFD architecture labels into Insight's ones */
-const Architecture * BinutilsBinaryLoader::get_BFD_architecture() const
+const Architecture *
+BinutilsBinaryLoader::compute_BFD_architecture(const string machine,
+				   Architecture::endianness_t endianness) const
 {
   Architecture::processor_t _processor;
   Architecture::endianness_t _endianness;
-  string bfd_architecture = bfd_printable_name(abfd);
+  string bfd_architecture = machine == ""? bfd_printable_name(abfd) : machine;
 
   /* Setting architecture */
 
-  if (bfd_architecture.find("i386:x86-64") != string::npos)
+  if (bfd_architecture.find("x86-64") != string::npos)
     _processor = Architecture::X86_64;
 
   else if (bfd_architecture.find("i386") != string::npos)
@@ -73,21 +75,24 @@ const Architecture * BinutilsBinaryLoader::get_BFD_architecture() const
     _processor = Architecture::Unknown;
 
   /* Setting endianness */
-  if (bfd_big_endian(abfd))
+  if (endianness == Architecture::BigEndian || bfd_big_endian(abfd))
     _endianness = Architecture::BigEndian;
 
-  else if (bfd_little_endian(abfd))
+  else if (endianness == Architecture::LittleEndian || bfd_little_endian(abfd))
     _endianness = Architecture::LittleEndian;
 
   else
-    _endianness = Architecture::LittleEndian;
+    _endianness = Architecture::UnknownEndian;
 
   return Architecture::getArchitecture(_processor, _endianness);
 }
 
 /********************* BinutilsBinaryLoader Methods ***********************/
 
-BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
+BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename,
+					  const string target,
+					  const string machine,
+					  Architecture::endianness_t endianness)
 {
   bfd *bfd_file; /* BFD file handler */
 
@@ -95,7 +100,7 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
   bfd_init();
 
   /* Opening of the given file 'filename' */
-  bfd_file = bfd_openr(filename.c_str(), NULL);
+  bfd_file = bfd_openr(filename.c_str(), target == ""? NULL : target.c_str());
 
   if (bfd_file == NULL)
     throw BinaryLoader::BinaryFileNotFound(filename);
@@ -114,7 +119,7 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename)
   this->filename = filename;
   this->abfd = bfd_file;
   this->format = get_BFD_format();
-  this->architecture = get_BFD_architecture();
+  this->architecture = compute_BFD_architecture(machine, endianness);
 
   /* Check if the binary file is executable */
   if (!(bfd_file->flags & EXEC_P) && false)
@@ -353,7 +358,7 @@ StubFactory *
 BinutilsBinaryLoader::get_StubFactory () const 
 {
   StubFactory *result = NULL;
-  const Architecture *arch = get_BFD_architecture ();
+  const Architecture *arch = get_architecture ();
 
   if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
     {

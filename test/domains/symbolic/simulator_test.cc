@@ -116,7 +116,8 @@ s_simulate (const char *filename)
 
   insight::init (ct);
   ConcreteMemory *memory = new ConcreteMemory ();
-  BinaryLoader *loader = new BinutilsBinaryLoader (filename);
+  BinaryLoader *loader =
+    new BinutilsBinaryLoader (filename, "", "", Architecture::UnknownEndian);
   const Architecture *A = loader->get_architecture ();
   loader->load_memory (memory);
   MicrocodeArchitecture arch (loader->get_architecture ());

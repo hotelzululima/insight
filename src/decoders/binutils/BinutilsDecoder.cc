@@ -110,7 +110,6 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
 {
   /* Initializing BFD framework */
   bfd_init();
-  bfd_set_default_target("elf32-i386");
 
   bfd *abfd = new_bfd();
 

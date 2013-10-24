@@ -414,7 +414,8 @@ main (int argc, char *argv[])
     logs::warning << "loading file " << execfile_name << endl;
 
   try {
-    BinaryLoader *loader = new BinutilsBinaryLoader (execfile_name);
+    BinaryLoader *loader = new BinutilsBinaryLoader (execfile_name, "", "",
+      Architecture::UnknownEndian);
 
     if (verbosity > 0)
       logs::warning << "Binary format: " << loader->get_format () << endl;

@@ -57,7 +57,8 @@ main (int argc, char **argv)
   else
     {
       const char *filename = argv[1];
-      BinaryLoader *loader = new BinutilsBinaryLoader (filename);
+      BinaryLoader *loader =
+	new BinutilsBinaryLoader (filename, "", "", Architecture::UnknownEndian);
       ConcreteMemory *memory = new ConcreteMemory ();
       loader->load_memory (memory);
       MicrocodeArchitecture arch (loader->get_architecture ());
