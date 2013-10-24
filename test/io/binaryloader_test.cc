@@ -147,9 +147,13 @@ ATF_TEST_CASE_BODY(binutils_binaryloader_arm)
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
+  /*
+   * XXX we hardcode the target architecture because the current (2.23.x)
+   * binutils fail to guess it.
+   */
   BinaryLoader * loader =
     new BinutilsBinaryLoader(TEST_SAMPLES_DIR "echo-linux-armel",
-			     "", "",
+			     "elf32-littlearm", "",
 			     Architecture::UnknownEndian);
 
   /* Checking various (non-critical) fields from the loader */
