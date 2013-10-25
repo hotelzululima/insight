@@ -101,7 +101,7 @@ s_program_has_node (Microcode *prg, address_t addr)
 }
 
 static void 
-s_simulate (const char *filename)
+s_simulate (const char *filename, const char *target)
 {
   ConfigTable ct;
 
@@ -117,7 +117,8 @@ s_simulate (const char *filename)
   insight::init (ct);
   ConcreteMemory *memory = new ConcreteMemory ();
   BinaryLoader *loader =
-    new BinutilsBinaryLoader (filename, "", "", Architecture::UnknownEndian);
+    new BinutilsBinaryLoader (filename, target, "", 
+			      Architecture::UnknownEndian);
   const Architecture *A = loader->get_architecture ();
   loader->load_memory (memory);
   MicrocodeArchitecture arch (loader->get_architecture ());
@@ -166,7 +167,7 @@ s_simulate (const char *filename)
 
 #include "simulator_test_cases.hh"
 
-#define BINARY_FILE(id, file) \
+#define BINARY_FILE(id, file, target)			\
 ATF_TEST_CASE(id) \
 \
 ATF_TEST_CASE_HEAD(id)	\
@@ -178,13 +179,13 @@ ATF_TEST_CASE_HEAD(id)	\
 \
 ATF_TEST_CASE_BODY(id) \
 { \
-  s_simulate (TEST_SAMPLES_DIR file); \
+  s_simulate (TEST_SAMPLES_DIR file, target);		\
 }
 
 SIMULATED_BINARIES
 #undef BINARY_FILE
 
-#define BINARY_FILE(id, file) \
+#define BINARY_FILE(id, file, target)			\
   ATF_ADD_TEST_CASE(tcs, id);
 
 ATF_INIT_TEST_CASES(tcs)

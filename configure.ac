@@ -7,8 +7,8 @@ AC_CONFIG_MACRO_DIR([autotools-files/m4])
 AC_CONFIG_HEADERS([src/config.h])
 
 # Otherwise the default may include -O2
-CFLAGS=
-CXXFLAGS=
+#CFLAGS=
+#CXXFLAGS=
 
 dnl Customize the src/config.h
 AH_TOP([/* Defining a robust NORETURN attribute */
@@ -108,8 +108,8 @@ dnl Option and variable settings
 dnl ********************************************************************
 
 dnl Initial settings of flags variables
-CFLAGS="${CFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2"
-CXXFLAGS="${CXXFLAGS} -Wall -Wextra -O -D_FORTIFY_SOURCE=2"
+CFLAGS="${CFLAGS} -Wall -Wextra -D_FORTIFY_SOURCE=2"
+CXXFLAGS="${CXXFLAGS} -Wall -Wextra -D_FORTIFY_SOURCE=2"
 CPPFLAGS="${CPPFLAGS}"
 LDFLAGS="${LDFLAGS}"
 LIBS="${LIBS}"
@@ -224,18 +224,22 @@ if test "${Z3_VERSION}" = ""; then
 fi
 
 if test "${has_z3_solver}" = yes; then
-	default_solver=z3
+	default_solver_command=z3
+	default_solver_args="-smt2 -in"
 	have_solver=yes
 elif test "${has_mathsat_solver}" != no; then
-	default_solver=mathsat
+	default_solver_command=mathsat
+	default_solver_args=
 	have_solver=yes
 else
-	default_solver=
+	default_solver=no-solver-is-defined
 	have_solver=no
 fi
 
+
 AC_SUBST(HAVE_SOLVER, ${have_solver})
-AC_SUBST(default_solver, ${default_solver})
+AC_SUBST(default_solver_command,${default_solver_command})
+AC_SUBST(default_solver_args,${default_solver_args})
 
 dnl Checking for binutils (libbfd, libopcodes)
 AC_ARG_WITH([binutils-header],
@@ -322,7 +326,6 @@ fi
 
 AM_CONDITIONAL([BFD_SUPPORTS_ARM], [test "${arm_support}" = "yes"])
 
-
 dnl Setting the standard flags (CXXFLAGS, CPPFLAGS, LDFLAGS)
 CXXFLAGS="${CXXFLAGS}"
 CPPFLAGS="${CPPFLAGS} ${XML_CFLAGS} ${BINUTILS_CFLAGS}"
@@ -358,11 +361,13 @@ AC_CONFIG_FILES([
 	test/domains/concrete/Makefile
 	test/domains/sets/Makefile
 	test/domains/symbolic/Makefile
+	test/domains/symbolic/config.cfg
 	test/domains/symbolic/Kyuafile
 	test/io/Makefile
 	test/kernel/Makefile
 	test/tools/Makefile
 	test/tools/cfgrecovery/Makefile
+	test/tools/cfgrecovery/config.cfg
 	test/decoders/Makefile
 	test/decoders/x86-32/Makefile
 	test/decoders/x86-64/Makefile

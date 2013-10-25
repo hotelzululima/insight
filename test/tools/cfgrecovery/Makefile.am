@@ -9,7 +9,7 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_COMMON_FLAGS = -D -c ${srcdir}/config -f mc
+CFGR_COMMON_FLAGS = -D -c ${builddir}/config.cfg -f mc
 CFGR_FLD_FLAGS = ${CFGR_COMMON_FLAGS} -d flood
 CFGR_LSW_FLAGS = ${CFGR_COMMON_FLAGS} -d linear
 CFGR_RT_FLAGS = ${CFGR_COMMON_FLAGS} -d recursive
@@ -917,45 +917,45 @@ MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=full
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
-%.sc.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.sc.res : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${CFGRECOVERY} ${CFGR_SCONC_FLAGS}  $< > $@ 2>&1
+	@${CFGRECOVERY} ${CFGR_SCONC_FLAGS} -b elf32-i386 $< > $@ 2>&1
 
-%.sym.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.sym.res : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${CFGRECOVERY} ${CFGR_SSYMB_FLAGS}  $< > $@ 2>&1
+	@${CFGRECOVERY} ${CFGR_SSYMB_FLAGS} -b elf32-i386  $< > $@ 2>&1
 
-%.fld.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.fld.res : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${CFGRECOVERY} ${CFGR_FLD_FLAGS}  $< > $@ 2>&1
+	@${CFGRECOVERY} ${CFGR_FLD_FLAGS} -b elf32-i386  $< > $@ 2>&1
 
-%.lsw.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.lsw.res : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${CFGRECOVERY} ${CFGR_LSW_FLAGS}  $< > $@ 2>&1
+	@${CFGRECOVERY} ${CFGR_LSW_FLAGS} -b elf32-i386  $< > $@ 2>&1
 
-%.rt.res : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.rt.res : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${CFGRECOVERY} ${CFGR_RT_FLAGS}  $< > $@ 2>&1
+	@${CFGRECOVERY} ${CFGR_RT_FLAGS} -b elf32-i386  $< > $@ 2>&1
 
-%.fld.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.fld.memres : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_FLD_FLAGS} $< > $@ 2>&1
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_FLD_FLAGS} -b elf32-i386 $< > $@ 2>&1
 
-%.lsw.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.lsw.memres : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_LSW_FLAGS} $< > $@ 2>&1
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_LSW_FLAGS} -b elf32-i386 $< > $@ 2>&1
 
-%.rt.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.rt.memres : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} $< > $@ 2>&1
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_RT_FLAGS} -b elf32-i386 $< > $@ 2>&1
 
-%.sym.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.sym.memres : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_SSYMB_FLAGS} $< > $@ 2>&1
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_SSYMB_FLAGS} -b elf32-i386 $< > $@ 2>&1
 
-%.sc.memres : ${TEST_SAMPLES_DIR}/%.bin ${CFGRECOVERY}
+x86_32-%.sc.memres : ${TEST_SAMPLES_DIR}/x86_32-%.bin ${CFGRECOVERY}
 	@echo "generate $@"
-	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_SCONC_FLAGS} $< > $@ 2>&1
+	@${MEMCHECK} ${CFGRECOVERY} ${CFGR_SCONC_FLAGS} -b elf32-i386 $< > $@ 2>&1
 
 check-diff : ${BASE_TESTS}
 	@ > check-diff

@@ -1,10 +1,10 @@
 # Name of default SMT solver
-kernel.expr.solver.default.command = mathsat
+#kernel.expr.solver.default.command = mathsat
 # Arguments passed to SMT solver
-kernel.expr.solver.default.args = 
+# kernel.expr.solver.default.args = 
 
-#kernel.expr.solver.default.command = z3
-#kernel.expr.solver.default.args = -smt2  -in
+kernel.expr.solver.default.command = @default_solver_command@
+kernel.expr.solver.default.args = @default_solver_args@
 
 # Set initial value of ESP register in case of x86 architecture.
 # This option is mandatory to simulate programs that use stack.
