@@ -71,8 +71,8 @@ public:
 			 bfd_errmsg(bfd_get_error())) { }
   };
 
-  BinutilsBinaryLoader(const std::string filename, const std::string target,
-		       const std::string machine,
+  BinutilsBinaryLoader(const std::string &filename, const std::string &target,
+		       const std::string &machine,
 		       Architecture::endianness_t endianness);
   virtual ~BinutilsBinaryLoader();
 

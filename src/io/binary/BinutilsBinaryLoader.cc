@@ -89,10 +89,10 @@ BinutilsBinaryLoader::compute_BFD_architecture(const string machine,
 
 /********************* BinutilsBinaryLoader Methods ***********************/
 
-BinutilsBinaryLoader::BinutilsBinaryLoader(const string filename,
-					  const string target,
-					  const string machine,
-					  Architecture::endianness_t endianness)
+BinutilsBinaryLoader::BinutilsBinaryLoader(const string &filename,
+					   const string &target,
+					   const string &machine,
+					   Architecture::endianness_t endianness)
 {
   bfd *bfd_file; /* BFD file handler */
 
