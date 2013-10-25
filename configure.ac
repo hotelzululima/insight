@@ -236,7 +236,7 @@ else
 	have_solver=no
 fi
 
-
+AM_CONDITIONAL([HAVE_SOLVER], [test x$have_solver = xyes])
 AC_SUBST(HAVE_SOLVER, ${have_solver})
 AC_SUBST(default_solver_command,${default_solver_command})
 AC_SUBST(default_solver_args,${default_solver_args})

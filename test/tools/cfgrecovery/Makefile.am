@@ -16,6 +16,7 @@ CFGR_RT_FLAGS = ${CFGR_COMMON_FLAGS} -d recursive
 CFGR_SCONC_FLAGS = ${CFGR_COMMON_FLAGS} -d sim=concrete
 CFGR_SSYMB_FLAGS = ${CFGR_COMMON_FLAGS} -d sim=symbolic
 
+if HAVE_SOLVER
 X86_32_SYM_TESTS = \
 	x86_32-cfgrecovery-01.sym.res \
         \
@@ -113,6 +114,7 @@ X86_32_SYM_TESTS = \
 	x86_32-gcd.sym.res \
         \
         ${dummy}
+endif
 
 X86_32_SC_TESTS = \
 	x86_32-cfgrecovery-01.sc.res \
@@ -457,6 +459,7 @@ X86_32_LSW_TESTS = \
         ${dummy}
 
 if WITH_VALGRIND
+if  HAVE_SOLVER
 X86_32_SYM_TESTS += \
 	x86_32-cfgrecovery-01.sym.memres \
         \
@@ -554,6 +557,7 @@ X86_32_SYM_TESTS += \
 	x86_32-gcd.sym.memres \
         \
         ${dummy}
+endif # HAVE_SOLVER
 
 X86_32_SC_TESTS += \
 	x86_32-cfgrecovery-01.sc.memres \
