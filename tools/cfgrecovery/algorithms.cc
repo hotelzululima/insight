@@ -141,7 +141,7 @@ s_generic_call (const std::list<ConcreteAddress >&entrypoint,
 void
 linear_sweep(const std::list<ConcreteAddress> &entrypoints, 
 	     ConcreteMemory * memory, Decoder * decoder, Microcode *result)
-  throw (Decoder::Exception &)
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &)
 { 
   s_generic_call (entrypoints, memory, decoder, 
 		  &AlgorithmFactory::buildLinearSweep, result);
@@ -150,7 +150,7 @@ linear_sweep(const std::list<ConcreteAddress> &entrypoints,
 void 
 flood_traversal (const std::list<ConcreteAddress> &entrypoints, 
 		 ConcreteMemory *memory, Decoder *decoder, Microcode *result)
-  throw (Decoder::Exception &)
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &)
 {
   s_generic_call (entrypoints, memory, decoder, 
 		  &AlgorithmFactory::buildFloodTraversal, result);
@@ -160,7 +160,7 @@ void
 recursive_traversal (const std::list<ConcreteAddress> &entrypoints, 
 		     ConcreteMemory *memory, Decoder *decoder, 
 		     Microcode *result)
-  throw (Decoder::Exception &)
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &)
 {
   s_generic_call (entrypoints, memory, decoder, 
 		  &AlgorithmFactory::buildRecursiveTraversal, result);
@@ -169,7 +169,7 @@ recursive_traversal (const std::list<ConcreteAddress> &entrypoints,
 void 
 symbolic_simulator (const std::list<ConcreteAddress> &entrypoints, 
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
-  throw (Decoder::Exception &)
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &)
 {
   s_generic_call (entrypoints, memory, decoder, 
 		  &AlgorithmFactory::buildSymbolicSimulator, result);
@@ -178,7 +178,7 @@ symbolic_simulator (const std::list<ConcreteAddress> &entrypoints,
 void 
 concrete_simulator (const std::list<ConcreteAddress> &entrypoints, 
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
-  throw (Decoder::Exception &)
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &)
 {
   s_generic_call (entrypoints, memory, decoder, 
 		  &AlgorithmFactory::buildConcreteSimulator, result);

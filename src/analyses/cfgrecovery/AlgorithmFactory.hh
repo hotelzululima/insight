@@ -1,6 +1,7 @@
 #ifndef ALGORITHMFACTORY_HH
 # define ALGORITHMFACTORY_HH
 
+# include <stdexcept>
 # include <kernel/Microcode.hh>
 # include <decoders/Decoder.hh>
 
@@ -19,10 +20,21 @@ class AlgorithmFactory
   ALGORITHM_FACTORY_PROPERTY (int, max_number_of_visits_per_address, 1)
 
 public:
+  class Exception : public std::runtime_error {
+  public: 
+    Exception (const std::string &why) : std::runtime_error (why) { }
+  };
+
+  class InstanciationException : public Exception {
+  public: 
+    InstanciationException (const std::string &why) : Exception (why) { }
+  };
+
   class Algorithm {
   protected:
     friend class AlgorithmFactory;
-    virtual void setup (AlgorithmFactory *factory) = 0;
+    virtual void setup (AlgorithmFactory *factory) 
+      throw (InstanciationException &) = 0;
 
   public:
     virtual ~Algorithm () { }
@@ -34,11 +46,16 @@ public:
   AlgorithmFactory ();
   ~AlgorithmFactory ();
 
-  Algorithm *buildLinearSweep ();
-  Algorithm *buildFloodTraversal ();
-  Algorithm *buildRecursiveTraversal ();
-  Algorithm *buildSymbolicSimulator ();
-  Algorithm *buildConcreteSimulator ();
+  Algorithm *buildLinearSweep () 
+    throw (InstanciationException &);
+  Algorithm *buildFloodTraversal ()
+    throw (InstanciationException &);
+  Algorithm *buildRecursiveTraversal ()
+    throw (InstanciationException &);
+  Algorithm *buildSymbolicSimulator ()
+    throw (InstanciationException &);
+  Algorithm *buildConcreteSimulator ()
+    throw (InstanciationException &);
 
 # define ALGORITHM_FACTORY_PROPERTY(type_, name_, defval_)	\
   private: type_ name_;						\

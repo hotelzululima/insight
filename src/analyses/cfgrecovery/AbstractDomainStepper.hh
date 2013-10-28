@@ -9,9 +9,9 @@
 template <typename PP, typename CTX>
 class AbstractDomainStepper 
   : public AbstractStepper<AbstractState <PP, CTX> > 
-{
+{  
 protected :
-  AbstractDomainStepper  (const Architecture *arch);
+  AbstractDomainStepper  (const Architecture *arch); 
 
 public:
   typedef AbstractState<PP, CTX> State;

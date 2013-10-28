@@ -33,32 +33,33 @@
 
 # include <kernel/Microcode.hh>
 # include <domains/concrete/ConcreteMemory.hh>
+# include <analyses/cfgrecovery/AlgorithmFactory.hh>
 # include <decoders/Decoder.hh>
 
 extern void
 linear_sweep (const std::list<ConcreteAddress> &entrypoints, 
 	      ConcreteMemory *memory, Decoder * decoder, Microcode *result)
-  throw (Decoder::Exception &);
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
 flood_traversal (const std::list<ConcreteAddress> &entrypoints, 
 		 ConcreteMemory *memory, Decoder *decoder, Microcode *result)
-  throw (Decoder::Exception &);
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
 recursive_traversal (const std::list<ConcreteAddress> &entrypoints, 
 		     ConcreteMemory *memory, Decoder *decoder, 
 		     Microcode *result)
-  throw (Decoder::Exception &);
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
 symbolic_simulator (const std::list<ConcreteAddress> &entrypoints, 
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
-  throw (Decoder::Exception &);
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
 concrete_simulator (const std::list<ConcreteAddress> &entrypoints, 
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
-  throw (Decoder::Exception &);
+  throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 #endif /* ALGORITHMS_HH */

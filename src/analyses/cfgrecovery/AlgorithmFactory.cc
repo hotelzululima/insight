@@ -4,6 +4,7 @@
 #include "FloodTraversal.hh"
 #include "RecursiveTraversal.hh"
 
+#include <kernel/expressions/ExprSolver.hh>
 #include <domains/symbolic/SymbolicStepper.hh>
 #include <domains/concrete/ConcreteStepper.hh>
 #include "DomainSimulator.hh"
@@ -32,7 +33,8 @@ public:
     delete traversal;
   }
 
-  virtual void setup_stepper (AlgorithmFactory *F) {
+  virtual void setup_stepper (AlgorithmFactory *F) 
+    throw (AlgorithmFactory::InstanciationException &) {
   }
 
   virtual void setup_traversal (AlgorithmFactory *F) {
@@ -50,7 +52,8 @@ public:
     traversal->set_number_of_visits_per_address (F->get_max_number_of_visits_per_address ());   
   }
 
-  virtual void setup (AlgorithmFactory *factory) {
+  virtual void setup (AlgorithmFactory *factory) 
+      throw (AlgorithmFactory::InstanciationException &) {
     setup_stepper (factory);
     setup_traversal (factory);
   }
@@ -85,12 +88,14 @@ AlgorithmFactory::~AlgorithmFactory ()
 
 template<> void 
 GenAlgorithm<LinearSweep>::setup_stepper (AlgorithmFactory *)
+  throw (AlgorithmFactory::InstanciationException &) 
 {
   stepper = new LinearSweep::Stepper ();
 }
 
 AlgorithmFactory::Algorithm *
 AlgorithmFactory::buildLinearSweep ()
+  throw (InstanciationException &)
 {
   Algorithm *result = new GenAlgorithm<LinearSweep> ();
 
@@ -101,6 +106,7 @@ AlgorithmFactory::buildLinearSweep ()
 
 template<> void 
 GenAlgorithm<FloodTraversal>::setup_stepper (AlgorithmFactory *F)
+  throw (AlgorithmFactory::InstanciationException &) 
 {
   const Architecture *arch = 
     F->get_decoder ()->get_arch ()->get_reference_arch();
@@ -109,6 +115,7 @@ GenAlgorithm<FloodTraversal>::setup_stepper (AlgorithmFactory *F)
 
 AlgorithmFactory::Algorithm *
 AlgorithmFactory::buildFloodTraversal ()
+  throw (InstanciationException &)
 {
   Algorithm *result = new GenAlgorithm<FloodTraversal> ();
 
@@ -119,6 +126,7 @@ AlgorithmFactory::buildFloodTraversal ()
 
 template<> void 
 GenAlgorithm<RecursiveTraversal>::setup_stepper (AlgorithmFactory *F)
+  throw (AlgorithmFactory::InstanciationException &) 
 {
   const Architecture *arch = 
     F->get_decoder ()->get_arch ()->get_reference_arch();
@@ -127,6 +135,7 @@ GenAlgorithm<RecursiveTraversal>::setup_stepper (AlgorithmFactory *F)
 
 AlgorithmFactory::Algorithm *
 AlgorithmFactory::buildRecursiveTraversal ()
+  throw (InstanciationException &)
 {
   Algorithm *result = new GenAlgorithm<RecursiveTraversal> ();
 
@@ -137,17 +146,25 @@ AlgorithmFactory::buildRecursiveTraversal ()
 
 template<> void 
 GenAlgorithm<SymbolicSimulator>::setup_stepper (AlgorithmFactory *F)
+  throw (AlgorithmFactory::InstanciationException &) 
 {
-  stepper = 
-    new SymbolicSimulator::Stepper (F->get_memory (), 
-				    F->get_decoder ()->get_arch ());
-  
+  try
+    {
+      stepper = 
+	new SymbolicSimulator::Stepper (F->get_memory (), 
+					F->get_decoder ()->get_arch ());
+    }
+  catch (ExprSolver::UnknownSolverException &e)
+    {
+      throw AlgorithmFactory::InstanciationException (e.what ());
+    }
   stepper->set_dynamic_jump_threshold (F->get_dynamic_jumps_threshold ());
   stepper->set_map_dynamic_jumps_to_memory (F->get_map_dynamic_jumps_to_memory ());  
 }
 
 AlgorithmFactory::Algorithm *
 AlgorithmFactory::buildSymbolicSimulator ()
+  throw (AlgorithmFactory::InstanciationException &) 
 {
   Algorithm *result = new GenAlgorithm<SymbolicSimulator> ();
 
@@ -158,6 +175,7 @@ AlgorithmFactory::buildSymbolicSimulator ()
 
 template<> void 
 GenAlgorithm<ConcreteSimulator>::setup_stepper (AlgorithmFactory *F)
+  throw (AlgorithmFactory::InstanciationException &) 
 {
   stepper = 
     new ConcreteSimulator::Stepper (F->get_memory (), 
@@ -166,6 +184,7 @@ GenAlgorithm<ConcreteSimulator>::setup_stepper (AlgorithmFactory *F)
 
 AlgorithmFactory::Algorithm *
 AlgorithmFactory::buildConcreteSimulator ()
+  throw (InstanciationException &)
 {
   Algorithm *result =  new GenAlgorithm<ConcreteSimulator> ();
 

@@ -569,6 +569,12 @@ main (int argc, char *argv[])
       mc = NULL;
       logs::error << "error: " << e.what () << endl;
     }
+  catch (AlgorithmFactory::Exception &e)
+    {
+      delete mc;
+      mc = NULL;
+      logs::error << "error: " << e.what () << endl;
+    }
   catch (runtime_error &e)
     {
       delete mc;
