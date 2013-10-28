@@ -6,6 +6,7 @@ SUBDIRS += test
 endif
 
 ACLOCAL_AMFLAGS = -I autotools-files/m4
+CLEANFILES=.z3-trace
 
 .PHONY:	doc check
 
@@ -13,7 +14,7 @@ doc:
 	(cd doc && $(MAKE))
 
 distclean-local:
-	rm -fr lib bin
+	rm -fr lib bin 
 
 maintainer-clean-local:
 	rm -fr $(top_srcdir)/Makefile.in \

@@ -6,7 +6,7 @@ TEST_SAMPLES_DIR=@TEST_SAMPLES_DIR@
 
 LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 
-CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
+CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES} .z3-trace
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
 CFGR_COMMON_FLAGS = -D -c ${builddir}/config.cfg -f mc
