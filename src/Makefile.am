@@ -29,6 +29,7 @@ analyses_sources = \
         analyses/cfgrecovery/AbstractStateSpace.hh \
         analyses/cfgrecovery/AbstractStepper.hh \
         analyses/cfgrecovery/DomainSimulator.hh \
+        analyses/cfgrecovery/DummyStateSpace.hh \
         analyses/cfgrecovery/FloodTraversal.hh \
         analyses/cfgrecovery/FloodTraversalStepper.cc \
         analyses/cfgrecovery/LinearSweep.hh \

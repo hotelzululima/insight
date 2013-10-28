@@ -4,7 +4,7 @@ bin_PROGRAMS = cfgrecovery
 
 cfgrecovery_SOURCES = \
 	cfgrecovery.cc cfgrecovery.hh \
-        algorithms.hh algorithms.cc |
+        algorithms.hh algorithms.cc \
         \
         ${dummy}
 
