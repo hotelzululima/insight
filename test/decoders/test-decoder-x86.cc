@@ -48,17 +48,20 @@ main (int argc, char **argv)
 
   insight::init (ct);
 
-  if (argc != 2)
+  if (argc != 3)
     {
       logs::error << "wrong # of arguments" << endl
-		  << "USAGE: " << argv[0] << " binary-filename" << endl;
+		  << "USAGE: " << argv[0] << " bfd-target binary-filename" 
+		  << endl;
       result = EXIT_FAILURE;
     }
   else
     {
-      const char *filename = argv[1];
+      const char *target = argv[1];
+      const char *filename = argv[2];
       BinaryLoader *loader =
-	new BinutilsBinaryLoader (filename, "", "", Architecture::UnknownEndian);
+	new BinutilsBinaryLoader (filename, target, "", 
+				  Architecture::UnknownEndian);
       ConcreteMemory *memory = new ConcreteMemory ();
       loader->load_memory (memory);
       MicrocodeArchitecture arch (loader->get_architecture ());

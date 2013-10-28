@@ -10,13 +10,14 @@ CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES}
 
 check_PROGRAMS = test-decoder
 
-test_decoder_SOURCES = test-decoder.cc
+test_decoder_SOURCES = ../test-decoder-x86.cc
 test_decoder_CPPFLAGS = -I$(top_srcdir)/src
 test_decoder_CXXFLAGS = -Wno-deprecated
 test_decoder_LDFLAGS = @BINUTILS_LDFLAGS@
 test_decoder_LDADD = $(top_builddir)/src/libinsight.la
 
-TEST_DECODER = ${builddir}/test-decoder
+TEST_DECODER = ${builddir}/test-decoder 
+TEST_DECODER_BFDTARGET = elf64-x86-64
 
 x86_64_TESTS = \
 	x86_64-and.res \
@@ -160,10 +161,10 @@ MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
 %.res : ${TEST_SAMPLES_DIR}/%.bin ${TEST_DECODER}
-	 @${TEST_DECODER} $< > $@ 2>&1
+	 @${TEST_DECODER} ${TEST_DECODER_BFDTARGET} $< > $@ 2>&1
 
 %.memres : ${TEST_SAMPLES_DIR}/%.bin ${TEST_DECODER}
-	 @${MEMCHECK} ${TEST_DECODER} $< > $@ 2>&1
+	 @${MEMCHECK} ${TEST_DECODER} ${TEST_DECODER_BFDTARGET} $< > $@ 2>&1
 
 check-diff : ${BASE_TESTS}
 	@ > check-diff
