@@ -87,9 +87,9 @@ dnl ********************************************************************
 
 AC_ARG_ENABLE(valgrind,
               AS_HELP_STRING([--enable-valgrind],
-			     [enable Valgrind for in test suite (default is yes)]),
+			     [enable Valgrind for in test suite (default is no)]),
               ENABLE_VALGRIND=$enableval,
-              ENABLE_VALGRIND=yes)
+              ENABLE_VALGRIND=no)
 
 if test "x${ENABLE_VALGRIND}" = "xyes"; then
    AC_CHECK_PROG(with_valgrind, [valgrind], [yes], [no])	
