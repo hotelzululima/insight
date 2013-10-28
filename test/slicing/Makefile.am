@@ -43,14 +43,17 @@ MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 
 
-%.res : %.spec.sh ${TEST_SAMPLES_DIR}/%.bin ${TEST_SLICER}
+x86_32-%.res : x86_32-%.spec.sh ${TEST_SAMPLES_DIR}/x86_32-%.bin ${TEST_SLICER}
 	 @ . $<; \
           ${TEST_SLICER} ${TEST_SAMPLES_DIR}/`basename $< .spec.sh`.bin \
-           $${SLICING_MAX_STEPS} $${SLICING_ADDR} $${SLICING_LVALUE} > $@ 2>&1
+            elf32-i386 \
+            $${SLICING_MAX_STEPS} $${SLICING_ADDR} $${SLICING_LVALUE} > $@ 2>&1
 
-%.memres : %.spec.sh ${TEST_SAMPLES_DIR}/%.bin ${TEST_SLICER}
+x86_32-%.memres : x86_32-%.spec.sh ${TEST_SAMPLES_DIR}/x86_32-%.bin \
+                  ${TEST_SLICER}
 	 @ . $<; ${MEMCHECK} \
           ${TEST_SLICER} ${TEST_SAMPLES_DIR}/`basename $< .spec.sh`.bin \
+           elf32-i386 \
            $${SLICING_MAX_STEPS} $${SLICING_ADDR} $${SLICING_LVALUE} > $@ 2>&1
 
 check-diff : ${BASE_TESTS}

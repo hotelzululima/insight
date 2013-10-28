@@ -70,8 +70,8 @@ s_build_cfg (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
 }
 
 static void 
-test_slicing (const char *filename, int max_step_nb, int target_addr, 
-	      const string &target_lv)
+test_slicing (const char *filename, const char *bfdtarget, int max_step_nb, 
+	      int target_addr, const string &target_lv)
 {
   logs::display << "*** Test of slicing algorithm ***" << endl
        << endl
@@ -81,7 +81,8 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
        << endl;
   
   BinaryLoader *loader =
-    new BinutilsBinaryLoader (filename, "", "", Architecture::UnknownEndian);
+    new BinutilsBinaryLoader (filename, bfdtarget, "", 
+			      Architecture::UnknownEndian);
   MicrocodeArchitecture *mcarch = 
     new MicrocodeArchitecture (loader->get_architecture ());
 
@@ -140,11 +141,11 @@ test_slicing (const char *filename, int max_step_nb, int target_addr,
 
 int main(int argc, char **argv)
 {
-  if (argc != 5)
+  if (argc != 6)
     {
       cerr << "wrong # of arguments" << endl
 	   << endl
-	   << "USAGE: " << argv[0] << " inputfile max-step addr lvalue" << endl;
+	   << "USAGE: " << argv[0] << " inputfile bfdtarget max-step addr lvalue" << endl;
       exit (EXIT_FAILURE);
     }
   ConfigTable ct;
@@ -157,7 +158,7 @@ int main(int argc, char **argv)
     DataDependency::ConsiderJumpCondMode(true);
     DataDependency::OnlySimpleSetsMode(true);
     
-    test_slicing(argv[1], atoi(argv[2]), strtol(argv[3],0,0), argv[4]);
+    test_slicing(argv[1], argv[2], atoi(argv[3]), strtol(argv[4],0,0), argv[5]);
     logs::display << endl;
   }
   insight::terminate ();
