@@ -89,7 +89,15 @@ xml_of_constant (const Constant *c)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "const");
   xmlNodeAddContent (result, BAD_CAST string_of_int(c->get_val()).c_str ());
-  
+
+  return result;
+}
+
+static xmlNodePtr 
+xml_of_random_value (const RandomValue *r)
+{
+  xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "random");
+
   return result;
 }
 
@@ -161,7 +169,7 @@ xml_of_binary_op (BinaryOp op)
     case BV_OP_LT_U: opname = "ltu"; break;
     case BV_OP_LEQ_S: opname = "leqs"; break;
     case BV_OP_LT_S: opname = "lts"; break;
-    case BV_OP_NEQ: opname = "nq"; break;
+    case BV_OP_NEQ: opname = "neq"; break;
     case BV_OP_GEQ_U: opname = "gequ"; break;
     case BV_OP_GT_U: opname = "gtu"; break;
     case BV_OP_GEQ_S: opname = "geqs"; break;
@@ -247,7 +255,7 @@ xml_of_memcell (const MemCell *m)
 }
 
 static xmlNodePtr 
-xml_of_lvalue (const Expr *lv)
+xml_of_lvalue (const Expr *lv, bool with_bv = false)
 {
   xmlNodePtr result;
 
@@ -258,6 +266,11 @@ xml_of_lvalue (const Expr *lv)
   else 
     result = NULL;
 
+  if (with_bv)
+    {
+      s_add_prop (result, "size", lv->get_bv_size ());
+      s_add_prop (result, "offset", lv->get_bv_offset ());
+    }
   if (result == NULL)
     logs::fatal_error("xml_of_lvalue:: lvalue type unknown");
 
@@ -273,6 +286,8 @@ xml_of_expr (const Expr *e)
     result = xml_of_variable ((const Variable *) e);
   else if (e->is_Constant ())
     result = xml_of_constant ((const Constant *) e);
+  else if (e->is_RandomValue ())
+    result = xml_of_random_value ((const RandomValue *) e);
   else if (e->is_UnaryApp ())
     result = xml_of_unaryapp ((const UnaryApp *) e);
   else if (e->is_BinaryApp ())
@@ -318,7 +333,8 @@ xml_of_stmtarrow (xmlNodePtr root, const StmtArrow *arr)
             logs::fatal_error("Assignment arrow with condition not supported");
 
           xmlNodePtr lv = 
-	    xml_of_lvalue (((Assignment *) sarr->get_stmt())->get_lval());
+	    xml_of_lvalue (((Assignment *) sarr->get_stmt())->get_lval(), true);
+	  
 	  xmlNodePtr v = 
 	    xml_of_expr (((Assignment *) sarr->get_stmt ())->get_rval ());
 	  xmlNodePtr xarrow = xmlNewChild (root, NULL, BAD_CAST "assign", NULL);

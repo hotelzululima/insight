@@ -31,15 +31,18 @@
 #ifndef IO_XML_MICROCODE_PARSER_HH
 #define IO_XML_MICROCODE_PARSER_HH
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdlib.h>
-#include <iostream>
-
 #include <kernel/Microcode.hh>
+
+class XmlParserException : public std::runtime_error 
+{
+public :
+  XmlParserException (const std::string &reason) 
+    : std::runtime_error (reason) { }
+};
 
 /** \brief Main interface of the XML microcode parser */
 extern Microcode *
-xml_parse_mc_program (const std::string &filename, MicrocodeArchitecture *arch);
+xml_parse_mc_program (const std::string &filename, MicrocodeArchitecture *arch)
+  throw (XmlParserException);
 
 #endif /* IO_XML_MICROCODE_PARSER_HH */
