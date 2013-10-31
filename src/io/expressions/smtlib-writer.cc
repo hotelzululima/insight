@@ -334,17 +334,28 @@ public:
 
   virtual void visit (const TernaryApp *e) {
     assert (e->get_op () == BV_OP_EXTRACT);
-    Constant *offset = dynamic_cast <Constant *> (e->get_arg2 ());
-    Constant *size = dynamic_cast <Constant *> (e->get_arg3 ());
+    Constant *expr_offset = dynamic_cast <Constant *> (e->get_arg2 ());
+    Constant *expr_size = dynamic_cast <Constant *> (e->get_arg3 ());
 
-    if (offset == NULL || size == NULL)
+    if (expr_offset == NULL || expr_size == NULL)
       throw SMTLibUnsupportedExpression (e->to_string ());
 
+    constant_t offset = expr_offset->get_val ();
+    constant_t size = expr_size->get_val ();
+    if (offset != e->get_bv_offset () || size != e->get_bv_size ())
+      {
+	
+	out << "((_ extract " 
+	    << dec << (e->get_bv_offset () + e->get_bv_size () - 1) << " "
+	    << e->get_bv_offset () << ") ";
+	  
+      }
     out << "((_ extract " 
-	<< dec << (offset->get_val () + size->get_val () - 1) << " " 
-	<< offset->get_val () << ") ";
+	<< dec << (offset + size - 1) << " " << offset << ") ";
     e->get_arg1 ()->acceptVisitor (this);
     out << ")";    	
+    if (offset != e->get_bv_offset () || size != e->get_bv_size ())
+      out << ")";    	
   }
 
   virtual void visit (const MemCell *e) {

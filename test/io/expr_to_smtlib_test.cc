@@ -99,6 +99,8 @@ using namespace std;
              "(= ((_ extract 7 7 ) eflags) #b1)") \
   X86_32_CC (Z, "%zf", \
              "(= ((_ extract 6 6 ) eflags) #b1)") 
+  X86_32_CC (BUG, "(EXTRACT %ebx{0;32} 0x0{0;32} 0x8{0;32}){0;1}", \
+	     "(= ((_ extract 0 0) ((_ extract 7 0) ebx)) #b1)")
 #else
 #define  ALL_X86_CC \
   X86_32_CC (NP, "(NOT %pf)", \
@@ -156,7 +158,9 @@ using namespace std;
   X86_32_CC (S, "%sf", \
              "(= sf #b1)") \
   X86_32_CC (Z, "%zf", \
-             "(= zf #b1)") 
+             "(= zf #b1)") \
+  X86_32_CC (BUG, "(EXTRACT %ebx{0;32} 0x0{0;32} 0x8{0;32}){0;1}", \
+	     "(= ((_ extract 0 0) ((_ extract 7 0) ebx)) #b1)")
 #endif
 
 #define X86_32_CC(id, e, expout) \
