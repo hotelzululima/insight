@@ -72,7 +72,7 @@ bool
 ConcreteAddress::operator==(const ConcreteAddress &a) const
 {
   return this->address == a.address;
-};
+}
 
 Address *
 ConcreteAddress::clone() const

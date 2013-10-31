@@ -50,7 +50,7 @@ public:
     out << std::dec << "{" << bv_offset << ";" << bv_size << "}";
   }
 
-  virtual void visit (const RandomValue *c) {
+  virtual void visit (const RandomValue *) {
     out << "RND";
   }
 
