@@ -120,7 +120,7 @@ s_generic_call (const std::list<ConcreteAddress >&entrypoint,
   F.set_max_number_of_visits_per_address (max_nb_visits);
  
   running_algorithm = (F.* build) ();
-  if (signal (SIGINT, &s_sigint_handler) != 0)
+  if (signal (SIGINT, &s_sigint_handler) == SIG_ERR)
     logs::error << "unable to set CTRL-C handler." << std::endl;
 
   try

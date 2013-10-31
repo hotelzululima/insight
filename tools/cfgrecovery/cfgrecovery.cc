@@ -555,7 +555,7 @@ main (int argc, char *argv[])
   CTRL_C_HANDLER.entrypoints = entrypoints;
   CTRL_C_HANDLER.mcarch = arch;
 
-  if (signal (SIGUSR1, &s_sighandler) != 0)
+  if (signal (SIGUSR1, &s_sighandler) == SIG_ERR)
     logs::error << "unable to set CTRL-C handler." << std::endl;
   
   try
