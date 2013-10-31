@@ -31,6 +31,7 @@
 #ifndef KERNEL_EXPRESSIONS_EXPRPROCESSSOLVER_HH
 # define KERNEL_EXPRESSIONS_EXPRPROCESSSOLVER_HH
 
+# include <csignal>
 # include <iostream>
 # include <vector>
 # include <kernel/expressions/ExprSolver.hh>
@@ -41,9 +42,10 @@ protected:
   std::string command;
   std::istream *in;
   std::ostream *out;
+  pid_t childpid;
 
   ExprProcessSolver (const MicrocodeArchitecture *mca, const std::string &cmd, 
-		     std::istream *r, std::ostream *w);
+		     std::istream *r, std::ostream *w, pid_t cpid);
 
 public:
   static ExprProcessSolver *

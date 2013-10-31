@@ -56,12 +56,12 @@ typedef __gnu_cxx::stdio_filebuf<char> file_buffer;
 
 static bool
 s_create_pipe (const std::string &cmd, const vector<string> &args,
-	       FILE **rwstreams);
+	       FILE **rwstreams, pid_t *p_cpid);
 
 ExprProcessSolver::ExprProcessSolver (const MicrocodeArchitecture *mca, 
 				      const string &cmd, 
-				      istream *r, ostream *w)
-  : ExprSolver (mca), command (cmd), in (r), out (w)
+				      istream *r, ostream *w, pid_t cpid)
+  : ExprSolver (mca), command (cmd), in (r), out (w), childpid (cpid)
 {
 }
 
@@ -71,16 +71,17 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca,
 			   const std::vector<std::string> &args)
   throw (UnexpectedResponseException, UnknownSolverException)
 {
+  pid_t cpid;
   FILE *pipestreams[2] = {NULL, NULL};
   ExprProcessSolver *result = NULL;
 
-  if (s_create_pipe (cmd, args, pipestreams))
+  if (s_create_pipe (cmd, args, pipestreams, &cpid))
     {
       istream *i = new istream (new file_buffer (pipestreams[0], 
 						 std::ios_base::in));
       ostream *o = new ostream (new file_buffer (pipestreams[1], 
 						 std::ios_base::out));      
-      result = new ExprProcessSolver (mca, cmd, i, o);
+      result = new ExprProcessSolver (mca, cmd, i, o, cpid);
       try
 	{
 	  if (! result->init ())
@@ -101,6 +102,10 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca,
 
 ExprProcessSolver::~ExprProcessSolver ()
 {
+  fclose (((file_buffer *) in->rdbuf ())->file ());
+  fclose (((file_buffer *) out->rdbuf ())->file ());
+  kill (childpid, SIGTERM);
+  
   delete in->rdbuf ();
   delete out->rdbuf ();
   delete in;
@@ -517,7 +522,7 @@ ExprProcessSolver::get_value_of (const Expr *e)
 
 static bool 
 s_create_pipe (const std::string &cmd, const vector<string> &args,
-	       FILE **rwstreams)
+	       FILE **rwstreams, pid_t *p_cpid)
 {
   int parent_child_pipe[2];
   int child_parent_pipe[2];
@@ -573,6 +578,7 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
   else 
     {
       /* Parent code */
+      *p_cpid = cpid;
       close (parent_child_pipe[0]); // close read part of P --> C
       close (child_parent_pipe[1]); // close write part of C --> P
       rwstreams[0] = fdopen (child_parent_pipe[0], "r");
