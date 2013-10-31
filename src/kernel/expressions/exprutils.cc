@@ -192,15 +192,7 @@ exprutils::collect_memcell_indexes (const Expr *e)
       assert (mc != NULL);
 
       ExprVector *tr = collect_memcell_indexes (mc->get_addr ());
-      if (tr->size () > 0) // index depend on other memcells
-	{
-	  for (ExprVector::size_type i = 0; i < tr->size (); i++)
-	    todo.push_back (tr->at (i));
-	}
-      else
-	{
-	  result->push_back (mc->get_addr ());
-	}
+      result->push_back (mc->get_addr ());
       delete (tr);
       todo.pop_front();
     }
