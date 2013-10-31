@@ -630,19 +630,21 @@ main (int argc, char *argv[])
 	    continue;
 	  if (first)
 	    {
-	      logs::display << "Sink nodes : " << endl;
+	      if (verbosity > 0)
+		logs::display << "Sink nodes : " << endl;
 	      first = false;
 	    }
 
 	  MicrocodeAddress ma (n->get_loc ());
-	  logs::display << "\t";
+	  if (verbosity > 0)
+	    logs::display << "\t";
 	  if (ma.getLocal () == 0)
 	    logs::display << hex << "0x" << ma.getGlobal ();
 	  else
 	    logs::display << ma;
 	  logs::display << endl;
 	}
-      if (first)
+      if (first && verbosity > 0)
 	logs::display << "no sink node." << endl;
     }
 
