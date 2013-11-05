@@ -1,32 +1,32 @@
 * Translation into XML of microcode annotations
-+ A new child "annotations" is added to root node.
-+ For each node with at least one annotation a new <microcode-node> node is added to <annotations>. The attribute addr stores the location of the microcode node. Children of <microcode-node> are annotations of this location.
-+ Each annotation is declared between <annotation> </annotation>. 
-+ The attribute "id" of <annotation> nodes stores the sort of the annotation. We use the static member ID of Annotation classes.
-+ Annotations are translated as follows:
+- A new child "nodes-annotations" is added to root node.
+- For each node with at least one annotation a new <annotations> node is added to <nodes-annotations>. The attribute "addr" stores the location of the microcode node. Children of <annotations> are annotations of this location.
+- Each annotation is declared between <ID> </ID> where ID is the member attribute of the corresponding class.
+- <annotations> nodes are also added to DynamicArrows; in this case "addr" is not given.
+- Annotations are translated as follows:
 ** SolvedJmpAnnotation:
-For each target belonging to the annotation, a child node is added to <annotation>. Each such node has an attribute "value" containing the address of the target. Example:
+For each target belonging to the annotation, a child node is added to <solved-jmp>. Each such node has an attribute "value" containing the address of the target. Example:
 
-<annotation id="solved-jmp">
+<solved-jmp>
  <addr value="12345"/>
  <addr value="145"/>
  <addr value="31415"/>
-</annotation>
+</solved>
 
 ** AsmAnnotation:
-An attribute "value" is added to <annotation> node. The value of this attribute is the text version of the corresponding assembler instruction. Example: <annotation id="asm" value="mov %eax, %ebx"></annotation>
+An attribute "value" is added to <asm> node. The value of this attribute is the text version of the corresponding assembler instruction. Example: <asm value="mov %eax, %ebx"></asm>
 
 ** NextInstAnnotation:
-An attribute "value" is added to <annotation> node. The value of this attribute is the address of the next instruction. 
-Example: <annotation id="next-inst" value=12345></annotation>
+An attribute "value" is added to <next-inst> node. The value of this attribute is the address of the next instruction. 
+Example: <next-inst value=12345></next-inst>
 
 ** CallRetAnnotation:
 A Boolean attribute "is-call" is used to indicate whether the instruction is a call or a return. If the value of this attribute is 1 then the child 
-of the <annotation> node is the expression of the target of the call.
+of the <callret> node is the expression of the target of the call.
 Example:
-<annotation id="callret" is-call=0></annotation>
-<annotation id="callret" is-call=1>
+<callret id="callret" is-call=0></callret>
+<callret is-call=1>
  <memref>
   <var var="%eax">
  </memref>
-</annotation>
+</callret>

@@ -491,10 +491,6 @@ s_expr_of_xml (xmlNodePtr node, ParserData &data)
   return NULL;
 }
 
-/*****************************************************************************/
-// Statements
-/*****************************************************************************/
-
 static MicrocodeAddress 
 s_extract_microcode_address_attribute(xmlNodePtr node, const char *id,
 				      ParserData &data)
@@ -532,6 +528,173 @@ s_extract_microcode_address_attribute(xmlNodePtr node, const char *id,
 			   parse_hexadecimal(&attr[idx + 1]));
 }
 
+/*
+ *
+ * ANNOTATIONS
+ *
+ */
+static Annotation *
+s_SolvedJmpAnnotation (xmlNodePtr annotation, ParserData &data)
+  throw (XmlParserException)
+{
+  return_if_not_named (annotation, "solved-jmp");
+
+  SolvedJmpAnnotation *sja = new SolvedJmpAnnotation ();
+
+  try
+    {
+      for (xmlNodePtr addr = annotation->children; addr; addr = addr->next)
+	{
+	  check_name (addr, "addr", data);
+	  MicrocodeAddress loc = 
+	    s_extract_microcode_address_attribute (addr, "value", data);
+	  sja->add (loc);
+	}
+    }
+  catch (XmlParserException)
+    {
+      delete sja;
+      throw;
+    }
+
+  return sja;
+}
+
+static Annotation *
+s_AsmAnnotation (xmlNodePtr annotation, ParserData &data)
+  throw (XmlParserException)
+{
+  return_if_not_named (annotation, "asm");
+
+  string instruction (s_xml_get_attribute (annotation, "value", data));
+
+  return  new AsmAnnotation (instruction);
+}
+
+static Annotation *
+s_NextInstAnnotation (xmlNodePtr annotation, ParserData &data)
+  throw (XmlParserException)
+{
+  return_if_not_named (annotation, "next-inst");
+
+  MicrocodeAddress loc = 
+    s_extract_microcode_address_attribute (annotation, "value", data);
+
+  return new NextInstAnnotation (loc);
+}
+
+static Annotation *
+s_CallRetAnnotation (xmlNodePtr annotation, ParserData &data)
+  throw (XmlParserException)
+{
+  return_if_not_named (annotation, "callret");
+
+  int is_call = s_xml_get_int_attribute (annotation, "is-call", data);
+  Annotation *a;
+
+  if (is_call)
+    {
+      if (annotation->children == NULL)
+	{
+	  data.error (annotation) << "malformed callret annotation; child "
+				  << "is missing.";
+	  RAISE_ERROR (data);
+	}
+      Expr *target = s_expr_of_xml (annotation->children, data);
+      a = CallRetAnnotation::create_call (target);
+      target->deref ();
+    }
+  else
+    {
+      a = CallRetAnnotation::create_ret ();
+    }
+
+  return a;
+}
+
+static Annotation *
+s_annotation_from_xml (xmlNodePtr annotation, ParserData &data)
+  throw (XmlParserException)
+{
+  Annotation * (*parser[])(xmlNodePtr, ParserData &) = {
+    s_SolvedJmpAnnotation, s_AsmAnnotation, s_NextInstAnnotation, 
+    s_CallRetAnnotation };
+  Annotation *result = NULL;
+
+  for (size_t i = 0; i < sizeof (parser)/sizeof(parser[0]) && result == NULL; 
+       i++)
+    result = parser[i] (annotation, data);
+  return result;
+}
+
+static void
+s_annotate (xmlNodePtr annotation, Annotable *annotable, ParserData &data)
+  throw (XmlParserException)
+{
+  Annotation *a = s_annotation_from_xml (annotation, data);
+
+  if (a != NULL)
+    {
+      string id = (const char *) annotation->name;
+
+      if (annotable->has_annotation (id))
+	{
+	  delete a;
+	  data.error (annotation) << "annotation '" << id 
+				  << "' has already been defined.";
+	  RAISE_ERROR (data);
+	}
+      annotable->add_annotation (id, a);
+    }
+  else
+    data.warning (annotation) << "unknown annotation '" << annotation->name 
+			      << "'. Skipped." << endl;
+}
+
+static void
+s_add_annotations (xmlNodePtr annotations, Annotable *annotable, 
+		   ParserData &data)
+  throw (XmlParserException)
+{
+  check_name (annotations, "annotations", data);
+  for (xmlNodePtr child = annotations->children; child; child = child->next)
+    s_annotate (child, annotable, data);
+}
+
+static void
+s_annotate_node (xmlNodePtr annotable, ParserData &data)
+  throw (XmlParserException)
+{
+  MicrocodeAddress loc = 
+    s_extract_microcode_address_attribute (annotable, "addr", data);
+ 
+  try
+    {
+      MicrocodeNode *node = data.mc->get_node (loc);
+      s_add_annotations (annotable, node, data);
+    }
+  catch (GetNodeNotFoundExc)
+    {
+      data.error (annotable) << "try to annotate unknown location " 
+			     << loc << ".";
+      RAISE_ERROR (data);
+    }
+}
+
+static void
+s_annotate_arrow (xmlNodePtr annotable, DynamicArrow *da, ParserData &data)
+  throw (XmlParserException)
+{ 
+  if (s_xml_has_attribute (annotable, "addr"))
+    {
+      data.error (annotable) << "malformed annotations node for dynamic jump.";
+      RAISE_ERROR (data);
+    }
+  s_add_annotations (annotable, da, data);
+}
+
+/*****************************************************************************/
+// Statements
 /*****************************************************************************/
 
 static MicrocodeNode * 
@@ -666,14 +829,7 @@ s_xml_parse_jump (xmlNodePtr node, ParserData &data)
     }
   else   // dynamic jump
     {
-      if (s_xml_child_nb (node) != 1)
-	{
-	  data.error (node) 
-	    << "xml_parse_jump:: dynamic jump expects 1 xml child.";
-	  RAISE_ERROR (data);
-	}
-
-      Expr *e = s_expr_of_xml (s_xml_nth_child (node, 0), data);
+      Expr *e = s_expr_of_xml (node->children, data);
 
       if (e == NULL)
 	{
@@ -681,10 +837,19 @@ s_xml_parse_jump (xmlNodePtr node, ParserData &data)
 	    << "xml_parse_jump:: dynamic jump expects an expression as child.";
 	  RAISE_ERROR (data);
 	}
-
-      return new MicrocodeNode (origin,
-				new DynamicArrow (origin, e, new Skip (), 
-						  Constant::True ()));
+      DynamicArrow *da = new DynamicArrow (origin, e, new Skip (), 
+					   Constant::True ());
+      try
+	{
+	  if (node->children->next != NULL)
+	    s_annotate_arrow (node->children->next, da, data);
+	  return new MicrocodeNode (origin, da);
+	}
+      catch (XmlParserException)
+	{
+	  delete da;
+	  throw;
+	}
     }
 }
 
@@ -702,107 +867,6 @@ s_MicrocodeNode_of_xml (xmlNodePtr node, ParserData &data)
 
   return NULL;
 }
-
-/*
- *
- * ANNOTATIONS
- *
- */
-static void
-s_annotate_node (xmlNodePtr annotation, MicrocodeNode *node, ParserData &data)
-{
-  check_name (annotation, "annotation", data);
-  string id (s_xml_get_attribute (annotation, "id", data));
-  Annotation *a;
-
-  if (node->has_annotation (id))
-    {
-      data.error (annotation) << "node at location " << node->get_loc () 
-			      << " already has annotation '" << id << "'.";
-      RAISE_ERROR (data);
-    }
-
-  if (id == SolvedJmpAnnotation::ID)
-    {
-      SolvedJmpAnnotation *sja = new SolvedJmpAnnotation ();
-
-      try
-	{
-	  for (xmlNodePtr addr = annotation->children; addr; addr = addr->next)
-	    {
-	      check_name (addr, "addr", data);
-	      MicrocodeAddress loc = 
-		s_extract_microcode_address_attribute (addr, "value", data);
-	      sja->add (loc);
-	    }
-	}
-      catch (XmlParserException)
-	{
-	  delete sja;
-	  throw;
-	}
-      a = sja;
-    }
-  else if (id == AsmAnnotation::ID)
-    {
-      string instruction (s_xml_get_attribute (annotation, "value", data));
-      a = new AsmAnnotation (instruction);
-    }
-  else if (id == CallRetAnnotation::ID)
-    {
-      int is_call = s_xml_get_int_attribute (annotation, "is-call", data);
-
-      if (is_call)
-	{
-	  if (annotation->children == NULL)
-	    {
-	      data.error (annotation) << "malformed callret annotation; child "
-				      << "is missing.";
-	      RAISE_ERROR (data);
-	    }
-	  Expr *target = s_expr_of_xml (annotation->children, data);
-	  a = CallRetAnnotation::create_call (target);
-	  target->deref ();
-	}
-      else
-	{
-	  a = CallRetAnnotation::create_ret ();
-	}
-    }
-  else if (id == NextInstAnnotation::ID)
-    {
-      MicrocodeAddress loc = 
-	s_extract_microcode_address_attribute (annotation, "value", data);
-      a = new NextInstAnnotation (loc);
-    }
-
-  if (a != NULL)
-    node->add_annotation (id, a);
-  else
-    data.warning (annotation) << "unknown annotation '" << id 
-			      << "'. Skipped." << endl;
-}
-
-static void
-s_annotate_microcode (xmlNodePtr annotable, ParserData &data)
-{
-  check_name (annotable, "microcode-node", data);
-  MicrocodeAddress loc = 
-    s_extract_microcode_address_attribute (annotable, "addr", data);
-  try
-    {
-      MicrocodeNode *node = data.mc->get_node (loc);
-      for (xmlNodePtr child = annotable->children; child; child = child->next)
-	s_annotate_node (child, node, data);
-    }
-  catch (GetNodeNotFoundExc)
-    {
-      data.error (annotable) << "try to annotate unknown location " 
-			     << loc << ".";
-      RAISE_ERROR (data);
-    }
-}
-
 
 static void 
 s_prefix_run (xmlNodePtr node, ParserData &data)
@@ -824,10 +888,10 @@ s_prefix_run (xmlNodePtr node, ParserData &data)
 	  else if (! data.mcArch->has_tmp_register (regname))
 	    data.mcArch->add_tmp_register (regname, size);
 	}
-      else if (xmlStrcmp(n->name, (const xmlChar *) "annotations") == 0)
+      else if (xmlStrcmp(n->name, (const xmlChar *) "nodes-annotations") == 0)
 	{
 	  for (xmlNodePtr child = n->children; child; child = child->next)
-	    s_annotate_microcode (child, data);
+	    s_annotate_node (child, data);
 	}
       else 
 	{

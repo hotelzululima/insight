@@ -96,9 +96,7 @@ s_add_prop (xmlNodePtr node, const char *propid, const MicrocodeAddress &addr)
 static xmlNodePtr 
 s_new_annotation_node (const string &id)
 {
-  xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "annotation");
-
-  s_add_prop (result, "id", id);
+  xmlNodePtr result = xmlNewNode (NULL, BAD_CAST id.c_str ());
 
   return result;
 }
@@ -154,16 +152,17 @@ s_annotation_to_xml (const NextInstAnnotation *a)
 }
 
 static void
-s_annotations_for_node (xmlNodePtr parent, const MicrocodeNode *node)
+s_add_annotations (xmlNodePtr parent, const Annotable *annotable, 
+		   const MicrocodeAddress *location = NULL)
 {
-  const Annotable::AnnotationMap *annotations = node->get_annotations ();
+  const Annotable::AnnotationMap *annotations = annotable->get_annotations ();
 
   if (annotations->size () == 0)
     return;
 
-  xmlNodePtr result = 
-    xmlNewChild (parent, NULL, BAD_CAST "microcode-node", NULL);
-  s_add_prop (result, "addr", node->get_loc ());
+  xmlNodePtr root = xmlNewChild (parent, NULL, BAD_CAST "annotations", NULL);
+  if (location != NULL)
+    s_add_prop (root, "addr", *location);
 
   for (Annotable::AnnotationMap::const_iterator i = annotations->begin ();
        i != annotations->end (); i++)
@@ -190,19 +189,19 @@ s_annotations_for_node (xmlNodePtr parent, const MicrocodeNode *node)
 			<< "implemented. " << endl;
 	  continue;
 	}
-      xmlAddChild (result, annotation);
+      xmlAddChild (root, annotation);
     }
 }
 
 static void
-s_generate_annotations (xmlNodePtr root, const Microcode *prg)
+s_generate_annotations_for_nodes (xmlNodePtr root, const Microcode *prg)
 {
   xmlNodePtr annotations = 
-    xmlNewChild (root, NULL, BAD_CAST "annotations", NULL);
+    xmlNewChild (root, NULL, BAD_CAST "nodes-annotations", NULL);
 
   for (Microcode::node_iterator n = prg->begin_nodes (); 
        n != prg->end_nodes (); n++)
-    s_annotations_for_node (annotations, *n);
+    s_add_annotations (annotations, *n, &((*n)->get_loc ()));
 }
 
 /*
@@ -489,6 +488,7 @@ xml_of_stmtarrow (xmlNodePtr root, const StmtArrow *arr)
       xmlNodePtr xarrow = xmlNewChild (root, NULL, BAD_CAST "jump", NULL);
       xmlAddChild (xarrow, target);
       s_add_prop (xarrow, "id", darr->get_origin ());
+      s_add_annotations (xarrow, darr);
 
       return;
     }
@@ -526,6 +526,7 @@ xml_of_microcode_element (xmlNodePtr root, const MicrocodeNode *elt)
       for (int i = 0; i < (int) succs->size(); i++)
         xml_of_stmtarrow (root, (*succs)[i]);
     }
+
 }
 
 static void
@@ -598,8 +599,7 @@ xml_of_microcode (ostream &out,
   if (mcarch)
     s_declare_registers (root, mcarch);
   s_generate_code (root, prg);
-  s_generate_annotations (root, prg);
-
+  s_generate_annotations_for_nodes (root, prg);
   xmlThrDefIndentTreeOutput (1);
   xmlSaveFormatFileTo (xout, doc, "UTF-8", 1);
   xmlFreeDoc (doc);

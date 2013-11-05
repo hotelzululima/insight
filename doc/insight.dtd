@@ -1,4 +1,4 @@
-<!ELEMENT program ((vardecl|memdecl)*,code, annotations*) >
+<!ELEMENT program ((vardecl|memdecl)*,code,nodes-annotations?) >
 
 <!ELEMENT vardecl EMPTY>
 <!ATTLIST vardecl
@@ -26,7 +26,7 @@
 	endianness	CDATA	#IMPLIED
 >
 
-<!ELEMENT skip EMPTY>
+<!ELEMENT skip>
 <!ATTLIST skip
 	id	ID	#REQUIRED
 	address	CDATA	#IMPLIED
@@ -51,7 +51,7 @@
 	next	IDREF	#IMPLIED
 >
 
-<!ELEMENT jump (var | memref | apply)>
+<!ELEMENT jump ((var | memref | apply),annotations?)>
 <!ATTLIST jump
 	id	ID	#REQUIRED
 	address	CDATA	#IMPLIED
@@ -120,19 +120,33 @@
 <!ELEMENT ltu EMPTY>
 <!ELEMENT lts EMPTY>
 
-<!ELEMENT annotations (microcode-node)*>
+<!ELEMENT nodes-annotations (annotations)*>
 
-<!ELEMENT microcode-node (annotation)*>
-<!ATTLIST microcode-node
-	addr	CDATA	#REQUIRED
+<!ELEMENT annotations (solved-jmp|asm|next-inst|callret)*>
+<!ATTLIST annotations
+	  addr CDATA #IMPLIED
 >
 
-<!ELEMENT annotation (expr|addr*)>
-<!ATTLIST annotation
-	id	CDATA	#REQUIRED
->
+<!ELEMENT solved-jmp (addr*)>
 
 <!ELEMENT addr EMPTY>
 <!ATTLIST addr
+	  value CDATA REQUIRED
+>
+
+<!ELEMENT callret (apply?)>
+<!ATTLIST callret
+	  is_call CDATA #REQUIRED
+>
+
+<!ELEMENT asm EMPTY>
+ 
+<!ATTLIST asm
+	  value CDATA #REQUIRED
+>
+
+<!ELEMENT next-inst EMPTY>
+ 
+<!ATTLIST next-inst
 	  value CDATA #REQUIRED
 >
