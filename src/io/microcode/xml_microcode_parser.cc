@@ -66,10 +66,6 @@ struct ParserData
 
     return oss;
   }
-
-  void raise_error () throw (XmlParserException) {
-    throw XmlParserException (oss.str ());
-  }
 };
 
 #define RAISE_ERROR(data) \
@@ -185,7 +181,7 @@ s_xml_child_nb (xmlNodePtr node)
   return n;
 }
 
-#define check_name(node, ident) \
+#define return_if_not_named(node, ident) \
   if (xmlStrcmp (node->name, (const xmlChar*) ident) != 0) return NULL;
 
 #define assert_name(node, ident) \
@@ -338,7 +334,7 @@ static Expr *
 s_apply_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name (node, "apply");
+  return_if_not_named (node, "apply");
   switch (s_xml_child_nb (node))
     {
     case 2: 
@@ -359,7 +355,7 @@ static RegisterExpr *
 s_register_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name(node, "var");
+  return_if_not_named(node, "var");
 
   string regname (s_xml_get_attribute (node, "var", data));
   const RegisterDesc *rdesc = data.mcArch->get_register (regname);
@@ -395,7 +391,7 @@ static Constant *
 s_constant_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name (node, "const");
+  return_if_not_named (node, "const");
 
   int offset = s_xml_get_int_attribute (node, "offset", data);
   int size = s_xml_get_int_attribute (node, "size", data);
@@ -415,7 +411,7 @@ static RandomValue *
 s_random_value_of_xml (xmlNodePtr node, ParserData &data) 
   throw (XmlParserException)
 {
-  check_name (node, "random");
+  return_if_not_named (node, "random");
   int size = s_xml_get_int_attribute (node, "size", data);
   RandomValue *r = RandomValue::create (size);
 
@@ -428,7 +424,7 @@ static MemCell *
 s_memcell_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name (node, "memref");
+  return_if_not_named (node, "memref");
 
   char *tag;
   if (s_xml_has_attribute (node, "mem"))
@@ -522,7 +518,7 @@ static MicrocodeNode *
 s_xml_parse_assign (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name(node, "assign");
+  return_if_not_named(node, "assign");
 
   MicrocodeAddress origin = 
     s_extract_microcode_address_attribute (node, "id", data);
@@ -567,7 +563,7 @@ static StaticArrow *
 s_xml_parse_guard (MicrocodeAddress origin, xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name (node, "guard");
+  return_if_not_named (node, "guard");
   MicrocodeAddress target =
     s_extract_microcode_address_attribute (node, "next", data);
 
@@ -593,7 +589,7 @@ static MicrocodeNode *
 s_xml_parse_switch (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name (node, "switch");
+  return_if_not_named (node, "switch");
 
   MicrocodeAddress origin = 
     s_extract_microcode_address_attribute (node, "id", data);
@@ -632,7 +628,7 @@ static MicrocodeNode *
 s_xml_parse_jump (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
-  check_name (node, "jump");
+  return_if_not_named (node, "jump");
 
   MicrocodeAddress origin = 
     s_extract_microcode_address_attribute (node, "id", data);
