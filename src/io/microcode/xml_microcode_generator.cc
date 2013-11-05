@@ -34,7 +34,7 @@
 
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
-
+#include "xml_annotations.hh"
 #include "xml_microcode_generator.hh"
 
 using namespace std;
@@ -79,11 +79,135 @@ s_add_prop (xmlNodePtr node, const char *propid, int value)
 }
 
 static void
+s_add_prop (xmlNodePtr node, const char *propid, bool value)
+{
+  s_add_prop (node, propid, value ? 1 : 0);
+}
+
+static void
 s_add_prop (xmlNodePtr node, const char *propid, const MicrocodeAddress &addr)
 {
   s_add_prop (node, propid, xml_of_mcaddress (addr));
 }
 
+/*
+ * ANNOTATIONS
+ */
+static xmlNodePtr 
+s_new_annotation_node (const string &id)
+{
+  xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "annotation");
+
+  s_add_prop (result, "id", id);
+
+  return result;
+}
+
+static xmlNodePtr 
+s_annotation_to_xml (const SolvedJmpAnnotation *a)
+{
+  xmlNodePtr result = s_new_annotation_node (a->ID);
+  for (SolvedJmpAnnotation::const_iterator i = a->begin (); i != a->end ();
+       i++)
+    {      
+      xmlNodePtr jmp = xmlNewChild (result, NULL, BAD_CAST "addr", NULL);
+      assert (i->getLocal () == 0);
+      s_add_prop (jmp, "value", *i);
+    }
+
+  return result;
+}
+
+static xmlNodePtr 
+s_annotation_to_xml (const AsmAnnotation *a)
+{
+  xmlNodePtr result = s_new_annotation_node (a->ID);
+  s_add_prop (result, "value", a->get_value ());
+
+  return result;
+}
+
+static xmlNodePtr 
+s_annotation_to_xml (const CallRetAnnotation *a)
+{
+  xmlNodePtr result = s_new_annotation_node (a->ID);
+  bool is_call = a->is_call ();
+
+  s_add_prop (result, "is-call", is_call);
+  if (is_call)
+    {
+      xmlNodePtr target = xml_of_expr (a->get_target ());
+      xmlAddChild (result, target);
+    }
+
+  return result;
+}
+
+static xmlNodePtr 
+s_annotation_to_xml (const NextInstAnnotation *a)
+{
+  xmlNodePtr result = s_new_annotation_node (a->ID);
+
+  s_add_prop (result, "value", a->get_value ());
+
+  return result;
+}
+
+static void
+s_annotations_for_node (xmlNodePtr parent, const MicrocodeNode *node)
+{
+  const Annotable::AnnotationMap *annotations = node->get_annotations ();
+
+  if (annotations->size () == 0)
+    return;
+
+  xmlNodePtr result = 
+    xmlNewChild (parent, NULL, BAD_CAST "microcode-node", NULL);
+  s_add_prop (result, "addr", node->get_loc ());
+
+  for (Annotable::AnnotationMap::const_iterator i = annotations->begin ();
+       i != annotations->end (); i++)
+    {
+      Annotable::AnnotationId id = i->first;
+      const Annotation *a = i->second;
+      xmlNodePtr annotation;
+
+      if (id == SolvedJmpAnnotation::ID)
+	annotation = 
+	  s_annotation_to_xml (dynamic_cast<const SolvedJmpAnnotation *> (a));
+      else if (id == AsmAnnotation::ID)
+	annotation = 
+	  s_annotation_to_xml (dynamic_cast<const AsmAnnotation *> (a));
+      else if (id == CallRetAnnotation::ID)
+	annotation =
+	  s_annotation_to_xml (dynamic_cast<const CallRetAnnotation *> (a));
+      else if (id == NextInstAnnotation::ID)
+	annotation =
+	  s_annotation_to_xml (dynamic_cast<const NextInstAnnotation *> (a));
+      else
+	{
+	  logs::warning << "translation of annotation type " << id << " is not "
+			<< "implemented. " << endl;
+	  continue;
+	}
+      xmlAddChild (result, annotation);
+    }
+}
+
+static void
+s_generate_annotations (xmlNodePtr root, const Microcode *prg)
+{
+  xmlNodePtr annotations = 
+    xmlNewChild (root, NULL, BAD_CAST "annotations", NULL);
+
+  for (Microcode::node_iterator n = prg->begin_nodes (); 
+       n != prg->end_nodes (); n++)
+    s_annotations_for_node (annotations, *n);
+}
+
+/*
+ * EXPRESSIONS
+ */
 static xmlNodePtr 
 xml_of_constant (const Constant *c)
 {
@@ -94,7 +218,7 @@ xml_of_constant (const Constant *c)
 }
 
 static xmlNodePtr 
-xml_of_random_value (const RandomValue *r)
+xml_of_random_value (const RandomValue *)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "random");
 
@@ -474,6 +598,8 @@ xml_of_microcode (ostream &out,
   if (mcarch)
     s_declare_registers (root, mcarch);
   s_generate_code (root, prg);
+  s_generate_annotations (root, prg);
+
   xmlThrDefIndentTreeOutput (1);
   xmlSaveFormatFileTo (xout, doc, "UTF-8", 1);
   xmlFreeDoc (doc);

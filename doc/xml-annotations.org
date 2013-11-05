@@ -1,0 +1,32 @@
+* Translation into XML of microcode annotations
++ A new child "annotations" is added to root node.
++ For each node with at least one annotation a new <microcode-node> node is added to <annotations>. The attribute addr stores the location of the microcode node. Children of <microcode-node> are annotations of this location.
++ Each annotation is declared between <annotation> </annotation>. 
++ The attribute "id" of <annotation> nodes stores the sort of the annotation. We use the static member ID of Annotation classes.
++ Annotations are translated as follows:
+** SolvedJmpAnnotation:
+For each target belonging to the annotation, a child node is added to <annotation>. Each such node has an attribute "value" containing the address of the target. Example:
+
+<annotation id="solved-jmp">
+ <addr value="12345"/>
+ <addr value="145"/>
+ <addr value="31415"/>
+</annotation>
+
+** AsmAnnotation:
+An attribute "value" is added to <annotation> node. The value of this attribute is the text version of the corresponding assembler instruction. Example: <annotation id="asm" value="mov %eax, %ebx"></annotation>
+
+** NextInstAnnotation:
+An attribute "value" is added to <annotation> node. The value of this attribute is the address of the next instruction. 
+Example: <annotation id="next-inst" value=12345></annotation>
+
+** CallRetAnnotation:
+A Boolean attribute "is-call" is used to indicate whether the instruction is a call or a return. If the value of this attribute is 1 then the child 
+of the <annotation> node is the expression of the target of the call.
+Example:
+<annotation id="callret" is-call=0></annotation>
+<annotation id="callret" is-call=1>
+ <memref>
+  <var var="%eax">
+ </memref>
+</annotation>

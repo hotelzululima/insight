@@ -42,7 +42,7 @@
 
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
-
+#include "xml_annotations.hh"
 #include "xml_microcode_parser.hh"
 
 using namespace std;
@@ -65,6 +65,15 @@ struct ParserData
     oss << "error: ";
 
     return oss;
+  }
+
+  std::ostream &warning (xmlNodePtr node) {    
+    logs::warning << filename << ": ";
+    if (node != NULL)
+      logs::warning << node->line << ": ";
+    logs::warning << "warning: ";
+
+    return logs::warning;
   }
 };
 
@@ -180,6 +189,17 @@ s_xml_child_nb (xmlNodePtr node)
     }
   return n;
 }
+
+#define check_name(node, ident, data)					\
+  do									\
+    {									\
+      if (xmlStrcmp (node->name, (const xmlChar*) ident) == 0) continue; \
+      (data).error (node) << "malformed XML document. Getting a node '" \
+			  << (node)->name << " where a '" << (ident)	\
+			  << " was expected.";				\
+	RAISE_ERROR (data);						\
+    } \
+  while (0)
 
 #define return_if_not_named(node, ident) \
   if (xmlStrcmp (node->name, (const xmlChar*) ident) != 0) return NULL;
@@ -683,8 +703,106 @@ s_MicrocodeNode_of_xml (xmlNodePtr node, ParserData &data)
   return NULL;
 }
 
-/*****************************************************************************/
-/*****************************************************************************/
+/*
+ *
+ * ANNOTATIONS
+ *
+ */
+static void
+s_annotate_node (xmlNodePtr annotation, MicrocodeNode *node, ParserData &data)
+{
+  check_name (annotation, "annotation", data);
+  string id (s_xml_get_attribute (annotation, "id", data));
+  Annotation *a;
+
+  if (node->has_annotation (id))
+    {
+      data.error (annotation) << "node at location " << node->get_loc () 
+			      << " already has annotation '" << id << "'.";
+      RAISE_ERROR (data);
+    }
+
+  if (id == SolvedJmpAnnotation::ID)
+    {
+      SolvedJmpAnnotation *sja = new SolvedJmpAnnotation ();
+
+      try
+	{
+	  for (xmlNodePtr addr = annotation->children; addr; addr = addr->next)
+	    {
+	      check_name (addr, "addr", data);
+	      MicrocodeAddress loc = 
+		s_extract_microcode_address_attribute (addr, "value", data);
+	      sja->add (loc);
+	    }
+	}
+      catch (XmlParserException)
+	{
+	  delete sja;
+	  throw;
+	}
+      a = sja;
+    }
+  else if (id == AsmAnnotation::ID)
+    {
+      string instruction (s_xml_get_attribute (annotation, "value", data));
+      a = new AsmAnnotation (instruction);
+    }
+  else if (id == CallRetAnnotation::ID)
+    {
+      int is_call = s_xml_get_int_attribute (annotation, "is-call", data);
+
+      if (is_call)
+	{
+	  if (annotation->children == NULL)
+	    {
+	      data.error (annotation) << "malformed callret annotation; child "
+				      << "is missing.";
+	      RAISE_ERROR (data);
+	    }
+	  Expr *target = s_expr_of_xml (annotation->children, data);
+	  a = CallRetAnnotation::create_call (target);
+	  target->deref ();
+	}
+      else
+	{
+	  a = CallRetAnnotation::create_ret ();
+	}
+    }
+  else if (id == NextInstAnnotation::ID)
+    {
+      MicrocodeAddress loc = 
+	s_extract_microcode_address_attribute (annotation, "value", data);
+      a = new NextInstAnnotation (loc);
+    }
+
+  if (a != NULL)
+    node->add_annotation (id, a);
+  else
+    data.warning (annotation) << "unknown annotation '" << id 
+			      << "'. Skipped." << endl;
+}
+
+static void
+s_annotate_microcode (xmlNodePtr annotable, ParserData &data)
+{
+  check_name (annotable, "microcode-node", data);
+  MicrocodeAddress loc = 
+    s_extract_microcode_address_attribute (annotable, "addr", data);
+  try
+    {
+      MicrocodeNode *node = data.mc->get_node (loc);
+      for (xmlNodePtr child = annotable->children; child; child = child->next)
+	s_annotate_node (child, node, data);
+    }
+  catch (GetNodeNotFoundExc)
+    {
+      data.error (annotable) << "try to annotate unknown location " 
+			     << loc << ".";
+      RAISE_ERROR (data);
+    }
+}
+
 
 static void 
 s_prefix_run (xmlNodePtr node, ParserData &data)
@@ -706,7 +824,12 @@ s_prefix_run (xmlNodePtr node, ParserData &data)
 	  else if (! data.mcArch->has_tmp_register (regname))
 	    data.mcArch->add_tmp_register (regname, size);
 	}
-      else
+      else if (xmlStrcmp(n->name, (const xmlChar *) "annotations") == 0)
+	{
+	  for (xmlNodePtr child = n->children; child; child = child->next)
+	    s_annotate_microcode (child, data);
+	}
+      else 
 	{
 	  assert (xmlStrcmp(n->name, (const xmlChar *) "code") == 0);
 	  for (xmlNodePtr child = n->children; child; child = child->next)
