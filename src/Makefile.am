@@ -245,6 +245,7 @@ io_sources = \
 	io/microcode/MicrocodeWriter.hh		\
 	io/microcode/xml_microcode_generator.cc	\
 	io/microcode/xml_microcode_generator.hh	\
+	io/microcode/xml_annotations.hh  	\
 	io/process/ProcessLoader.cc 	 	\
 	io/process/ProcessLoader.hh
 
