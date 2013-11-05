@@ -1,0 +1,138 @@
+<!ELEMENT program ((vardecl|memdecl)*,code, annotations*) >
+
+<!ELEMENT vardecl EMPTY>
+<!ATTLIST vardecl
+	id	ID	#REQUIRED
+	size	CDATA	#REQUIRED
+>
+
+<!ELEMENT memdecl (zone)*>
+<!ATTLIST memdecl
+	id	ID	#REQUIRED
+>
+
+<!ELEMENT zone (write-aborts|read-aborts|write-is-ignored)*>
+<!ATTLIST zone
+	start	CDATA	#REQUIRED
+	size	CDATA	#REQUIRED
+>
+
+<!ELEMENT write-aborts EMPTY>
+<!ELEMENT read-aborts EMPTY>
+<!ELEMENT write-is-ignored EMPTY>
+
+<!ELEMENT code (skip|assign|switch|jump|external)*>
+<!ATTLIST code
+	endianness	CDATA	#IMPLIED
+>
+
+<!ELEMENT skip EMPTY>
+<!ATTLIST skip
+	id	ID	#REQUIRED
+	address	CDATA	#IMPLIED
+	next	IDREF	#IMPLIED
+>
+
+<!ELEMENT assign ((var | memref), (const | var | memref | apply))>
+<!ATTLIST assign
+	id	ID	#REQUIRED
+	address	CDATA	#IMPLIED
+	next	IDREF	#IMPLIED
+>
+
+<!ELEMENT switch (guard)+>
+<!ATTLIST switch
+	id	ID	#REQUIRED
+	address	CDATA	#IMPLIED
+>
+
+<!ELEMENT guard (apply)>
+<!ATTLIST guard
+	next	IDREF	#IMPLIED
+>
+
+<!ELEMENT jump (var | memref | apply)>
+<!ATTLIST jump
+	id	ID	#REQUIRED
+	address	CDATA	#IMPLIED
+>
+
+<!ELEMENT external (apply)>
+<!ATTLIST external
+	id	ID	#REQUIRED
+	address	CDATA	#IMPLIED
+	next	IDREF	#IMPLIED
+>
+
+<!ELEMENT const ANY>
+<!ATTLIST const
+	size	CDATA	#REQUIRED
+>
+
+<!ELEMENT var EMPTY>
+<!ATTLIST var
+	var	IDREF	#REQUIRED
+	offset	CDATA	#IMPLIED
+	size	CDATA	#IMPLIED
+>
+
+<!ELEMENT memref (const | var | memref | apply)>
+<!ATTLIST memref
+	mem		IDREF	#REQUIRED
+	size		CDATA	#REQUIRED
+	endianness	CDATA	#IMPLIED
+>
+
+<!ELEMENT apply ((plus | minus | times | divs | divu | mods | modu |
+		not | or | and | xor |
+		lshift | rshifts | rshiftu | concat | exts | extu |
+		lnot | lor | land | eq | lequ | leqs | ltu | lts),
+		(const | var | memref | apply)*)
+>
+<!ATTLIST apply
+	offset	CDATA	#IMPLIED
+	size	CDATA	#IMPLIED
+>
+
+<!ELEMENT plus EMPTY>
+<!ELEMENT minus EMPTY>
+<!ELEMENT times EMPTY>
+<!ELEMENT divs EMPTY>
+<!ELEMENT divu EMPTY>
+<!ELEMENT mods EMPTY>
+<!ELEMENT modu EMPTY>
+<!ELEMENT not EMPTY>
+<!ELEMENT or EMPTY>
+<!ELEMENT and EMPTY>
+<!ELEMENT xor EMPTY>
+<!ELEMENT lshift EMPTY>
+<!ELEMENT rshifts EMPTY>
+<!ELEMENT rshiftu EMPTY>
+<!ELEMENT concat EMPTY>
+<!ELEMENT exts EMPTY>
+<!ELEMENT extu EMPTY>
+<!ELEMENT lnot EMPTY>
+<!ELEMENT lor EMPTY>
+<!ELEMENT land EMPTY>
+<!ELEMENT eq EMPTY>
+<!ELEMENT lequ EMPTY>
+<!ELEMENT leqs EMPTY>
+<!ELEMENT ltu EMPTY>
+<!ELEMENT lts EMPTY>
+
+<!ELEMENT annotations (microcode-node)*>
+
+<!ELEMENT microcode-node (annotation)*>
+<!ATTLIST microcode-node
+	addr	CDATA	#REQUIRED
+>
+
+<!ELEMENT annotation (expr|addr*)>
+<!ATTLIST annotation
+	id	CDATA	#REQUIRED
+>
+
+<!ELEMENT addr EMPTY>
+<!ATTLIST addr
+	  value CDATA #REQUIRED
+>
