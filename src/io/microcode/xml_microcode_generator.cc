@@ -211,7 +211,8 @@ static xmlNodePtr
 xml_of_constant (const Constant *c)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "const");
-  xmlNodeAddContent (result, BAD_CAST string_of_int(c->get_val()).c_str ());
+  int val = c->get_not_truncated_value ();
+  xmlNodeAddContent (result, BAD_CAST string_of_int(val).c_str ());
 
   return result;
 }
@@ -540,6 +541,13 @@ s_generate_code (xmlNodePtr root, const Microcode *prg)
     xml_of_microcode_element (code, *n);
 }
 
+struct CmpRegisterDesc
+{
+  bool operator() (const RegisterDesc *r1, const RegisterDesc *r2) {
+    return r1->get_label () < r2->get_label ();
+  }
+};
+
 static void 
 s_declare_registers (xmlNodePtr root, const MicrocodeArchitecture *mcarch)
 {
@@ -548,7 +556,8 @@ s_declare_registers (xmlNodePtr root, const MicrocodeArchitecture *mcarch)
     mcarch->get_tmp_registers (),
     NULL
   };
-    
+  list<const RegisterDesc *> reglist;
+
   for (const RegisterSpecs **r = regs; *r; r++)
     {
       RegisterSpecs::const_iterator reg = (*r)->begin ();
@@ -556,10 +565,18 @@ s_declare_registers (xmlNodePtr root, const MicrocodeArchitecture *mcarch)
 	{
 	  if (reg->second->is_alias ())
 	    continue;
-	  xmlNodePtr node = xmlNewChild (root, NULL, BAD_CAST "vardecl", NULL);
-	  s_add_prop (node, "id", reg->second->get_label ());
-	  s_add_prop (node, "size", reg->second->get_register_size ());
+	  reglist.push_back (reg->second);
 	}
+    }
+  CmpRegisterDesc c;
+  reglist.sort<CmpRegisterDesc> (c);
+
+  for (list<const RegisterDesc *>::iterator r = reglist.begin();
+       r != reglist.end (); r++)
+    {
+      xmlNodePtr node = xmlNewChild (root, NULL, BAD_CAST "vardecl", NULL);
+      s_add_prop (node, "id", (*r)->get_label ());
+      s_add_prop (node, "size", (*r)->get_register_size ());
     }
 }
 
