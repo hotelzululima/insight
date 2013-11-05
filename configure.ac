@@ -356,6 +356,7 @@ AC_CONFIG_FILES([
 	src/Makefile
 	test/Makefile
 	test/Makefile.inc
+	test/cfgrecovery.cfg
 	test/bugs/Makefile
 	test/domains/Makefile
 	test/domains/concrete/Makefile
@@ -364,6 +365,7 @@ AC_CONFIG_FILES([
 	test/domains/symbolic/config.cfg
 	test/domains/symbolic/Kyuafile
 	test/io/Makefile
+	test/io/xml/Makefile
 	test/kernel/Makefile
 	test/tools/Makefile
 	test/tools/cfgrecovery/Makefile
