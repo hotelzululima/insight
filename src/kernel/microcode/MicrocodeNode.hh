@@ -151,7 +151,7 @@ protected:
 public:
   StmtArrow(MicrocodeNode * origin,
             Statement *stmt,
-            AnnotationMap * annotations = 0,
+            const AnnotationMap * annotations = 0,
             Expr * condition = 0);
 
   /* The two below are deprecated because the mapping
@@ -160,7 +160,7 @@ public:
    */
   StmtArrow(MicrocodeAddress origin,
             Statement *stmt,
-            AnnotationMap *annotations,
+            const AnnotationMap *annotations,
             Expr *condition);
   StmtArrow(MicrocodeAddress origin,
             Statement *stmt,
@@ -216,7 +216,7 @@ public:
   StaticArrow(MicrocodeNode *src,
               MicrocodeNode *tgt,
               Statement *stmt,
-              AnnotationMap *annotations = 0,
+              const AnnotationMap *annotations = 0,
               Expr *condition = 0);
 
   /* The two below are deprecated because the mapping
@@ -227,7 +227,7 @@ public:
   StaticArrow(MicrocodeAddress origin,
               MicrocodeAddress target,
               Statement *stmt,
-              AnnotationMap *annotations,
+              const AnnotationMap *annotations,
               Expr *condition);
 
   StaticArrow(MicrocodeAddress origin,
@@ -269,7 +269,7 @@ public:
   DynamicArrow(MicrocodeNode *origin,
                Expr *target,
                Statement *stmt,
-               AnnotationMap *annotations = 0,
+               const AnnotationMap *annotations = 0,
                Expr *condition = 0);
 
   /* The two below are deprecated because the mapping
@@ -279,7 +279,7 @@ public:
   DynamicArrow(MicrocodeAddress origin,
                Expr *target,
                Statement *stmt,
-               AnnotationMap *annotations,
+               const AnnotationMap *annotations,
                Expr *condition);
 
   DynamicArrow(MicrocodeAddress origin,

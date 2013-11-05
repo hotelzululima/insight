@@ -57,7 +57,7 @@ public:
   /*! \brief get annotations. Renamed this method in order to
    * lower the number of name conflicts on methods such as begin().
    * That's why the inheritance on std::tr1::unordered_map is private */
-  AnnotationMap *get_annotations();
+  const AnnotationMap *get_annotations() const;
   /*! \brief get a specific annotation. */
   Annotation *get_annotation(const AnnotationId &id) const;
   /*! \brief get a specific annotation. */

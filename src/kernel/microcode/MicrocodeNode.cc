@@ -254,7 +254,7 @@ bool MicrocodeNode::operator<(const MicrocodeNode &e) const
 /**********************************************************************/
 
 StmtArrow::StmtArrow(MicrocodeNode *src, Statement *stmt,
-		                 AnnotationMap *annotations, Expr *condition) :
+		     const AnnotationMap *annotations, Expr *condition) :
   Annotable(annotations),
   src(src),
   stmt(stmt),
@@ -272,8 +272,8 @@ StmtArrow::StmtArrow(MicrocodeAddress origin,
 
 StmtArrow::StmtArrow(MicrocodeAddress origin,
                      Statement *st,
-                     AnnotationMap *annotations,
-                     Expr *condition) : Annotable(*annotations),
+                     const AnnotationMap *annotations,
+                     Expr *condition) : Annotable(annotations),
   origin(origin),
   stmt(st),
   condition(condition) { }
@@ -396,7 +396,7 @@ string DynamicArrow::pp() const
 }
 
 StaticArrow::StaticArrow(MicrocodeNode * src, MicrocodeNode * tgt,
-			 Statement *stmt, AnnotationMap *annotations,
+			 Statement *stmt, const AnnotationMap *annotations,
 			 Expr *condition) :
   StmtArrow(src, stmt, annotations, condition),
   tgt(tgt)
@@ -406,10 +406,10 @@ StaticArrow::StaticArrow(MicrocodeNode * src, MicrocodeNode * tgt,
 
 
 StaticArrow::StaticArrow(MicrocodeAddress origin,
-		                 MicrocodeAddress target,
-		                 Statement *stmt,
-		                 AnnotationMap *annotations,
-		                 Expr *condition) :
+			 MicrocodeAddress target,
+			 Statement *stmt,
+			 const AnnotationMap *annotations,
+			 Expr *condition) :
   StmtArrow(origin, stmt, annotations, condition),
   target(target)
 {}
@@ -485,7 +485,7 @@ DynamicArrow::make_static()
 
 DynamicArrow::DynamicArrow(MicrocodeNode *src,
 			   Expr *target, Statement *stmt,
-			   AnnotationMap *annotations, Expr *condition) :
+			   const AnnotationMap *annotations, Expr *condition) :
   StmtArrow(src, stmt, annotations, condition),
   target(target)
 {
@@ -494,7 +494,7 @@ DynamicArrow::DynamicArrow(MicrocodeNode *src,
 DynamicArrow::DynamicArrow(MicrocodeAddress origin,
                            Expr *target,
                            Statement *stmt,
-                           AnnotationMap *annotations,
+                           const AnnotationMap *annotations,
                            Expr *condition) :
   StmtArrow(origin, stmt, annotations, condition),
   target(target)

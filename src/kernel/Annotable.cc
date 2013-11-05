@@ -82,8 +82,8 @@ void Annotable::del_annotation(const AnnotationId &id)
 }
 
 
-Annotable::AnnotationMap *
-Annotable::get_annotations()
+const Annotable::AnnotationMap *
+Annotable::get_annotations() const 
 {
   return &amap;
 }
