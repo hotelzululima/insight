@@ -1,4 +1,5 @@
 ## Process this file with automake to produce Makefile.in
+SUBDIRS=xml
 include ${top_builddir}/test/Makefile.inc
 
 check_PROGRAMS = \
