@@ -593,7 +593,7 @@ xml_of_microcode (ostream &out,
 			     NULL);
 
   xmlDocPtr doc = xmlNewDoc (BAD_CAST "1.0");
-  xmlCreateIntSubset (doc, BAD_CAST "program", NULL, BAD_CAST "bincoa.dtd");
+  xmlCreateIntSubset (doc, BAD_CAST "program", NULL, BAD_CAST "insight.dtd");
   xmlNodePtr root = xmlNewNode (NULL, BAD_CAST "program");
   xmlDocSetRootElement (doc, root);
   if (mcarch)
