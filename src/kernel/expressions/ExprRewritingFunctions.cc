@@ -692,6 +692,56 @@ simplify_formula (const Expr *phi)
   return result;
 }
 
+/* (SHIFT (SHIFT arg n){o,s} m){o,s} --> (SHIFT arg n+m){o,s} */
+static Expr * 
+s_cumulate_shifts (const Expr *phi)
+{
+  const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
+
+  if (! (ba != NULL &&
+	 (ba->get_op () == BV_OP_RSH_U ||
+	  ba->get_op () == BV_OP_RSH_S ||
+	  ba->get_op () == BV_OP_LSH) &&
+	 ba->get_arg2 ()->is_Constant ()))
+    return NULL;
+  const BinaryApp *barg1 = dynamic_cast<const BinaryApp *> (ba->get_arg1 ());
+
+  if (!(barg1 != NULL &&
+	barg1->get_op () == ba->get_op () &&
+	barg1->get_arg2 ()->is_Constant () &&
+	ba->get_bv_size () == barg1->get_bv_size () && 
+	ba->get_bv_offset () == barg1->get_bv_offset ()))
+    return NULL;
+  
+  constant_t s = 
+    dynamic_cast<const Constant *>(ba->get_arg2 ())->get_not_truncated_value();
+  s += 
+    dynamic_cast<const Constant *>(barg1->get_arg2 ())->get_not_truncated_value();
+
+  
+  Constant *shift = Constant::create (s, ba->get_arg2 ()->get_bv_offset (),
+				      ba->get_arg2 ()->get_bv_size ());
+  return BinaryApp::create (ba->get_op (),
+			    barg1->get_arg1 ()->ref (), shift, 
+			    ba->get_bv_offset (), ba->get_bv_size ());
+}
+
+/* (AND a a){o,s} --> a {o,s} */
+static Expr * 
+s_simplify_idempotent (const Expr *phi)
+{
+  const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
+  Expr *result;
+  if (ba != NULL && 
+      (ba->get_op () == BV_OP_AND || ba->get_op () == BV_OP_OR) &&
+      (ba->get_arg1 () == ba->get_arg2 ()))
+    result = ba->get_arg1 ()->extract_bit_vector (ba->get_bv_offset (),
+						  ba->get_bv_size ());
+  else
+    result = NULL;
+  return result;
+}
+
 Expr * 
 simplify_expr (const Expr *phi)
 {
@@ -702,6 +752,8 @@ simplify_expr (const Expr *phi)
     binary_operations_simplification,     
     zero_shift_rule, 
     s_simplify_extract, 
+    s_simplify_idempotent,
+    s_cumulate_shifts,
     NULL 
   };
 
