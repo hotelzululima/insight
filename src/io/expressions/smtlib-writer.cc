@@ -28,6 +28,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <tr1/unordered_map>
+#include <tr1/unordered_set>
+
+#include <list>
 #include "smtlib-writer.hh"
 
 #include <stdlib.h>
@@ -37,8 +41,156 @@
 
 #include <utils/logs.hh>
 #include <kernel/expressions/ExprVisitor.hh>
+#include <kernel/expressions/exprutils.hh>
 
 using namespace std;
+
+class SMTLibVisitor;
+
+class CountSharedSubFormulas : public ConstExprVisitor 
+{
+  struct DFScounters {
+    int enter;
+    int leave;
+    int counter;
+  };
+
+  typedef std::tr1::unordered_map<const Expr *, DFScounters> Counters;
+  typedef std::tr1::unordered_set<const Expr *> Done;
+
+  int max;
+  int date;
+  Counters counters;
+  list<const Expr *> shared;
+  Done done;
+
+public :
+
+  CountSharedSubFormulas () 
+    : ConstExprVisitor (), max (0), date (0), counters (), shared (), done () { 
+  }
+
+  virtual ~CountSharedSubFormulas () { 
+  }
+
+
+  bool operator () (const Expr *e1, const Expr *e2) {
+    return  counters[e1].leave < counters[e2].leave;
+  }
+
+  const list<const Expr *> &get_shared () const {
+    return shared;
+  }
+
+  void open_context (std::ostream &out, SMTLibVisitor &sw);
+
+  void close_context (std::ostream &out) const {
+    int nb_symbols = shared.size ();
+    while (nb_symbols--)
+      out << ")";
+  }
+
+  void output_shared_symbol (const DFScounters &c, std::ostream &out) const {
+    out << "_$" << dec << c.enter;
+  }
+
+  bool output_shared_expr (const Expr *e, std::ostream &out) {
+    if (done.find (e) == done.end ())
+      return false;
+    Counters::const_iterator i = counters.find (e);
+    output_shared_symbol (i->second, out);
+
+    return true;
+  }
+
+  int display_counters (std::ostream &out) const {
+    if (max <= 1)
+      return 0;
+
+    int *distrib = new int[max + 1];
+
+    for (int i = 0; i <= max; i++)
+      distrib[i] = 0;
+    for (Counters::const_iterator i = counters.begin (); i != counters.end ();
+	 i++)
+      distrib[i->second.counter]++;
+    out << "Shared Formulas: " << endl;
+    int result = 0;
+    for (int i = 2; i <= max; i++)
+      if (distrib[i] > 0)
+	{
+	  out << "shared " << i << " times : " << distrib[i] << endl;    
+	  result++;
+	}
+    delete[] distrib;
+    return result;
+  }
+
+  virtual int update_counter (const Expr *e) {
+    if (counters.find (e) == counters.end ())
+      {
+	date++;
+	counters[e].enter = date;
+	counters[e].counter = 1;
+	counters[e].leave = date;
+      }
+    else
+      {
+	counters[e].counter++;
+      }
+
+    if (counters[e].counter > max)
+      max = counters[e].counter;
+
+    return counters[e].counter;
+  }
+
+  virtual void visit (const Constant *) { }
+
+  virtual void visit (const RandomValue *) { 
+    logs::error << "RandomValue should not be sent to SMT solver." << endl;
+    abort ();
+  } 
+
+  virtual void visit (const Variable *) { }
+
+  virtual void visit (const UnaryApp *e) { 
+    if (update_counter (e) > 1)
+      return;
+    e->get_arg1 ()->acceptVisitor (this);
+    counters[e].leave = date + 1;
+  }
+
+  virtual void visit (const BinaryApp *e) { 
+    if (update_counter (e) > 1)
+      return;
+    e->get_arg1 ()->acceptVisitor (this);
+    e->get_arg2 ()->acceptVisitor (this);
+    counters[e].leave = date + 1;
+  }
+  virtual void visit (const TernaryApp *e) { 
+    if (update_counter (e) > 1)
+      return;
+    e->get_arg1 ()->acceptVisitor (this);
+    e->get_arg2 ()->acceptVisitor (this);
+    e->get_arg3 ()->acceptVisitor (this);
+    counters[e].leave = date + 1;
+  } 
+
+  virtual void visit (const MemCell *e) { 
+    if (update_counter (e) > 1)
+      return;
+    e->get_addr ()->acceptVisitor (this);
+    counters[e].leave = date + 1;
+  }
+
+  virtual void visit (const RegisterExpr *) { 
+  }
+
+  virtual void visit (const QuantifiedExpr *e) { 
+    throw SMTLibUnsupportedExpression (e->to_string ());
+  }
+};  
 
 class SMTLibVisitor : public ConstExprVisitor 
 {
@@ -46,15 +198,21 @@ class SMTLibVisitor : public ConstExprVisitor
   const string &memvar;
   int addrsize;
   Architecture::endianness_t endian;
+  CountSharedSubFormulas *cssf;
 
 public:
 
 
   SMTLibVisitor (ostream &o, const string &mv, int bpa, 
 		 Architecture::endianness_t e)
-    : ConstExprVisitor(), out (o), memvar (mv), addrsize (bpa), endian (e) {}
+    : ConstExprVisitor (), out (o), memvar (mv), addrsize (bpa), endian (e),
+      cssf (NULL) {}
 
   ~SMTLibVisitor () { }
+
+  void set_cssf (CountSharedSubFormulas *cssf) {
+    this->cssf = cssf;
+  }
 
   virtual void output_sign (const Expr *e) {
     int szindex = e->get_bv_size () - 1;
@@ -152,9 +310,12 @@ public:
   }
 
   virtual void visit (const UnaryApp *e) {
+    if (cssf->output_shared_expr (e, out))
+      return;
     const char *op;
     bool extract = (e->get_bv_offset () != 0 ||
 		    e->get_bv_size () != e->get_arg1 ()->get_bv_size ());
+    bool extend = false;
 
     if (e->get_op () == BV_OP_NOT)
       op = "bvnot";
@@ -162,6 +323,7 @@ public:
       {
 	assert (e->get_op () == BV_OP_NEG);
 	op = "bvneg";
+	extend = true;
       }
 
     if (extract)
@@ -169,9 +331,16 @@ public:
 	out << "(";
 	extract_bv_window (e);
       }
+    if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
+      {
+	int ext = (e->get_bv_size () - e->get_arg1 ()->get_bv_size ());
+	out << "((_ sign_extend " << dec << ext << ") ";
+      }
     out << "(" << op << " ";      
     e->get_arg1 ()->acceptVisitor (this);
     out << ")";
+    if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
+      out << ")";
     if (extract)
       out << ")";
   }
@@ -192,6 +361,9 @@ public:
   }
 
   virtual void visit (const BinaryApp *e) {
+    if (cssf->output_shared_expr (e, out))
+      return;
+
     BinaryOp op = e->get_op ();
     const char *op_str = NULL;
     bool extract = need_extract (e); 	  	
@@ -333,6 +505,9 @@ public:
   }
 
   virtual void visit (const TernaryApp *e) {
+    if (cssf->output_shared_expr (e, out))
+      return;
+
     assert (e->get_op () == BV_OP_EXTRACT);
     Constant *expr_offset = dynamic_cast <Constant *> (e->get_arg2 ());
     Constant *expr_size = dynamic_cast <Constant *> (e->get_arg3 ());
@@ -359,6 +534,9 @@ public:
   }
 
   virtual void visit (const MemCell *e) {
+    if (cssf->output_shared_expr (e, out))
+      return;
+
     if (e->get_bv_size () == 8 && e->get_bv_offset () == 0)
       {
 	// to be fixed !!!
@@ -427,16 +605,57 @@ public:
   }
 };
 
+
 void 
-smtlib_writer (std::ostream &out, const Expr *e, const std::string &memvar, 
+smtlib_writer (std::ostream &out, const Expr *ep, const std::string &memvar, 
 	       int addrsize, Architecture::endianness_t endian, bool as_boolean)
   throw (SMTLibUnsupportedExpression)
 {
+
+  CountSharedSubFormulas cssf;
   SMTLibVisitor writer (out, memvar, addrsize, endian);
+  writer.set_cssf (&cssf);
+
+  Expr *e = ep->ref ();
+  exprutils::simplify (&e);
+
+  e->acceptVisitor (cssf);
+  //  if (cssf.display_counters (logs::debug) > 0) {
+    //    ((void) 0); 
+    //exprutils::simplify (&e);
+    //  logs::debug << *e << endl;
+  //}
+  cssf.open_context (out, writer);  
 
   if (as_boolean)
     writer.output_boolean (e); 
   else
     e->acceptVisitor (writer);
+  cssf.close_context (out);  
+
   out.flush ();
+  e->deref ();
+}
+
+void 
+CountSharedSubFormulas::open_context (std::ostream &out, 
+				      SMTLibVisitor &sw) 
+{    
+  for (Counters::const_iterator i = counters.begin (); i != counters.end ();
+       i++) 
+    {
+      if (i->second.counter > 1)
+	shared.push_back (i->first);
+    }
+  shared.sort (*this);
+  for (list<const Expr *>::iterator i = shared.begin (); i != shared.end (); 
+       i++)
+    {
+      out << "(let ((";
+      output_shared_symbol (counters[*i], out);
+      out << " ";
+      (*i)->acceptVisitor (sw);
+      out << ")) ";
+      done.insert (*i);
+    }
 }
