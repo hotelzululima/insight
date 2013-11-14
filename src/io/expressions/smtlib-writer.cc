@@ -214,14 +214,6 @@ public:
     this->cssf = cssf;
   }
 
-  virtual void output_sign (const Expr *e) {
-    int szindex = e->get_bv_size () - 1;
-    
-    out << "((extract " << dec << szindex << " " << szindex << ") ";
-    e->acceptVisitor (this);
-    out << ")";
-  }
-
   virtual void visit (const Constant *c) {
     word_t val = c->get_val ();
     int bv_size = c->get_bv_size () ;
