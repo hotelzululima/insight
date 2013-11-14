@@ -107,13 +107,18 @@ public:
 /*****************************************************************************/
 
   /* Here is the simplified API */
-  void add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard = 0);
-  void add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
-		      MicrocodeAddress end, Expr *guard = 0);
+  StmtArrow *
+  add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard = 0);
+  StmtArrow *
+  add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
+		 MicrocodeAddress end, Expr *guard = 0);
 
-  void add_assignment(MicrocodeAddress &beg, LValue *lvalue, Expr *expr,
-		      MicrocodeAddress *pend = NULL);
-  void add_jump(MicrocodeAddress beg, Expr *target, Expr *guard = 0);
+  StmtArrow *
+  add_assignment(MicrocodeAddress &beg, LValue *lvalue, Expr *expr,
+		 MicrocodeAddress *pend = NULL);
+  StmtArrow *
+  add_jump(MicrocodeAddress beg, Expr *target, Expr *guard = 0);
+
   void add_external(MicrocodeAddress beg, Expr *relation, MicrocodeAddress end);
 
 /*****************************************************************************/
@@ -188,6 +193,8 @@ public:
   bool is_optimized();
 
   void output_text(std::ostream &out) const;
+  
+  void check () const;
 };
 /***************************************************************************/
 

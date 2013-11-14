@@ -138,7 +138,7 @@ Microcode::get_or_create_node(MicrocodeAddress addr) {
 
 /*****************************************************************************/
 
-void
+StmtArrow *
 Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard) 
 {
   MicrocodeNode *b = get_or_create_node(beg);
@@ -157,16 +157,18 @@ Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard)
       if (cond == guard && tgt.equals (end))
 	{
 	  guard->deref ();
-	  return;
+	  return *succ;
 	}
     }
 
   StmtArrow *a = b->add_successor (guard, get_or_create_node(end), 
 				       new Skip());
   apply_callbacks (a);
+
+  return a;
 }
 
-void
+StmtArrow *
 Microcode::add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
         MicrocodeAddress end, Expr *guard) {
   MicrocodeNode *b = get_or_create_node(beg);
@@ -176,19 +178,23 @@ Microcode::add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
   StmtArrow *a = b->add_successor(guard, get_or_create_node(end),
 				  new Assignment(lvalue, expr));
   apply_callbacks (a);  
+
+  return a;
 }
 
-void 
+StmtArrow *
 Microcode::add_assignment(MicrocodeAddress &beg, LValue *lvalue, Expr *expr,
 			  MicrocodeAddress *pend)
 {  
   MicrocodeAddress end = pend == NULL ? beg + 1 : *pend;
 
-  add_assignment (beg, lvalue, expr, end);
+  StmtArrow *a = add_assignment (beg, lvalue, expr, end);
   beg = end;
+
+  return a;
 }
 
-void
+StmtArrow *
 Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) {
   MicrocodeNode *b = get_or_create_node(beg);
 
@@ -196,6 +202,8 @@ Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) {
     guard = Constant::True ();
   StmtArrow *a = b->add_successor(guard, target->ref (), new Jump(target));
   apply_callbacks (a); 
+
+  return a;
 }
 
 /* Should the relation be a Formula instead? Probably. */
@@ -285,7 +293,36 @@ void Microcode::sort()
   std::sort(nodes->begin(), nodes->end(), microcode_sort_ordering);
 }
 
-/*****************************************************************************/
+/*! \brief Produces a (new) static arrow from the current dynamic arrow
+ *  by trying to extract the target with extract_target method. */
+
+static Option<StaticArrow*>
+make_static (Microcode *mc, DynamicArrow *da)
+{
+  Option<MicrocodeAddress> t = da->extract_target();
+
+  if (t.hasValue()) 
+    {
+      MicrocodeNode *tgt = NULL;
+      try 
+	{
+	  tgt = mc->get_node (t.getValue ());
+	}
+      catch (GetNodeNotFoundExc)
+	{
+	  return Option<StaticArrow*>();
+	}
+      StaticArrow * static_arrow =
+	new StaticArrow(da->get_src(),
+			tgt, 
+			da->get_stmt()->clone(),
+			da->get_annotations(),
+			da->get_condition()->ref());
+      return Option<StaticArrow*>(static_arrow);
+    }
+  else
+    return Option<StaticArrow*>();
+}
 
 void Microcode::simplify_and_clean_targets()
 {
@@ -320,7 +357,7 @@ void Microcode::simplify_and_clean_targets()
 		    {
 		      DynamicArrow *old_arrow = (DynamicArrow *) * arr;
 		      StaticArrow * static_arrow =
-			old_arrow->make_static().getValue();
+			make_static (this, old_arrow).getValue();
 		      delete old_arrow;
 		      (*succs).erase(arr);
 		      succs->push_back(static_arrow);
@@ -600,3 +637,17 @@ Microcode *Microcode::get_subgraph(list<MicrocodeNode *>* subset)
   return res;
 }
 */
+
+void 
+Microcode::check () const
+{
+  for (vector<MicrocodeNode *>::const_iterator it = nodes->begin(); 
+       it != nodes->end(); it++)
+    {
+      const MicrocodeNode *e = *it;
+      MicrocodeNode_iterate_successors (*e, succ) {
+	StmtArrow *sa = *succ;
+	assert (sa->get_src () == e);
+      }
+    }
+}
