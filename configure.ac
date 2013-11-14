@@ -367,14 +367,12 @@ AC_CONFIG_FILES([
 	test/domains/concrete/Makefile
 	test/domains/sets/Makefile
 	test/domains/symbolic/Makefile
-	test/domains/symbolic/config.cfg
 	test/domains/symbolic/Kyuafile
 	test/io/Makefile
 	test/io/xml/Makefile
 	test/kernel/Makefile
 	test/tools/Makefile
 	test/tools/cfgrecovery/Makefile
-	test/tools/cfgrecovery/config.cfg
 	test/decoders/Makefile
 	test/decoders/x86-32/Makefile
 	test/decoders/x86-64/Makefile
