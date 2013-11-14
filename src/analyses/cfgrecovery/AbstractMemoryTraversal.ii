@@ -149,7 +149,9 @@ AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
 	  int count = visits[a];
 	  visits[a] = count +1;
 	}
-      if (visits[a] > number_of_visits_per_address)
+      int threshold = 
+	number_of_visits_per_address * pa.arrow->get_src ()->get_successors()->size ();
+      if (visits[a] > threshold)
 	result = true;
     }
   return result;
