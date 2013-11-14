@@ -33,73 +33,71 @@
 #include <utils/logs.hh>
 #include <kernel/expressions/ExprProcessSolver.hh>
 #include <vector>
+#include <cassert>
 
 using namespace std;
 
 static const std::string PROP_PREFIX = "kernel.expr.solver";
+const std::string ExprSolver::SOLVER_NAME_PROP = PROP_PREFIX + ".name";
+const std::string ExprSolver::DEBUG_TRACES_PROP = PROP_PREFIX + ".debug-traces";
 
 
-const std::string ExprSolver::DEFAULT_COMMAND_PROP = 
-  PROP_PREFIX + ".default.command";
 
-const std::string ExprSolver::DEFAULT_ARGS_PROP =
-  PROP_PREFIX + ".default.args";
-
-const std::string ExprSolver::DEBUG_TRACES_PROP =
-  PROP_PREFIX + ".debug-traces";
-
-const std::string 
-ExprSolver::DEFAULT_ARG_PROP (int index) 
+struct SolverModule 
 {
-  ostringstream pref;
-  pref << PROP_PREFIX << ".default.arg" << index;
+  void (*init) (const ConfigTable &cfg);
+  const string & (*ident) ();
+  ExprSolver *(*instantiate)(const MicrocodeArchitecture *mca);
+  void (*terminate) ();
+};
 
-  return pref.str ();
-}
+#define SOLVER_MODULE(C) \
+  { &(C :: init), &(C :: ident), &(C :: create), &(C ::terminate) }
 
+static SolverModule modules[] = {
+  SOLVER_MODULE (ExprProcessSolver)  
+};
+
+static size_t nb_modules = sizeof (modules)/sizeof(modules[0]);
+
+static SolverModule *default_solver = NULL;
 bool ExprSolver::debug_traces = false;
-static string default_solver_command;
-static vector<string> default_solver_args;
+
 
 void 
 ExprSolver::init (const ConfigTable &cfg)
+  throw (UnknownSolverException)
 {
-  default_solver_command = cfg.get (DEFAULT_COMMAND_PROP);
-  string args = cfg.get (DEFAULT_ARGS_PROP);
-
-  while (!args.empty ())
-    {
-      string::size_type p = args.find (' ');
-
-      if (p == string::npos)
-	{
-	  default_solver_args.push_back (args);
-	  break;
-	}
-
-      string tmp = args.substr (0, p );
-      if (! tmp.empty ())
-	default_solver_args.push_back (tmp);
-    
-      args = args.substr (p + 1, string::npos);
-    }
-
+  string sname = cfg.get (SOLVER_NAME_PROP);
   debug_traces = cfg.get_boolean (DEBUG_TRACES_PROP);
+
+  for (size_t i = 0; i < nb_modules; i++)
+    {
+      modules[i].init (cfg);
+      if (modules[i].ident () == sname)
+	default_solver = &modules[i];
+    }
+  if (sname != "" && default_solver == NULL)
+    throw UnknownSolverException ("can not find solver '" + sname + "'.");
+
 }
 
 void 
 ExprSolver::terminate ()
 {
+  default_solver = NULL;
+  for (size_t i = 0; i < nb_modules; i++)
+    modules[i].terminate ();
 }
   
 ExprSolver *
 ExprSolver::create_default_solver (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
 {  
-  if (default_solver_command == "")
-    throw UnknownSolverException (DEFAULT_COMMAND_PROP + " is not set.");
-  return ExprProcessSolver::create (mca, default_solver_command,
-				    default_solver_args);
+  if (default_solver == NULL)
+    throw UnknownSolverException ("no default solver has been specified.");
+
+  return default_solver->instantiate (mca);
 }
 
 ExprSolver::ExprSolver (const MicrocodeArchitecture *mca) : mca (mca)

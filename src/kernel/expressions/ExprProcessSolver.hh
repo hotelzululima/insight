@@ -48,9 +48,16 @@ protected:
 		     std::istream *r, std::ostream *w, pid_t cpid);
 
 public:
-  static ExprProcessSolver *
-  create (const MicrocodeArchitecture *mca, const std::string &cmd, 
-	  const std::vector<std::string> &args)
+
+  static const std::string COMMAND_PROP;
+  static const std::string ARGS_PROP;
+
+  static const std::string &ident ();
+  static void init (const ConfigTable &cfg);
+  static void terminate ();
+
+  static ExprSolver *
+  create (const MicrocodeArchitecture *mca)
     throw (UnexpectedResponseException, UnknownSolverException);
 
   virtual ~ExprProcessSolver ();

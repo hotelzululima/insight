@@ -256,10 +256,12 @@ if test "${has_z3_solver}" = yes; then
 	default_solver_command=z3
 	default_solver_args="-smt2 -in"
 	have_solver=yes
+	default_solver=process
 elif test "${has_mathsat_solver}" != no; then
 	default_solver_command=mathsat
 	default_solver_args=
 	have_solver=yes
+	default_solver=process
 else
 	default_solver=no-solver-is-defined
 	have_solver=no
@@ -274,6 +276,7 @@ AM_CONDITIONAL([HAVE_SOLVER], [test x$have_solver = xyes])
 AC_SUBST(HAVE_SOLVER, ${have_solver})
 AC_SUBST(process_solver_command,${default_solver_command})
 AC_SUBST(process_solver_args,${default_solver_args})
+AC_SUBST(default_solver,${default_solver})
 
 dnl Checking for binutils (libbfd, libopcodes)
 AC_ARG_WITH([binutils-header],

@@ -59,12 +59,17 @@ public:
     }
   };
 
-  static const std::string DEFAULT_COMMAND_PROP;
-  static const std::string DEFAULT_ARGS_PROP;
-  static const std::string DEFAULT_ARG_PROP (int index);
+  static const std::string SOLVER_NAME_PROP;
   static const std::string DEBUG_TRACES_PROP;
 
-  static void init (const ConfigTable &cfg);
+  //  static const std::string DEFAULT_COMMAND_PROP;
+  //  static const std::string DEFAULT_ARGS_PROP;
+  //  static const std::string DEFAULT_ARG_PROP (int index);
+
+
+  static void init (const ConfigTable &cfg)
+    throw (UnknownSolverException);
+
   static void terminate ();
 
   static ExprSolver *create_default_solver (const MicrocodeArchitecture *mca)

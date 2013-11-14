@@ -54,6 +54,52 @@ typedef ExprSolver::UnexpectedResponseException UnexpectedResponseException;
 
 typedef __gnu_cxx::stdio_filebuf<char> file_buffer;
 
+static const std::string SOLVER_NAME = "process";
+
+static const std::string PROP_PREFIX = "kernel.expr.solver." + SOLVER_NAME;
+const std::string ExprProcessSolver::COMMAND_PROP = PROP_PREFIX + ".command";
+const std::string ExprProcessSolver::ARGS_PROP = PROP_PREFIX + ".args";
+
+static string default_solver_command;
+static vector<string> default_solver_args;
+
+const string &
+ExprProcessSolver::ident ()
+{
+  return SOLVER_NAME;
+}
+
+void 
+ExprProcessSolver::init (const ConfigTable &cfg)
+{
+  default_solver_command = cfg.get (COMMAND_PROP);
+  string args = cfg.get (ARGS_PROP);
+
+  while (!args.empty ())
+    {
+      string::size_type p = args.find (' ');
+
+      if (p == string::npos)
+	{
+	  default_solver_args.push_back (args);
+	  break;
+	}
+
+      string tmp = args.substr (0, p );
+      if (! tmp.empty ())
+	default_solver_args.push_back (tmp);
+    
+      args = args.substr (p + 1, string::npos);
+    }
+}
+
+void 
+ExprProcessSolver::terminate ()
+{
+  default_solver_command = "";
+  default_solver_args = vector<string>();
+}
+
 static bool
 s_create_pipe (const std::string &cmd, const vector<string> &args,
 	       FILE **rwstreams, pid_t *p_cpid);
@@ -65,15 +111,15 @@ ExprProcessSolver::ExprProcessSolver (const MicrocodeArchitecture *mca,
 {
 }
 
-ExprProcessSolver * 
-ExprProcessSolver::create (const MicrocodeArchitecture *mca, 
-			   const std::string &cmd, 
-			   const std::vector<std::string> &args)
+ExprSolver * 
+ExprProcessSolver::create (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
 {
   pid_t cpid;
   FILE *pipestreams[2] = {NULL, NULL};
   ExprProcessSolver *result = NULL;
+  const std::string &cmd = default_solver_command;
+  const std::vector<std::string> &args = default_solver_args;
 
   if (s_create_pipe (cmd, args, pipestreams, &cpid))
     {
