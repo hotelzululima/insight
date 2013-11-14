@@ -267,6 +267,11 @@ else
 	have_solver=no
 fi
 
+if test "${have_integrated_mathsat}" = "yes"; then
+	default_solver=mathsat
+	have_solver=yes
+fi
+
 AC_DEFINE([HAVE_SOLVER], [0], [Defined to 1 if at least one SMT solver has been found])
 if test "${have_solver}" = "yes"; then
    AC_DEFINE([HAVE_SOLVER],[1])
