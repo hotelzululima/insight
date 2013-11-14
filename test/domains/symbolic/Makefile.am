@@ -12,7 +12,7 @@ symbolic_simulator_test_SOURCES = \
 	simulator_test_cases.hh \
         simulator_test.cc
 
-symbolic_simulator_test_CPPFLAGS=${AM_CPPFLAGS} -DINSIGHT_CONFIG_FILE=\"${abs_builddir}/config.cfg\"
+symbolic_simulator_test_CPPFLAGS=${AM_CPPFLAGS} -DINSIGHT_CONFIG_FILE=\"${abs_top_builddir}/test/cfgrecovery.cfg\"
 
 maintainer-clean-local:
 	rm -fr $(top_srcdir)/test/domains/symbolic/Makefile.in
