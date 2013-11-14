@@ -177,6 +177,7 @@ dnl ********************************************************************
 dnl Checking for specific programs, headers and libraries
 dnl ********************************************************************
 
+
 dnl Checking for MathSAT solver
 AC_CHECK_PROG([has_mathsat_solver], [mathsat], [yes], [no])
 if test ${has_mathsat_solver} = "yes"; then
@@ -197,6 +198,34 @@ fi
 
 if test "${MATHSAT_VERSION}" = ""; then
    MATHSAT_VERSION="	"
+fi
+
+have_libgmp=no
+AC_SEARCH_LIBS([__gmp_version], [gmp],
+	       [have_libgmp=yes],
+	       [AC_MSG_WARN(['mathsat' library (-lmathsat) cannot be found])])
+
+have_libmathsat=no
+AC_SEARCH_LIBS([msat_get_version], [mathsat],
+	       [have_libmathsat=yes],
+	       [AC_MSG_WARN(['mathsat' library (-lmathsat) cannot be found])])
+
+have_mathsat_h=no
+AC_CHECK_HEADERS([mathsat.h],
+                 [have_mathsat_h=yes],
+                 [AC_MSG_WARN(['mathsat.h' cannot be found])])
+
+AC_DEFINE([INTEGRATED_MATHSAT_SOLVER], [], 
+          [Defined to 1 if MATHSAT solver has to be integrated.])
+
+have_integrated_mathsat=no
+if test "${have_mathsat_h}" = "yes" -a "${have_libmathsat}" = "yes" \
+        -a "${have_libgmp}" = "yes"; then
+   have_integrated_mathsat=yes
+   AC_DEFINE([INTEGRATED_MATHSAT_SOLVER], [1])
+   AC_MSG_NOTICE([integrate MATHSAT API.])
+else
+   AC_DEFINE([INTEGRATED_MATHSAT_SOLVER], [0])
 fi
 
 dnl Checking for Z3 solver
