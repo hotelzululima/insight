@@ -540,7 +540,12 @@ main (int argc, char *argv[])
 
 
   if (preload_filename != NULL)
-    mc = xml_parse_mc_program (preload_filename, arch);
+    {
+      mc = xml_parse_mc_program (preload_filename, arch);
+#ifdef DEBUG
+      mc->check ();
+#endif /* DEBUG */
+    }
   else
     {
       mc = new Microcode ();
