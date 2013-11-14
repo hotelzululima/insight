@@ -117,7 +117,7 @@ public:
 
   void extend_bv_window (int bv_size, const Expr *arg, bool with_sign) {
     int ext = (bv_size - arg->get_bv_size ());
-    if (ext == 0)
+    if (ext <= 0)
       return;
 
     if (with_sign)
