@@ -90,7 +90,7 @@ SymbolicStepper::SymbolicStepper (ConcreteMemory *memory,
 {
   solver = ExprSolver::create_default_solver (arch);
   if (solver == NULL)
-    throw std::runtime_error("Couldn't create default solver");
+    throw std::runtime_error("can't create default solver");
 }
 
 SymbolicStepper::~SymbolicStepper () {
