@@ -9,7 +9,7 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES} .z3-trace
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_COMMON_FLAGS = -D -c ${top_builddir}/tests/cfgrecovery.cfg -f mc
+CFGR_COMMON_FLAGS = -c ${top_builddir}/test/cfgrecovery.cfg -f mc
 CFGR_FLD_FLAGS = ${CFGR_COMMON_FLAGS} -d flood
 CFGR_LSW_FLAGS = ${CFGR_COMMON_FLAGS} -d linear
 CFGR_RT_FLAGS = ${CFGR_COMMON_FLAGS} -d recursive
