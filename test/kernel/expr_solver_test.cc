@@ -27,10 +27,13 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef INSIGHT_CONFIG_FILE
+# error INSIGHT_CONFIG_FILE is not defined
+#endif
 
 #include <atf-c++.hpp>
 #include <string>
-#include <sstream>
+#include <fstream>
 
 #include <config.h>
 #include <utils/logs.hh>
@@ -42,7 +45,7 @@
 
 using namespace std;
 
-#if HAVE_Z3_SOLVER 
+#if HAVE_SOLVER 
 
 #define ALL_TESTS					\
   SOLVER_TEST (NP, "(NOT %pf)", ExprSolver::SAT)	     \
@@ -86,16 +89,20 @@ ATF_TEST_CASE_BODY(id)			\
 }
 
 static void
-s_check_tautology (const string &, const string &expr, ExprSolver::Result res)
+s_check_tautology (const string &, const string &expr, 
+		   ExprSolver::Result res)
 {
   ConfigTable cfg;
+
+  fstream config (INSIGHT_CONFIG_FILE, fstream::in);
+  ATF_REQUIRE  (config.is_open ());
+  cfg.load (config);
+  config.close();
+
 
   cfg.set (logs::DEBUG_ENABLED_PROP, true);
   cfg.set (logs::STDIO_ENABLED_PROP, true);
   cfg.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
-
-  cfg.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
-  cfg.set (ExprSolver::DEFAULT_ARGS_PROP, "-smt2 -in");
 
   insight::init (cfg);
   const Architecture *x86_32 = 
@@ -119,13 +126,15 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
 {
   ConfigTable cfg;
 
+  fstream config (INSIGHT_CONFIG_FILE, fstream::in);
+  ATF_REQUIRE  (config.is_open ());
+  cfg.load (config);
+  config.close();
+
+
   cfg.set (logs::DEBUG_ENABLED_PROP, true);
   cfg.set (logs::STDIO_ENABLED_PROP, true);
   cfg.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
-  
-  cfg.set (ExprSolver::DEFAULT_COMMAND_PROP, "z3");
-  cfg.set (ExprSolver::DEFAULT_ARGS_PROP, "-smt2 -in");
-  cfg.set (ExprSolver::DEBUG_TRACES_PROP, true);
 
   insight::init (cfg);
   const Architecture *x86_32 = 
@@ -185,20 +194,20 @@ s_check_evaluation (const string &, const string &, const string &,
 {
 }
 
-ATF_TEST_CASE(NO_Z3_SOLVER)
+ATF_TEST_CASE(NO_SMT_SOLVER)
 
-ATF_TEST_CASE_HEAD(NO_Z3_SOLVER)
+ATF_TEST_CASE_HEAD(NO_SMT_SOLVER)
 { 
-  set_md_var ("descr", "Z3 has not been found."); 
+  set_md_var ("descr", "No SMT solver has not been found."); 
 } 
 
-ATF_TEST_CASE_BODY(NO_Z3_SOLVER) 
+ATF_TEST_CASE_BODY(NO_SMT_SOLVER) 
 { 
 }
 
 ATF_INIT_TEST_CASES(tcs)
 {
-  ATF_ADD_TEST_CASE(tcs, NO_Z3_SOLVER);
+  ATF_ADD_TEST_CASE(tcs, NO_SMT_SOLVER);
 }
 #endif
 

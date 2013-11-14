@@ -10,6 +10,8 @@ check_PROGRAMS = \
 kernel_architecture_test_SOURCES = architecture_test.cc
 kernel_expr_parser_test_SOURCES = expr_parser_test.cc
 kernel_expr_solver_test_SOURCES = expr_solver_test.cc
+kernel_expr_solver_test_CPPFLAGS=${AM_CPPFLAGS} -DINSIGHT_CONFIG_FILE=\"${abs_top_builddir}/test/cfgrecovery.cfg\"
+
 kernel_expression_test_SOURCES = expression_test.cc
 
 maintainer-clean-local:
