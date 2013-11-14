@@ -236,10 +236,15 @@ else
 	have_solver=no
 fi
 
+AC_DEFINE([HAVE_SOLVER], [0], [Defined to 1 if at least one SMT solver has been found])
+if test "${have_solver}" = "yes"; then
+   AC_DEFINE([HAVE_SOLVER],[1])
+fi
+
 AM_CONDITIONAL([HAVE_SOLVER], [test x$have_solver = xyes])
 AC_SUBST(HAVE_SOLVER, ${have_solver})
-AC_SUBST(default_solver_command,${default_solver_command})
-AC_SUBST(default_solver_args,${default_solver_args})
+AC_SUBST(process_solver_command,${default_solver_command})
+AC_SUBST(process_solver_args,${default_solver_args})
 
 dnl Checking for binutils (libbfd, libopcodes)
 AC_ARG_WITH([binutils-header],

@@ -3,8 +3,8 @@
 # Arguments passed to SMT solver
 # kernel.expr.solver.default.args = 
 
-kernel.expr.solver.default.command = @default_solver_command@
-kernel.expr.solver.default.args = @default_solver_args@
+kernel.expr.solver.default.command = @process_solver_command@
+kernel.expr.solver.default.args = @process_solver_args@
 
 # Set initial value of ESP register in case of x86 architecture.
 # This option is mandatory to simulate programs that use stack.
