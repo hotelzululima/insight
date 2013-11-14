@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * 
@@ -28,81 +28,58 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef KERNEL_EXPRESSIONS_EXPRSOLVER_HH
-# define KERNEL_EXPRESSIONS_EXPRSOLVER_HH
+#ifndef KERNEL_EXPRESSIONS_EXPRMATHSATSOLVER_HH
+# define KERNEL_EXPRESSIONS_EXPRMATHSATSOLVER_HH
 
-# include <stdexcept>
-# include <vector>
-# include <kernel/Expressions.hh>
-# include <utils/ConfigTable.hh>
+# include <config.h>
 
-class ExprSolver 
+# if INTEGRATED_MATHSAT_SOLVER
+#  include <mathsat.h>
+#  include <stack>
+#  include <kernel/expressions/ExprSolver.hh>
+
+class ExprMathsatSolver : public ExprSolver
 {
+private:
+  std::stack<msat_env> envstack;
+
+  ExprMathsatSolver (const MicrocodeArchitecture *mca);
+
 public:
-  class SolverException : public std::runtime_error {
-  public:
-    SolverException (const std::string &msg) : runtime_error (msg) {
-    }
-  };
 
-  class UnexpectedResponseException : public SolverException {
-  public:
-    UnexpectedResponseException (const std::string &msg) 
-      : SolverException (msg) {
-    }
-  };
-
-  class UnknownSolverException : public SolverException {
-  public:
-    UnknownSolverException (const std::string &msg) 
-      : SolverException (msg) {
-    }
-  };
-
-  static const std::string SOLVER_NAME_PROP;
-  static const std::string DEBUG_TRACES_PROP;
+  static const std::string &ident ();
 
   static void init (const ConfigTable &cfg)
     throw (UnknownSolverException);
 
   static void terminate ();
 
-  static ExprSolver *create_default_solver (const MicrocodeArchitecture *mca)
+  static ExprSolver *create (const MicrocodeArchitecture *mca)
     throw (UnexpectedResponseException, UnknownSolverException);
 
-  enum Result { SAT, UNSAT, UNKNOWN };
- 
-  virtual ~ExprSolver ();
+  virtual ~ExprMathsatSolver ();
 
   virtual void add_assertion (const Expr *e)
-    throw (UnexpectedResponseException) = 0;
-
-  virtual Result check_sat (const Expr *e, bool preserve) 
-    throw (UnexpectedResponseException) = 0;
-
-  virtual Result check_sat ()
-    throw (UnexpectedResponseException) = 0;
-
-  virtual Constant *evaluate (const Expr *e, const Expr *context) 
     throw (UnexpectedResponseException);
 
-  virtual std::vector<constant_t> * 
-  evaluate (const Expr *e, const Expr *context, int nb_values) 
+  virtual Result check_sat (const Expr *e, bool preserve) 
+    throw (UnexpectedResponseException);
+
+  virtual Result check_sat ()
     throw (UnexpectedResponseException);
 
   virtual void push () 
-    throw (UnexpectedResponseException) = 0;
+    throw (UnexpectedResponseException);
+
   virtual void pop () 
-    throw (UnexpectedResponseException) = 0;
+    throw (UnexpectedResponseException);
+
   virtual Constant *get_value_of (const Expr *var)
-    throw (UnexpectedResponseException) = 0;
-
-protected:
-  ExprSolver (const MicrocodeArchitecture *mca);
-
-  const MicrocodeArchitecture *mca;
-
-  static bool debug_traces;
+    throw (UnexpectedResponseException);
 };
 
-#endif /* ! KERNEL_EXPRESSIONS_EXPRSOLVER_HH */
+# else
+#  warning "no MATHSAT API"
+# endif /* INTEGRATED_MATHSAT_SOLVER */
+
+#endif /* ! KERNEL_EXPRESSIONS_EXPRMATHSATSOLVER_HH */

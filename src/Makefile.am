@@ -134,6 +134,8 @@ kernel_source = \
 	kernel/expressions/ExprSolver.cc	\
 	kernel/expressions/ExprProcessSolver.hh	\
 	kernel/expressions/ExprProcessSolver.cc	\
+	kernel/expressions/ExprMathsatSolver.hh	\
+	kernel/expressions/ExprMathsatSolver.cc	\
 	kernel/expressions/Operators.cc   	\
 	kernel/expressions/Operators.def  	\
 	kernel/expressions/Operators.hh   	\
@@ -150,6 +152,7 @@ kernel_source = \
 	kernel/microcode/MicrocodeStatements.cc	\
 	kernel/microcode/MicrocodeStatements.hh	\
 	kernel/microcode/MicrocodeStore.hh	
+
 
 BUILT_SOURCES+= \
 	${kernel_built_sources}

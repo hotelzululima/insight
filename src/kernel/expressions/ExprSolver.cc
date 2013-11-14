@@ -32,6 +32,7 @@
 
 #include <utils/logs.hh>
 #include <kernel/expressions/ExprProcessSolver.hh>
+#include <kernel/expressions/ExprMathsatSolver.hh>
 #include <vector>
 #include <cassert>
 
@@ -55,6 +56,9 @@ struct SolverModule
   { &(C :: init), &(C :: ident), &(C :: create), &(C ::terminate) }
 
 static SolverModule modules[] = {
+#if INTEGRATED_MATHSAT_SOLVER
+  SOLVER_MODULE (ExprMathsatSolver),
+#endif
   SOLVER_MODULE (ExprProcessSolver)  
 };
 
@@ -173,7 +177,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values)
       phi->deref ();
     }
 
-  pop ();
+  pop ();  
   var->deref ();
   if (debug_traces)
     END_DBG_BLOCK ();
