@@ -260,27 +260,10 @@ StmtArrow::StmtArrow(MicrocodeNode *src, Statement *stmt,
   stmt(stmt),
   condition(condition)
 {
-  origin = src->get_loc();
 }
-
-StmtArrow::StmtArrow(MicrocodeAddress origin,
-                     Statement *st,
-                     Expr *condition) : Annotable(),
-  origin(origin),
-  stmt(st),
-  condition(condition) { }
-
-StmtArrow::StmtArrow(MicrocodeAddress origin,
-                     Statement *st,
-                     const AnnotationMap *annotations,
-                     Expr *condition) : Annotable(annotations),
-  origin(origin),
-  stmt(st),
-  condition(condition) { }
 
 StmtArrow::StmtArrow(const StmtArrow &arr): Annotable(arr)
 {
-  origin = arr.origin;
   stmt = arr.stmt->clone();
   condition = NULL;
   if (arr.condition)
@@ -301,7 +284,7 @@ void StmtArrow::set_src(MicrocodeNode * n) { src = n; }
 
 MicrocodeAddress StmtArrow::get_origin() const
 {
-  return origin;
+  return get_src ()->get_loc ();
 }
 
 MicrocodeNode * StmtArrow::get_src() const
@@ -333,7 +316,7 @@ bool StmtArrow::is_static() const
 
 bool StmtArrow::operator==(const StmtArrow &other)
 {
-  if (!(origin.equals(other.origin))) return false;
+  if (!(get_src () == other.get_src ())) return false;
   if (!(condition == other.condition)) return false;
   if (! Statement::equal(stmt, other.stmt)) return false;
 
@@ -382,7 +365,7 @@ string DynamicArrow::pp() const
 {
   ostringstream oss;
 
-  s_arrow_to_string(oss, "DynamicArrow", origin, stmt, condition);
+  s_arrow_to_string(oss, "DynamicArrow", get_origin (), stmt, condition);
   oss << "<< " + target->to_string () + " >>";
   /* Annotation */
   if (is_annotated ()) 
@@ -404,23 +387,6 @@ StaticArrow::StaticArrow(MicrocodeNode * src, MicrocodeNode * tgt,
   target = tgt->get_loc();
 }
 
-
-StaticArrow::StaticArrow(MicrocodeAddress origin,
-			 MicrocodeAddress target,
-			 Statement *stmt,
-			 const AnnotationMap *annotations,
-			 Expr *condition) :
-  StmtArrow(origin, stmt, annotations, condition),
-  target(target)
-{}
-
-StaticArrow::StaticArrow(MicrocodeAddress origin,
-                         MicrocodeAddress target,
-                         Statement *stmt,
-                         Expr *condition) :
-  StmtArrow(origin, stmt, condition),
-  target(target)
-{}
 
 StaticArrow::StaticArrow(const StaticArrow &other) :
   StmtArrow(other),
@@ -460,27 +426,10 @@ void StaticArrow::set_tgt(MicrocodeNode * n) {
 string StaticArrow::pp() const 
 {
   ostringstream oss;
-  s_arrow_to_string(oss, "StaticArrow", origin, stmt, condition);
+  s_arrow_to_string(oss, "StaticArrow", get_origin (), stmt, condition);
   oss << target.to_string ();
   
   return oss.str ();
-}
-
-Option<StaticArrow*>
-DynamicArrow::make_static()
-{
-	Option<MicrocodeAddress> t = this->extract_target();
-	if (t.hasValue()) {
-		StaticArrow * static_arrow =
-				new StaticArrow(this->get_origin(),
-						MicrocodeAddress(t.getValue()),
-						this->get_stmt()->clone(),
-						this->get_annotations(),
-						this->get_condition()->ref());
-		return Option<StaticArrow*>(static_arrow);
-	}
-	else
-		return Option<StaticArrow*>();
 }
 
 DynamicArrow::DynamicArrow(MicrocodeNode *src,
@@ -490,23 +439,6 @@ DynamicArrow::DynamicArrow(MicrocodeNode *src,
   target(target)
 {
 }
-
-DynamicArrow::DynamicArrow(MicrocodeAddress origin,
-                           Expr *target,
-                           Statement *stmt,
-                           const AnnotationMap *annotations,
-                           Expr *condition) :
-  StmtArrow(origin, stmt, annotations, condition),
-  target(target)
-{}
-
-DynamicArrow::DynamicArrow(MicrocodeAddress origin,
-                           Expr *target,
-                           Statement *stmt,
-                           Expr *condition) :
-  StmtArrow(origin, stmt, condition),
-  target(target)
-{}
 
 DynamicArrow::DynamicArrow(const DynamicArrow &other) :
   StmtArrow(other),

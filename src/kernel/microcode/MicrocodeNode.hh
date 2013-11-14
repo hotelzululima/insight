@@ -133,8 +133,6 @@ class StmtArrow: public Annotable {
 
 protected:
 
-  // \todo origin is deprecated
-  MicrocodeAddress origin;
   /*! points on the origin of the arrow if it is different to NULL (for optimization) */
   Microcode * father; // \todo changer le nom. Ok a supprimer
 
@@ -154,17 +152,6 @@ public:
             const AnnotationMap * annotations = 0,
             Expr * condition = 0);
 
-  /* The two below are deprecated because the mapping
-   * MicrocodeAddress -> MicrocodeNode * is not possible w/o a Microcode.
-   * This will remove the "optimize" trick.
-   */
-  StmtArrow(MicrocodeAddress origin,
-            Statement *stmt,
-            const AnnotationMap *annotations,
-            Expr *condition);
-  StmtArrow(MicrocodeAddress origin,
-            Statement *stmt,
-            Expr *condition);
   StmtArrow(const StmtArrow & arr);
   virtual ~StmtArrow();
   virtual StmtArrow *clone() = 0;
@@ -219,23 +206,6 @@ public:
               const AnnotationMap *annotations = 0,
               Expr *condition = 0);
 
-  /* The two below are deprecated because the mapping
-   * MicrocodeAddress -> MicrocodeNode * is not possible w/o a Microcode.
-   * This will remove the "optimize" trick.
-   */
-  
-  StaticArrow(MicrocodeAddress origin,
-              MicrocodeAddress target,
-              Statement *stmt,
-              const AnnotationMap *annotations,
-              Expr *condition);
-
-  StaticArrow(MicrocodeAddress origin,
-              MicrocodeAddress target,
-              Statement *stmt,
-              Expr *condition);
-  
-
   StaticArrow(const StaticArrow &other);
   StmtArrow * clone();
   virtual ~StaticArrow();
@@ -272,21 +242,6 @@ public:
                const AnnotationMap *annotations = 0,
                Expr *condition = 0);
 
-  /* The two below are deprecated because the mapping
-   * MicrocodeAddress -> MicrocodeNode * is not possible w/o a Microcode.
-   * This will remove the "optimize" trick.
-   */
-  DynamicArrow(MicrocodeAddress origin,
-               Expr *target,
-               Statement *stmt,
-               const AnnotationMap *annotations,
-               Expr *condition);
-
-  DynamicArrow(MicrocodeAddress origin,
-               Expr *target,
-               Statement *stmt,
-               Expr *condition);
-
   DynamicArrow(const DynamicArrow &other);
 
   StmtArrow *clone();
@@ -295,10 +250,6 @@ public:
 
   /* \brief may return nothing if there is no trivial simplification. */
   Option<MicrocodeAddress> extract_target() const;
-
-  /*! \brief Produces a (new) static arrow from the current dynamic arrow
-   *  by trying to extract the target with extract_target method. */
-  Option<StaticArrow*> make_static();
 
   /*! \brief the function expr_list must access the address of the
     target attribute. */
