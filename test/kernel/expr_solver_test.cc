@@ -183,17 +183,6 @@ ATF_INIT_TEST_CASES(tcs)
   ALL_TESTS
 }
 #else
-static void
-s_check_tautology (const string &, const string &, ExprSolver::Result)
-{
-}
-
-static void
-s_check_evaluation (const string &, const string &, const string &,
-		    const string &)
-{
-}
-
 ATF_TEST_CASE(NO_SMT_SOLVER)
 
 ATF_TEST_CASE_HEAD(NO_SMT_SOLVER)
