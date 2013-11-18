@@ -123,17 +123,21 @@ dnl	    "-Wuninitialized -Wcast-align -Wredundant-decls"
 AC_CANONICAL_HOST
 case $host_os in
      *linux*)
+        HOST_OS=linux
 	LIBS="${LIBS}"
 	;;
      *bsd*)
+        HOST_OS=bsd
 	CPPFLAGS="-I/usr/pkg/include ${CPPFLAGS} -DBSD"
 	LDFLAGS="${LDFLAGS} -L/usr/pkg/lib"
 	LIBS="${LIBS} -lz -liberty -lintl"
 	;;
      *cygwin*)
+        HOST_OS=cygwin
 	LIBS="${LIBS} -lz -liberty -lintl"
 	;;
      *darwin*)
+        HOST_OS=darwin
 	CPPFLAGS="${CPPFLAGS} -I/opt/local/include"
 	LDFLAGS="${LDFLAGS} -L/opt/local/lib"
 	LIBS="${LIBS} -lz -liberty -lintl"
@@ -191,6 +195,11 @@ if test ${has_mathsat_solver} = "yes"; then
       has_mathsat_solver="warning! (version 5.0.0 or beyond is prefered)"
    fi
 
+   if test "${MATHSAT_VERSION_MINOR}" = "2" -a  \
+           "${MATHSAT_VERSION_PATCH}" -ge "7" -a \
+           "$HOST_OS" = "darwin"; then
+	   LIBS="${LIBS} -lc++"
+   fi
    AC_DEFINE([HAVE_MATHSAT_SOLVER],[1])
 else
    AC_DEFINE([HAVE_MATHSAT_SOLVER],[0],[Defined to 1 if MathSAT is installed])
