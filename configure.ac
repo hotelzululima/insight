@@ -198,7 +198,7 @@ if test ${has_mathsat_solver} = "yes"; then
    if test "${MATHSAT_VERSION_MINOR}" = "2" -a  \
            "${MATHSAT_VERSION_PATCH}" -ge "7" -a \
            "$HOST_OS" = "darwin"; then
-	   LIBS="${LIBS} -lc++"
+	   LIBS="${LIBS} -lstdc++ -lc++"
    fi
    AC_DEFINE([HAVE_MATHSAT_SOLVER],[1])
 else
@@ -460,6 +460,7 @@ Binutils supported architectures
 
 Detected SMT-solvers
     MathSAT ${MATHSAT_VERSION}		: ${has_mathsat_solver}
+    Integrated MathSAT			: ${have_integrated_mathsat}
     Z3 ${Z3_VERSION}			: ${has_z3_solver}
 
 Optional Features:
