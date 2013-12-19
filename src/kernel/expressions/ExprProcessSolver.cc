@@ -115,7 +115,7 @@ ExprSolver *
 ExprProcessSolver::create (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
 {
-  pid_t cpid;
+  pid_t cpid = 0;
   FILE *pipestreams[2] = {NULL, NULL};
   ExprProcessSolver *result = NULL;
   const std::string &cmd = default_solver_command;

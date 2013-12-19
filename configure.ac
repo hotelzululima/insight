@@ -460,7 +460,7 @@ Binutils supported architectures
 
 Detected SMT-solvers
     MathSAT ${MATHSAT_VERSION}		: ${has_mathsat_solver}
-    Integrated MathSAT			: ${have_integrated_mathsat}
+    Integrated MathSAT		: ${have_integrated_mathsat}
     Z3 ${Z3_VERSION}			: ${has_z3_solver}
 
 Optional Features:

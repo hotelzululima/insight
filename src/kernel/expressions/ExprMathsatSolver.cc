@@ -645,7 +645,7 @@ ExprMathsatSolver::check_sat ()
     {
     case MSAT_SAT: result = ExprSolver::SAT; break;
     case MSAT_UNSAT: result = ExprSolver::UNSAT; break;
-    case MSAT_UNKNOWN: result = ExprSolver::UNKNOWN; break;
+    default: result = ExprSolver::UNKNOWN; break;
     }
 
   return result;
