@@ -1245,6 +1245,7 @@ Expr::init (const ConfigTable &cfg)
 void 
 Expr::terminate () 
 {
+  ExprSolver::terminate ();
   if (Expr::expr_store == NULL)
     return;
   bool abortion = (Expr::expr_store->size () > 0) && non_empty_store_abort;
