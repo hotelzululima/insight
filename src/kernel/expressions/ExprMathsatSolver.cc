@@ -509,6 +509,11 @@ ExprMathsatSolver::init (const ConfigTable &)
   throw (UnknownSolverException)
 {
   MATHSAT_CONFIG = msat_create_default_config ("QF_AUFBV");
+
+  /* Check msat_create_default_config() result */
+  if (MSAT_ERROR_CONFIG(MATHSAT_CONFIG) == true)
+    throw UnknownSolverException ("failed creating MathSAT default config");
+
   msat_set_option(MATHSAT_CONFIG, "model_generation", "true");
   msat_set_option(MATHSAT_CONFIG, "proof_generation", "true");
   msat_set_option(MATHSAT_CONFIG, "bool_model_generation", "true");
