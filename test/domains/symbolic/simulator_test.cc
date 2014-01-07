@@ -77,6 +77,7 @@ s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 
   AlgorithmFactory::Algorithm *algo = F.buildSymbolicSimulator ();
   algo->compute (*entrypoints, result);
+  delete entrypoints;
   delete algo;
 
   return result;

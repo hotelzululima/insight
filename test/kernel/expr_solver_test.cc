@@ -116,6 +116,7 @@ s_check_tautology (const string &, const string &expr,
 
   ATF_REQUIRE_EQ (s->check_sat (e, true), res); 
   e->deref ();
+  delete s;
 
   insight::terminate ();
 }
@@ -164,7 +165,7 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
   c->deref ();
   er->deref ();
   res->deref ();
-  
+  delete s;
   insight::terminate ();
 }
 
