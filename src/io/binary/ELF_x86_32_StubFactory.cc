@@ -218,7 +218,11 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
 
       assert (memory->is_defined (slot));
 
+#if 0
       symtab->add_symbol (s->first, dest_slot);
+#else
+      (void) symtab;
+#endif
       memory->put (ConcreteAddress (slot), ConcreteValue (32, dest_slot), 
 		   rarch->get_endian ());
       memory->put (ConcreteAddress (dest_slot), ConcreteValue (32, dest_slot), 
