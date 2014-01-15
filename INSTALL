@@ -128,6 +128,9 @@ Building the sources goes as usual, except that we will ask configure
 Under NetBSD, we found it necessary to pass also the '--disable-nls'
 option to configure.
 
+Under Linux, you will have to pass the '--enable-shared' option to
+configure.
+
 You will probably need to point to this installation of the binutils
 when invoking 'configure' within insight. E.g.:
 
