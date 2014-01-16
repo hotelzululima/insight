@@ -53,6 +53,19 @@ if test "x$YACC" = "x:" ; then
    AC_MSG_ERROR(['bison' cannot be found])
 fi
 
+dnl ********************************************************************
+dnl Check whether a python interpreter is available
+dnl ********************************************************************
+
+AM_PATH_PYTHON([2.6], , [:])
+if test "$PYTHON" != :; then
+   python_cflags=`${PYTHON}-config --cflags 2>/dev/null` || PYTHON= :
+   python_ldflags=`${PYTHON}-config --ldflags 2>/dev/null` || PYTHON= :
+   AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+fi
+
+AC_SUBST(PYTHON_CFLAGS, ${python_cflags})
+AC_SUBST(PYTHON_LDFLAGS, ${python_ldflags})
 
 dnl ********************************************************************
 dnl Checking for test framework (ATF with Kyua)
@@ -426,6 +439,7 @@ AC_CONFIG_FILES([
 	test/utils/Makefile
 	tools/Makefile
 	tools/cfgrecovery/Makefile
+	tools/pynsight/Makefile
 ], [ ], [ ])
 
 AC_OUTPUT
