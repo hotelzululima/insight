@@ -47,17 +47,17 @@ issue tracker at https://insight.labri.fr/trac/newticket
 To contact the development team, send an e-mail to insight@labri.fr
 
 
-Debugging with libtools
-========================
-The autotools and libtools are producing shell scripts in place of
+Debugging with libtool
+=======================
+The autotools and libtool are producing shell scripts in place of
 executable files when building the software. Thus, using debug tools
 such as 'gdb' or 'valgrind' is quite tedious because you have to find
 your way to the real executable file and properly set the library
 path.
 
-Fortunately, there is a quick and safe way to work around these dirty
-hacks. You just have to use the 'libtool' command as shown here:
+You just have to use the 'libtool' command as shown here:
 
 $ libtool --mode=execute gdb cfgrecovery
 $ libtool --mode=execute valgrind cfgrecovery
 
+On some operating systems, you have to use "glibtool" instead.
