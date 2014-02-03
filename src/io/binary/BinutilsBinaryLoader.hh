@@ -43,7 +43,7 @@
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 #include <io/binary/BinaryLoader.hh>
-#include <io/binary/SymbolTable.hh>
+#include <kernel/SymbolTable.hh>
 
 /*************** BinutilsBinaryLoader class definition ****************/
 

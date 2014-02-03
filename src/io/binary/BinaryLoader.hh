@@ -40,9 +40,9 @@
 #include <kernel/Architecture.hh>
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
-#include <kernel/Microcode.hh>
 #include <io/binary/StubFactory.hh>
-#include <io/binary/SymbolTable.hh>
+#include <kernel/Microcode.hh>
+#include <kernel/SymbolTable.hh>
 
 /****************** BinaryLoader class definition *********************/
 

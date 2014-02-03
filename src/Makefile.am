@@ -151,7 +151,9 @@ kernel_source = \
 	kernel/microcode/MicrocodeNode.hh	\
 	kernel/microcode/MicrocodeStatements.cc	\
 	kernel/microcode/MicrocodeStatements.hh	\
-	kernel/microcode/MicrocodeStore.hh	
+	kernel/microcode/MicrocodeStore.hh	\
+	kernel/SymbolTable.cc 	 		\
+	kernel/SymbolTable.hh
 
 
 BUILT_SOURCES+= \
@@ -221,8 +223,6 @@ io_sources = \
 	io/binary/BinaryLoader.hh 		\
 	io/binary/BinutilsBinaryLoader.cc	\
 	io/binary/BinutilsBinaryLoader.hh 	\
-	io/binary/SymbolTable.cc 	 	\
-	io/binary/SymbolTable.hh 	 	\
 	io/binary/StubFactory.hh 		\
 	io/binary/BinutilsStubFactory.hh 	\
 	io/binary/BinutilsStubFactory.cc 	\

@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "SymbolTable.hh"
+#include <kernel/SymbolTable.hh>
 
 #include <algorithm>
 #include <cassert>

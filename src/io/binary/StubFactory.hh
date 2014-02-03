@@ -32,9 +32,9 @@
 # define STUBFACTORY_HH
 
 # include <domains/concrete/ConcreteMemory.hh>
-# include <io/binary/SymbolTable.hh>
 # include <kernel/Microcode.hh>
 # include <kernel/microcode/MicrocodeArchitecture.hh>
+# include <kernel/SymbolTable.hh>
 
 class StubFactory 
 {
