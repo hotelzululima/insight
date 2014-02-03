@@ -58,7 +58,7 @@ using namespace std;
   FORMAT(OF_ASM, "asm", "assembler code", ".asm") \
   FORMAT(OF_ASM_DOT, "asm-dot", "assembler code on a dot graph", ".asm.dot") \
   FORMAT(OF_MC, "mc", "microcode", ".mc") \
-  FORMAT(OF_MC_DOT, "mc", "microcode on a dot graph", ".mc.dot") \
+  FORMAT(OF_MC_DOT, "mc-dot", "microcode on a dot graph", ".mc.dot") \
   FORMAT(OF_XML, "xml", "microcode in XML format", ".mc.xml") 
 
 #define FORMAT(id,name,desc,ext) id, 
