@@ -120,7 +120,7 @@ SymbolicMemory::put (const ConcreteAddress &a, const SymbolicValue &v,
       offset = 0;
       inc = 8;
     }
-  else
+  else /* BigEndian */
     {
       offset = v.get_size () - 8;
       inc = -8;
