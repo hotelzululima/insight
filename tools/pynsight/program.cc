@@ -308,25 +308,6 @@ s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds) {
   return result;  
 }
 
-static const char *S_CPU[Architecture::Unknown + 1] = {
-  [Architecture::Alpha] = "alpha", 
-  [Architecture::ARM] = "arm", 
-  [Architecture::IA64] = "ia64", 
-  [Architecture::M68K] = "m68k", 
-  [Architecture::MIPS] = "mips", 
-  [Architecture::PowerPC] = "ppc", 
-  [Architecture::SPARC] = "sparc", 
-  [Architecture::X86_32] = "x86-32", 
-  [Architecture::X86_64] = "x86-64", 
-  [Architecture::Unknown] = "unknown"
-};
-
-static const char *S_ENDIAN[Architecture::UnknownEndian + 1] = {
-  [Architecture::LittleEndian] = "little", 
-  [Architecture::BigEndian] = "big", 
-  [Architecture::UnknownEndian] = "unknown"
-};
-
 static PyObject *
 s_registers (const Architecture *arch) {
   const RegisterSpecs *regspecs = arch->get_registers ();
@@ -374,9 +355,9 @@ s_insight_Program_infos (PyObject *obj, PyObject *)
      "entrypoint", 
      p->loader->get_entrypoint ().get_address (),
      "cpu", 
-     S_CPU[p->loader->get_architecture ()->get_proc ()],
+     p->loader->get_architecture()->get_proc_name(),
      "endianness", 
-     S_ENDIAN[p->loader->get_architecture ()->get_endian ()],
+     p->loader->get_architecture()->get_endian_name(),
      "word_size", 
      p->loader->get_architecture ()->get_word_size (),
      "address_size", 
