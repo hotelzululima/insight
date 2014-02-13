@@ -103,7 +103,11 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string &filename,
   bfd_file = bfd_openr(filename.c_str(), target == ""? NULL : target.c_str());
 
   if (bfd_file == NULL)
-    throw BinaryLoader::BinaryFileNotFound(filename);
+    {
+      if (bfd_get_error () == bfd_error_invalid_target)
+	throw BinaryLoader::UnknownBinaryFormat (target);
+      throw BinaryLoader::BinaryFileNotFound(filename);
+    }
 
   /* If the file is an archive, throw an exception and stop */
   if (bfd_check_format(bfd_file, bfd_archive))
