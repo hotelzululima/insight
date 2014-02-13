@@ -362,7 +362,7 @@ s_insight_Program_infos (PyObject *obj, PyObject *)
      p->loader->get_architecture ()->get_word_size (),
      "address_size", 
      p->loader->get_architecture ()->get_address_size (),
-     "memory min_address", 
+     "memory_min_address", 
      start_addr, 
      "memory_max_address", 
      end_addr,
