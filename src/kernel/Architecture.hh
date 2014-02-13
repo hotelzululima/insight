@@ -178,9 +178,13 @@ public:
     return processor;
   }
 
+  const char *get_proc_name () const;
+
   inline endianness_t get_endian () const { 
     return endianness;
   }
+
+  const char *get_endian_name () const;
 
   inline size_in_bits_t get_word_size () const { 
     return word_size;
@@ -209,6 +213,7 @@ protected:
 			   int size, int offset);
 
   static Architecture **architectures;
+  static const char **processor_names;
 
   /** \brief Specification of all the registers of an architecture.
    *

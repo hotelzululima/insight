@@ -109,6 +109,25 @@ RegisterDesc::is_alias () const
   return window_offset > 0 || window_size != register_size;
 }
 
+const char *
+Architecture::get_proc_name() const {
+  const char *name = processor_names[processor];
+
+  return name == NULL? "unknown" : name;
+}
+
+const char *
+Architecture::get_endian_name() const {
+  switch (endianness) {
+  case LittleEndian:
+    return "little";
+  case BigEndian:
+    return "big";
+  default:
+    return "unkwown";
+  }
+}
+
 void
 Architecture::add_register(const std::string &id, int regsize)
 {  
@@ -174,6 +193,7 @@ Architecture::~Architecture()
 }
 
 Architecture **Architecture::architectures = NULL;
+const char **Architecture::processor_names = NULL;
 
 void 
 Architecture::init ()
@@ -182,6 +202,10 @@ Architecture::init ()
   architectures = new Architecture *[nb_architectures];
   for (int i = 0; i < nb_architectures; i++)
     architectures[i] = NULL;
+
+  processor_names = new const char *[Unknown + 1];
+  for (int i = 0; i < Unknown + 1; i++)
+    processor_names[i] = NULL;
 }
 
 void 
@@ -213,16 +237,19 @@ Architecture::getArchitecture (const processor_t proc,
 	{
 	case Architecture::ARM:
 	  arch = new Architecture_ARM(endian);
+	  processor_names[Architecture::ARM] = "arm";
 	  break;
 	  
 	case Architecture::SPARC:
 	  arch = new Architecture_SPARC(endian);
+	  processor_names[Architecture::SPARC] = "sparc";
 	  break;
 	  
 	case Architecture::X86_32:
 	  if (endian == Architecture::LittleEndian)
 	    {
 	      arch = new Architecture_X86_32();
+	      processor_names[Architecture::X86_32] = "x86-32";
 	      break;
 	    }
 	  
@@ -230,6 +257,7 @@ Architecture::getArchitecture (const processor_t proc,
 	  if (endian == Architecture::LittleEndian)
 	    {
 	      arch = new Architecture_X86_64();
+	      processor_names[Architecture::X86_64] = "x86-64";
 	      break;
 	    }
 
