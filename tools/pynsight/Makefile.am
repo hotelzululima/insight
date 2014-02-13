@@ -1,9 +1,15 @@
+PYNSIGHT_PKGNAME=insight
+PYNSIGHT_HOME=$(DESTDIR)${pkgdatadir}/pynsight/
+PYNSIGHT_DESTDIR=${PYNSIGHT_HOME}/${PYNSIGHT_PKGNAME}
+PYNSIGHT_SCRIPT_FILES=__init__.py utils.py
 
 bin_PROGRAMS = pynsight
 
-pynsight_SOURCES = pynsight.cc pynsight.hh program.cc 
+pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc
+pynsight_CPPFLAGS = @PYTHON_CFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
+                    -DPYNSIGHT_HOME="\"${PYNSIGHT_HOME}\"" \
+                    -DPYNSIGHT_PACKAGE="\"${PYNSIGHT_PKGNAME}\"" 
 
-pynsight_CPPFLAGS = @PYTHON_CFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src
 pynsight_CXXFLAGS = -Wno-deprecated -Wno-long-long \
                     -Wno-missing-field-initializers
 pynsight_LDFLAGS = @PYTHON_LDFLAGS@ @BINUTILS_LDFLAGS@
@@ -13,3 +19,16 @@ all:
 
 MAINTAINERCLEANFILES = \
 	$(top_srcdir)/tools/pynsight/Makefile.in
+
+install-data-hook:
+	@ echo Installing Pynsight scripts into ${PYNSIGHT_DESTDIR}
+	@ ${MKDIR_P} ${PYNSIGHT_DESTDIR} && \
+           for file in ${PYNSIGHT_SCRIPT_FILES}; do \
+             ${INSTALL_DATA} ${srcdir}/$$file ${PYNSIGHT_DESTDIR}; \
+           done
+
+uninstall-hook:
+	@ echo Removing files from ${PYNSIGHT_DESTDIR}
+	@ if test -d ${PYNSIGHT_DESTDIR}; then \
+          cd ${PYNSIGHT_DESTDIR}; rm -f ${PYNSIGHT_SCRIPT_FILES}; \
+        fi

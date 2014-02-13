@@ -4,45 +4,80 @@
 #include <kernel/insight.hh>
 #include "pynsight.hh"
 
-static PyObject *insight_load_bfd(PyObject *, PyObject *, PyObject *kwds);
+# ifndef PYNSIGHT_HOME
+#  error PYNSIGHT_HOME is not defined
+# endif
+# ifndef PYNSIGHT_PACKAGE
+#  error PYNSIGHT_PACKAGE is not defined
+# endif
 
-static PyMethodDef insightMethods[] = {
-  { "load_bfd", (PyCFunction) insight_load_bfd, METH_VARARGS|METH_KEYWORDS,
-    "Load a file with the BFD library" },
-  { NULL, NULL, 0, NULL }
-};
+#define PRE_SCRIPT \
+  "import sys\n" \
+  "sys.path.append('" PYNSIGHT_HOME "')\n" 
 
-static PyObject *
-insight_load_bfd(PyObject *, PyObject *args, PyObject *kwds) {
-  static const char *kwlists[] = 
-    { "filename", "target", "machine", "endianness", NULL };
-  const char *c_fname;
-  const char *c_bfdtarget = "";
-  const char *c_machine = "";
-  const char *c_endianness = NULL;
+#define POST_SCRIPT \
+  "import insight\n" \
+  "from insight import *"
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|sss", (char **) kwlists, 
-				    &c_fname, &c_bfdtarget, &c_machine, 
-				    &c_endianness))
-    return NULL;
 
-  Architecture::endianness_t endian = Architecture::UnknownEndian;
+using namespace pynsight;
 
-  if (c_endianness) {
-    if (strcmp (c_endianness, "little") == 0) { 
-      endian = Architecture::LittleEndian;
-    } else if (strcmp (c_endianness, "big") == 0) { 
-      endian = Architecture::BigEndian;
-    } else if (strcmp (c_endianness, "unknown") != 0) { 
-      PyErr_SetString (pynsight::Error, "invalid endianness.");
-      return NULL;
-    }
-  }
-
-  return pynsight::load_program (c_fname, c_bfdtarget, c_machine, endian);
+static std::list<Module *> &
+s_get_modules ()
+{
+  static std::list<Module *> modules;
+  
+  return modules;
 }
 
-PyObject *pynsight::Error = NULL;
+pynsight::Module::Module (const char *name, bool (*i) (), bool (*t) ()) 
+  : name (name), init_cb (i), terminate_cb (t) {
+  s_get_modules ().push_back (this);
+}
+
+static bool
+s_init_package ()
+{
+  bool result = true;
+
+  if (PyRun_SimpleString (PRE_SCRIPT) < 0)
+    return false;
+
+  PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
+
+  if (pkg == NULL)
+    return false;
+
+  /* Declare general purpose error of the module */
+
+  for (std::list<Module *>::const_iterator i = s_get_modules ().begin ();
+       i != s_get_modules ().end () && result; i++) {    
+    result = (*i)->init ();
+    if ((*i)->get_name () != NULL) {
+      std::string s ("import ");
+      s += (*i)->get_name ();
+      result = (PyRun_SimpleString (s.c_str ()) >= 0);
+    }
+  }
+  Py_DECREF (pkg);
+
+  if (PyRun_SimpleString (POST_SCRIPT) < 0)
+    return false;
+
+
+  return result;
+}
+
+static bool
+s_terminate_package () {
+  bool result = true;
+  for (std::list<Module *>::const_iterator i = s_get_modules ().begin ();
+       i != s_get_modules ().end (); i++) {
+    if (! (*i)->terminate ())
+      result = false;
+  }
+  return result;
+}
 
 int
 main (int argc, char **argv) {
@@ -51,24 +86,16 @@ main (int argc, char **argv) {
   insight::init();
 
   Py_Initialize();
-  PyObject *m = Py_InitModule("insight", insightMethods);
-
-  /* Declare general purpose error of the module */
-  pynsight::Error = PyErr_NewException ((char *) "insight.error", NULL, NULL);
-  Py_INCREF (pynsight::Error);
-  PyModule_AddObject (m, "error", pynsight::Error);
-
-  if (pynsight::program_init ())
+  if (s_init_package ())
     {
-      PyRun_SimpleString("import insight\n");
-      if (Py_Main (argc, argv) != 0)
+      if (Py_Main (argc, argv) != 0) 
 	result = EXIT_FAILURE;
-      pynsight::program_terminate ();
     }
-  Py_DECREF (m);
+  s_terminate_package ();
   Py_Finalize();
 
   insight::terminate ();
 
   return result;
 }
+

@@ -111,18 +111,20 @@ static PyMethodDef programMethods[] = {
   { NULL, NULL, 0, NULL }
 };
 
-bool 
-pynsight::program_init () { 
+static bool 
+s_init () { 
   insight_ProgramType.tp_methods = programMethods;
   if (PyType_Ready (&insight_ProgramType) < 0)
     return false;
   return true;
 }
 
-bool 
-pynsight::program_terminate () {
+static bool 
+s_terminate () {
   return true;
 }
+
+static pynsight::Module PROGRAM (NULL, s_init, s_terminate);
 
 PyObject * 
 pynsight::load_program (const char *filename, const char *target, 
@@ -144,7 +146,7 @@ pynsight::load_program (const char *filename, const char *target,
     p->loader->load_memory (p->concrete_memory);
     p->loader->load_symbol_table (p->symbol_table);
   } catch (std::runtime_error &e) {
-    PyErr_SetString (pynsight::Error, e.what ());
+    PyErr_SetString (pynsight::BFDError, e.what ());
   } catch (std::bad_alloc &e) {
     PyErr_NoMemory();
   }

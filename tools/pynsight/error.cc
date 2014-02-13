@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -27,40 +27,50 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <cassert>
+#include <kernel/insight.hh>
+#include "pynsight.hh"
 
-#ifndef PYNSIGHT_HH
-# define PYNSIGHT_HH
+struct Exception {
+  const char *name;
+  PyObject **p_exception;
+}; 
+static PyMethodDef Error_Methods[] = {
+  { NULL, NULL, 0, NULL }
+};
 
-# include <list>
-# include <Python.h>
+PyObject *pynsight::BFDError = NULL;
 
-# include <kernel/Architecture.hh>
+static Exception ALL_EXCEPTIONS[] = {
+  { "BFDError", &pynsight::BFDError },
+  { NULL, NULL }
+};
 
+static bool 
+s_init () {
+  PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
+  PyObject *error_module = Py_InitModule ("error", Error_Methods);
+  PyModule_AddObject (pkg, "error", error_module);
+  Py_INCREF (error_module);
 
-namespace pynsight {
-  class Module {
-  public:
-    Module (const char *name, bool (*init) (), bool (*terminate) ());
-    virtual ~Module () { }
-    inline const char *get_name () const { return name; }
-    inline bool init () const { return init_cb (); }
-    inline bool terminate () const { return terminate_cb (); }
+  for (Exception *e = ALL_EXCEPTIONS; e->name; e++) {
+    std::string name ("error.");
+    name += e->name;
+    PyObject *o = PyErr_NewException ((char *) name.c_str (), NULL, NULL);
+    *(e->p_exception) = o;
+    Py_INCREF (o);
+    PyModule_AddObject (pkg, "error", o);
+  }
 
-  private:
-    const char *name;
-    bool (*init_cb) ();
-    bool (*terminate_cb) ();
-  };
-  
-  extern PyObject *load_program (const char *filename, const char *target, 
-				 const char *mach, 
-				 Architecture::endianness_t endianness);
+  Py_DECREF (pkg);
 
-  inline PyObject *None () { Py_INCREF (Py_None); return Py_None; }
-
-  /* Exceptions */
-  extern PyObject *BFDError;
-
+  return true;
 }
 
-#endif /* ! PYNSIGHT_HH */
+static bool 
+s_terminate () {
+  return true;
+}
+
+static pynsight::Module ERROR ("error", s_init, s_terminate);
+
