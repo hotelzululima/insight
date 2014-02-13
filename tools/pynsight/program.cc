@@ -47,7 +47,7 @@ static void
 s_insight_Program_dealloc (PyObject *p);
 
 static PyObject *
-s_insight_Program_infos (PyObject *p, PyObject *);
+s_insight_Program_info (PyObject *p, PyObject *);
 
 static PyObject *
 s_insight_Program_sym (PyObject *p, PyObject *args);
@@ -86,8 +86,8 @@ static PyTypeObject insight_ProgramType = {
 
 static PyMethodDef programMethods[] = {
   {
-    "infos",
-    s_insight_Program_infos, 
+    "info",
+    s_insight_Program_info,
     METH_NOARGS,
     "Return a dictionary containing data related to the program "
     "(e.g entrypoint).\n"
@@ -336,7 +336,7 @@ s_registers (const Architecture *arch) {
 }
 
 static PyObject *
-s_insight_Program_infos (PyObject *obj, PyObject *)
+s_insight_Program_info (PyObject *obj, PyObject *)
 {
   Program *p = (Program *) obj;
   PyObject *regs = s_registers (p->loader->get_architecture ());
