@@ -515,8 +515,8 @@ ExprMathsatSolver::init (const ConfigTable &)
     throw UnknownSolverException ("failed creating MathSAT default config");
 
   msat_set_option(MATHSAT_CONFIG, "model_generation", "true");
-  msat_set_option(MATHSAT_CONFIG, "proof_generation", "true");
-  msat_set_option(MATHSAT_CONFIG, "bool_model_generation", "true");
+  //  msat_set_option(MATHSAT_CONFIG, "proof_generation", "true");
+  // msat_set_option(MATHSAT_CONFIG, "bool_model_generation", "true");
 
   if (debug_traces)
     {
