@@ -1,9 +1,11 @@
 PYNSIGHT_PKGNAME=insight
 PYNSIGHT_HOME=$(DESTDIR)${pkgdatadir}/pynsight/
 PYNSIGHT_DESTDIR=${PYNSIGHT_HOME}/${PYNSIGHT_PKGNAME}
-PYNSIGHT_SCRIPT_FILES=__init__.py utils.py
+PYNSIGHT_SCRIPT_FILES=__init__.py utils.py 
 
 bin_PROGRAMS = pynsight
+
+EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES}
 
 pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc
 pynsight_CPPFLAGS = @PYTHON_CFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
