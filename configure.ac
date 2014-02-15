@@ -59,8 +59,8 @@ dnl ********************************************************************
 
 AM_PATH_PYTHON([2.6], , [:])
 if test "$PYTHON" != :; then
-   python_cflags=`${PYTHON}-config --includes 2>/dev/null` || PYTHON= :
-   python_ldflags=`${PYTHON}-config --ldflags 2>/dev/null` || PYTHON= :
+   python_cflags=`${PYTHON}-config --includes 2>/dev/null` || PYTHON=:
+   python_ldflags=`${PYTHON}-config --ldflags 2>/dev/null` || PYTHON=:
    AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 fi
 
