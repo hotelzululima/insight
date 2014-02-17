@@ -1,10 +1,10 @@
 import sys
 import string
 
-def pretty_print_memory (P):
+def pretty_print_memory (P, s, l=16):
     if P is None:
         raise ValueError
-    for addr, data in P.dump_memory (0, step=16):
+    for addr, data in P.dump_memory (start=s, len=l):
         sys.stdout.write ("{0:08x} :".format (addr));
         st = " "
         for i in range (0,len(data)):

@@ -60,7 +60,6 @@ namespace pynsight {
 
   /* Exceptions */
   extern PyObject *BFDError;
-
 }
 
 #endif /* ! PYNSIGHT_HH */

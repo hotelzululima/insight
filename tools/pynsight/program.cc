@@ -30,9 +30,12 @@
 #include <stdexcept>
 #include <domains/concrete/ConcreteMemory.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
+#include <decoders/binutils/BinutilsDecoder.hh>
 
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/SymbolTable.hh>
+#include <analyses/cfgrecovery/LinearSweep.hh>
+#include "gengen.hh"
 
 #include "pynsight.hh"
 
@@ -57,6 +60,9 @@ s_insight_Program_symbols (PyObject *p, PyObject *);
 
 static PyObject *
 s_insight_Program_dump_memory (PyObject *p, PyObject *args, PyObject *kwds);
+
+static PyObject *
+s_insight_Program_disas (PyObject *p, PyObject *args, PyObject *kwds);
 
 static PyTypeObject insight_ProgramType = {
   PyObject_HEAD_INIT(NULL)
@@ -107,8 +113,14 @@ static PyMethodDef programMethods[] = {
     (PyCFunction) s_insight_Program_dump_memory, 
     METH_VARARGS|METH_KEYWORDS,
     "Return a list of tuples containing memory bytes.\n"
-  }, 
-  { NULL, NULL, 0, NULL }
+  }, { 
+    "disas", 
+    (PyCFunction) s_insight_Program_disas, 
+    METH_VARARGS|METH_KEYWORDS,
+    "Return an iterator on disassembled instructions."
+  }, { 
+    NULL, NULL, 0, NULL 
+  }
 };
 
 static bool 
@@ -372,6 +384,82 @@ s_insight_Program_info (PyObject *obj, PyObject *)
      regs
      );
   Py_XDECREF (regs);
+
+  return result;
+}
+
+struct disas
+{
+  MicrocodeArchitecture *march;
+  BinutilsDecoder *decoder;
+  address_t current_addr;
+  address_t max_addr;
+};
+
+static PyObject *
+s_disas_iterator (void *data)
+{
+  PyObject *result;
+  disas *D = (disas *) data;
+
+  if (D->current_addr >= D->max_addr) {
+    PyErr_SetNone (PyExc_StopIteration);
+    result = NULL;
+  } else {
+    std::string inst = D->decoder->get_instruction (D->current_addr);
+
+    result = Py_BuildValue ("(i,s)", D->current_addr, inst.c_str ());
+    D->current_addr = D->decoder->next (D->current_addr).get_address ();
+  }
+
+  return (result);
+}
+
+static void
+s_disas_destroy (void *data)
+{
+  disas *D = (disas *) data;
+  delete D->march;
+  delete D->decoder;
+  delete D;
+}
+
+static PyObject *
+s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  { "start", "len", NULL };
+  Program *p = (Program *) obj;
+  address_t s,e;
+
+  p->concrete_memory->get_address_range (s, e);
+
+  Py_ssize_t start = s;
+  Py_ssize_t len = e - s + 1;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|II", (char **) kwlists, 
+				    &start, &len))
+    return NULL;
+
+  if (! (s <= start && start <= e)) {    
+    PyErr_SetString (PyExc_LookupError, "start address is out of memory");
+    return NULL;
+  }
+
+  if (len == 0)
+    return pynsight::None ();
+
+  if (start + len >= e) {
+    len = e - start + 1;
+  }
+
+  disas *D = new disas;
+  D->march = new MicrocodeArchitecture (p->loader->get_architecture ());
+  D->decoder = new BinutilsDecoder (D->march, p->concrete_memory);
+  D->current_addr = start;
+  D->max_addr = start + len;
+
+  PyObject *result = 
+    pynsight::generic_generator_new (s_disas_iterator, D, s_disas_destroy);
 
   return result;
 }

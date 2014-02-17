@@ -7,7 +7,9 @@ bin_PROGRAMS = pynsight
 
 EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES}
 
-pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc
+pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc \
+                   gengen.cc
+
 pynsight_CPPFLAGS = @PYTHON_CFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
                     -DPYNSIGHT_HOME="\"${PYNSIGHT_HOME}\"" \
                     -DPYNSIGHT_PACKAGE="\"${PYNSIGHT_PKGNAME}\"" 
