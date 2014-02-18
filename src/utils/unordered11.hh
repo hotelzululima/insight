@@ -30,6 +30,8 @@
 #ifndef UTILS_UNORDERED11_HH_
 #define UTILS_UNORDERED11_HH_
 
+#include <config.h>
+
 #ifdef HAVE_TR1_UNORDERED_MAP
 
 #define USE_TR1_NAMESPACE
