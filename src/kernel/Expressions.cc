@@ -34,14 +34,13 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <tr1/unordered_map>
-#include <tr1/unordered_map>
 #include <kernel/expressions/ExprVisitor.hh>
 #include <kernel/expressions/ExprSolver.hh>
 #include <io/expressions/expr-writer.hh>
 #include <utils/tools.hh>
 #include <utils/bv-manip.hh>
 #include <utils/logs.hh>
+#include <utils/unordered11.hh>
 
 #include <cassert>
 #include <cstdio>
@@ -1041,7 +1040,7 @@ Expr::hash () const
 size_t 
 Variable::hash () const 
 { 
-  return (13 * this->Expr::hash() + 51 * std::tr1::hash<string>()(id) + 
+  return (13 * this->Expr::hash() + 51 * std::hash<string>()(id) + 
 	  73 * size);
 }
 
@@ -1081,7 +1080,7 @@ TernaryApp::hash () const
 size_t 
 MemCell::hash () const 
 { 
-  return (13 * this->Expr::hash() + 19 * std::tr1::hash<string>()(tag) +
+  return (13 * this->Expr::hash() + 19 * std::hash<string>()(tag) +
 	  111 * addr->hash ());
 }
 

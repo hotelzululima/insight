@@ -3,11 +3,11 @@
 
 # include <cassert>
 # include <list>
-# include <tr1/unordered_map>
 # include <analyses/cfgrecovery/MicrocodeAddressProgramPoint.hh>
 # include <analyses/cfgrecovery/AbstractStepper.hh>
 # include <analyses/cfgrecovery/SingleContextStateSpace.hh>
 # include <analyses/cfgrecovery/AbstractMemoryTraversal.hh>
+# include <utils/unordered11.hh>
 
 class RecursiveTraversal
 {

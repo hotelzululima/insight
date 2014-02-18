@@ -43,6 +43,8 @@ AC_SEARCH_LIBS([dlopen], [dl dld], [], [
    AC_MSG_ERROR([unable to find the dlopen() function])
 ])
 
+AC_CHECK_HEADERS([tr1/unordered_map], [], [])
+
 AC_PROG_LEX
 if test "x$LEX" = "x:" ; then
    AC_MSG_ERROR(['flex' cannot be found])

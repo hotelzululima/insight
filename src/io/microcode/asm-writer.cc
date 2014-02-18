@@ -34,10 +34,10 @@
 #include <cstring>
 #include <cstdio>
 #include <list>
-#include <tr1/unordered_map>
 #include <kernel/annotations/NextInstAnnotation.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
 #include <kernel/annotations/SolvedJmpAnnotation.hh>
+#include <utils/unordered11.hh>
 #include "asm-writer.hh"
 
 using namespace std;

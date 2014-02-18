@@ -32,11 +32,11 @@
 
 #include <string>
 
-#include <utils/Option.hh>
-#include <utils/ConfigTable.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/expressions/Operators.hh>
-#include <tr1/unordered_set>
+#include <utils/Option.hh>
+#include <utils/ConfigTable.hh>
+#include <utils/unordered11.hh>
 
 class ExprVisitor;
 class ConstExprVisitor;
@@ -247,7 +247,7 @@ protected:
   }
   
 private:
-  typedef std::tr1::unordered_set<Expr *, Expr::Hash, Expr::Equal> ExprStore;  
+  typedef std::unordered_set<Expr *, Expr::Hash, Expr::Equal> ExprStore;  
 
   static ExprStore *expr_store;
   static bool non_empty_store_abort;

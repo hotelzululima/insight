@@ -37,8 +37,8 @@
 class PatternMatching :  public Object
 {
 public:
-  typedef std::tr1::unordered_map<const Variable *, Expr *,
-				  Expr::Hash, Expr::Equal> Matching;
+  typedef std::unordered_map<const Variable *, Expr *,
+			     Expr::Hash, Expr::Equal> Matching;
   typedef std::list<const Variable *> VarList;
   typedef Matching::const_iterator const_iterator;
 

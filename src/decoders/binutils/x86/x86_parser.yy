@@ -82,8 +82,8 @@ namespace x86 {
     const char *stack_segment;
     MicrocodeArchitecture *arch;
     Expr *condition_codes[NB_CC];
-    std::tr1::unordered_set<const RegisterDesc *, 
-			    RegisterDesc::Hash> segment_registers;
+    std::unordered_set<const RegisterDesc *, 
+		       RegisterDesc::Hash> segment_registers;
   };
 }
 }

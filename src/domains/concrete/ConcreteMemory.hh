@@ -36,7 +36,6 @@
 #include <inttypes.h>
 
 #include <map>
-#include <tr1/unordered_map>
 
 #include <domains/concrete/ConcreteValue.hh>
 #include <domains/concrete/ConcreteAddress.hh>
@@ -46,15 +45,16 @@
 
 #include <utils/Object.hh>
 #include <utils/tools.hh>
+#include <utils/unordered11.hh>
 
 /** \brief ConcreteMemory module which manage memory and also registers. */
 class ConcreteMemory : public Memory<ConcreteAddress, ConcreteValue>,
 		       public RegisterMap<ConcreteValue>
 {
   /** \brief Data structure used to encode the concrete memory. */
-  typedef std::tr1::unordered_map<address_t,
+  typedef std::unordered_map<address_t,
 				  uint8_t,
-				  std::tr1::hash<address_t> > MemoryMap;
+				  std::hash<address_t> > MemoryMap;
 
   /** \brief The actual storage into memory. */
   const ConcreteMemory *base;

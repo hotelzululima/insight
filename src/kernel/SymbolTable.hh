@@ -32,17 +32,17 @@
 # define SYMBOLTABLE_HH
 
 # include <string>
-# include <tr1/unordered_map>
 
 # include <kernel/Architecture.hh>
 # include <utils/Object.hh>
+# include <utils/unordered11.hh>
 
 class SymbolTable : public Object  
 {
 public:
-  typedef std::tr1::unordered_map<std::string, address_t> SymbolMap;
+  typedef std::unordered_map<std::string, address_t> SymbolMap;
   typedef SymbolMap::const_iterator const_symbol_iterator;
-  typedef std::tr1::unordered_map<address_t, std::list<std::string> > AddressMap;
+  typedef std::unordered_map<address_t, std::list<std::string> > AddressMap;
   typedef AddressMap::const_iterator const_address_iterator;
 
   SymbolTable ();

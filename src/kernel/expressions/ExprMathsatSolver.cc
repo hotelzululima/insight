@@ -36,12 +36,11 @@
 #include <utils/logs.hh>
 #include <vector>
 #include <map>
-#include <tr1/unordered_set>
+#include <utils/unordered11.hh>
 #include <iomanip>
 #include <cassert>
 
 using namespace std;
-using namespace std::tr1;
 using namespace exprutils;
 
 static const std::string MEMORY_VAR = "MEM";

@@ -7,7 +7,7 @@
 # include <kernel/Microcode.hh>
 # include <kernel/annotations/AsmAnnotation.hh>
 # include <kernel/annotations/NextInstAnnotation.hh>
-# include <tr1/unordered_map>
+# include <utils/unordered11.hh>
 
 template<typename AlgoSpec>
 class AbstractMemoryTraversal 
@@ -63,7 +63,7 @@ private:
   Decoder *decoder;
   Microcode *program;
   StateSpace *states;
-  std::tr1::unordered_map<address_t,int> visits;
+  std::unordered_map<address_t,int> visits;
   bool stop_computation;
 
 # define ABSTRACT_MEMORY_TRAVERSAL_PROPERTY(type_, name_, defval_)	\

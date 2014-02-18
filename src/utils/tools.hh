@@ -31,25 +31,7 @@
 #ifndef UTILS_TOOLS_H
 #define UTILS_TOOLS_H
 
-#include <map>
-#include <tr1/unordered_map>
-
-#if 0
-namespace std {
-  namespace tr1 {
-    /** Implements a hashmap's hash function for strings */
-    template<>
-    struct hash<std::string>
-    {
-      hash<char*> h;
-      size_t operator()(const std::string &s) const
-      {
-	return h(s.c_str());
-      };
-    };
-  }
-}
-#endif
+#include <string>
 
 /** \brief Convert an int to a string (cf. 'itoa()') */
 std::string itos(int i);

@@ -28,9 +28,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <tr1/unordered_map>
-#include <tr1/unordered_set>
-
 #include <list>
 #include "smtlib-writer.hh"
 
@@ -39,9 +36,10 @@
 #include <iomanip>
 #include <cassert>
 
-#include <utils/logs.hh>
 #include <kernel/expressions/ExprVisitor.hh>
 #include <kernel/expressions/exprutils.hh>
+#include <utils/logs.hh>
+#include <utils/unordered11.hh>
 
 using namespace std;
 
@@ -55,8 +53,8 @@ class CountSharedSubFormulas : public ConstExprVisitor
     int counter;
   };
 
-  typedef std::tr1::unordered_map<const Expr *, DFScounters> Counters;
-  typedef std::tr1::unordered_set<const Expr *> Done;
+  typedef std::unordered_map<const Expr *, DFScounters> Counters;
+  typedef std::unordered_set<const Expr *> Done;
 
   int max;
   int date;

@@ -31,9 +31,8 @@
 #define KERNEL_ANNOTABLE_HH
 
 #include <string>
-#include <tr1/unordered_map>
-#include <utils/Object.hh>
 #include <kernel/Annotation.hh>
+#include <utils/unordered11.hh>
 
 /* ***************************************************/
 /**
@@ -44,7 +43,7 @@ class Annotable
 {
 public:
   typedef std::string AnnotationId;
-  typedef std::tr1::unordered_map<AnnotationId,Annotation*> AnnotationMap;
+  typedef std::unordered_map<AnnotationId,Annotation*> AnnotationMap;
 
   Annotable(const AnnotationMap *o = 0);
   Annotable(AnnotationMap &o);
@@ -56,7 +55,7 @@ public:
 
   /*! \brief get annotations. Renamed this method in order to
    * lower the number of name conflicts on methods such as begin().
-   * That's why the inheritance on std::tr1::unordered_map is private */
+   * That's why the inheritance on std::unordered_map is private */
   const AnnotationMap *get_annotations() const;
   /*! \brief get a specific annotation. */
   Annotation *get_annotation(const AnnotationId &id) const;

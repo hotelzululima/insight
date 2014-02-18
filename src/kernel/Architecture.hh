@@ -39,7 +39,7 @@
 #include <string>
 
 #include <utils/Object.hh>
-#include <utils/tools.hh>
+#include <utils/unordered11.hh>
 
 /** \brief Default numeric type for expressions. */
 typedef int64_t word_t;
@@ -102,9 +102,9 @@ private:
 };
 
 /** \brief Data structure used to encode the registers. */
-typedef std::tr1::unordered_map<std::string,
-				RegisterDesc*,
-				std::tr1::hash<std::string> > RegisterSpecs;
+typedef std::unordered_map<std::string,
+			   RegisterDesc*,
+			   std::hash<std::string> > RegisterSpecs;
 
 /** \brief Abstract class storing the full description of an architecture.
  *

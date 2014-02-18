@@ -32,13 +32,13 @@
 
 #include <sstream>
 #include <iostream>
-#include <tr1/unordered_map>
 
 #include <domains/concrete/ConcreteAddress.hh>
 
 #include <kernel/Architecture.hh>
 #include <kernel/Memory.hh>
 #include <kernel/Expressions.hh>
+#include <utils/unordered11.hh>
 
 template <typename Value>
 class ConcreteAddressMemory : public Memory<ConcreteAddress, Value>
@@ -70,7 +70,7 @@ protected:
     int offset;
   };
 
-  typedef std::tr1::unordered_map<address_t, ConcreteAddressMemoryCell>
+  typedef std::unordered_map<address_t, ConcreteAddressMemoryCell>
 	memory_type;
   memory_type memory;
 

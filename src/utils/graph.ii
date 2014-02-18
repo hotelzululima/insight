@@ -547,8 +547,8 @@ GraphPath<Node, Edge>* optimize(GraphPath<Node, Edge>* nvo)
 template<typename Node, typename Edge>
 GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
 {
-  std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*> eqns;
-  std::tr1::unordered_map<size_t, VariablePath<Node, Edge>*> names;
+  std::unordered_map<std::string, GraphPath<Node, Edge>*> eqns;
+  std::unordered_map<size_t, VariablePath<Node, Edge>*> names;
 
   int idl = 0;
   std::vector<Node *>* nodes = this->get_nodes();
@@ -603,14 +603,14 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
       GraphPath<Node, Edge>* solution = NULL;
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
       std::cout << "Simplification..." << std::endl;
-      for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
+      for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
         {
           std::pair<std::string, GraphPath<Node, Edge>*>elem = *it;
           std::cout << elem.first << " := " << elem.second->pp() << std::endl;
         }
 #endif
       //Choisit une simplification à faire ...
-      for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); eqns.size() > 1 && it != eqns.end() && !replaced && !rewrited; ++it)
+      for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); eqns.size() > 1 && it != eqns.end() && !replaced && !rewrited; ++it)
         {
           GraphPath<Node, Edge>* eqn = it->second;
           tosolve = it->first;
@@ -703,7 +703,7 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
       if (!replaced && !rewrited)
         {
           std::list<VariablePath<Node, Edge>*> vars;
-          for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end() && !replaced; ++it)
+          for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end() && !replaced; ++it)
             {
               GraphPath<Node, Edge>* eqn = it->second;
               tosolve = it->first;
@@ -717,7 +717,7 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
                     {
                       int times_used = 0;
                       //VariablePath<Node,Edge>* var=(VariablePath<Node,Edge>*)vars.back();
-                      for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it2 = eqns.begin(); it2 != eqns.end() && times_used <= 1; ++it2)
+                      for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it2 = eqns.begin(); it2 != eqns.end() && times_used <= 1; ++it2)
                         {
                           vars.clear();
                           (it2->second)->gather_variables(&vars);
@@ -748,7 +748,7 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
           std::cout << "Remplace " << tosolve << " avec " << solution->pp() << std::endl;
 #endif
-          for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
+          for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
             {
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
               std::cout << "*" << it->first << std::endl;
@@ -800,7 +800,7 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
         }
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
       std::cout << "Fin simplification..." << std::endl;
-      /*for(typename std::tr1::unordered_map<std::string,GraphPath<Node,Edge>*>::iterator it=eqns.begin();it!=eqns.end();++it) {
+      /*for(typename std::unordered_map<std::string,GraphPath<Node,Edge>*>::iterator it=eqns.begin();it!=eqns.end();++it) {
         std::pair<std::string,GraphPath<Node,Edge>*>elem=*it;
         std::cout << elem.first <<" := "<<elem.second->pp()<<std::endl;
         }*/

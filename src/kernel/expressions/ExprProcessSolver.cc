@@ -34,8 +34,8 @@
 #include <kernel/expressions/exprutils.hh>
 #include <io/expressions/expr-parser.hh>
 #include <utils/logs.hh>
+#include <utils/unordered11.hh>
 
-#include <tr1/unordered_set>
 #include <ext/stdio_filebuf.h>
 #include <csignal>
 #include <cstdio>
@@ -46,7 +46,6 @@
 #include <unistd.h>
 
 using namespace std;
-using namespace std::tr1;
 using namespace exprutils;
 typedef ExprSolver::UnexpectedResponseException UnexpectedResponseException;
 

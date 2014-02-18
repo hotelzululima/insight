@@ -35,13 +35,13 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
-#include <tr1/unordered_map>
 
 #include <libxml2/libxml/tree.h>
 #include <libxml2/libxml/parser.h>
 
 #include <kernel/Microcode.hh>
 #include <kernel/Expressions.hh>
+#include <utils/unordered11.hh>
 #include "xml_annotations.hh"
 #include "xml_microcode_parser.hh"
 

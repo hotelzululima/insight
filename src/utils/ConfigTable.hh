@@ -31,14 +31,14 @@
 #ifndef UTILS_CONFIGTABLE_HH
 # define UTILS_CONFIGTABLE_HH
 
-# include <tr1/unordered_map>
 # include <string>
 # include <iostream>
 # include <utils/Object.hh>
+# include <utils/unordered11.hh>
 
 class ConfigTable : public Object
 {
-  typedef std::tr1::unordered_map<std::string, std::string> Store;
+  typedef std::unordered_map<std::string, std::string> Store;
 public:
 
   typedef Store::const_iterator const_iterator;

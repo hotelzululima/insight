@@ -38,12 +38,11 @@
 #include <list>
 #include <stdexcept>
 
-#include <tr1/unordered_map>
-
 #include <domains/concrete/ConcreteAddress.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 #include <io/binary/BinaryLoader.hh>
 #include <kernel/SymbolTable.hh>
+#include <utils/unordered11.hh>
 
 /*************** BinutilsBinaryLoader class definition ****************/
 

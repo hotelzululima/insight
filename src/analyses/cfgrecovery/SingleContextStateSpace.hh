@@ -1,10 +1,10 @@
 #ifndef SINGLECONTEXTSTATESPACE_HH
 # define SINGLECONTEXTSTATESPACE_HH
 
-# include <tr1/unordered_set>
 # include <set>
-# include <utils/map-helpers.hh>
 # include <analyses/cfgrecovery/AbstractStateSpace.hh>
+# include <utils/map-helpers.hh>
+# include <utils/unordered11.hh>
 
 template <typename State>
 class SingleContextStateSpace : public AbstractStateSpace<State>
@@ -19,8 +19,8 @@ public:
   virtual std::size_t size () const;
 
 private:
-  typedef std::tr1::unordered_set<State *, HashPtrFunctor<State>, 
-  				  EqualsPtrFunctor<State> > StateTable;
+  typedef std::unordered_set<State *, HashPtrFunctor<State>, 
+  			     EqualsPtrFunctor<State> > StateTable;
 
   StateTable states;
 };

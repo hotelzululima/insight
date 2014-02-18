@@ -28,9 +28,10 @@
  * SUCH DAMAGE.
  */
 
-#include <tr1/unordered_map>
 
 #include <kernel/Annotation.hh>
+#include <utils/unordered11.hh>
+
 /*
  * pp
  */
@@ -467,7 +468,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
     }
   //Calcul du polynome
   assert((left ^ right) || none);
-  std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*> polynome;
+  std::unordered_map<std::string, GraphPath<Node, Edge>*> polynome;
   for (typename std::list<GraphPath<Node, Edge>*>::iterator it = nvo.begin(); it != nvo.end(); ++it)
     {
       ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) * it;
@@ -515,7 +516,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
     }
 
   this->clear();
-  for (typename std::tr1::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = polynome.begin(); it != polynome.end(); ++it)
+  for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = polynome.begin(); it != polynome.end(); ++it)
     {
       VariablePath<Node, Edge>* var = NULL;
       if (it->first != "None")

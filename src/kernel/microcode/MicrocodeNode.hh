@@ -261,14 +261,18 @@ public:
 
 /* MicrocodeAddress Hash function */
 namespace std {
+#ifdef USE_TR1_NAMESPACE
   namespace tr1 {
+#endif
     template<>
     struct hash<MicrocodeAddress> {
       size_t operator()(const MicrocodeAddress &a) const {
 	return a.getGlobal();
       }
     };
+#ifdef USE_TR1_NAMESPACE
   }
+#endif
 }
 
 /*****************************************************************************/

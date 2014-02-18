@@ -32,18 +32,18 @@
 #ifndef SYMBOLICMEMORY_HH
 # define SYMBOLICMEMORY_HH
 
-#include <tr1/unordered_map>
 
 # include <kernel/Memory.hh>
 # include <kernel/RegisterMap.hh>
 # include <domains/concrete/ConcreteMemory.hh>
 # include <domains/symbolic/SymbolicValue.hh>
+# include <utils/unordered11.hh>
 
 class SymbolicMemory 
   : public Memory<ConcreteAddress, SymbolicValue>,
     public RegisterMap<SymbolicValue>
 {
-  typedef std::tr1::unordered_map<address_t, SymbolicValue> MemoryMap;
+  typedef std::unordered_map<address_t, SymbolicValue> MemoryMap;
   address_t minaddr;
   address_t maxaddr;
 
