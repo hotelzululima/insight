@@ -242,8 +242,79 @@ s_insight_Program_symbols (PyObject *obj, PyObject *) {
   return result;
 }
 
+struct DumpIterator {
+  Program *prg;
+  Py_ssize_t addr;
+  Py_ssize_t len;
+  Py_ssize_t step;
+};
+
 static PyObject * 
-s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds) {
+s_DumpIterator_next (void *data) 
+{
+  DumpIterator *di = (DumpIterator *) data;
+  PyObject *result = NULL;
+
+  if (di->len == 0) 
+    PyErr_SetNone (PyExc_StopIteration);
+  else 
+    {
+      PyObject *line_addr = Py_BuildValue ("n", di->addr);
+      int max = std::min (di->step, di->len);
+      Program *p = di->prg;
+
+      if (line_addr != NULL) 
+	{
+	  PyObject *tuple = PyTuple_New (di->step);
+	  if (tuple != NULL) 
+	    {
+	      for (Py_ssize_t i = 0; i < di->step && !PyErr_Occurred (); i++) 
+		{
+		  PyObject *b = NULL;
+		  ConcreteAddress addr ((address_t) di->addr + i);
+	      
+		  if (i < max && p->concrete_memory->is_defined (addr)) 
+		    {
+		      ConcreteValue val = 
+			p->concrete_memory->get (addr, 1, 
+						 Architecture::LittleEndian);
+		      b = Py_BuildValue ("b", (unsigned char) val.get ());
+		    } else {
+		    b = pynsight::None ();
+		  }
+		  if (b != NULL)		
+		    PyTuple_SET_ITEM (tuple, i, b);
+		}
+	    
+	      if (!PyErr_Occurred ()) 
+		result = PyTuple_Pack (2, line_addr, tuple);
+	      Py_DECREF (tuple);
+	    }
+	  Py_DECREF (line_addr);
+	}
+
+      if (! PyErr_Occurred ()) 
+	{
+	  di->len -= max;
+	  di->addr += max;
+	}
+    }
+
+  return result;
+}
+
+static void 
+s_DumpIterator_destroy (void *data) 
+{
+  DumpIterator *di = (DumpIterator *) data;
+  Py_DECREF ((PyObject *) di->prg);
+
+  delete di;
+}
+
+static PyObject * 
+s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds) 
+{
   static const char *kwlists[] =  { "start", "len", "step", NULL };
   Program *p = (Program *) obj;
   address_t s,e;
@@ -260,66 +331,30 @@ s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds) {
 				    &start, &len, &step))
     return NULL;
 
-  if (! (s <= start && start <= e)) {    
-    PyErr_SetString (PyExc_LookupError, "start address is out of memory");
-    return NULL;
-  }
+  if (! (s <= start && start <= e)) 
+    {    
+      PyErr_SetString (PyExc_LookupError, "start address is out of memory");
+      return NULL;
+    }
 
   if (step == 0 || len == 0)
     return pynsight::None ();
 
-  if (start + len >= e) {
+  if (start + len >= e) 
     len = e - start + 1;
-  }
 
-  PyObject *result = PyList_New (0);
-  if (result == NULL)
-    return NULL;
-  
-  while (len && !PyErr_Occurred ()) {
-    PyObject *line_addr = Py_BuildValue ("n", start);
-    int max = std::min (step, len);
+  DumpIterator *D = new DumpIterator;
+  Py_INCREF (obj);
+  D->prg = p;
+  D->addr = start;
+  D->len = len;
+  D->step = step;
 
-    if (line_addr != NULL) {
-      PyObject *tuple = PyTuple_New (step);
-      if (tuple != NULL) {
-	for (Py_ssize_t i = 0; i < step && !PyErr_Occurred (); i++) {
-	  PyObject *b = NULL;
-	  ConcreteAddress addr ((address_t) start + i);
+  PyObject *result = 
+    pynsight::generic_generator_new (s_DumpIterator_next, D, 
+				     s_DumpIterator_destroy);
 
-	  if (i < max && p->concrete_memory->is_defined (addr)) {
-	      ConcreteValue val = 
-		p->concrete_memory->get (addr, 1, 
-					 Architecture::LittleEndian);
-	      b = Py_BuildValue ("b", (unsigned char) val.get ());
-	  } else {
-	    b = pynsight::None ();
-	  }
-	  if (b != NULL)		
-	    PyTuple_SET_ITEM (tuple, i, b);
-	}
-
-	if (!PyErr_Occurred ()) {
-	  PyObject *couple = PyTuple_Pack (2, line_addr, tuple);
-	  if (couple != NULL) {
-	    PyList_Append (result, couple);
-	    Py_DECREF (couple);
-	  }
-	}
-	Py_DECREF (tuple);
-      }
-      Py_DECREF (line_addr);
-    } 
-    len -= max;
-    start += max;
-  }
-
-  if (PyErr_Occurred ()) {
-    Py_DECREF (result);
-    result = NULL;
-  } 
-
-  return result;  
+  return result;
 }
 
 static PyObject *
@@ -388,7 +423,7 @@ s_insight_Program_info (PyObject *obj, PyObject *)
   return result;
 }
 
-struct disas
+struct DisasIterator
 {
   MicrocodeArchitecture *march;
   BinutilsDecoder *decoder;
@@ -397,28 +432,35 @@ struct disas
 };
 
 static PyObject *
-s_disas_iterator (void *data)
+s_DisasIterator_next (void *data)
 {
-  PyObject *result;
-  disas *D = (disas *) data;
+  PyObject *result = NULL;
+  DisasIterator *D = (DisasIterator *) data;
 
-  if (D->current_addr >= D->max_addr) {
+  if (D->current_addr >= D->max_addr) 
     PyErr_SetNone (PyExc_StopIteration);
-    result = NULL;
-  } else {
-    std::string inst = D->decoder->get_instruction (D->current_addr);
-
-    result = Py_BuildValue ("(i,s)", D->current_addr, inst.c_str ());
-    D->current_addr = D->decoder->next (D->current_addr).get_address ();
+  else 
+    {
+      try 
+	{
+	  std::string inst = D->decoder->get_instruction (D->current_addr);
+	  address_t next = D->decoder->next (D->current_addr).get_address ();
+	  result = Py_BuildValue ("(i,s)", D->current_addr, inst.c_str ());
+	  D->current_addr = next;
+	} 
+      catch (Decoder::OutOfBounds &e)
+	{
+	  PyErr_SetNone (PyExc_StopIteration);
+	}
   }
 
   return (result);
 }
 
 static void
-s_disas_destroy (void *data)
+s_DisasIterator_destroy (void *data)
 {
-  disas *D = (disas *) data;
+  DisasIterator *D = (DisasIterator *) data;
   delete D->march;
   delete D->decoder;
   delete D;
@@ -452,14 +494,15 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
     len = e - start + 1;
   }
 
-  disas *D = new disas;
+  DisasIterator *D = new DisasIterator;
   D->march = new MicrocodeArchitecture (p->loader->get_architecture ());
   D->decoder = new BinutilsDecoder (D->march, p->concrete_memory);
   D->current_addr = start;
   D->max_addr = start + len;
 
   PyObject *result = 
-    pynsight::generic_generator_new (s_disas_iterator, D, s_disas_destroy);
+    pynsight::generic_generator_new (s_DisasIterator_next, D, 
+				     s_DisasIterator_destroy);
 
   return result;
 }
