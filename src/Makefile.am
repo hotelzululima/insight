@@ -68,7 +68,8 @@ utils_source = \
 	utils/path.hh		\
 	utils/path.ii		\
 	utils/tools.cc		\
-	utils/tools.hh
+	utils/tools.hh		\
+	utils/unordered11.hh
 
 ## kernel module
 kernel_source = \
