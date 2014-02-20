@@ -64,7 +64,22 @@ static SolverModule modules[] = {
 
 static size_t nb_modules = sizeof (modules)/sizeof(modules[0]);
 
-static SolverModule *default_solver = NULL;
+static const ConfigTable *CONFIG = NULL;
+
+static SolverModule *default_solver () 
+{
+  SolverModule *result = NULL;
+  string sname = CONFIG->get (ExprSolver::SOLVER_NAME_PROP);
+
+  for (size_t i = 0; result == NULL && i < nb_modules; i++)
+    if (modules[i].ident () == sname)
+      result = &modules[i];
+  if (result == NULL)
+    throw ExprSolver::UnknownSolverException ("can not find solver '" +
+					      sname + "'.");
+  return result;
+}
+
 bool ExprSolver::debug_traces = false;
 
 
@@ -72,24 +87,16 @@ void
 ExprSolver::init (const ConfigTable &cfg)
   throw (UnknownSolverException)
 {
-  string sname = cfg.get (SOLVER_NAME_PROP);
+  CONFIG = &cfg;
   debug_traces = cfg.get_boolean (DEBUG_TRACES_PROP);
 
   for (size_t i = 0; i < nb_modules; i++)
-    {
-      modules[i].init (cfg);
-      if (modules[i].ident () == sname)
-	default_solver = &modules[i];
-    }
-  if (sname != "" && default_solver == NULL)
-    throw UnknownSolverException ("can not find solver '" + sname + "'.");
-
+    modules[i].init (cfg);
 }
 
 void 
 ExprSolver::terminate ()
 {
-  default_solver = NULL;
   for (size_t i = 0; i < nb_modules; i++)
     modules[i].terminate ();
 }
@@ -98,10 +105,7 @@ ExprSolver *
 ExprSolver::create_default_solver (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
 {  
-  if (default_solver == NULL)
-    throw UnknownSolverException ("no default solver has been specified.");
-
-  return default_solver->instantiate (mca);
+  return default_solver ()->instantiate (mca);
 }
 
 ExprSolver::ExprSolver (const MicrocodeArchitecture *mca) : mca (mca)
