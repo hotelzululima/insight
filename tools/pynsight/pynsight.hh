@@ -35,7 +35,8 @@
 # include <Python.h>
 
 # include <kernel/Architecture.hh>
-
+# include <io/binary/BinaryLoader.hh>
+# include <utils/ConfigTable.hh>
 
 namespace pynsight {
   class Module {
@@ -52,14 +53,32 @@ namespace pynsight {
     bool (*terminate_cb) ();
   };
   
+  struct Program {
+    PyObject_HEAD
+    BinaryLoader *loader;
+    ConcreteMemory *concrete_memory;
+    SymbolTable *symbol_table;
+  };
+
+
   extern PyObject *load_program (const char *filename, const char *target, 
 				 const char *mach, 
 				 Architecture::endianness_t endianness);
+
+  enum SimulationSemantics {
+    SIM_SYMBOLIC,
+    SIM_CONCRETE
+  };
+
+  extern PyObject *start_simulator (Program *P, address_t start_adddr, 
+				    SimulationSemantics sem);
 
   inline PyObject *None () { Py_INCREF (Py_None); return Py_None; }
 
   /* Exceptions */
   extern PyObject *BFDError;
+
+  extern ConfigTable &configTable ();
 }
 
 #endif /* ! PYNSIGHT_HH */

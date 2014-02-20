@@ -1,5 +1,3 @@
-
-
 /*-
  * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
@@ -29,36 +27,42 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include "gengen.hh"
-
 #include <stdexcept>
+#include <domains/concrete/ConcreteMemory.hh>
+#include <io/binary/BinutilsBinaryLoader.hh>
+#include <decoders/binutils/BinutilsDecoder.hh>
 
+#include <kernel/microcode/MicrocodeArchitecture.hh>
+#include <kernel/SymbolTable.hh>
+#include <domains/concrete/ConcreteStepper.hh>
+#include <domains/symbolic/SymbolicStepper.hh>
 
-using namespace pynsight;
+#include "gengen.hh"
+#include "pynsight.hh"
 
-struct GenericGenerator {
+struct Simulator {
   PyObject_HEAD
-  generic_generator_func generator;
-  void *generator_data;
-  void (*delete_data) (void *);
+  pynsight::Program *prg;  
+  pynsight::SimulationSemantics sem;
+  ConcreteAddress start;
+
+  Microcode *mc;
+  MicrocodeArchitecture *march;
+
+  void *stepper;
+  void *currentState;
 };
 
 static void
-s_GenericGenerator_dealloc (PyObject *p);
+s_Simulator_dealloc (PyObject *p);
 
-static PyObject *
-s_GenericGenerator_iter (PyObject *p);
-
-static PyObject *
-s_GenericGenerator_iternext (PyObject *p);
-
-static PyTypeObject GenericGeneratorType = {
+static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
-  "insight.Gengen",			/*tp_name*/
-  sizeof(GenericGenerator),		/*tp_basicsize*/
+  "insight.Simulator",			/*tp_name*/
+  sizeof (Simulator),		        /*tp_basicsize*/
   0,					/*tp_itemsize*/
-  s_GenericGenerator_dealloc,		/*tp_dealloc*/
+  s_Simulator_dealloc,		        /*tp_dealloc*/
   0,					/*tp_print*/
   0,					/*tp_getattr*/
   0,					/*tp_setattr*/
@@ -73,21 +77,21 @@ static PyTypeObject GenericGeneratorType = {
   0,					/*tp_getattro*/
   0,					/*tp_setattro*/
   0,					/*tp_as_buffer*/
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
-  "Internal generic iterator",          /* tp_doc */
-  0,                                    /* tp_traverse */
-  0,                                    /* tp_clear */
-  0,                                    /* tp_richcompare */
-  0,                                    /* tp_weaklistoffset */
-  s_GenericGenerator_iter,              /* tp_iter: __iter__() method */
-  s_GenericGenerator_iternext,          /* tp_iternext: next() method */
+  Py_TPFLAGS_DEFAULT,			/*tp_flags*/
+  "This type represents a program",	/*tp_doc */
   0
+};
+
+static PyMethodDef SimulatorMethods[] = {
+  { 
+    NULL, NULL, 0, NULL 
+  }
 };
 
 static bool 
 s_init () { 
-  GenericGeneratorType.tp_methods = NULL;
-  if (PyType_Ready (&GenericGeneratorType) < 0)
+  SimulatorType.tp_methods = SimulatorMethods;
+  if (PyType_Ready (&SimulatorType) < 0)
     return false;
   return true;
 }
@@ -97,49 +101,51 @@ s_terminate () {
   return true;
 }
 
-static pynsight::Module GENERIC_GENERATOR (NULL, s_init, s_terminate);
-
-static void
-s_GenericGenerator_dealloc (PyObject *self) {
-  GenericGenerator *g = (GenericGenerator *) self;
-
-  if (g->delete_data != NULL) {
-    g->delete_data (g->generator_data);
-  }
-
-  self->ob_type->tp_free (self);
-}
-
-static PyObject * 
-s_GenericGenerator_iter (PyObject *self)
-{
-  Py_INCREF (self);
-  return self;
-}
-
-static PyObject * 
-s_GenericGenerator_iternext (PyObject *self)
-{
-  GenericGenerator *g = (GenericGenerator *) self;
-
-  return g->generator (g->generator_data);
-}
+static pynsight::Module SIMULATOR (NULL, s_init, s_terminate);
 
 PyObject * 
-pynsight::generic_generator_new (generic_generator_func G, void *Gdata, 
-				 void (*delete_data)(void *data))
+pynsight::start_simulator (Program *P, address_t start_addr,
+			   SimulationSemantics sem)
 {
-  GenericGenerator *result = (GenericGenerator *) 
-    PyObject_New (GenericGenerator, &GenericGeneratorType);
+  Simulator *S = PyObject_New (Simulator, &SimulatorType);
 
-  if (result == NULL)
+  if (S == NULL)
     return NULL;
 
-  PyObject_Init ((PyObject *) result, &GenericGeneratorType);
+  PyObject_Init ((PyObject *) S, &SimulatorType);
 
-  result->generator = G;
-  result->generator_data = Gdata;
-  result->delete_data = delete_data;
+  S->prg = P;
+  Py_INCREF (P);
+  S->start = start_addr;
+  S->mc = new Microcode ();
+  S->march = new MicrocodeArchitecture (P->loader->get_architecture ());
+  
+  if (sem == pynsight::SIM_SYMBOLIC) 
+    {
+      SymbolicStepper *st;
+      S->stepper = st = new SymbolicStepper (P->concrete_memory, S->march);
+      S->currentState = st->get_initial_state (S->start);
+    }
+  else 
+    {
+      ConcreteStepper *st;
 
-  return (PyObject *) result;
+      assert (sem == pynsight::SIM_CONCRETE);
+
+      S->stepper = st = new ConcreteStepper (P->concrete_memory, S->march);
+      S->currentState = st->get_initial_state (S->start);
+    }
+
+  return (PyObject *) S;
 }
+
+static void
+s_Simulator_dealloc (PyObject *obj) {
+  Simulator *S = (Simulator *) obj;
+
+  Py_DECREF (S->prg);
+  delete S->mc;
+  delete S->march;
+  S->ob_type->tp_free (S);
+}
+

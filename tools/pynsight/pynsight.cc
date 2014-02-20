@@ -2,6 +2,7 @@
  * Wrapper glue for python
  */
 #include <kernel/insight.hh>
+#include <kernel/expressions/ExprSolver.hh>
 #include "pynsight.hh"
 
 # ifndef PYNSIGHT_HOME
@@ -83,7 +84,7 @@ int
 main (int argc, char **argv) {
   int result =  EXIT_SUCCESS;
 
-  insight::init();
+  insight::init (pynsight::configTable ());
 
   Py_Initialize();
   if (s_init_package ())

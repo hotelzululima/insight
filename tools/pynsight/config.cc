@@ -29,60 +29,85 @@
  */
 #include "pynsight.hh"
 
-#include <cassert>
-#include <kernel/insight.hh>
-
 static PyObject *
-io_load_bfd (PyObject *, PyObject *args, PyObject *kwds) {
-  static const char *kwlists[] = 
-    { "filename", "target", "machine", "endianness", NULL };
-  const char *c_fname;
-  const char *c_bfdtarget = "";
-  const char *c_machine = "";
-  const char *c_endianness = NULL;
+s_Config_set (PyObject *, PyObject *args)
+{
+  const char *optname;
+  PyObject *optvalue = NULL;
+  PyObject *result = NULL;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|sss", (char **) kwlists, 
-				    &c_fname, &c_bfdtarget, &c_machine, 
-				    &c_endianness))
-    return NULL;
+  if (PyArg_ParseTuple (args, "sO", &optname, &optvalue))
+    {
+      ConfigTable &cfg = pynsight::configTable ();
 
-  Architecture::endianness_t endian = Architecture::UnknownEndian;
-
-  if (c_endianness) {
-    if (strcmp (c_endianness, "little") == 0) { 
-      endian = Architecture::LittleEndian;
-    } else if (strcmp (c_endianness, "big") == 0) { 
-      endian = Architecture::BigEndian;
-    } else if (strcmp (c_endianness, "unknown") != 0) { 
-      PyErr_SetString (PyExc_ValueError, "invalid endianness.");
-      return NULL;
+      if (PyBool_Check (optvalue)) 
+	cfg.set (optname, (optvalue == Py_True));
+      else if (PyInt_Check (optvalue)) 
+	cfg.set (optname, PyInt_AsLong (optvalue));
+      else if (PyString_Check (optvalue)) 
+	cfg.set (optname,  PyString_AsString(optvalue));
+      else 
+	PyErr_SetString (PyExc_TypeError, "invalid value type");
     }
-  }
+  if (! PyErr_Occurred ())
+    result = pynsight::None ();
 
-  return pynsight::load_program (c_fname, c_bfdtarget, c_machine, endian);
+  return result;
 }
 
-static PyMethodDef IO_Methods[] = {
-  { "load_bfd", (PyCFunction) io_load_bfd, METH_VARARGS|METH_KEYWORDS,
-    "Load a file with the BFD library" },
-  { NULL, NULL, 0, NULL }
+static PyObject *
+s_Config_get (PyObject *, PyObject *args)
+{
+  PyObject *result;
+  const char *optname = NULL;
+
+  if (!PyArg_ParseTuple (args, "s", &optname))
+    return NULL;
+  ConfigTable &cfg = pynsight::configTable ();
+
+  if (cfg.has (optname)) 
+    result = Py_BuildValue ("s", cfg.get (optname).c_str ());
+  else
+    result = pynsight::None ();
+  return result;
+}
+
+static PyMethodDef Config_Methods[] = {
+  { 
+    "set", (PyCFunction) s_Config_set, METH_VARARGS,
+    "Set the value of configuation option"
+  }, {
+    "get", (PyCFunction) s_Config_get, METH_VARARGS,
+    "Get value of a configuration option"
+  }, { 
+    NULL, NULL, 0, NULL 
+  }
 };
 
 static bool 
-s_init () {
+s_init () 
+{
   PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
-  PyObject *io_module = Py_InitModule ("io", IO_Methods);  
-  PyModule_AddObject (pkg, "io", io_module);
+  PyObject *cfg_module = Py_InitModule ("config", Config_Methods);  
+  PyModule_AddObject (pkg, "config", cfg_module);
   Py_DECREF (pkg);
-  Py_INCREF (io_module);
+  Py_INCREF (cfg_module);
 
   return true;
 }
 
 static bool 
-s_terminate () {
+s_terminate () 
+{
   return true;
 }
 
-static pynsight::Module IO ("io", s_init, s_terminate);
+static pynsight::Module CONFIG ("config", s_init, s_terminate);
 
+ConfigTable &
+pynsight::configTable () 
+{
+  static ConfigTable CONFIG;
+
+  return CONFIG;
+}

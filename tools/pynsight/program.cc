@@ -27,9 +27,11 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include "pynsight.hh"
+
 #include <stdexcept>
 #include <domains/concrete/ConcreteMemory.hh>
-#include <io/binary/BinutilsBinaryLoader.hh>
+# include <io/binary/BinutilsBinaryLoader.hh>
 #include <decoders/binutils/BinutilsDecoder.hh>
 
 #include <kernel/microcode/MicrocodeArchitecture.hh>
@@ -37,14 +39,7 @@
 #include <analyses/cfgrecovery/LinearSweep.hh>
 #include "gengen.hh"
 
-#include "pynsight.hh"
-
-struct Program {
-  PyObject_HEAD
-  BinaryLoader *loader;
-  ConcreteMemory *concrete_memory;
-  SymbolTable *symbol_table;
-};
+using pynsight::Program;
 
 static void
 s_insight_Program_dealloc (PyObject *p);
@@ -63,6 +58,9 @@ s_insight_Program_dump_memory (PyObject *p, PyObject *args, PyObject *kwds);
 
 static PyObject *
 s_insight_Program_disas (PyObject *p, PyObject *args, PyObject *kwds);
+
+static PyObject *
+s_insight_Program_simulate (PyObject *p, PyObject *args, PyObject *kwds);
 
 static PyTypeObject insight_ProgramType = {
   PyObject_HEAD_INIT(NULL)
@@ -118,6 +116,11 @@ static PyMethodDef programMethods[] = {
     (PyCFunction) s_insight_Program_disas, 
     METH_VARARGS|METH_KEYWORDS,
     "Return an iterator on disassembled instructions."
+  }, { 
+    "simulate", 
+    (PyCFunction) s_insight_Program_simulate, 
+    METH_VARARGS|METH_KEYWORDS,
+    "Start a step-by-step simulator."
   }, { 
     NULL, NULL, 0, NULL 
   }
@@ -503,6 +506,41 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
   PyObject *result = 
     pynsight::generic_generator_new (s_DisasIterator_next, D, 
 				     s_DisasIterator_destroy);
+
+  return result;
+}
+
+static PyObject *
+s_insight_Program_simulate (PyObject *obj, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  { "start", "domain", NULL };
+  Program *p = (Program *) obj;
+
+  address_t s,e;
+
+  p->concrete_memory->get_address_range (s, e);
+
+  Py_ssize_t start = p->loader->get_entrypoint ().get_address ();
+  const char *domain = "symbolic";
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|Is", (char **) kwlists, 
+				    &start, &domain))
+    return NULL;
+
+  if (! (s <= start && start <= e)) {    
+    PyErr_SetString (PyExc_LookupError, "start address is out of memory");
+    return NULL;
+  }
+
+  pynsight::SimulationSemantics sem;
+  if (strcmp (domain, "symbolic") == 0) sem = pynsight::SIM_SYMBOLIC;
+  else if (strcmp (domain, "concrete") == 0) sem = pynsight::SIM_CONCRETE;
+  else 
+    {
+      PyErr_SetString (PyExc_LookupError, "unknown domain");
+      return NULL;
+    }
+  PyObject *result = pynsight::start_simulator (p, start, sem);
 
   return result;
 }
