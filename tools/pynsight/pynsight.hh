@@ -65,20 +65,21 @@ namespace pynsight {
 				 const char *mach, 
 				 Architecture::endianness_t endianness);
 
-  enum SimulationSemantics {
+  enum SimulationDomain {
     SIM_SYMBOLIC,
     SIM_CONCRETE
   };
 
   extern PyObject *start_simulator (Program *P, address_t start_adddr, 
-				    SimulationSemantics sem);
+				    SimulationDomain dom);
 
   inline PyObject *None () { Py_INCREF (Py_None); return Py_None; }
 
+  extern ConfigTable &configTable ();
+
   /* Exceptions */
   extern PyObject *BFDError;
-
-  extern ConfigTable &configTable ();
+  extern PyObject *NotDeterministicBehaviorError;
 }
 
 #endif /* ! PYNSIGHT_HH */

@@ -1,5 +1,3 @@
-
-
 /*-
  * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
@@ -36,29 +34,28 @@
 
 using namespace pynsight;
 
-struct GenericGenerator {
+struct GeneratorObject
+{
   PyObject_HEAD
-  generic_generator_func generator;
-  void *generator_data;
-  void (*delete_data) (void *);
+  GenericGenerator *generator;
 };
 
 static void
-s_GenericGenerator_dealloc (PyObject *p);
+s_GeneratorObject_dealloc (PyObject *p);
 
 static PyObject *
-s_GenericGenerator_iter (PyObject *p);
+s_GeneratorObject_iter (PyObject *p);
 
 static PyObject *
-s_GenericGenerator_iternext (PyObject *p);
+s_GeneratorObject_iternext (PyObject *p);
 
-static PyTypeObject GenericGeneratorType = {
+static PyTypeObject GeneratorObjectType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
   "insight.Gengen",			/*tp_name*/
-  sizeof(GenericGenerator),		/*tp_basicsize*/
+  sizeof (GeneratorObject),		/*tp_basicsize*/
   0,					/*tp_itemsize*/
-  s_GenericGenerator_dealloc,		/*tp_dealloc*/
+  s_GeneratorObject_dealloc,		/*tp_dealloc*/
   0,					/*tp_print*/
   0,					/*tp_getattr*/
   0,					/*tp_setattr*/
@@ -79,67 +76,65 @@ static PyTypeObject GenericGeneratorType = {
   0,                                    /* tp_clear */
   0,                                    /* tp_richcompare */
   0,                                    /* tp_weaklistoffset */
-  s_GenericGenerator_iter,              /* tp_iter: __iter__() method */
-  s_GenericGenerator_iternext,          /* tp_iternext: next() method */
+  s_GeneratorObject_iter,              /* tp_iter: __iter__() method */
+  s_GeneratorObject_iternext,          /* tp_iternext: next() method */
   0
 };
 
 static bool 
-s_init () { 
-  GenericGeneratorType.tp_methods = NULL;
-  if (PyType_Ready (&GenericGeneratorType) < 0)
+s_init () 
+{ 
+  GeneratorObjectType.tp_methods = NULL;
+  if (PyType_Ready (&GeneratorObjectType) < 0)
     return false;
   return true;
 }
 
 static bool 
-s_terminate () {
+s_terminate () 
+{
   return true;
 }
 
 static pynsight::Module GENERIC_GENERATOR (NULL, s_init, s_terminate);
 
 static void
-s_GenericGenerator_dealloc (PyObject *self) {
-  GenericGenerator *g = (GenericGenerator *) self;
+s_GeneratorObject_dealloc (PyObject *self) 
+{
+  GeneratorObject *g = (GeneratorObject *) self;
 
-  if (g->delete_data != NULL) {
-    g->delete_data (g->generator_data);
-  }
+  delete g->generator;
 
   self->ob_type->tp_free (self);
 }
 
 static PyObject * 
-s_GenericGenerator_iter (PyObject *self)
+s_GeneratorObject_iter (PyObject *self)
 {
   Py_INCREF (self);
   return self;
 }
 
 static PyObject * 
-s_GenericGenerator_iternext (PyObject *self)
+s_GeneratorObject_iternext (PyObject *self)
 {
-  GenericGenerator *g = (GenericGenerator *) self;
+  GeneratorObject *g = (GeneratorObject *) self;
 
-  return g->generator (g->generator_data);
+  return g->generator->next ();
 }
 
 PyObject * 
-pynsight::generic_generator_new (generic_generator_func G, void *Gdata, 
-				 void (*delete_data)(void *data))
+pynsight::generic_generator_new (GenericGenerator *G)
 {
-  GenericGenerator *result = (GenericGenerator *) 
-    PyObject_New (GenericGenerator, &GenericGeneratorType);
+  GeneratorObject *result = (GeneratorObject *) 
+    PyObject_New (GeneratorObject, &GeneratorObjectType);
 
   if (result == NULL)
     return NULL;
 
-  PyObject_Init ((PyObject *) result, &GenericGeneratorType);
+  PyObject_Init ((PyObject *) result, &GeneratorObjectType);
 
   result->generator = G;
-  result->generator_data = Gdata;
-  result->delete_data = delete_data;
 
   return (PyObject *) result;
 }

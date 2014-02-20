@@ -117,7 +117,7 @@ static PyMethodDef programMethods[] = {
     METH_VARARGS|METH_KEYWORDS,
     "Return an iterator on disassembled instructions."
   }, { 
-    "simulate", 
+    "simulator", 
     (PyCFunction) s_insight_Program_simulate, 
     METH_VARARGS|METH_KEYWORDS,
     "Start a step-by-step simulator."
@@ -245,37 +245,45 @@ s_insight_Program_symbols (PyObject *obj, PyObject *) {
   return result;
 }
 
-struct DumpIterator {
-  Program *prg;
-  Py_ssize_t addr;
+class DumpIterator : public pynsight::GenericGenerator 
+{
+private:
+  Program *p;
+  Py_ssize_t current;
   Py_ssize_t len;
   Py_ssize_t step;
-};
+  
+public:
+  DumpIterator (Program *prg, Py_ssize_t addr, Py_ssize_t len, Py_ssize_t step)
+    : pynsight::GenericGenerator(), 
+      p (prg), current (addr), len (len), step (step) { 
+    Py_INCREF ((PyObject *)prg);    
+  }
 
-static PyObject * 
-s_DumpIterator_next (void *data) 
-{
-  DumpIterator *di = (DumpIterator *) data;
-  PyObject *result = NULL;
+  ~DumpIterator () {
+    Py_DECREF ((PyObject *) p);
+  }
 
-  if (di->len == 0) 
-    PyErr_SetNone (PyExc_StopIteration);
-  else 
-    {
-      PyObject *line_addr = Py_BuildValue ("n", di->addr);
-      int max = std::min (di->step, di->len);
-      Program *p = di->prg;
+  PyObject *next () {
+    PyObject *result = NULL;
 
-      if (line_addr != NULL) 
-	{
-	  PyObject *tuple = PyTuple_New (di->step);
-	  if (tuple != NULL) 
-	    {
-	      for (Py_ssize_t i = 0; i < di->step && !PyErr_Occurred (); i++) 
+    if (len == 0) 
+      PyErr_SetNone (PyExc_StopIteration);
+    else 
+      {
+	PyObject *line_addr = Py_BuildValue ("n", current);
+	int max = std::min (step, len);
+
+	if (line_addr != NULL) 
+	  {
+	    PyObject *tuple = PyTuple_New (step);
+	    if (tuple != NULL) 
+	      {
+		for (Py_ssize_t i = 0; i < step && !PyErr_Occurred (); i++) 
 		{
 		  PyObject *b = NULL;
-		  ConcreteAddress addr ((address_t) di->addr + i);
-	      
+		  ConcreteAddress addr ((address_t) current + i);
+		  
 		  if (i < max && p->concrete_memory->is_defined (addr)) 
 		    {
 		      ConcreteValue val = 
@@ -288,32 +296,24 @@ s_DumpIterator_next (void *data)
 		  if (b != NULL)		
 		    PyTuple_SET_ITEM (tuple, i, b);
 		}
-	    
-	      if (!PyErr_Occurred ()) 
-		result = PyTuple_Pack (2, line_addr, tuple);
-	      Py_DECREF (tuple);
-	    }
-	  Py_DECREF (line_addr);
-	}
+		
+		if (!PyErr_Occurred ()) 
+		  result = PyTuple_Pack (2, line_addr, tuple);
+		Py_DECREF (tuple);
+	      }
+	    Py_DECREF (line_addr);
+	  }
+	
+	if (! PyErr_Occurred ()) 
+	  {
+	    len -= max;
+	    current += max;
+	  }
+      }
 
-      if (! PyErr_Occurred ()) 
-	{
-	  di->len -= max;
-	  di->addr += max;
-	}
-    }
-
-  return result;
-}
-
-static void 
-s_DumpIterator_destroy (void *data) 
-{
-  DumpIterator *di = (DumpIterator *) data;
-  Py_DECREF ((PyObject *) di->prg);
-
-  delete di;
-}
+    return result;
+  }
+};
 
 static PyObject * 
 s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds) 
@@ -346,16 +346,8 @@ s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds)
   if (start + len >= e) 
     len = e - start + 1;
 
-  DumpIterator *D = new DumpIterator;
-  Py_INCREF (obj);
-  D->prg = p;
-  D->addr = start;
-  D->len = len;
-  D->step = step;
-
   PyObject *result = 
-    pynsight::generic_generator_new (s_DumpIterator_next, D, 
-				     s_DumpIterator_destroy);
+    pynsight::generic_generator_new (new DumpIterator (p, start, len, step));
 
   return result;
 }
@@ -426,48 +418,49 @@ s_insight_Program_info (PyObject *obj, PyObject *)
   return result;
 }
 
-struct DisasIterator
+class DisasIterator : public pynsight::GenericGenerator 
 {
-  MicrocodeArchitecture *march;
-  BinutilsDecoder *decoder;
+private:
   address_t current_addr;
   address_t max_addr;
-};
-
-static PyObject *
-s_DisasIterator_next (void *data)
-{
-  PyObject *result = NULL;
-  DisasIterator *D = (DisasIterator *) data;
-
-  if (D->current_addr >= D->max_addr) 
-    PyErr_SetNone (PyExc_StopIteration);
-  else 
-    {
-      try 
-	{
-	  std::string inst = D->decoder->get_instruction (D->current_addr);
-	  address_t next = D->decoder->next (D->current_addr).get_address ();
-	  result = Py_BuildValue ("(i,s)", D->current_addr, inst.c_str ());
-	  D->current_addr = next;
-	} 
-      catch (Decoder::OutOfBounds &e)
-	{
-	  PyErr_SetNone (PyExc_StopIteration);
-	}
+  MicrocodeArchitecture *march;
+  BinutilsDecoder *decoder;
+public:
+  DisasIterator (Program *p, address_t start, address_t max) 
+    : pynsight::GenericGenerator (), current_addr (start), max_addr (max) {
+    march = new MicrocodeArchitecture (p->loader->get_architecture ());
+    decoder = new BinutilsDecoder (march, p->concrete_memory);
   }
 
-  return (result);
-}
+  virtual ~DisasIterator () {
+    delete march;
+    delete decoder;
+  }
 
-static void
-s_DisasIterator_destroy (void *data)
-{
-  DisasIterator *D = (DisasIterator *) data;
-  delete D->march;
-  delete D->decoder;
-  delete D;
-}
+  PyObject *next () {
+    PyObject *result = NULL;
+
+    if (current_addr >= max_addr) 
+      PyErr_SetNone (PyExc_StopIteration);
+    else 
+      {
+	try 
+	  {
+	    std::string inst = decoder->get_instruction (current_addr);
+	    address_t next = decoder->next (current_addr).get_address ();
+	    result = Py_BuildValue ("(i,s)", current_addr, inst.c_str ());
+	    current_addr = next;
+	  } 
+	catch (Decoder::OutOfBounds &e)
+	  {
+	    PyErr_SetNone (PyExc_StopIteration);
+	  }
+      }
+    
+    return (result);
+  }
+};
+
 
 static PyObject *
 s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
@@ -497,15 +490,8 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
     len = e - start + 1;
   }
 
-  DisasIterator *D = new DisasIterator;
-  D->march = new MicrocodeArchitecture (p->loader->get_architecture ());
-  D->decoder = new BinutilsDecoder (D->march, p->concrete_memory);
-  D->current_addr = start;
-  D->max_addr = start + len;
-
   PyObject *result = 
-    pynsight::generic_generator_new (s_DisasIterator_next, D, 
-				     s_DisasIterator_destroy);
+    pynsight::generic_generator_new (new DisasIterator (p, start, start + len));
 
   return result;
 }
@@ -532,7 +518,7 @@ s_insight_Program_simulate (PyObject *obj, PyObject *args, PyObject *kwds)
     return NULL;
   }
 
-  pynsight::SimulationSemantics sem;
+  pynsight::SimulationDomain sem;
   if (strcmp (domain, "symbolic") == 0) sem = pynsight::SIM_SYMBOLIC;
   else if (strcmp (domain, "concrete") == 0) sem = pynsight::SIM_CONCRETE;
   else 

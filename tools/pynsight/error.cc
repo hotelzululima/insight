@@ -40,9 +40,12 @@ static PyMethodDef Error_Methods[] = {
 };
 
 PyObject *pynsight::BFDError = NULL;
+PyObject *pynsight::NotDeterministicBehaviorError = NULL;
 
 static Exception ALL_EXCEPTIONS[] = {
   { "BFDError", &pynsight::BFDError },
+  { "NotDeterministicBehaviorError", 
+    &pynsight::NotDeterministicBehaviorError },
   { NULL, NULL }
 };
 

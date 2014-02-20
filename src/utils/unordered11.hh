@@ -40,7 +40,10 @@
 #include <tr1/unordered_set>
 
 namespace std {
-  using namespace tr1;
+  //  using namespace tr1;
+  using tr1::hash;
+  using tr1::unordered_map;
+  using tr1::unordered_set;
 }
 
 #else // !HAVE_TR1_UNORDERED_MAP
