@@ -41,16 +41,20 @@ static PyMethodDef Error_Methods[] = {
 
 PyObject *pynsight::BFDError = NULL;
 PyObject *pynsight::NotDeterministicBehaviorError = NULL;
+PyObject *pynsight::UndefinedValueError = NULL;
 
 static Exception ALL_EXCEPTIONS[] = {
   { "BFDError", &pynsight::BFDError },
   { "NotDeterministicBehaviorError", 
     &pynsight::NotDeterministicBehaviorError },
+  { "UndefinedValueError", 
+    &pynsight::UndefinedValueError },
   { NULL, NULL }
 };
 
 static bool 
-s_init () {
+s_init () 
+{
   PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
   PyObject *error_module = Py_InitModule ("error", Error_Methods);
   PyModule_AddObject (pkg, "error", error_module);
@@ -71,7 +75,8 @@ s_init () {
 }
 
 static bool 
-s_terminate () {
+s_terminate () 
+{
   return true;
 }
 

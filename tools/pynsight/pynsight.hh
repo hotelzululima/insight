@@ -80,6 +80,7 @@ namespace pynsight {
   /* Exceptions */
   extern PyObject *BFDError;
   extern PyObject *NotDeterministicBehaviorError;
+  extern PyObject *UndefinedValueError;
 }
 
 #endif /* ! PYNSIGHT_HH */
