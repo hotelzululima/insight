@@ -18,6 +18,7 @@ template <typename CTX, typename PP>
 typename AbstractDomainStepper<CTX,PP>::StateSet *
 AbstractDomainStepper<CTX,PP>::get_successors (const State *s, 
 					       const StmtArrow *arrow) 
+  throw (UndefinedValueException)
 {
   StateSet *result = new StateSet ();      
   Context *newctx = restrict_to_condition (s->get_Context (), 

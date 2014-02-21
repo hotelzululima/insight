@@ -11,7 +11,7 @@ class AbstractDomainStepper
   : public AbstractStepper<AbstractState <PP, CTX> > 
 {  
 protected :
-  AbstractDomainStepper  (const Architecture *arch); 
+  AbstractDomainStepper (const Architecture *arch); 
 
 public:
   typedef AbstractState<PP, CTX> State;
@@ -26,7 +26,8 @@ public:
 
   virtual State *get_initial_state (const ConcreteAddress &entrypoint) = 0;
 
-  virtual StateSet *get_successors (const State *s, const StmtArrow *arrow);
+  virtual StateSet *get_successors (const State *s, const StmtArrow *arrow)
+    throw (UndefinedValueException);
 
   virtual Address 
   value_to_address (const Context *ctx, const Value &v) 
