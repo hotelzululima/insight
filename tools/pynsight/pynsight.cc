@@ -18,7 +18,7 @@
 
 #define POST_SCRIPT \
   "import insight\n" \
-  "from insight import *"
+  "from insight import *\n" 
 
 
 using namespace pynsight;
@@ -91,6 +91,10 @@ main (int argc, char **argv) {
     {
       if (Py_Main (argc, argv) != 0) 
 	result = EXIT_FAILURE;
+    }
+  else if (PyErr_Occurred ())
+    {
+      PyErr_Print ();
     }
   s_terminate_package ();
   Py_Finalize();
