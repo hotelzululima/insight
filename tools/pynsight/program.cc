@@ -490,8 +490,8 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
     len = e - start + 1;
   }
 
-  PyObject *result = 
-    pynsight::generic_generator_new (new DisasIterator (p, start, start + len));
+  DisasIterator *di = new DisasIterator (p, start, start + len);
+  PyObject *result = pynsight::generic_generator_new (di);
 
   return result;
 }
