@@ -73,6 +73,8 @@ public:
   virtual string get_register (const RegisterDesc *reg) = 0;
   virtual bool check_memory_range (void *s, address_t addr, size_t len) = 0;
   virtual bool check_register (void *s, const RegisterDesc *reg) = 0;
+  virtual MicrocodeAddress get_pc (void *s) = 0;
+  virtual MicrocodeAddress get_current_pc () = 0;
 
 protected:
   Program *prg;  
@@ -106,6 +108,8 @@ public:
   virtual string get_register (const RegisterDesc *reg);
   virtual bool check_memory_range (void *s, address_t addr, size_t len);
   virtual bool check_register (void *s, const RegisterDesc *reg);
+  virtual MicrocodeAddress get_pc (void *s);
+  virtual MicrocodeAddress get_current_pc ();
 
 protected:
   Stepper *stepper;
@@ -132,6 +136,9 @@ static PyObject *
 s_Simulator_microstep (PyObject *self, PyObject *args);
 
 static PyObject *
+s_Simulator_step (PyObject *self, PyObject *args);
+
+static PyObject *
 s_Simulator_print_state (PyObject *self, PyObject *args);
 
 static PyObject *
@@ -145,6 +152,12 @@ s_Simulator_set_register (PyObject *self, PyObject *args);
 
 static PyObject *
 s_Simulator_get_register (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_get_pc (PyObject *self, PyObject *);
+
+static PyObject *
+s_Simulator_get_arrows (PyObject *self, PyObject *);
 
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
@@ -181,6 +194,8 @@ static PyMethodDef SimulatorMethods[] = {
 	  "\n"),
   METHOD ("microstep", "ms", s_Simulator_microstep, METH_VARARGS, 
 	  "\n"),
+  METHOD ("step", "s", s_Simulator_step, METH_NOARGS, 
+	  "\n"),
   METHOD ("print_state", "ps", s_Simulator_print_state, METH_NOARGS, 
 	  "\n"),
   METHOD ("set_memory", "sm", s_Simulator_set_memory, METH_VARARGS, 
@@ -190,6 +205,10 @@ static PyMethodDef SimulatorMethods[] = {
   METHOD ("get_memory", "gm", s_Simulator_get_memory, METH_VARARGS, 
 	  "\n"),
   METHOD ("get_register", "gr", s_Simulator_get_register, METH_VARARGS, 
+	  "\n"),
+  METHOD ("get_pc", "pc", s_Simulator_get_pc, METH_NOARGS,
+	  "\n"),
+  METHOD ("get_arrows", "a", s_Simulator_get_arrows, METH_NOARGS,
 	  "\n"),
   { NULL, NULL, 0, NULL }
 };
@@ -315,6 +334,42 @@ s_Simulator_microstep (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+s_Simulator_step (PyObject *self, PyObject *x1)
+{
+  PyObject *result;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  MicrocodeAddress ep = S->get_current_pc ();
+
+  while (ep.getGlobal () == S->get_current_pc ().getGlobal () &&
+	 ! PyErr_Occurred ())
+    {
+      MicrocodeAddress tmp = S->get_current_pc ();
+      if (S->get_number_of_arrows () > 1)
+	{
+	  PyErr_SetNone (pynsight::NotDeterministicBehaviorError);
+	  return NULL;
+	}
+      StmtArrow *a = S->get_arrow_at (0);
+
+      void *st = S->get_state ();
+      void *succ = S->trigger_arrow (st, a);
+      if (succ != NULL)
+	{
+	  S->set_state (succ);
+	  S->delete_state (succ);	    
+	}
+      S->delete_state (st);
+    }
+
+  if (PyErr_Occurred ())
+    result = NULL;
+  else
+    result = pynsight::generic_generator_new (new ArrowsIterator (S));
+
+  return result;
+}
+
+static PyObject *
 s_Simulator_print_state (PyObject *self, PyObject *)
 {
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
@@ -432,6 +487,31 @@ s_Simulator_get_register (PyObject *self, PyObject *args)
   return result;
 }
 
+static PyObject *
+s_Simulator_get_pc (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  PyObject *result = NULL;
+  void *st = S->get_state ();
+  if (st == NULL)
+    result = pynsight::None ();
+  else
+    {
+      MicrocodeAddress a = S->get_pc (st);
+      result = Py_BuildValue ("(k,k)", a.getGlobal (), a.getLocal ());
+      S->delete_state (st);
+    }
+
+  return result;
+}
+
+static PyObject *
+s_Simulator_get_arrows (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  return pynsight::generic_generator_new (new ArrowsIterator (S));
+}
 
 /*****************************************************************************
  *
@@ -652,6 +732,18 @@ InsightSimulator<Stepper>::check_register (void *p, const RegisterDesc *reg)
   const RegisterDesc *areg = march->get_register (reg->get_label ());
 
   return mem->is_defined (areg);
+}
+
+template <typename Stepper> MicrocodeAddress 
+InsightSimulator<Stepper>::get_pc (void *p)
+{
+  return ((State *) p)->get_ProgramPoint ()->to_MicrocodeAddress ();
+}
+
+template <typename Stepper> MicrocodeAddress 
+InsightSimulator<Stepper>::get_current_pc ()
+{
+  return get_pc (current_state);
 }
 
 template <typename Stepper> void 
