@@ -42,6 +42,9 @@ static PyMethodDef Error_Methods[] = {
 PyObject *pynsight::BFDError = NULL;
 PyObject *pynsight::NotDeterministicBehaviorError = NULL;
 PyObject *pynsight::UndefinedValueError = NULL;
+PyObject *pynsight::BreakpointReached = NULL;
+PyObject *pynsight::SinkNodeReached = NULL;
+PyObject *pynsight::JumpToInvalidAddress = NULL;
 
 static Exception ALL_EXCEPTIONS[] = {
   { "BFDError", &pynsight::BFDError },
@@ -49,6 +52,12 @@ static Exception ALL_EXCEPTIONS[] = {
     &pynsight::NotDeterministicBehaviorError },
   { "UndefinedValueError", 
     &pynsight::UndefinedValueError },
+  { "BreakpointReached", 
+    &pynsight::BreakpointReached },
+  { "SinkNodeReached", 
+    &pynsight::SinkNodeReached },
+  { "JumpToInvalidAddress", 
+    &pynsight::JumpToInvalidAddress },
   { NULL, NULL }
 };
 
@@ -66,7 +75,7 @@ s_init ()
     PyObject *o = PyErr_NewException ((char *) name.c_str (), NULL, NULL);
     *(e->p_exception) = o;
     Py_INCREF (o);
-    PyModule_AddObject (pkg, "error", o);
+    PyModule_AddObject (error_module, e->name, o);
   }
 
   Py_DECREF (pkg);

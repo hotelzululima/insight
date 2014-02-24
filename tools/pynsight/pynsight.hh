@@ -82,6 +82,9 @@ namespace pynsight {
   extern PyObject *BFDError;
   extern PyObject *NotDeterministicBehaviorError;
   extern PyObject *UndefinedValueError;
+  extern PyObject *BreakpointReached;
+  extern PyObject *SinkNodeReached;
+  extern PyObject *JumpToInvalidAddress;
 }
 
 #endif /* ! PYNSIGHT_HH */
