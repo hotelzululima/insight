@@ -151,6 +151,7 @@ pynsight::load_program (const char *filename, const char *target,
   p->concrete_memory = NULL;
   p->symbol_table = NULL;
   p->loader = NULL;
+  p->stubfactory = NULL;
 
   PyObject_Init ((PyObject *) p, &insight_ProgramType);
 
@@ -158,6 +159,7 @@ pynsight::load_program (const char *filename, const char *target,
     p->loader = new BinutilsBinaryLoader (filename, target, mach, endian);
     p->concrete_memory = new ConcreteMemory ();
     p->symbol_table = new SymbolTable ();
+    p->stubfactory = p->loader->get_StubFactory ();
     p->loader->load_memory (p->concrete_memory);
     p->loader->load_symbol_table (p->symbol_table);
   } catch (std::runtime_error &e) {
@@ -186,6 +188,11 @@ s_insight_Program_dealloc (PyObject *obj) {
   if (p->symbol_table != NULL) {
     delete p->symbol_table;
     p->symbol_table = NULL;
+  }
+
+  if (p->stubfactory != NULL) {
+    delete p->stubfactory;
+    p->stubfactory = NULL;
   }
 
   if (p->loader != NULL) {

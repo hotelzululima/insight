@@ -58,6 +58,7 @@ namespace pynsight {
     BinaryLoader *loader;
     ConcreteMemory *concrete_memory;
     SymbolTable *symbol_table;
+    StubFactory *stubfactory;
   };
 
 

@@ -43,12 +43,18 @@
 #include "pynsight.hh"
 
 using std::vector;
+using std::list;
 using std::string;
 using pynsight::Program;
 
 class GenericInsightSimulator {
 public:
   typedef vector<StmtArrow *> ArrowVector;
+  struct Breakpoint {
+    int id;
+    MicrocodeAddress addr;
+  };
+  typedef list<Breakpoint> BreakpointSet;
 
   GenericInsightSimulator (Program *prg, address_t start_addr);
 
@@ -76,6 +82,11 @@ public:
   virtual MicrocodeAddress get_pc (void *s) = 0;
   virtual MicrocodeAddress get_current_pc () = 0;
 
+  virtual const Breakpoint *add_breakpoint (const MicrocodeAddress &addr);
+  virtual const BreakpointSet *get_breakpoints ();
+  virtual const Breakpoint *check_breakpoints ();
+  virtual bool del_breakpoint (int id);
+
 protected:
   Program *prg;  
   ConcreteAddress start;
@@ -83,6 +94,8 @@ protected:
   Microcode *mc;
   MicrocodeArchitecture *march;
   ArrowVector *arrows;
+  BreakpointSet *breakpoints;
+  int last_bp_index;
 };
 
 template <typename Stepper>
@@ -159,6 +172,15 @@ s_Simulator_get_pc (PyObject *self, PyObject *);
 static PyObject *
 s_Simulator_get_arrows (PyObject *self, PyObject *);
 
+static PyObject *
+s_Simulator_get_breakpoints (PyObject *self, PyObject *);
+
+static PyObject *
+s_Simulator_add_breakpoint (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_del_breakpoint (PyObject *self, PyObject *args);
+
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -185,31 +207,33 @@ static PyTypeObject SimulatorType = {
   0
 };
 
-#define METHOD(lname, sname, proc, flags, help) \
-  { lname, proc, flags, help }, \
-  { sname, proc, flags, help } 
-
 static PyMethodDef SimulatorMethods[] = {
-  METHOD ("run", "r", s_Simulator_run, METH_NOARGS, 
-	  "\n"),
-  METHOD ("microstep", "ms", s_Simulator_microstep, METH_VARARGS, 
-	  "\n"),
-  METHOD ("step", "s", s_Simulator_step, METH_NOARGS, 
-	  "\n"),
-  METHOD ("print_state", "ps", s_Simulator_print_state, METH_NOARGS, 
-	  "\n"),
-  METHOD ("set_memory", "sm", s_Simulator_set_memory, METH_VARARGS, 
-	  "\n"),
-  METHOD ("set_register", "sr", s_Simulator_set_register, METH_VARARGS, 
-	  "\n"),
-  METHOD ("get_memory", "gm", s_Simulator_get_memory, METH_VARARGS, 
-	  "\n"),
-  METHOD ("get_register", "gr", s_Simulator_get_register, METH_VARARGS, 
-	  "\n"),
-  METHOD ("get_pc", "pc", s_Simulator_get_pc, METH_NOARGS,
-	  "\n"),
-  METHOD ("get_arrows", "a", s_Simulator_get_arrows, METH_NOARGS,
-	  "\n"),
+ { "run", s_Simulator_run, METH_NOARGS, 
+   "\n" },
+ { "microstep", s_Simulator_microstep, METH_VARARGS, 
+   "\n" },
+ { "step", s_Simulator_step, METH_NOARGS, 
+   "\n" },
+ { "print_state", s_Simulator_print_state, METH_NOARGS, 
+   "\n" },
+ { "set_memory", s_Simulator_set_memory, METH_VARARGS, 
+   "\n" },
+ { "set_register", s_Simulator_set_register, METH_VARARGS, 
+   "\n" },
+ { "get_memory", s_Simulator_get_memory, METH_VARARGS, 
+   "\n" },
+ { "get_register", s_Simulator_get_register, METH_VARARGS, 
+   "\n" },
+ { "get_pc", s_Simulator_get_pc, METH_NOARGS,
+   "\n" },
+ { "get_arrows", s_Simulator_get_arrows, METH_NOARGS,
+   "\n" },
+ { "get_breakpoints", s_Simulator_get_breakpoints, METH_NOARGS, 
+   "\n" },
+ { "add_breakpoint", s_Simulator_add_breakpoint, METH_VARARGS,
+   "\n" }, 
+ { "del_breakpoint", s_Simulator_del_breakpoint, METH_VARARGS,
+   "\n" }, 
   { NULL, NULL, 0, NULL }
 };
 
@@ -301,9 +325,28 @@ s_Simulator_run (PyObject *p, PyObject *)
 }
 
 static PyObject *
+s_BreakpointReached (const GenericInsightSimulator::Breakpoint *bp)
+{
+  if (PyErr_Occurred ())
+    return NULL;
+  if (bp != NULL)
+    PyErr_SetObject (pynsight::BreakpointReached,
+		     Py_BuildValue ("(k (k,k))",
+				    bp->id,
+				    bp->addr.getGlobal (),
+				    bp->addr.getLocal ()));
+  return NULL;
+}
+
+static PyObject *
+s_PyMicrocodeAddress (const MicrocodeAddress &addr)
+{
+  return Py_BuildValue ("(k,k)", addr.getGlobal (), addr.getLocal ());
+}
+  
+static PyObject *
 s_Simulator_microstep (PyObject *self, PyObject *args)
 {
-  PyObject *result;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   unsigned int aindex;
 
@@ -316,17 +359,29 @@ s_Simulator_microstep (PyObject *self, PyObject *args)
       return NULL;
     }
 
+  PyObject *result = NULL;
   StmtArrow *a = S->get_arrow_at (aindex);
   void *st = S->get_state ();
   void *newst = S->trigger_arrow (st, a);
   if (newst != NULL)
     {
-      S->set_state (newst);      
-      result = pynsight::generic_generator_new (new ArrowsIterator (S));
-    }
-  else
-    {
-      result = NULL;
+      S->set_state (newst); 
+
+      if (S->get_number_of_arrows () == 0)
+	{
+	  MicrocodeAddress a = S->get_pc (st);
+	  PyErr_SetObject (pynsight::SinkNodeReached, s_PyMicrocodeAddress (a));
+	}
+      else
+	{
+	  const GenericInsightSimulator::Breakpoint *bp = 
+	    S->check_breakpoints ();
+	  if (bp == NULL)
+	    result = pynsight::generic_generator_new (new ArrowsIterator (S));
+	  else
+	    result = s_BreakpointReached (bp);
+	}
+      S->delete_state (newst);
     }
   S->delete_state (st);
 
@@ -334,7 +389,7 @@ s_Simulator_microstep (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-s_Simulator_step (PyObject *self, PyObject *x1)
+s_Simulator_step (PyObject *self, PyObject *)
 {
   PyObject *result;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
@@ -349,6 +404,13 @@ s_Simulator_step (PyObject *self, PyObject *x1)
 	  PyErr_SetNone (pynsight::NotDeterministicBehaviorError);
 	  return NULL;
 	}
+
+      if (S->get_number_of_arrows () == 0)
+	{
+	  PyErr_SetObject (pynsight::SinkNodeReached, 
+			   s_PyMicrocodeAddress (ep));
+	  return NULL;
+	}
       StmtArrow *a = S->get_arrow_at (0);
 
       void *st = S->get_state ();
@@ -359,6 +421,14 @@ s_Simulator_step (PyObject *self, PyObject *x1)
 	  S->delete_state (succ);	    
 	}
       S->delete_state (st);
+      if (! PyErr_Occurred ()) 
+	{
+	  const GenericInsightSimulator::Breakpoint *bp = 
+	    S->check_breakpoints ();
+      
+	  if (bp != NULL)
+	    result = s_BreakpointReached (bp);
+	}
     }
 
   if (PyErr_Occurred ())
@@ -498,7 +568,7 @@ s_Simulator_get_pc (PyObject *self, PyObject *)
   else
     {
       MicrocodeAddress a = S->get_pc (st);
-      result = Py_BuildValue ("(k,k)", a.getGlobal (), a.getLocal ());
+      result = s_PyMicrocodeAddress (a);
       S->delete_state (st);
     }
 
@@ -511,6 +581,81 @@ s_Simulator_get_arrows (PyObject *self, PyObject *)
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
   return pynsight::generic_generator_new (new ArrowsIterator (S));
+}
+
+class BreakpointsIterator : public pynsight::GenericGenerator
+{
+private:
+  GenericInsightSimulator *gsim;
+  GenericInsightSimulator::BreakpointSet::const_iterator current;
+public:
+  BreakpointsIterator (GenericInsightSimulator *gsim) 
+    : gsim (gsim), current (gsim->get_breakpoints ()->begin ()) { }
+
+  virtual ~BreakpointsIterator () { }
+
+  PyObject *next () {
+    PyObject *result = NULL;
+    if (current == gsim->get_breakpoints ()->end ())
+      PyErr_SetNone (PyExc_StopIteration);
+    else
+      {
+	result = Py_BuildValue ("(k (k,k))",
+				current->id,
+				current->addr.getGlobal (),
+				current->addr.getLocal ());
+	current++;
+      }
+
+    return result;
+  } 
+};
+
+static PyObject *
+s_Simulator_get_breakpoints (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  return pynsight::generic_generator_new (new BreakpointsIterator (S));
+
+}
+
+static PyObject *
+s_Simulator_add_breakpoint (PyObject *self, PyObject *args)
+{
+  unsigned long gaddr = 0;
+  unsigned long laddr = 0;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  if (! PyArg_ParseTuple (args, "k|k", &gaddr, &laddr))
+    return NULL;
+
+  PyObject *result = NULL;
+  MicrocodeAddress a (gaddr, laddr);
+
+  const GenericInsightSimulator::Breakpoint *bp = S->add_breakpoint (a);
+  if (bp == NULL)
+    result = pynsight::None ();
+  else
+    result = Py_BuildValue ("(k,(k,k))", bp->id, bp->addr.getGlobal (), 
+			    bp->addr.getLocal ());
+
+  return result;
+}
+
+static PyObject *
+s_Simulator_del_breakpoint (PyObject *self, PyObject *args)
+{
+  unsigned long id = 0;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  if (! PyArg_ParseTuple (args, "k", &id))
+    return NULL;
+
+  if (S->del_breakpoint (id))
+    return Py_BuildValue ("i", 1);
+  else
+    return pynsight::None ();
 }
 
 /*****************************************************************************
@@ -529,6 +674,11 @@ GenericInsightSimulator::GenericInsightSimulator (Program *P,
   march = new MicrocodeArchitecture (P->loader->get_architecture ());
   decoder = new BinutilsDecoder (march, P->concrete_memory);
   arrows = new ArrowVector ();
+  breakpoints = new BreakpointSet;
+  last_bp_index = 1;
+  if (prg->stubfactory)
+    prg->stubfactory->add_stubs (prg->concrete_memory, march, mc, 
+				 prg->symbol_table);
 }
 
 GenericInsightSimulator::~GenericInsightSimulator ()
@@ -538,6 +688,7 @@ GenericInsightSimulator::~GenericInsightSimulator ()
   delete march;
   delete decoder;
   delete arrows;
+  delete breakpoints;
 }
 
 MicrocodeArchitecture *
@@ -563,6 +714,57 @@ GenericInsightSimulator::get_arrow_at (size_t i) const
 {
   assert (i < arrows->size ());
   return arrows->at (i);
+}
+
+const GenericInsightSimulator::Breakpoint * 
+GenericInsightSimulator::add_breakpoint (const MicrocodeAddress &addr)
+{
+  const Breakpoint *result = NULL;
+
+  for (BreakpointSet::iterator i = breakpoints->begin (); 
+       i != breakpoints->end () && result == NULL; i++) {
+    if (addr.equals (i->addr))
+      result = &*i;
+  }
+  Breakpoint bp = { last_bp_index++, addr };
+  breakpoints->push_back (bp);
+
+  return result;
+}
+
+const GenericInsightSimulator::BreakpointSet *
+GenericInsightSimulator::get_breakpoints () 
+{
+  return breakpoints;
+}
+
+const GenericInsightSimulator::Breakpoint *
+GenericInsightSimulator::check_breakpoints ()
+{
+  const Breakpoint *result = NULL;
+  MicrocodeAddress pc = get_current_pc ();
+
+  for (BreakpointSet::iterator i = breakpoints->begin (); 
+       i != breakpoints->end () && result == NULL; i++) {
+    if (pc.equals (i->addr))
+      result = &*i;
+  }
+
+  return result;
+}
+
+bool 
+GenericInsightSimulator::del_breakpoint (int id)
+{
+  for (BreakpointSet::iterator i = breakpoints->begin (); 
+       i != breakpoints->end (); i++) {
+    if (i->id == id)
+      {
+	breakpoints->erase (i);
+	return true;
+      }
+  }
+  return false;
 }
 
 /*****************************************************************************
@@ -633,7 +835,17 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 	stepper->get_successors ((State *) from, a);
   
       if (succs->size () == 1)
-	result = *(succs->begin ());
+	{
+	  result = *(succs->begin ());
+	  MicrocodeAddress tgt = 
+	    result->get_ProgramPoint ()->to_MicrocodeAddress ();
+	  if (! check_memory_range (from, tgt.getGlobal (), 1))
+	    {
+	      PyErr_SetObject (pynsight::JumpToInvalidAddress,
+			       s_PyMicrocodeAddress (tgt));
+	      result = NULL;
+	    }
+	}
       else if (succs->size () != 0)
 	PyErr_SetNone (pynsight::NotDeterministicBehaviorError);
       delete succs;
@@ -809,115 +1021,3 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
   return result;
 }
 
-#if 0
-
-static PyObject *
-s_state_iterator (void *data)
-{
-  PyObject *result = NULL;
-  vector<string> *states = ((vector<string> *) data);
-  
-  if (states->empty ())
-    PyErr_SetNone (PyExc_StopIteration);
-  else
-    {
-      string s = states->back ();
-      states->pop_back ();
-      result = Py_BuildValue ("s", s.c_str ());
-    }
-
-  return result;
-}
-
-static void 
-s_delete_state_list (void *data)
-{
-  delete ((vector<string> *) data);
-}
-
-static PyObject *
-s_Simulator_microstep (PyObject *p, PyObject *args)
-{
-  Simulator *S = (Simulator *) p;
-  unsigned int aindex;
-
-  if (! PyArg_ParseTuple (args, "I", &aindex))
-    return NULL;
-  
-  if (aindex >= S->arrows->size ())
-    {
-      PyErr_SetString (PyExc_IndexError, "invalid microcode-arrow index");
-      return NULL;
-    }
-
-  StmtArrow *a = S->arrows->at (aindex);
-  void *s = S->states->at (0);
-  vector<void*> *new_states = new vector<void*>;
-  S->successors (S, s, a, new_states);
-  s_clear_states (S, S->states);
-  delete S->states;
-  S->states = new_states;
-
-  vector<string> *vs = new vector<string>;
-
-  for (vector<void*>::iterator i = S->states->begin (); i != S->states->end (); 
-       i++) 
-    vs->push_back (S->state_to_string (*i));
- 
-  PyObject *result = 
-    pynsight::generic_generator_new (s_state_iterator, vs, 
-				     s_delete_state_list);
-  return result;  
-}
-
-template <typename Stepper> void *
-s_initial_state (void *stepper, address_t addr)
-{
-  return ((Stepper *) stepper)->get_initial_state (addr);
-}
-
-template <typename Stepper> void 
-s_delete_state (void *s)
-{
-  ((typename Stepper::State *) s)->deref ();
-}
-
-template <typename Stepper> string
-s_state_to_string (void *s)
-{
-  return ((typename Stepper::State *) s)->to_string ();
-}
-
-template <typename Stepper> void 
-s_delete_stepper (void *s)
-{
-  delete (Stepper *) s;
-}
-
-template <typename Stepper> void 
-s_successors (Simulator *S, void *s, StmtArrow *a, vector<void *> *result) 
-{
-  typename Stepper::State *ns = (typename Stepper::State *) s;
-  typename Stepper::StateSet *succ = 
-    ((Stepper *) S->stepper)->get_successors (ns, a);
-
-  for (typename Stepper::StateSet::iterator i = succ->begin(); 
-       i != succ->end ();  i++) 
-    result->push_back (*i);
-
-  delete succ;
-}
-
-template <typename Stepper> 
-void 
-s_init_simulator (Simulator *S, ConcreteMemory *mem)
-{
-  S->initial_state = s_initial_state<Stepper>;
-  S->delete_stepper = s_delete_stepper<Stepper>;
-  S->delete_state = s_delete_state<Stepper>;
-  S->state_to_string = s_state_to_string<Stepper>;
-  S->enabled_arrows = s_enabled_arrows<Stepper>;
-  S->successors = s_successors<Stepper>;
-  S->stepper = new Stepper (mem, S->march);
-}
-#endif
