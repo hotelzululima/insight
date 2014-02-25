@@ -29,8 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "ConfigTable.hh"
+
+#include <algorithm>
 #include <cstdlib>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -156,8 +159,17 @@ ConfigTable::get_boolean (const std::string &name, bool def) const
 void 
 ConfigTable::save (std::ostream &out) const
 {
-  for (const_iterator i = table.begin (); i != table.end (); i++)
-    out << i->first << " = " << i->second << endl;
+  std::vector<std::string> names(table.size());
+  int idx = 0;
+
+  for (const_iterator i = table.begin(); i != table.end(); i++)
+    names[idx++] = i->first;
+
+  std::sort(names.begin(), names.end());
+
+  for (std::vector<std::string>::const_iterator i = names.begin ();
+       i != names.end (); i++)
+    out << *i << " = " << table.find(*i)->second << endl;
 }
 
 static void
