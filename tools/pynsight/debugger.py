@@ -225,6 +225,14 @@ def print_symbols():
         print "0x{:x} : {}".format (a, s)
 
 def print_registers(l=None):
+    """Display values of registers specified in l.
+
+    For each name of register given in iterable object 'l', the function 
+    displays its value according to the current context of the simulation. If
+    no value has been assigned yet to a register this latter is not displayed.
+
+    If 'l' is 'None' then all registers are considered.
+    """
     global simulator
     if simulator == None:
         print "Program is not started."
@@ -242,6 +250,7 @@ def print_registers(l=None):
                 print fmt.format (r, simulator.get_register (r))
 
 def register(regname):
+    """Returns the value of a register."""
     global simulator
     if simulator == None:
         print "Program is not started."
@@ -252,10 +261,15 @@ def register(regname):
         print e, regname
     
 def prog(): 
+    """Returns the program being debugged."""
     global program
     return program
 
 def set(loc, val):
+    """Assign a value to register or a location in memory.
+
+    
+    """
     global simulator
     if simulator == None:
         print "program is not started"
@@ -274,7 +288,13 @@ def set(loc, val):
             loc += 1
 
     
-def instr(at=None):
+def instr(addr=None):
+    """Assembler instruction at address 'addr'.
+
+    This method displays the assembler instruction located at 'addr'. If the
+    parameter is omitted or is 'None' the program counter of the current 
+    simulation is used. Note that this method directly uses Insight's decoder; 
+    no access to currently built MC is done."""
     global program
     if program == None:
         print "no program is loaded"
