@@ -153,14 +153,19 @@ bool Annotable::is_annotated() const
 void 
 Annotable::output_annotations (std::ostream &out) const
 {
+  std::vector<Annotable::AnnotationId> *ids = get_sorted_annotation_ids();
+
   out << "{";
-  for (AnnotationMap::const_iterator it = amap.begin(); it != amap.end(); it++)
+  for (std::vector<Annotable::AnnotationId>::const_iterator it = ids->begin();
+       it != ids->end(); it++)
     {
-      if (it != amap.begin())
+      if (it != ids->begin())
         {
           out << ", ";
         }
-      out << it->first << ":=" << *(it->second);
+      out << *it << ":=" << *get_annotation(*it);
     }
   out << "}";
+
+  delete ids;
 }
