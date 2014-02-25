@@ -30,6 +30,7 @@
 
 #include <kernel/Annotable.hh>
 
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <typeinfo>
