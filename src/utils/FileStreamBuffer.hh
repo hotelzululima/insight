@@ -45,7 +45,7 @@ protected:
   virtual int sync();
 private:
   FILE *file;
-  char read_buffer[2];
+  charT read_buffer[2];
 };
 
 #endif /* UTILS_FILESTREAMBUFFER_HH_ */
