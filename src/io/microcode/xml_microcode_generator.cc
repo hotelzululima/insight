@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -164,11 +164,12 @@ s_add_annotations (xmlNodePtr parent, const Annotable *annotable,
   if (location != NULL)
     s_add_prop (root, "addr", *location);
 
-  for (Annotable::AnnotationMap::const_iterator i = annotations->begin ();
-       i != annotations->end (); i++)
+  vector<Annotable::AnnotationId> *ids = annotable->get_sorted_annotation_ids();
+  for (vector<Annotable::AnnotationId>::const_iterator i = ids->begin();
+       i != ids->end(); i++)
     {
-      Annotable::AnnotationId id = i->first;
-      const Annotation *a = i->second;
+      Annotable::AnnotationId id = *i;
+      const Annotation *a = annotable->get_annotation(id);
       xmlNodePtr annotation;
 
       if (id == SolvedJmpAnnotation::ID)
@@ -191,6 +192,7 @@ s_add_annotations (xmlNodePtr parent, const Annotable *annotable,
 	}
       xmlAddChild (root, annotation);
     }
+  delete ids;
 }
 
 static void
