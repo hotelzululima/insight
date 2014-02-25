@@ -572,11 +572,15 @@ s_Simulator_set_register (PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple (args, "sk", &regname, &regval))
     return NULL;
 
-  const RegisterDesc *rd = S->get_march ()->get_register (regname);
-  if (rd == NULL)
-    PyErr_SetString (PyExc_LookupError, "unknown register");
-  else
-    S->set_register (rd, regval);
+  try 
+    {
+      const RegisterDesc *rd = S->get_march ()->get_register (regname);
+      S->set_register (rd, regval);
+    }
+  catch (Architecture::RegisterDescNotFound &e)
+    {
+      PyErr_SetString (PyExc_LookupError, "unknown register");
+    }
 
   return pynsight::None ();
 }
@@ -591,16 +595,19 @@ s_Simulator_get_register (PyObject *self, PyObject *args)
 
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   PyObject *result = NULL;
-  const RegisterDesc *rd = S->get_march ()->get_register (regname);
-  if (rd == NULL)
-    PyErr_SetString (PyExc_LookupError, "unknown register");
-  else 
+
+  try 
     {
+      const RegisterDesc *rd = S->get_march ()->get_register (regname);
       void *st = S->get_state ();
       if (!S->check_register (st, rd)) 
 	result = pynsight::None ();
       else
 	result = Py_BuildValue ("s", S->get_register (rd).c_str ());
+    }
+  catch (Architecture::RegisterDescNotFound &e) 
+    {
+      PyErr_SetString (PyExc_LookupError, "unknown register");
     }
 
   return result;

@@ -246,7 +246,10 @@ def register(regname):
     if simulator == None:
         print "Program is not started."
         return
-    return simulator.get_register (regname)
+    try:
+        return simulator.get_register (regname)
+    except LookupError, e:
+        print e, regname
     
 def prog(): 
     global program
