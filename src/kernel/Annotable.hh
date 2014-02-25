@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -31,6 +31,8 @@
 #define KERNEL_ANNOTABLE_HH
 
 #include <string>
+#include <vector>
+
 #include <kernel/Annotation.hh>
 #include <utils/unordered11.hh>
 
@@ -61,6 +63,8 @@ public:
   Annotation *get_annotation(const AnnotationId &id) const;
   /*! \brief get a specific annotation. */
   Annotation *get_annotation(const char *id) const;
+  /*! \brief get a vector of sorted annotation ids to help determinism */
+  std::vector<AnnotationId> *get_sorted_annotation_ids() const;
 
   /*! \brief add an annotation. Cf. previous remark */
   void add_annotation(const AnnotationId &id, Annotation *a);

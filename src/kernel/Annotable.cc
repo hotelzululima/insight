@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * All rights reserved.
@@ -100,6 +100,23 @@ Annotation *Annotable::get_annotation(const char *id) const
 {
   AnnotationId tmp(id);
   return this->get_annotation(tmp);
+}
+
+std::vector<Annotable::AnnotationId> *
+Annotable::get_sorted_annotation_ids() const {
+  std::vector<Annotable::AnnotationId> *annotation_ids =
+    new std::vector<Annotable::AnnotationId>(amap.size());
+  int idx = 0;
+
+  for (Annotable::AnnotationMap::const_iterator i = amap.begin ();
+       i != amap.end (); i++)
+    {
+      (*annotation_ids)[idx++] = i->first;
+    }
+
+  sort(annotation_ids->begin(), annotation_ids->end());
+
+  return annotation_ids;
 }
 
 void Annotable::add_annotation(const AnnotationId &id, Annotation *a)
