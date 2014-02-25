@@ -23,11 +23,12 @@ def file(filename,target=""):
     simulator = None
     sys.ps1 = prompt.format (filename)
     
-def run():
+def run(ep=None, dom="symbolic"):
+    """Start simulation"""
     global simulator, program
     if simulator != None:
-        for a in simulator.run ():
-            print a
+        simulator.run ()
+        arross ()
         return
     if program == None:
         if len (sys.argv) == 2:
@@ -38,7 +39,9 @@ def run():
         raise RuntimeWarning, "No program has been loaded"
 
     insight.config.set ("kernel.expr.solver.name", "mathsat")
-    simulator = program.simulator ()
+    if ep == None:
+        ep = entrypoint ()
+    simulator = program.simulator (start=ep, domain=dom)
     simulator.run ()
     arrows ()
 
@@ -48,6 +51,7 @@ def arrows():
         print "Program is not started"
         return
     i = 0
+    print "Arrows from (0x{:x},{}):".format (pc()[0],pc()[1])
     for a in simulator.get_arrows():
         print i, ":", a
         i += 1
@@ -58,8 +62,8 @@ def simulation_error ():
         print "execution interrupted:"
         print sys.exc_value
     elif sys.exc_type is insight.error.BreakpointReached:
-        (id, (ga,la)) = sys.exc_value
-        print "breakpoint {} reached at (0x{:x}, {})".format (id, ga, la)
+        (id, s) = sys.exc_value
+        print "stop condition {} reached: {}".format (id, s)
     elif sys.exc_type is insight.error.SinkNodeReached:
         (ga,la) = sys.exc_value
         print "sink node reached after (0x{:x}, {})".format(ga,la)
@@ -67,7 +71,7 @@ def simulation_error ():
         (ga,la) = sys.exc_value
         print "try to jump into undefined memory (0x{:x}, {})".format(ga,la)
     elif sys.exc_type is insight.error.NotDeterministicBehaviorError:
-        print "stop in a configuration wtih several output arrows"
+        print "stop in a configuration with several output arrows"
     else:
         raise 
 
@@ -82,23 +86,24 @@ def microstep(a = 0):
         simulation_error ()
     arrows ()
 
-def step():
+def step(a = 0):
     global simulator
     if simulator == None:
         print "Program is not started"
         return
     try:
-        simulator.step ()
+        simulator.step (a)
     except:
         simulation_error ()
     arrows ()
 
-def cont():
+def cont(a = 0):
     global simulator
     if simulator == None:
         print "Program is not started"
         return
     try:
+        simulator.step (a)
         while True:
             simulator.step ()
     except:
@@ -143,7 +148,38 @@ def breakpoint(g=None,l=0):
             l = simulator.get_pc()[1]
     bp = simulator.add_breakpoint (g,l)
     if bp != None:
-        print "breakpoint already set at (0x{:x},{}) with id ({}).".format (bp[1][0], bp[1][1], bp[0])
+        print "breakpoint already set at (0x{:x},{}) with id ({}).".format (g, l, bp[0])
+
+def cond (id, e = None):
+    global simulator
+
+    if simulator == None:
+        print "Program is not started; set breakpoint to entrypoint."
+        return None;
+    bp = None
+    if e == None:
+        bp = simulator.set_cond (id)        
+    elif isinstance (e, str):
+        bp = simulator.set_cond (id, e)
+    else:
+        raise TypeError, e
+    if bp == None:
+        print "no such breakpoint ", id
+        return
+    elif e == None:
+        print "making breakpoint", id," unconditional"
+    else:
+        print "making breakpoint", id," conditional"
+    print bp[0], " : ", bp[1]
+
+def watchpoint(cond):
+    global simulator
+    if simulator == None:
+        print "Program is not started"
+        return 
+    bp = simulator.add_watchpoint (cond)
+    if bp != None:
+        print "watchpoint already setid ({}).".format (bp[0])
 
 def delete_breakpoints(l=None):
     global simulator
@@ -162,8 +198,8 @@ def delete_breakpoints(l=None):
 def info (what):
     global program, simulator
     if "breakpoints".find (what) == 0 and simulator != None:
-        for (id, (ga,la)) in simulator.get_breakpoints ():
-            print id, " : (0x{:x},{})".format (ga,la)
+        for (id, s) in simulator.get_breakpoints ():
+            print id, " : {}".format (id, s)
     elif "entrypoint".find (what) == 0 or "ep".find (what) == 0:
         print "0x{:x}".format (entrypoint()[0], entrypoint()[1])
     elif "pc".find (what) == 0:
@@ -177,22 +213,24 @@ def pc():
     return simulator.get_pc ()
 
 def entrypoint():
-    global simulator
-    if simulator == None:
-        print "Program is not started."
+    global program
+    if program == None:
+        print "no program is loaded"
         return None
-    return simulator.get_pc ()
+    return program.info()["entrypoint"]
 
-def symbols():
+def print_symbols():
     global program
     for (s,a) in program.symbols ():
         print "0x{:x} : {}".format (a, s)
 
-def registers(l=None):
+def print_registers(l=None):
     global simulator
     if simulator == None:
         print "Program is not started."
-        return
+        return 
+    if l == None:
+        l = program.info()["registers"].keys()
     if isinstance (l, str):
         l = [l]
     regs = program.info()["registers"];
@@ -202,6 +240,13 @@ def registers(l=None):
             val = simulator.get_register (r)
             if val != None:
                 print fmt.format (r, simulator.get_register (r))
+
+def register(regname):
+    global simulator
+    if simulator == None:
+        print "Program is not started."
+        return
+    return simulator.get_register (regname)
     
 def prog(): 
     global program
@@ -224,3 +269,14 @@ def set(loc, val):
         for b in val:
             simulator.set_memory (loc, 0xFF & b)
             loc += 1
+
+    
+def instr(at=None):
+    global program
+    if program == None:
+        print "no program is loaded"
+    if at == None:
+        disas(1)
+    else:
+        for i in program.disas (at, 1):
+            print i[1]

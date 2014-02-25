@@ -429,12 +429,14 @@ class DisasIterator : public pynsight::GenericGenerator
 {
 private:
   address_t current_addr;
+  int remain;
   address_t max_addr;
   MicrocodeArchitecture *march;
   BinutilsDecoder *decoder;
 public:
-  DisasIterator (Program *p, address_t start, address_t max) 
-    : pynsight::GenericGenerator (), current_addr (start), max_addr (max) {
+  DisasIterator (Program *p, address_t start, int nb, address_t max) 
+    : pynsight::GenericGenerator (), current_addr (start), remain (nb),
+      max_addr (max) {
     march = new MicrocodeArchitecture (p->loader->get_architecture ());
     decoder = new BinutilsDecoder (march, p->concrete_memory);
   }
@@ -447,10 +449,11 @@ public:
   PyObject *next () {
     PyObject *result = NULL;
 
-    if (current_addr >= max_addr) 
+    if (current_addr >= max_addr || remain == 0)
       PyErr_SetNone (PyExc_StopIteration);
     else 
       {
+	remain--;
 	try 
 	  {
 	    std::string inst = decoder->get_instruction (current_addr);
@@ -472,17 +475,17 @@ public:
 static PyObject *
 s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
 {
-  static const char *kwlists[] =  { "start", "len", NULL };
+  static const char *kwlists[] =  { "start", "nb", NULL };
   Program *p = (Program *) obj;
-  address_t s,e;
+  address_t s, e;
 
   p->concrete_memory->get_address_range (s, e);
 
   Py_ssize_t start = s;
-  Py_ssize_t len = e - s + 1;
+  Py_ssize_t nb = 1;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwds, "|II", (char **) kwlists, 
-				    &start, &len))
+				    &start, &nb))
     return NULL;
 
   if (! (s <= start && start <= e)) {    
@@ -490,14 +493,10 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
     return NULL;
   }
 
-  if (len == 0)
+  if (nb == 0)
     return pynsight::None ();
 
-  if (start + len >= e) {
-    len = e - start + 1;
-  }
-
-  DisasIterator *di = new DisasIterator (p, start, start + len);
+  DisasIterator *di = new DisasIterator (p, start, nb, e);
   PyObject *result = pynsight::generic_generator_new (di);
 
   return result;
