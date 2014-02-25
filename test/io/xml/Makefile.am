@@ -145,7 +145,8 @@ endif
 #
 .SECONDARY: # keep generated files
 
-x86_32-%.mc.xml : ${TEST_SAMPLES_DIR}/x86_32-%.bin check-cfgrecovery
+x86_32-%.mc.xml : ${TEST_SAMPLES_DIR}/x86_32-%.bin check-cfgrecovery \
+								$(CFGRECOVERY)
 	@ echo "Generate $@"
 	@ ${CFGRECOVERY} ${CFGRECOVERYFLAGS} -b elf32-i386 -o x86_32-$* $<
 
