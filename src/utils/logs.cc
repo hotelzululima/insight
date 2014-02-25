@@ -37,7 +37,7 @@
 #ifdef NDEBUG
 # define DEBUG_IS_ON false
 #else
-# define DEBUG_IS_ON debug
+# define DEBUG_IS_ON true
 #endif
 
 using namespace std;
