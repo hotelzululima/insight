@@ -6,7 +6,7 @@ PYNSIGHT_SCRIPT_FILES=__init__.py utils.py debugger.py
 bin_PROGRAMS = pynsight 
 bin_SCRIPTS = insightdb
 
-EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES}
+EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES} ${bin_SCRIPTS}
 
 pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc \
                    gengen.cc gengen.hh simulator.cc config.cc
