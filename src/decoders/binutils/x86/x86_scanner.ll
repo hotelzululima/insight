@@ -980,7 +980,7 @@ optype    [bswlqt]
 	        return token::TOK_REGISTER;
              }
 
- /* Anything else is probable an error */
+ /* Anything else is probably an error */
 .  { 
      char tmp[2] = { yytext[0], 0 };
      yylval->stringValue = new string (tmp);
