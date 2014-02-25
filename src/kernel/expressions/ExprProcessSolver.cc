@@ -33,10 +33,10 @@
 #include <io/expressions/smtlib-writer.hh>
 #include <kernel/expressions/exprutils.hh>
 #include <io/expressions/expr-parser.hh>
+#include <utils/FileStreamBuffer.hh>
 #include <utils/logs.hh>
 #include <utils/unordered11.hh>
 
-#include <ext/stdio_filebuf.h>
 #include <csignal>
 #include <cstdio>
 #include <cstring>
@@ -51,7 +51,7 @@ typedef ExprSolver::UnexpectedResponseException UnexpectedResponseException;
 
 #define MEMORY_VAR "MEM"
 
-typedef __gnu_cxx::stdio_filebuf<char> file_buffer;
+typedef FileStreamBuffer<char, char_traits<char> > file_buffer;
 
 static const std::string SOLVER_NAME = "process";
 
@@ -122,10 +122,8 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca)
 
   if (s_create_pipe (cmd, args, pipestreams, &cpid))
     {
-      istream *i = new istream (new file_buffer (pipestreams[0], 
-						 std::ios_base::in));
-      ostream *o = new ostream (new file_buffer (pipestreams[1], 
-						 std::ios_base::out));      
+      istream *i = new istream (new file_buffer (pipestreams[0]));
+      ostream *o = new ostream (new file_buffer (pipestreams[1]));
       result = new ExprProcessSolver (mca, cmd, i, o, cpid);
       try
 	{
@@ -147,8 +145,6 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca)
 
 ExprProcessSolver::~ExprProcessSolver ()
 {
-  fclose (((file_buffer *) in->rdbuf ())->file ());
-  fclose (((file_buffer *) out->rdbuf ())->file ());
   kill (childpid, SIGTERM);
   
   delete in->rdbuf ();

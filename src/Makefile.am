@@ -53,22 +53,24 @@ analyses_sources = \
 
 ## utils module
 utils_source = \
-        utils/ConfigTable.hh	\
-        utils/ConfigTable.cc	\
-        utils/graph.hh		\
-        utils/graph.ii		\
-	utils/logs.cc		\
-	utils/logs.hh		\
-	utils/Object.cc		\
-	utils/Object.hh		\
-	utils/bv-manip.hh	\
-	utils/infrastructure.hh	\
-	utils/map-helpers.hh	\
-	utils/Option.hh		\
-	utils/path.hh		\
-	utils/path.ii		\
-	utils/tools.cc		\
-	utils/tools.hh		\
+        utils/ConfigTable.hh		\
+        utils/ConfigTable.cc		\
+	utils/FileStreamBuffer.hh	\
+	utils/FileStreamBuffer_char.cc	\
+        utils/graph.hh			\
+        utils/graph.ii			\
+	utils/logs.cc			\
+	utils/logs.hh			\
+	utils/Object.cc			\
+	utils/Object.hh			\
+	utils/bv-manip.hh		\
+	utils/infrastructure.hh		\
+	utils/map-helpers.hh		\
+	utils/Option.hh			\
+	utils/path.hh			\
+	utils/path.ii			\
+	utils/tools.cc			\
+	utils/tools.hh			\
 	utils/unordered11.hh
 
 ## kernel module
