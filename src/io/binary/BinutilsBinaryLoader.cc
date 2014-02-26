@@ -68,6 +68,9 @@ BinutilsBinaryLoader::compute_BFD_architecture(const string machine,
   else if (bfd_architecture.find("arm") != string::npos)
     _processor = Architecture::ARM;
 
+  else if (bfd_architecture.find("msp430") != string::npos)
+    _processor = Architecture::MSP430;
+
   else if (bfd_architecture.find("sparc") != string::npos)
     _processor = Architecture::SPARC;
 

@@ -143,6 +143,13 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
       this->decoder = &arm_decoder_func;
       break;
 
+    case Architecture::MSP430:
+      if ((abfd->arch_info = bfd_scan_arch("msp430"))  == NULL)
+	throw Decoder::DecoderUnexpectedError("msp430 is not supported on your system");
+      /* Setting the decoder function for arm */
+      this->decoder = NULL;
+      break;
+
     case Architecture::SPARC:
       /* Checking support and setting the disassembler for sparc */
       if ((abfd->arch_info = bfd_scan_arch("sparc"))  == NULL)
@@ -227,6 +234,9 @@ BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
 {
   assert(memory->is_defined(address));
   ConcreteAddress result = this->next(address);
+
+  if (decoder == NULL)
+    throw Decoder::DecoderUnexpectedError("Decoder not implemented for this architecture");
 
   if (this->decoder(arch, mc, instr_buffer->str(), address, result))
     {

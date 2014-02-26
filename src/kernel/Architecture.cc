@@ -33,6 +33,7 @@
 #include <cassert>
 
 #include <kernel/Architecture_ARM.hh>
+#include <kernel/Architecture_msp430.hh>
 #include <kernel/Architecture_SPARC.hh>
 #include <kernel/Architecture_X86_32.hh>
 #include <kernel/Architecture_X86_64.hh>
@@ -228,7 +229,7 @@ const Architecture *
 Architecture::getArchitecture (const processor_t proc, 
 			       const endianness_t endian)
 {
-  int index = s_arch_index (proc, endian);
+  int index = s_arch_index(proc, endian);
   Architecture *arch = architectures [index];
 
   if (arch == NULL)
@@ -238,6 +239,11 @@ Architecture::getArchitecture (const processor_t proc,
 	case Architecture::ARM:
 	  arch = new Architecture_ARM(endian);
 	  processor_names[Architecture::ARM] = "arm";
+	  break;
+
+	case Architecture::MSP430:
+	  arch = new Architecture_MSP430();
+	  processor_names[Architecture::MSP430] = "msp430";
 	  break;
 	  
 	case Architecture::SPARC:

@@ -84,6 +84,8 @@ kernel_source = \
 	kernel/Architecture.hh 	  	\
 	kernel/Architecture_ARM.cc    	\
 	kernel/Architecture_ARM.hh    	\
+	kernel/Architecture_msp430.cc   \
+	kernel/Architecture_msp430.hh   \
 	kernel/Architecture_SPARC.cc    \
 	kernel/Architecture_SPARC.hh    \
 	kernel/Architecture_X86_32.cc 	\

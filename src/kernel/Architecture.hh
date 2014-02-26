@@ -127,6 +127,7 @@ public:
     IA64,
     M68K,
     MIPS,
+    MSP430,
     PowerPC,
     SPARC,
     X86_32,
