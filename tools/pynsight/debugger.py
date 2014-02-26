@@ -28,7 +28,7 @@ def run(ep=None, dom="symbolic"):
     global simulator, program
     if simulator != None:
         simulator.run ()
-        arross ()
+        arrows ()
         return
     if program == None:
         if len (sys.argv) == 2:
@@ -298,8 +298,9 @@ def instr(addr=None):
     global program
     if program == None:
         print "no program is loaded"
-    if at == None:
+    if addr == None:
         disas(1)
     else:
-        for i in program.disas (at, 1):
+        for i in program.disas (addr, 1):
             print i[1]
+
