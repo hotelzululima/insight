@@ -28,8 +28,8 @@
  * SUCH DAMAGE.
  */
 #include <stdexcept>
-# include <kernel/annotations/AsmAnnotation.hh>
-# include <kernel/annotations/NextInstAnnotation.hh>
+#include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/NextInstAnnotation.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/expressions/expr-parser.hh>
@@ -138,6 +138,7 @@ public:
   virtual const StopCondition *check_stop_conditions ();
   virtual void reset_stop_conditions ();
   virtual bool del_stop_condition (int id);
+  virtual const Microcode *get_microcode () const;
 
   virtual Option<bool> eval (const Expr *e) const = 0;
 
@@ -192,7 +193,6 @@ struct Simulator {
   GenericInsightSimulator *gsim;
 };
 
-
 static void
 s_Simulator_dealloc (PyObject *self);
 
@@ -240,6 +240,9 @@ s_Simulator_add_watchpoint (PyObject *self, PyObject *args);
 
 static PyObject *
 s_Simulator_del_breakpoint (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_get_microcode (PyObject *self, PyObject *);
 
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
@@ -298,7 +301,10 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" }, 
  { "del_breakpoint", s_Simulator_del_breakpoint, METH_VARARGS,
    "\n" }, 
-  { NULL, NULL, 0, NULL }
+ { "get_microcode", s_Simulator_get_microcode, METH_NOARGS,
+   "\n" }, 
+
+ { NULL, NULL, 0, NULL }
 };
 
 static bool 
@@ -812,6 +818,14 @@ s_Simulator_del_breakpoint (PyObject *self, PyObject *args)
     return pynsight::None ();
 }
 
+static PyObject *
+s_Simulator_get_microcode (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  return pynsight::microcode_object (self, S->get_microcode ());
+}
+
 /*****************************************************************************
  *
  * GenericInsightSimulator
@@ -943,6 +957,12 @@ GenericInsightSimulator::del_stop_condition (int id)
       }
   }
   return false;
+}
+
+const Microcode * 
+GenericInsightSimulator::get_microcode () const
+{
+  return mc;
 }
 
 /*****************************************************************************

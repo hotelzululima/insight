@@ -9,7 +9,8 @@ bin_SCRIPTS = insightdb
 EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES} ${bin_SCRIPTS}
 
 pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc \
-                   gengen.cc gengen.hh simulator.cc config.cc
+                   gengen.cc gengen.hh simulator.cc config.cc \
+                   microcode.cc
 
 pynsight_CPPFLAGS = @PYTHON_CFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
                     -DPYNSIGHT_HOME="\"${PYNSIGHT_HOME}\"" \

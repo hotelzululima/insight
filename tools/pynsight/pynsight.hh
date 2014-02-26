@@ -78,7 +78,9 @@ namespace pynsight {
 
   extern ConfigTable &configTable ();
 
-  /* Exceptions */
+  extern PyObject *microcode_object (PyObject *parent, const Microcode *mc);
+
+  /* Exceptions & Errors */
   extern PyObject *BFDError;
   extern PyObject *NotDeterministicBehaviorError;
   extern PyObject *UndefinedValueError;
