@@ -517,6 +517,10 @@ ExprMathsatSolver::init (const ConfigTable &)
   //  msat_set_option(MATHSAT_CONFIG, "proof_generation", "true");
   // msat_set_option(MATHSAT_CONFIG, "bool_model_generation", "true");
 
+  /* Disabling 'eager' method because it leads to some memory leaks */
+  /* Confirmed on mathsat 5.2.11 */
+  msat_set_option(MATHSAT_CONFIG, "theory.bv.eager", "false");
+
   if (debug_traces)
     {
       msat_set_option(MATHSAT_CONFIG, "debug.api_call_trace", "3");
