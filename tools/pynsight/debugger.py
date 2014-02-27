@@ -6,6 +6,7 @@ program = None
 simulator = None
 prompt = "pynsight:{}> "
 sys.ps1 = "pynsight:> "
+hooks = {}
 
 def file(filename,target=""):
     """Load a binary file.
@@ -22,12 +23,29 @@ def file(filename,target=""):
     program = insight.io.load_bfd (filename, target)
     simulator = None
     sys.ps1 = prompt.format (filename)
-    
+
+
+def exec_hooks (f):
+    global hooks
+    if f in hooks:
+        for h in hooks[f]:
+            h ()
+
+def add_hook (f, h):
+    if f in hooks:
+        hooks[f] += [h]
+    else:
+        hooks[f] = [h]
+
+def add_run_hook (h): add_hook (run, h)
+def add_step_hook (h): add_hook (step, h)
+
 def run(ep=None, dom="symbolic"):
     """Start simulation"""
     global simulator, program
     if simulator != None:
         simulator.run ()
+        exec_hooks (run)
         arrows ()
         return
     if program == None:
@@ -43,6 +61,7 @@ def run(ep=None, dom="symbolic"):
         ep = entrypoint ()
     simulator = program.simulator (start=ep, domain=dom)
     simulator.run ()
+    exec_hooks (run)
     arrows ()
 
 def arrows():
@@ -92,9 +111,10 @@ def step(a = 0):
         print "Program is not started"
         return
     try:
-        simulator.step (a)
+        simulator.step (a)        
     except:
         simulation_error ()
+    exec_hooks (step)
     arrows ()
 
 def cont(a = 0):
@@ -108,6 +128,7 @@ def cont(a = 0):
             simulator.step ()
     except:
         simulation_error ()
+    exec_hooks (cont)
     arrows ()
 
 def dump(addr = None, l = 256):
