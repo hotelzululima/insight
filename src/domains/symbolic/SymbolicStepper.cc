@@ -97,6 +97,48 @@ SymbolicStepper::~SymbolicStepper () {
   delete solver;
 }
 
+ConcreteValue 
+SymbolicStepper::value_to_ConcreteValue (const SymbolicStepper::Context *ctx, 
+					 const SymbolicStepper::Value &v) 
+  throw (UndefinedValueException)
+{
+  if (v.get_Expr() == NULL)
+    throw UndefinedValueException (v.to_string ());
+
+  const SymbolicContext *sc = dynamic_cast<const SymbolicContext *> (ctx);
+  assert (sc != NULL);
+  RewriteWithAssignedValues r (sc, this->arch->get_endian ());
+  Expr *f = v.get_Expr ()->ref ();
+
+  for (;;)
+    {
+      f->acceptVisitor (r);
+      Expr *aux = r.get_result ();
+      f->deref ();
+      if (aux == f)
+	break;
+      f = aux;
+    }
+  exprutils::simplify (&f);
+
+  Expr *cond = sc->get_path_condition ()->ref ();
+
+  std::vector<constant_t> *values = solver->evaluate (f, cond, 1);
+  f->deref ();
+  cond->deref ();
+
+  if (values->size () == 0)
+    {
+      delete values;
+      throw UndefinedValueException (v.to_string ());
+    }
+
+  assert (f->get_bv_offset () == 0);
+  ConcreteValue result (f->get_bv_size (), values->at (0));
+  delete values;
+  return result;    
+}
+
 SymbolicStepper::Address 
 SymbolicStepper::value_to_address (const Context *, const Value &v) 
   throw (UndefinedValueException)

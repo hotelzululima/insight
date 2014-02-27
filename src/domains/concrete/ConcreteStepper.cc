@@ -76,6 +76,14 @@ ConcreteStepper::~ConcreteStepper ()
 {
 }
 
+ConcreteValue 
+ConcreteStepper::value_to_ConcreteValue (const ConcreteStepper::Context *, 
+					 const ConcreteStepper::Value &v) 
+    throw (UndefinedValueException)
+{
+  return v;
+}
+
 ConcreteStepper::Address 
 ConcreteStepper::value_to_address (const ConcreteStepper::Context *, 
 				   const ConcreteStepper::Value &v) 

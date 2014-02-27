@@ -23,6 +23,10 @@ public:
   ConcreteStepper (ConcreteMemory *memory, const MicrocodeArchitecture *arch);
   virtual ~ConcreteStepper ();
 
+  virtual ConcreteValue 
+  value_to_ConcreteValue (const Context *ctx, const Value &v) 
+    throw (UndefinedValueException);
+
   virtual Address 
   value_to_address (const Context *ctx, const Value &v) 
     throw (UndefinedValueException);

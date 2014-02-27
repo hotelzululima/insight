@@ -29,6 +29,10 @@ public:
   virtual StateSet *get_successors (const State *s, const StmtArrow *arrow)
     throw (UndefinedValueException);
 
+  virtual ConcreteValue 
+  value_to_ConcreteValue (const Context *ctx, const Value &v) 
+    throw (UndefinedValueException) = 0;
+
   virtual Address 
   value_to_address (const Context *ctx, const Value &v) 
     throw (UndefinedValueException) = 0;
