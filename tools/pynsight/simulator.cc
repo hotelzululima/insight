@@ -123,14 +123,33 @@ public:
   virtual void *get_state () = 0;
   virtual void *trigger_arrow (void *from, StmtArrow *a) = 0;
 
-  virtual void set_memory (address_t addr, uint8_t val) = 0;
-  virtual string get_memory (address_t addr) = 0;
-  virtual void set_register (const RegisterDesc *reg, word_t val) = 0;
-  virtual string get_register (const RegisterDesc *reg) = 0;
+  virtual string get_memory (address_t addr);
+  virtual string get_memory (void *p, address_t addr) = 0;
+  virtual bool check_memory_range (address_t addr, size_t len);
   virtual bool check_memory_range (void *s, address_t addr, size_t len) = 0;
+
+  virtual bool concretize_memory (address_t addr, size_t len);
+  virtual bool concretize_memory (address_t addr, const ConcreteValue *values, 
+				  size_t len);
+  virtual void *concretize_memory (void *s, address_t addr, size_t len) = 0;
+  virtual void *concretize_memory (void *s, address_t addr, 
+				   const ConcreteValue *values,
+				   size_t len) = 0;
+
+  virtual string get_register (const RegisterDesc *reg);
+  virtual string get_register (void *p, const RegisterDesc *reg) = 0;
+  virtual bool check_register (const RegisterDesc *reg);
   virtual bool check_register (void *s, const RegisterDesc *reg) = 0;
+
+  virtual bool concretize_register (const RegisterDesc *reg);
+  virtual bool concretize_register (const RegisterDesc *reg, 
+				    const ConcreteValue &v);
+  virtual void *concretize_register (void *s, const RegisterDesc *reg) = 0;
+  virtual void *concretize_register (void *s, const RegisterDesc *reg, 
+				     const ConcreteValue &v) = 0;
+
   virtual MicrocodeAddress get_pc (void *s) = 0;
-  virtual MicrocodeAddress get_current_pc () = 0;
+  virtual MicrocodeAddress get_pc () = 0;
 
   virtual const StopCondition *add_stop_condition (StopCondition *sc);
   virtual const StopConditionSet *get_stop_conditions () const;
@@ -156,6 +175,7 @@ template <typename Stepper>
 class InsightSimulator : public GenericInsightSimulator {
 public:
   typedef typename Stepper::State State;
+  typedef typename Stepper::Value Value;
   typedef typename Stepper::ProgramPoint ProgramPoint;
 
   InsightSimulator (Program *prg, address_t start_addr);
@@ -169,16 +189,29 @@ public:
   virtual void *get_state ();
   virtual void *trigger_arrow (void *from, StmtArrow *a);
 
-  virtual void set_memory (address_t addr, uint8_t value);
-  virtual string get_memory (address_t addr);
-  virtual void set_register (const RegisterDesc *reg, word_t value);
-  virtual string get_register (const RegisterDesc *reg);
+  virtual void set_memory (void *p, address_t addr, uint8_t value);
+  virtual string get_memory (void *p, address_t addr);
+  virtual Value get_memory_value (void *p, address_t addr);
   virtual bool check_memory_range (void *s, address_t addr, size_t len);
+  virtual void *concretize_memory (void *s, address_t addr, size_t len);
+  virtual void *concretize_memory (void *s, address_t addr, 
+				   const ConcreteValue *values,
+				   size_t len);
+
+  virtual void set_register (void *p, const RegisterDesc *reg, word_t value);
+  virtual string get_register (void *p, const RegisterDesc *reg);
+  virtual Value get_register_value (void *p, const RegisterDesc *reg);
   virtual bool check_register (void *s, const RegisterDesc *reg);
+
+  virtual void *concretize_register (void *s, const RegisterDesc *reg);
+  virtual void *concretize_register (void *s, const RegisterDesc *reg, 
+				     const ConcreteValue &v);
+
   virtual MicrocodeAddress get_pc (void *s);
-  virtual MicrocodeAddress get_current_pc ();
+  virtual MicrocodeAddress get_pc ();
 
   virtual Option<bool> eval (const Expr *e) const;
+
 protected:
   Stepper *stepper;
   State *current_state;
@@ -212,6 +245,9 @@ static PyObject *
 s_Simulator_set_memory (PyObject *self, PyObject *args);
 
 static PyObject *
+s_Simulator_concretize_memory (PyObject *self, PyObject *args);
+
+static PyObject *
 s_Simulator_get_memory (PyObject *self, PyObject *args);
 
 static PyObject *
@@ -219,6 +255,9 @@ s_Simulator_set_register (PyObject *self, PyObject *args);
 
 static PyObject *
 s_Simulator_get_register (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_concretize_register (PyObject *self, PyObject *args);
 
 static PyObject *
 s_Simulator_get_pc (PyObject *self, PyObject *);
@@ -281,12 +320,16 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" },
  { "set_memory", s_Simulator_set_memory, METH_VARARGS, 
    "\n" },
- { "set_register", s_Simulator_set_register, METH_VARARGS, 
-   "\n" },
  { "get_memory", s_Simulator_get_memory, METH_VARARGS, 
+   "\n" },
+ { "concretize_memory", s_Simulator_concretize_memory, METH_VARARGS,
+   "\n" }, 
+ { "set_register", s_Simulator_set_register, METH_VARARGS, 
    "\n" },
  { "get_register", s_Simulator_get_register, METH_VARARGS, 
    "\n" },
+ { "concretize_register", s_Simulator_concretize_register, METH_VARARGS,
+   "\n" }, 
  { "get_pc", s_Simulator_get_pc, METH_NOARGS,
    "\n" },
  { "get_arrows", s_Simulator_get_arrows, METH_NOARGS,
@@ -303,7 +346,6 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" }, 
  { "get_microcode", s_Simulator_get_microcode, METH_NOARGS,
    "\n" }, 
-
  { NULL, NULL, 0, NULL }
 };
 
@@ -349,7 +391,6 @@ pynsight::start_simulator (Program *P, address_t start_addr,
 static void
 s_Simulator_dealloc (PyObject *obj) {
   Simulator *S = (Simulator *) obj;
-
   delete S->gsim;
   S->ob_type->tp_free (S);
 }
@@ -449,7 +490,7 @@ s_Simulator_step (PyObject *self, PyObject *args)
 {  
   PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  MicrocodeAddress ep = S->get_current_pc ();
+  MicrocodeAddress ep = S->get_pc ();
   int aindex = -1;
 
   if (! PyArg_ParseTuple (args, "|I", &aindex))
@@ -469,10 +510,10 @@ s_Simulator_step (PyObject *self, PyObject *args)
 	}
     }
     
-  while (ep.getGlobal () == S->get_current_pc ().getGlobal () &&
+  while (ep.getGlobal () == S->get_pc ().getGlobal () &&
 	 ! PyErr_Occurred ())
     {
-      MicrocodeAddress tmp = S->get_current_pc ();
+      MicrocodeAddress tmp = S->get_pc ();
       if (S->get_number_of_arrows () > 1)
 	{
 	  PyErr_SetNone (pynsight::NotDeterministicBehaviorError);
@@ -522,7 +563,12 @@ s_Simulator_set_memory (PyObject *self, PyObject *args)
   
   if (!PyArg_ParseTuple (args, "Ib", &addr, &byte))
     return NULL;
-  S->set_memory (addr, byte);
+  ConcreteValue v (8, byte);
+  if (! S->concretize_memory (addr, &v, 1))
+    {
+      PyErr_SetNone (pynsight::ConcretizationException);
+      return NULL;
+    }
 
   return pynsight::None ();
 }
@@ -538,8 +584,7 @@ s_Simulator_get_memory (PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple (args, "k|k", &addr, &len))
     return NULL;
 
-  void *st = S->get_state ();  
-  if (S->check_memory_range (st, addr, len)) 
+  if (S->check_memory_range (addr, len)) 
     {
       result = PyTuple_New (len);
       for (unsigned long i = 0; i < len && ! PyErr_Occurred (); i++)
@@ -562,11 +607,30 @@ s_Simulator_get_memory (PyObject *self, PyObject *args)
     {
       PyErr_SetString (PyExc_IndexError, "memory range out of bounds");
     }
-  S->delete_state (st);
 
   return result;
 }
 
+static PyObject *
+s_Simulator_concretize_memory (PyObject *self, PyObject *args)
+{
+  unsigned long addr;
+  unsigned long len = 1;
+  PyObject *result = NULL;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  
+  if (!PyArg_ParseTuple (args, "k|k", &addr, &len))
+    return NULL;
+
+  if (! S->check_memory_range (addr, len)) 
+    PyErr_SetString (PyExc_IndexError, "memory range out of bounds");
+  else if (! S->concretize_memory (addr, len))
+    PyErr_SetNone (pynsight::ConcretizationException);
+  else
+    result = pynsight::None ();
+
+  return result;
+}
 
 static PyObject *
 s_Simulator_set_register (PyObject *self, PyObject *args)
@@ -581,7 +645,13 @@ s_Simulator_set_register (PyObject *self, PyObject *args)
   try 
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
-      S->set_register (rd, regval);
+      ConcreteValue v (rd->get_window_size (), regval);
+
+      if (! S->concretize_register (rd, v))
+	{
+	  PyErr_SetNone (pynsight::ConcretizationException);
+	  return NULL;
+	}
     }
   catch (Architecture::RegisterDescNotFound &e)
     {
@@ -605,11 +675,37 @@ s_Simulator_get_register (PyObject *self, PyObject *args)
   try 
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
-      void *st = S->get_state ();
-      if (!S->check_register (st, rd)) 
+      if (!S->check_register (rd)) 
 	result = pynsight::None ();
       else
 	result = Py_BuildValue ("s", S->get_register (rd).c_str ());
+    }
+  catch (Architecture::RegisterDescNotFound &e) 
+    {
+      PyErr_SetString (PyExc_LookupError, "unknown register");
+    }
+
+  return result;
+}
+
+static PyObject *
+s_Simulator_concretize_register (PyObject *self, PyObject *args)
+{
+  const char *regname;
+
+  if (!PyArg_ParseTuple (args, "s", &regname))
+    return NULL;
+
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  PyObject *result = NULL;
+
+  try 
+    {
+      const RegisterDesc *rd = S->get_march ()->get_register (regname);
+      if (! S->check_register (rd) || S->concretize_register (rd))
+	result = pynsight::None ();
+      else 
+	PyErr_SetNone (pynsight::ConcretizationException);
     }
   catch (Architecture::RegisterDescNotFound &e) 
     {
@@ -888,6 +984,106 @@ GenericInsightSimulator::get_arrow_at (size_t i) const
   return arrows->at (i);
 }
 
+string 
+GenericInsightSimulator::get_memory (address_t addr)
+{
+  void *s = get_state ();
+  string result = get_memory (s, addr);
+  delete_state (s);  
+  return result;
+}
+
+bool 
+GenericInsightSimulator::check_memory_range (address_t addr, size_t len)
+{
+  void *s = get_state ();
+  bool result = check_memory_range (s, addr, len);
+  delete_state (s);  
+
+  return result;
+}
+
+bool 
+GenericInsightSimulator::concretize_memory (address_t addr, size_t len)
+{
+  void *s = get_state ();
+  void *ns = concretize_memory (s, addr, len);
+  if (ns != NULL)
+    {
+      set_state (ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+
+  return (ns != NULL);
+}
+
+bool 
+GenericInsightSimulator::concretize_memory (address_t addr, 
+					    const ConcreteValue *values, 
+					    size_t len)
+{
+  void *s = get_state ();
+  void *ns = concretize_memory (s, addr, values, len);
+  if (ns != NULL)
+    {
+      set_state (ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+
+  return (ns != NULL);
+}
+
+string 
+GenericInsightSimulator::get_register (const RegisterDesc *reg)
+{
+  void *s = get_state ();
+  string result = get_register (s, reg);
+  delete_state (s);  
+
+  return result;
+}
+
+bool 
+GenericInsightSimulator::check_register (const RegisterDesc *reg)
+{
+  void *s = get_state ();
+  bool result = check_register (s, reg);
+  delete_state (s);  
+
+  return result;
+}
+
+bool
+GenericInsightSimulator::concretize_register (const RegisterDesc *reg)
+{
+  void *s = get_state ();
+  void *ns = concretize_register (s, reg);
+  if (ns != NULL)
+    {
+      set_state (ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+  return (ns != NULL);
+}
+
+bool
+GenericInsightSimulator::concretize_register (const RegisterDesc *reg, 
+					      const ConcreteValue &v)
+{
+  void *s = get_state ();
+  void *ns = concretize_register (s, reg, v);
+  if (ns != NULL)
+    {
+      set_state (ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+  return (ns != NULL);
+}
+
 const StopCondition * 
 GenericInsightSimulator::add_stop_condition (StopCondition *sc)
 {
@@ -1057,65 +1253,26 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 }
 
 template <typename Stepper> void 
-InsightSimulator<Stepper>::set_memory (address_t addr, uint8_t value) 
+InsightSimulator<Stepper>::set_memory (void *p, address_t addr, uint8_t value) 
 {
+  typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Value val (8, value);
-  typename Stepper::Memory *mem = 
-    current_state->get_Context ()->get_memory ();
+  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
   mem->put (addr, val, Architecture::LittleEndian);
 }
 
 template <typename Stepper> string 
-InsightSimulator<Stepper>::get_memory (address_t addr) 
+InsightSimulator<Stepper>::get_memory (void *p, address_t addr) 
 {
-  typename Stepper::Memory *mem = 
-    current_state->get_Context ()->get_memory ();
-  return mem->get (addr, 1, Architecture::LittleEndian).to_string ();
+  return get_memory_value (p, addr).to_string ();
 }
 
-template <typename Stepper> void 
-InsightSimulator<Stepper>::set_register (const RegisterDesc *reg, word_t v)
+template <typename Stepper> typename Stepper::Value
+InsightSimulator<Stepper>::get_memory_value (void *p, address_t addr) 
 {
-  typename Stepper::Value val (reg->get_window_size (), v);
-  typename Stepper::Memory *mem = 
-    current_state->get_Context ()->get_memory ();
-  const RegisterDesc *areg = march->get_register (reg->get_label ());
-
-  if (val.get_size () != areg->get_register_size ())
-    {
-      typename Stepper::Value regval;
-
-      if (mem->is_defined (areg))
-	regval = mem->get (areg);
-      else 
-	regval = Stepper::Value::unknown_value (areg->get_register_size ());
-      
-      val = stepper->embed_eval (regval, val, reg->get_window_offset ());
-    }     
-  mem->put (areg, val);
-}
-
-template <typename Stepper> string 
-InsightSimulator<Stepper>::get_register (const RegisterDesc *reg)
-{
-  typename Stepper::Memory *mem = 
-    current_state->get_Context ()->get_memory ();
-  const RegisterDesc *areg = march->get_register (reg->get_label ());
-  assert (mem->is_defined (areg));
-  typename Stepper::Value regval;
-
-  if (reg->get_window_size () == areg->get_register_size ())
-    regval = mem->get (areg);
-  else
-    {      
-      Expr *tmp = Expr::createExtract (RegisterExpr::create (areg),
-				       reg->get_window_offset (),
-				       reg->get_window_size ());
-      regval = stepper->eval (current_state->get_Context (), tmp);
-      tmp->deref ();
-    }     
-
-  return regval.to_string ();
+  typename Stepper::State *s = (typename Stepper::State *) p;
+  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
+  return mem->get (addr, 1, Architecture::LittleEndian);
 }
 
 template <typename Stepper> bool 
@@ -1134,6 +1291,131 @@ InsightSimulator<Stepper>::check_memory_range (void *p, address_t addr,
   return true;
 }
 
+template <> void *
+InsightSimulator<SymbolicStepper>::concretize_memory 
+(void *p, address_t addr, const ConcreteValue *values, size_t len)
+{
+  SymbolicStepper::State *s = (SymbolicStepper::State *) p;
+  SymbolicMemory *mem = s->get_Context ()->get_memory ();
+  Expr *cond = Constant::True ();
+
+  for (size_t i = 0; i < len; i++) 
+    {
+      if (! mem->is_defined (addr + i))
+	continue;
+
+      SymbolicStepper::Value val = get_memory_value (p, addr + i);
+      Expr *eq = 
+	Expr::createEquality (val.get_Expr()->ref (),
+			      Constant::create (values[i].get (), 0, 8));
+      cond = Expr::createLAnd (cond, eq);    
+    }
+
+  s = stepper->restrict_state_to_condition (s, cond);
+  cond->deref ();
+  if (s != NULL)
+    {
+      for (size_t i = 0; i < len; i++)
+	set_memory (s, addr + i, values[i].get ());
+    }
+
+  return s;  
+}
+
+template <> void *
+InsightSimulator<ConcreteStepper>::concretize_memory
+(void *p, address_t addr, const ConcreteValue *values, size_t len)
+{
+  ConcreteStepper::State *s = (ConcreteStepper::State *) p;
+  ConcreteMemory *mem = s->get_Context ()->get_memory ();
+  bool eq = true;
+
+  for (size_t i = 0; eq && i < len; i++) 
+    {
+      if ((eq = mem->is_defined (addr + i)))
+	{
+	  ConcreteValue v = get_memory_value (p, addr + i);
+	  eq = values[i].equals (v);
+	}
+    }
+
+  if (eq)
+    s->ref ();
+  else
+    s = NULL;
+
+  return s;  
+}
+
+template <typename Stepper> void *
+InsightSimulator<Stepper>::concretize_memory (void *p, address_t addr, 
+					      size_t len)
+{
+  typename Stepper::State *s = (typename Stepper::State *) p;
+  ConcreteValue *cvalues = new ConcreteValue[len];
+
+  for (size_t i = 0; i < len; i++) 
+    {
+      typename Stepper::Value val = get_memory_value (p, addr + i);
+      cvalues[i] = stepper->value_to_ConcreteValue (s->get_Context (), val);
+    }
+  s = (typename Stepper::State *) concretize_memory (s, addr, cvalues, len);
+  delete [] cvalues;
+
+  return s;
+}
+
+template <typename Stepper> void 
+InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg, 
+					 word_t v)
+{
+  typename Stepper::State *s = (typename Stepper::State *) p;
+  typename Stepper::Value val (reg->get_window_size (), v);
+  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
+  const RegisterDesc *areg = march->get_register (reg->get_label ());
+
+  if (val.get_size () != areg->get_register_size ())
+    {
+      typename Stepper::Value regval;
+
+      if (mem->is_defined (areg))
+	regval = mem->get (areg);
+      else 
+	regval = Stepper::Value::unknown_value (areg->get_register_size ());
+      
+      val = stepper->embed_eval (regval, val, reg->get_window_offset ());
+    }     
+  mem->put (areg, val);
+}
+
+template <typename Stepper> string
+InsightSimulator<Stepper>::get_register (void *p, const RegisterDesc *reg)
+{
+  return get_register_value (p, reg).to_string ();
+}
+
+template <typename Stepper> typename Stepper::Value
+InsightSimulator<Stepper>::get_register_value (void *p, const RegisterDesc *reg)
+{
+  typename Stepper::State *s = (typename Stepper::State *) p;
+  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
+  const RegisterDesc *areg = march->get_register (reg->get_label ());
+  assert (mem->is_defined (areg));
+  typename Stepper::Value regval;
+
+  if (reg->get_window_size () == areg->get_register_size ())
+    regval = mem->get (areg);
+  else
+    {      
+      Expr *tmp = Expr::createExtract (RegisterExpr::create (areg),
+				       reg->get_window_offset (),
+				       reg->get_window_size ());
+      regval = stepper->eval (s->get_Context (), tmp);
+      tmp->deref ();
+    }     
+  return regval;
+}
+
 template <typename Stepper> bool 
 InsightSimulator<Stepper>::check_register (void *p, const RegisterDesc *reg)
 {
@@ -1144,6 +1426,57 @@ InsightSimulator<Stepper>::check_register (void *p, const RegisterDesc *reg)
   return mem->is_defined (areg);
 }
 
+template <typename Stepper> void *
+InsightSimulator<Stepper>::concretize_register (void *p, 
+						const RegisterDesc *reg)
+{
+  typename Stepper::State *s = (typename Stepper::State *) p;
+  typename Stepper::Value regval = get_register_value (p, reg);
+  ConcreteValue v = stepper->value_to_ConcreteValue (s->get_Context (), regval);
+  s = (typename Stepper::State *) concretize_register (s, reg, v);
+
+  return s;
+}
+
+template <> void *
+InsightSimulator<SymbolicStepper>::concretize_register
+(void *p, const RegisterDesc *reg, const ConcreteValue &v)
+{
+  SymbolicStepper::State *s = (SymbolicStepper::State *) p;
+  if (check_register (s, reg))
+    {
+      SymbolicStepper::Value regval = get_register_value (p, reg);
+      Expr *cond = 
+	Expr::createEquality (regval.get_Expr ()->ref (), 
+			      Constant::create (v.get (), 0, 
+						reg->get_window_size ()));
+      s = stepper->restrict_state_to_condition (s, cond);
+      cond->deref ();
+    }
+  else
+    {
+      s = dynamic_cast<SymbolicStepper::State *> (s->clone ());
+    }
+  if (s != NULL)
+      set_register (s, reg, v.get ());
+  return s;
+}
+
+template <> void *
+InsightSimulator<ConcreteStepper>::concretize_register
+(void *p, const RegisterDesc *reg, const ConcreteValue &v)
+{
+  ConcreteStepper::State *s = (ConcreteStepper::State *) p;
+  ConcreteValue val = get_register_value (p, reg);
+  
+  if (val.equals (v))
+    s->ref ();
+  else
+    s = NULL;
+
+  return s;
+}
+
 template <typename Stepper> MicrocodeAddress 
 InsightSimulator<Stepper>::get_pc (void *p)
 {
@@ -1151,7 +1484,7 @@ InsightSimulator<Stepper>::get_pc (void *p)
 }
 
 template <typename Stepper> MicrocodeAddress 
-InsightSimulator<Stepper>::get_current_pc ()
+InsightSimulator<Stepper>::get_pc ()
 {
   return get_pc (current_state);
 }
@@ -1188,7 +1521,7 @@ InsightSimulator<Stepper>::compute_enabled_arrows (State *s,
 	if (succs == NULL || succs->size () > 0)
 	  result->push_back (*pa);
 	if (succs)
-	  delete succs;
+	  stepper->destroy_state_set (succs);
       }
     }
   catch (Decoder::Exception &e)
@@ -1277,7 +1610,7 @@ Breakpoint::~Breakpoint ()
 bool 
 Breakpoint::stop (GenericInsightSimulator *S)
 {
-  MicrocodeAddress pc = S->get_current_pc ();
+  MicrocodeAddress pc = S->get_pc ();
 
   if (! pc.equals (addr))
     return false;
