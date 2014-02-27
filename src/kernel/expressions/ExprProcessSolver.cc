@@ -59,8 +59,7 @@ static const std::string PROP_PREFIX = "kernel.expr.solver." + SOLVER_NAME;
 const std::string ExprProcessSolver::COMMAND_PROP = PROP_PREFIX + ".command";
 const std::string ExprProcessSolver::ARGS_PROP = PROP_PREFIX + ".args";
 
-static string default_solver_command;
-static vector<string> default_solver_args;
+static const ConfigTable *CONFIG;
 
 const string &
 ExprProcessSolver::ident ()
@@ -71,8 +70,27 @@ ExprProcessSolver::ident ()
 void 
 ExprProcessSolver::init (const ConfigTable &cfg)
 {
-  default_solver_command = cfg.get (COMMAND_PROP);
-  string args = cfg.get (ARGS_PROP);
+  CONFIG = &cfg;
+}
+
+void 
+ExprProcessSolver::terminate ()
+{
+  CONFIG = NULL;
+}
+
+static string 
+s_solver_command ()
+{
+  return CONFIG->get (ExprProcessSolver::COMMAND_PROP);
+}
+
+static std::vector<std::string> 
+s_solver_args ()
+{
+  std::vector<std::string> result;
+
+  string args = CONFIG->get (ExprProcessSolver::ARGS_PROP);
 
   while (!args.empty ())
     {
@@ -80,23 +98,18 @@ ExprProcessSolver::init (const ConfigTable &cfg)
 
       if (p == string::npos)
 	{
-	  default_solver_args.push_back (args);
+	  result.push_back (args);
 	  break;
 	}
 
       string tmp = args.substr (0, p );
       if (! tmp.empty ())
-	default_solver_args.push_back (tmp);
+	result.push_back (tmp);
     
       args = args.substr (p + 1, string::npos);
     }
-}
 
-void 
-ExprProcessSolver::terminate ()
-{
-  default_solver_command = "";
-  default_solver_args = vector<string>();
+  return result;
 }
 
 static bool
@@ -117,8 +130,8 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca)
   pid_t cpid = 0;
   FILE *pipestreams[2] = {NULL, NULL};
   ExprProcessSolver *result = NULL;
-  const std::string &cmd = default_solver_command;
-  const std::vector<std::string> &args = default_solver_args;
+  const std::string &cmd = s_solver_command ();
+  const std::vector<std::string> &args = s_solver_args ();
 
   if (s_create_pipe (cmd, args, pipestreams, &cpid))
     {
