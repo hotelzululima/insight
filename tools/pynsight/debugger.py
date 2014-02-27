@@ -220,7 +220,7 @@ def info (what):
     global program, simulator
     if "breakpoints".find (what) == 0 and simulator != None:
         for (id, s) in simulator.get_breakpoints ():
-            print id, " : {}".format (id, s)
+            print id, " : {}".format (s)
     elif "entrypoint".find (what) == 0 or "ep".find (what) == 0:
         print "0x{:x}".format (entrypoint()[0], entrypoint()[1])
     elif "pc".find (what) == 0:
@@ -263,7 +263,8 @@ def print_registers(l=None):
     if isinstance (l, str):
         l = [l]
     regs = program.info()["registers"];
-    for r in l:
+    
+    for r in sorted (l):
         if r in regs:
             fmt = "{: <5s} : {}"
             val = simulator.get_register (r)
