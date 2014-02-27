@@ -7,6 +7,7 @@ simulator = None
 prompt = "pynsight:{}> "
 sys.ps1 = "pynsight:> "
 hooks = {}
+sys.path += [ '.' ]
 
 def file(filename,target=""):
     """Load a binary file.
@@ -287,29 +288,34 @@ def prog():
     global program
     return program
 
-def set(loc, val):
+def set(loc, val = None):
     """Assign a value to register or a location in memory.
-
-    
     """
     global simulator
     if simulator == None:
         print "program is not started"
         return
-    if isinstance (loc, str):
-        regs = prog().info()["registers"]
-        if loc in regs:
-            simulator.set_register (loc, val)
+    try:
+        if isinstance (loc, str):
+            regs = prog().info()["registers"]
+            if loc in regs:
+                if val == None:
+                    simulator.concretize_register (loc)
+                else:
+                    simulator.set_register (loc, val)
+            else:
+                print "unknown register ", loc
+        elif val == None:
+            simulator.concretize_memory (loc)
+        elif isinstance (val, int):
+            simulator.set_memory (loc, 0xFF & val)
         else:
-            print "unknown register ", loc
-    elif isinstance (val, int):
-        simulator.set_memory (loc, 0xFF & val)
-    else:
-        for b in val:
-            simulator.set_memory (loc, 0xFF & b)
-            loc += 1
+            for b in val:
+                simulator.set_memory (loc, 0xFF & b)
+                loc += 1
+    except insight.error.ConcretizationException:
+        print "try to assign an inconsistent value to", loc
 
-    
 def instr(addr=None):
     """Assembler instruction at address 'addr'.
 
@@ -325,4 +331,3 @@ def instr(addr=None):
     else:
         for i in program.disas (addr, 1):
             print i[1]
-
