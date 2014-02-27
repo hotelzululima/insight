@@ -15,6 +15,27 @@ AbstractDomainStepper<CTX,PP>::~AbstractDomainStepper ()
 }
 
 template <typename CTX, typename PP>
+typename AbstractDomainStepper<CTX,PP>::State *
+AbstractDomainStepper<CTX,PP>::restrict_state_to_condition (const State *s, 
+							    const Expr *cond)
+{
+  Context *newctx = restrict_to_condition (s->get_Context (), cond);
+  if (newctx == NULL)
+    return NULL;
+  ProgramPoint *pp = s->get_ProgramPoint ();
+  pp->ref ();
+  return new State (pp, newctx);
+}
+
+template <typename CTX, typename PP>
+void AbstractDomainStepper<CTX,PP>::destroy_state_set (StateSet *s)
+{
+  for (typename StateSet::iterator i = s->begin(); i != s->end (); i++) 
+    (*i)->deref ();
+  delete s;
+}
+
+template <typename CTX, typename PP>
 typename AbstractDomainStepper<CTX,PP>::StateSet *
 AbstractDomainStepper<CTX,PP>::get_successors (const State *s, 
 					       const StmtArrow *arrow) 

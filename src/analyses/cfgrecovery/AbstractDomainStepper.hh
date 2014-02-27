@@ -49,7 +49,12 @@ public:
   void set_map_dynamic_jumps_to_memory (bool value);
 
   void set_dynamic_jump_threshold (int value);
-    
+
+  virtual State * 
+  restrict_state_to_condition (const State *s, const Expr *cond);
+
+  virtual void destroy_state_set (StateSet *s);
+
 protected:
   const Architecture *arch;
   bool map_dynamic_jumps_to_memory;
