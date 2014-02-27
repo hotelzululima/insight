@@ -81,12 +81,18 @@ namespace pynsight {
   extern PyObject *microcode_object (PyObject *parent, const Microcode *mc);
 
   /* Exceptions & Errors */
-  extern PyObject *BFDError;
-  extern PyObject *NotDeterministicBehaviorError;
-  extern PyObject *UndefinedValueError;
-  extern PyObject *BreakpointReached;
-  extern PyObject *SinkNodeReached;
-  extern PyObject *JumpToInvalidAddress;
+# define PYNSIGHT_EXCEPTIONS			\
+  PYNSIGHT_EXC(BFDError)			\
+  PYNSIGHT_EXC(NotDeterministicBehaviorError)	\
+  PYNSIGHT_EXC(UndefinedValueError)		\
+  PYNSIGHT_EXC(BreakpointReached)		\
+  PYNSIGHT_EXC(SinkNodeReached)			\
+  PYNSIGHT_EXC(ConcretizationException)		\
+  PYNSIGHT_EXC(JumpToInvalidAddress) 
+
+# define PYNSIGHT_EXC(e) extern PyObject *e;
+  PYNSIGHT_EXCEPTIONS
+# undef  PYNSIGHT_EXC
 }
 
 #endif /* ! PYNSIGHT_HH */

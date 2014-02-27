@@ -35,31 +35,25 @@ struct Exception {
   const char *name;
   PyObject **p_exception;
 }; 
+
 static PyMethodDef Error_Methods[] = {
   { NULL, NULL, 0, NULL }
 };
 
-PyObject *pynsight::BFDError = NULL;
-PyObject *pynsight::NotDeterministicBehaviorError = NULL;
-PyObject *pynsight::UndefinedValueError = NULL;
-PyObject *pynsight::BreakpointReached = NULL;
-PyObject *pynsight::SinkNodeReached = NULL;
-PyObject *pynsight::JumpToInvalidAddress = NULL;
 
-static Exception ALL_EXCEPTIONS[] = {
-  { "BFDError", &pynsight::BFDError },
-  { "NotDeterministicBehaviorError", 
-    &pynsight::NotDeterministicBehaviorError },
-  { "UndefinedValueError", 
-    &pynsight::UndefinedValueError },
-  { "BreakpointReached", 
-    &pynsight::BreakpointReached },
-  { "SinkNodeReached", 
-    &pynsight::SinkNodeReached },
-  { "JumpToInvalidAddress", 
-    &pynsight::JumpToInvalidAddress },
-  { NULL, NULL }
-};
+# define PYNSIGHT_EXC(e) PyObject *pynsight::e = NULL;
+  PYNSIGHT_EXCEPTIONS
+# undef  PYNSIGHT_EXC
+
+static void
+s_declare_exception (PyObject *module, const char *name, PyObject *&exc)
+{
+  std::string n ("error.");
+  n += name;
+  exc = PyErr_NewException ((char *) n.c_str (), NULL, NULL);
+  Py_INCREF (exc);
+  PyModule_AddObject (module, name, exc);
+}
 
 static bool 
 s_init () 
@@ -69,14 +63,9 @@ s_init ()
   PyModule_AddObject (pkg, "error", error_module);
   Py_INCREF (error_module);
 
-  for (Exception *e = ALL_EXCEPTIONS; e->name; e++) {
-    std::string name ("error.");
-    name += e->name;
-    PyObject *o = PyErr_NewException ((char *) name.c_str (), NULL, NULL);
-    *(e->p_exception) = o;
-    Py_INCREF (o);
-    PyModule_AddObject (error_module, e->name, o);
-  }
+#define PYNSIGHT_EXC(e) s_declare_exception (error_module, # e, pynsight::e);
+  PYNSIGHT_EXCEPTIONS
+# undef  PYNSIGHT_EXC
 
   Py_DECREF (pkg);
 
