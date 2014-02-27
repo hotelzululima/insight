@@ -203,7 +203,7 @@ void
 ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory, 
 				   MicrocodeArchitecture *arch,
 				   Microcode *dest,
-				   SymbolTable *symtab)
+				   SymbolTable *)
 {
   address_t dummy;
   address_t dest_slot;
@@ -218,11 +218,6 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
 
       assert (memory->is_defined (slot));
 
-#if 0
-      symtab->add_symbol (s->first, dest_slot);
-#else
-      (void) symtab;
-#endif
       memory->put (ConcreteAddress (slot), ConcreteValue (32, dest_slot), 
 		   rarch->get_endian ());
       memory->put (ConcreteAddress (dest_slot), ConcreteValue (32, dest_slot), 
@@ -244,8 +239,11 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
       
       MicrocodeNode *start_node = dest->get_node (dest_slot);
       if (start_node != NULL)
-	start_node->add_annotation (AsmAnnotation::ID, 
-				    new AsmAnnotation ("insight-stub"));
+	{
+	  string a("insight-stub/");
+	  a += name;
+	  start_node->add_annotation (AsmAnnotation::ID, new AsmAnnotation (a));
+	}
       dest_slot += 4;
     }
 }
