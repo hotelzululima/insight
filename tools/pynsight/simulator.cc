@@ -255,7 +255,7 @@ static PyObject *
 s_Simulator_step (PyObject *self, PyObject *args);
 
 static PyObject *
-s_Simulator_print_state (PyObject *self, PyObject *args);
+s_Simulator_state (PyObject *self, PyObject *args);
 
 static PyObject *
 s_Simulator_set_memory (PyObject *self, PyObject *args);
@@ -338,7 +338,7 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" },
  { "step", s_Simulator_step, METH_VARARGS, 
    "\n" },
- { "print_state", s_Simulator_print_state, METH_NOARGS, 
+ { "state", s_Simulator_state, METH_NOARGS, 
    "\n" },
  { "set_memory", s_Simulator_set_memory, METH_VARARGS, 
    "\n" },
@@ -564,7 +564,7 @@ s_Simulator_step (PyObject *self, PyObject *args)
 }
 
 static PyObject *
-s_Simulator_print_state (PyObject *self, PyObject *)
+s_Simulator_state (PyObject *self, PyObject *)
 {
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   void *s = S->get_state ();

@@ -355,3 +355,11 @@ def instr(addr=None):
     else:
         for i in program.disas (addr, 1):
             print i[1]
+
+def print_state():
+    global simulator
+    if simulator == None:
+        print "program is not started"
+        return 
+    print simulator.state ()
+
