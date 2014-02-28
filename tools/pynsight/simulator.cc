@@ -1540,7 +1540,8 @@ InsightSimulator<Stepper>::concretize_memory (void *p, address_t addr,
   for (size_t i = 0; i < len; i++) 
     {
       typename Stepper::Value val = get_memory_value (p, addr + i);
-      cvalues[i] = stepper->value_to_ConcreteValue (s->get_Context (), val);
+      cvalues[i] = stepper->value_to_ConcreteValue (s->get_Context (), val,
+						    NULL);
     }
   s = (typename Stepper::State *) concretize_memory (s, addr, cvalues, len);
   delete [] cvalues;
@@ -1659,7 +1660,8 @@ InsightSimulator<Stepper>::concretize_register (void *p,
 {
   typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Value regval = get_register_value (p, reg);
-  ConcreteValue v = stepper->value_to_ConcreteValue (s->get_Context (), regval);
+  ConcreteValue v = 
+    stepper->value_to_ConcreteValue (s->get_Context (), regval, NULL);
   s = (typename Stepper::State *) concretize_register (s, reg, v);
 
   return s;

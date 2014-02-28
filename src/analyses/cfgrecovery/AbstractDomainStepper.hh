@@ -30,7 +30,8 @@ public:
     throw (UndefinedValueException);
 
   virtual ConcreteValue 
-  value_to_ConcreteValue (const Context *ctx, const Value &v) 
+  value_to_ConcreteValue (const Context *ctx, const Value &v, 
+			  bool *is_unique)
     throw (UndefinedValueException) = 0;
 
   virtual Address 

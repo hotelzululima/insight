@@ -77,10 +77,12 @@ ConcreteStepper::~ConcreteStepper ()
 }
 
 ConcreteValue 
-ConcreteStepper::value_to_ConcreteValue (const ConcreteStepper::Context *, 
-					 const ConcreteStepper::Value &v) 
-    throw (UndefinedValueException)
+ConcreteStepper::value_to_ConcreteValue (const Context *, const Value &v, 
+					 bool *is_unique)
+  throw (UndefinedValueException)
 {
+  if (is_unique)
+    *is_unique = 1;
   return v;
 }
 

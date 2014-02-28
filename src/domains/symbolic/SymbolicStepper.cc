@@ -98,8 +98,8 @@ SymbolicStepper::~SymbolicStepper () {
 }
 
 ConcreteValue 
-SymbolicStepper::value_to_ConcreteValue (const SymbolicStepper::Context *ctx, 
-					 const SymbolicStepper::Value &v) 
+SymbolicStepper::value_to_ConcreteValue (const Context *ctx, const Value &v, 
+					 bool *is_unique)
   throw (UndefinedValueException)
 {
   if (v.get_Expr() == NULL)
@@ -122,8 +122,9 @@ SymbolicStepper::value_to_ConcreteValue (const SymbolicStepper::Context *ctx,
   exprutils::simplify (&f);
 
   Expr *cond = sc->get_path_condition ()->ref ();
-
-  std::vector<constant_t> *values = solver->evaluate (f, cond, 1);
+  
+  std::vector<constant_t> *values = 
+    solver->evaluate (f, cond, is_unique ? 2 : 1);
   f->deref ();
   cond->deref ();
 
@@ -132,10 +133,11 @@ SymbolicStepper::value_to_ConcreteValue (const SymbolicStepper::Context *ctx,
       delete values;
       throw UndefinedValueException (v.to_string ());
     }
-
-  assert (f->get_bv_offset () == 0);
   ConcreteValue result (f->get_bv_size (), values->at (0));
+  if (is_unique)
+    *is_unique = (values->size () == 1);
   delete values;
+
   return result;    
 }
 
