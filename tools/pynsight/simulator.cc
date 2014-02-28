@@ -589,7 +589,7 @@ s_Simulator_set_memory (PyObject *self, PyObject *args)
   unsigned char byte;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTuple (args, "Ib", &addr, &byte))
+  if (!PyArg_ParseTuple (args, "kb", &addr, &byte))
     return NULL;
   ConcreteValue v (8, byte);
   if (! S->concretize_memory (addr, &v, 1))
