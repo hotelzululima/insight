@@ -1,7 +1,7 @@
 /*-
- * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
- *                          Universite Bordeaux 1.
+ *                          Universite de Bordeaux.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,9 +59,9 @@ using namespace std;
   FORMAT(OF_ASM_DOT, "asm-dot", "assembler code on a dot graph", ".asm.dot") \
   FORMAT(OF_MC, "mc", "microcode", ".mc") \
   FORMAT(OF_MC_DOT, "mc-dot", "microcode on a dot graph", ".mc.dot") \
-  FORMAT(OF_XML, "xml", "microcode in XML format", ".mc.xml") 
+  FORMAT(OF_XML, "xml", "microcode in XML format", ".mc.xml")
 
-#define FORMAT(id,name,desc,ext) id, 
+#define FORMAT(id,name,desc,ext) id,
 enum OutputFormatID  { OUTPUT_FORMATS OF_UNKNOWN };
 #undef FORMAT
 
@@ -72,10 +72,10 @@ struct OutputFormat {
   const char *extension;
 };
 
-#define FORMAT(id,name,desc,ext) { id, name, desc, ext }, 
-static const OutputFormat FORMATS[] = { 
-  OUTPUT_FORMATS 
-  FORMAT(OF_UNKNOWN, NULL, NULL, NULL) 
+#define FORMAT(id,name,desc,ext) { id, name, desc, ext },
+static const OutputFormat FORMATS[] = {
+  OUTPUT_FORMATS
+  FORMAT(OF_UNKNOWN, NULL, NULL, NULL)
 };
 #undef FORMAT
 
@@ -101,8 +101,8 @@ struct disassembler {
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linear_sweep },
   { "recursive", "recursive traversal", recursive_traversal },
-  { "sim=symbolic", "symbolic simulation", symbolic_simulator },
-  { "sim=concrete", "simulation within concrete domain", concrete_simulator },
+  { "concrete", "concrete simulation", concrete_simulator },
+  { "symbolic", "symbolic simulation with formula", symbolic_simulator },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };
@@ -134,33 +134,35 @@ usage (int status)
 
       cout << "Rebuild the CFG based on the analysis of the binary." << endl
 	   << endl
-	   << "  -c, --config FILE\t specify configuration filename (default " 
+	   << "  -c, --config FILE\t\tset config file    (default: ~/" << CFGRECOVERY_CONFIG_FILENAME << ")" << endl
+	   << "  -g, --generate-config[=FILE]\tdump a config file (default: ~/"
 	   << CFGRECOVERY_CONFIG_FILENAME << ")" << endl
-	   << "  -d, --disas TYPE\tselect disassembler type" << endl
-	   << "  -l, --list\t\tlist all disassembler types" << endl
-	   << "  -e, --entrypoint ADDR\tforce entry point" << endl
-	   << "  -f, --formats FMT\toutput format " << FORMATS->name;
-      
+	   << "  -x, --in FILE\t\t\tload an XML file FILE from previous analysis" << endl
+	   << "  -d, --disas TYPE\t\tselect disassembler TYPE (default: linear)" << endl
+	   << "  -l, --list\t\t\tdisplay all available disassembler methods" << endl
+	   << "  -f, --formats FMT\t\tset disassembler output format:" << endl
+	   << "\t\t\t\t   " << FORMATS->name;
+
       for (const OutputFormat *of = FORMATS + 1; of->id != OF_UNKNOWN; of++)
 	cout << "|" << of->name;
-      
+
       cout << " (default: " << DEFAULT_FORMAT->name << ")" << endl
-	   << "  -x, --in FILE\tpreload an existing XML program" << endl
-	   << "  -o, --output FILE\twrite outputs to FILE" << endl
-	   << "  -h, --help\t\tdisplay this help" << endl
-	   << "  -v, --verbose\t\tincrease verbosity level" << endl
-	   << "  -D, --debug\t\tenable debug traces" << endl
-	   << "  -V, --version\t\tdisplay version and exit" << endl
-	   << "  -S, --symbols\t\tdisplay known symbols" << endl
-	   << "  -EB|-EL, --endian\tselect endianness" << endl
-	   << "  -b, --target TARG\tselect BFD target" << endl
-	   << "  -m, --architecture ARCH\tselect BFD architecture" << endl
+	   << "  -S, --symbols\t\t\tdisplay known symbols" << endl
+	   << "  -e, --entrypoint ADDR\t\tforce entrypoint to be ADDR" << endl
+	   << "  -b, --target TARGET\t\tforce BFD target to TARGET" << endl
+	   << "  -m, --architecture ARCH\tforce BFD architecture to ARCH" << endl
+	   << "  -EB|-EL, --endian B|L\t\tforce endianness to big=B|little=L" << endl
+	   << "  -o, --output FILE\t\twrite outputs to FILE" << endl
+	   << "  -v, --verbose\t\t\tincrease verbosity level" << endl
+	   << "  -D, --debug\t\t\tenable debug traces" << endl
+	   << "  -h, --help\t\t\tdisplay this help" << endl
+	   << "  -V, --version\t\t\tdisplay version and exit" << endl
 	   << "assembler output options:" << endl
-	   << " --asm-with-bytes" << endl
-	   << " --asm-with-holes"  << endl
-	   << " --asm-with-labels" << endl
+	   << " --asm-with-bytes\t\tdisplay the bytes of the opcodes" << endl
+	   << " --asm-with-holes\t\tdo not skip the empty memory holes"  << endl
+	   << " --asm-with-labels\t\tdisplay symbols whenever possible" << endl
 	   << "miscellaneous options:" << endl
-	   << "  --sink-nodes\t\tlist sink nodes" << endl;
+	   << "  --sink-nodes\t\t\tlist sink nodes" << endl;
     }
 
   exit (status);
@@ -196,22 +198,22 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
     switch (fmt)
       {
       case OF_ASM :
-	asm_writer (output, mc, memory, symboltable, asm_with_bytes, 
+	asm_writer (output, mc, memory, symboltable, asm_with_bytes,
 		    asm_with_holes, asm_with_labels);
 	break;
       case OF_MC :
 	mc->output_text (output);
 	output << endl;
 	break;
-      case OF_MC_DOT : 
-      case OF_ASM_DOT : 
+      case OF_MC_DOT :
+      case OF_ASM_DOT :
 	{
 	  ConcreteAddress *ep;
 	  if (entrypoints.begin () == entrypoints.end ())
 	    ep = NULL;
-	  else 
+	  else
 	    ep = new ConcreteAddress (*entrypoints.begin ());
-	  dot_writer (output, mc, (fmt == OF_ASM_DOT), exec_filename, ep, 
+	  dot_writer (output, mc, (fmt == OF_ASM_DOT), exec_filename, ep,
 		      symboltable);
 	  if (ep != NULL)
 	    delete ep;
@@ -226,11 +228,11 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
 	abort ();
       }
   }
-    
+
   virtual void add_node (Microcode *mc, StmtArrow *) {
     if (output_program)
       {
-	write_microcode (mc, OF_ASM, logs::warning);    
+	write_microcode (mc, OF_ASM, logs::warning);
 	output_program = false;
       }
   }
@@ -238,11 +240,11 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
 
 static CtrlCHandler CTRL_C_HANDLER;
 
-static void 
-s_sighandler (int) 
+static void
+s_sighandler (int)
 {
   CTRL_C_HANDLER.output_program = true;
-}    
+}
 
 int
 main (int argc, char *argv[])
@@ -254,16 +256,19 @@ main (int argc, char *argv[])
   const char *architecture = NULL;
   const char *target = NULL;
   const char *endianness = NULL;
-  string config_filename = CFGRECOVERY_CONFIG_FILENAME;
+
+  string config_filename =
+    string(getenv("HOME")) + "/" + CFGRECOVERY_CONFIG_FILENAME;
   bool display_symbols = false;
 
   /* Default output format (asm, _mc_, dot, asm-dot, xml) */
   list<const OutputFormat *> output_formats;
-  
+
   /* Long options struct */
   struct option const
     long_opts[] = {
     {"config", required_argument, NULL, 'c'},
+    {"generate-config", optional_argument, NULL, 'g'},
     {"disas", required_argument, NULL, 'd'},
     {"list", no_argument, NULL, 'l'},
     {"endian", required_argument, NULL, 'E'},
@@ -274,14 +279,14 @@ main (int argc, char *argv[])
     {"architecture", required_argument, NULL, 'm'},
     {"help", no_argument, NULL, 'h'},
     {"debug", no_argument, NULL, 'D'},
-    {"symbols", no_argument, NULL, 'S' }, 
+    {"symbols", no_argument, NULL, 'S' },
     {"target", required_argument, NULL, 'b' },
     {"verbose", no_argument, NULL, 'v'},
     {"version", no_argument, NULL, 'V'},
-    {"asm-with-bytes", no_argument, &asm_with_bytes, 1 }, 
-    {"asm-with-holes", no_argument, &asm_with_holes, 1 }, 
-    {"asm-with-labels", no_argument, &asm_with_labels, 1 }, 
-    {"sink-nodes", no_argument, &sink_nodes, 1 }, 
+    {"asm-with-bytes", no_argument, &asm_with_bytes, 1 },
+    {"asm-with-holes", no_argument, &asm_with_holes, 1 },
+    {"asm-with-labels", no_argument, &asm_with_labels, 1 },
+    {"sink-nodes", no_argument, &sink_nodes, 1 },
     {NULL, 0, NULL, 0}
   };
 
@@ -296,7 +301,7 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "b:ld:e:E:f:o:hDm:vVc:x:S",
+	  getopt_long (argc, argv, "b:ld:e:E:f:g::o:hDm:vVc:x:S",
 		       long_opts, NULL)) != -1)
     switch (optc)
       {
@@ -314,8 +319,53 @@ main (int argc, char *argv[])
 	    }
 	  else
 	    {
-	      cerr << "warning: can't open configuration file '" 
+	      cerr << "warning: can't open configuration file '"
 		   << optarg << "'." << endl;
+	    }
+	}
+	break;
+
+      case 'g':		/* Generate a default configuration file */
+	{
+	  string filename = config_filename;
+	  /* Check optional argument */
+	  if (optarg)
+	    filename = string(optarg);
+
+	  /* Check correctness of filename */
+	  fstream f (filename.c_str (), fstream::out);
+	  if (f.is_open ())
+	    {
+	      config_filename = filename;
+
+	      CONFIG.set (logs::STDIO_ENABLED_PROP, true);
+	      CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, verbosity > 0);
+	      CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
+#if INTEGRATED_MATHSAT_SOLVER
+	      CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "mathsat");
+#elif HAVE_MATHSAT_SOLVER
+	      CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
+	      CONFIG.set (ExprProcessSolver::COMMAND_PROP, "mathsat");
+	      CONFIG.set (ExprProcessSolver::ARGS_PROP, "");
+#elif HAVE_Z3_SOLVER
+	      CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
+	      CONFIG.set (ExprProcessSolver::COMMAND_PROP, "z3");
+	      CONFIG.set (ExprProcessSolver::ARGS_PROP, "-smt2 -in");
+#endif
+	      CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
+	      if (enable_debug)
+		{
+		  CONFIG.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
+		  CONFIG.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+		}
+
+	      CONFIG.save (f);
+	      f.close();
+	    }
+	  else
+	    {
+	      cerr << "warning: can't write configuration file '"
+		   << filename << "'." << endl;
 	    }
 	}
 	break;
@@ -326,8 +376,8 @@ main (int argc, char *argv[])
 
       case 'l':		/* List disassembly types */
 	cout << "Disassembler types ('value to pass' = description):" << endl;
-	for (size_t i = 0; i < NDISASSEMBLERS; i++) {
-	    cout << "  '" << disassemblers[i].name << "' = " <<
+	for (size_t i = 1; i < NDISASSEMBLERS; i++) {
+	    cout << "  '" << disassemblers[i].name << "'\t= " <<
 	      disassemblers[i].desc << endl;
 	}
 	exit (EXIT_SUCCESS);
@@ -338,17 +388,17 @@ main (int argc, char *argv[])
 	break;
 
       case 'e':		/* Force entrypoint */
-	entrypoint_symbols.push_back (optarg);	
+	entrypoint_symbols.push_back (optarg);
 	break;
 
       case 'E':
 	endianness = optarg;
 	break;
-      case 'f':		/* Output file format */	
+      case 'f':		/* Output file format */
 	{
 	  string fmt (optarg);
 	  const OutputFormat *of = FORMATS;
-	  for (; of->id != OF_UNKNOWN; of++) 
+	  for (; of->id != OF_UNKNOWN; of++)
 	    {
 	      if (fmt == of->name)
 		{
@@ -358,7 +408,7 @@ main (int argc, char *argv[])
 	    }
 	  if (of->id == OF_UNKNOWN)
 	    {
-	      cerr << prog_name 
+	      cerr << prog_name
 		   << ": error: '" << fmt << "' unknown format" << endl;
 	      usage(EXIT_FAILURE);
 	    }
@@ -405,10 +455,20 @@ main (int argc, char *argv[])
     }
 
   /* Starting insight and initializing the needed objects */
-  
   CONFIG.set (logs::STDIO_ENABLED_PROP, true);
   CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, verbosity > 0);
   CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
+#if INTEGRATED_MATHSAT_SOLVER
+  CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "mathsat");
+#elif HAVE_MATHSAT_SOLVER
+  CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
+  CONFIG.set (ExprProcessSolver::COMMAND_PROP, "mathsat");
+  CONFIG.set (ExprProcessSolver::ARGS_PROP, "");
+#elif HAVE_Z3_SOLVER
+  CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
+  CONFIG.set (ExprProcessSolver::COMMAND_PROP, "z3");
+  CONFIG.set (ExprProcessSolver::ARGS_PROP, "-smt2 -in");
+#endif
   CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
   if (enable_debug)
     {
@@ -470,8 +530,8 @@ main (int argc, char *argv[])
     if (entrypoint_symbols.empty())
       {
 	if (verbosity > 0)
-	  logs::warning << "Adding entrypoint " 
-			<< loader->get_entrypoint() << endl;	    
+	  logs::warning << "Adding entrypoint "
+			<< loader->get_entrypoint() << endl;
 	entrypoints.push_back (ConcreteAddress(loader->get_entrypoint()));
       }
     delete loader;
@@ -503,7 +563,7 @@ main (int argc, char *argv[])
 
       if (val.hasValue ())
 	entrypoints.push_back (val.getValue ());
-      else 
+      else
 	{
 	  logs::error << "Error: symbol '" << symb << "' not found" << endl;
 	  exit(EXIT_FAILURE);
@@ -520,7 +580,7 @@ main (int argc, char *argv[])
   /* Starting disassembly with proper disassembler */
   struct disassembler *dis = disassembler_lookup(disassembler);
   if (dis == NULL) {
-    logs::error 
+    logs::error
       << prog_name
       << ": error: '" << disassembler << "' disassembler is unknown" << endl
       << "Type '" << prog_name << " -l' to list all disassemblers" << endl;
@@ -530,7 +590,7 @@ main (int argc, char *argv[])
   BinutilsDecoder *decoder = NULL;
   Microcode *mc = NULL;
 
-  if (dis->process == NULL) 
+  if (dis->process == NULL)
     goto end;
 
   decoder = new BinutilsDecoder (arch, memory);
@@ -562,7 +622,7 @@ main (int argc, char *argv[])
 
   if (signal (SIGUSR1, &s_sighandler) == SIG_ERR)
     logs::error << "unable to set CTRL-C handler." << std::endl;
-  
+
   try
     {
       mc->add_arrow_creation_callback (&CTRL_C_HANDLER);
@@ -592,7 +652,7 @@ main (int argc, char *argv[])
 
   if (output_formats.empty ())
     output_formats.push_back (DEFAULT_FORMAT);
-  
+
   if (output_filename == NULL)
     {
       for (list<const OutputFormat *>::iterator i = output_formats.begin ();
@@ -600,7 +660,7 @@ main (int argc, char *argv[])
 	CTRL_C_HANDLER.write_microcode (mc, (*i)->id, cout);
       cout.flush ();
     }
-  else 
+  else
     {
       for (list<const OutputFormat *>::iterator i = output_formats.begin ();
 	   i != output_formats.end (); i++)
@@ -611,7 +671,7 @@ main (int argc, char *argv[])
 	  ofstream output (filename.c_str ());
 	  if (! output.is_open ())
 	    {
-	      logs::error << prog_name << ": error opening file '" 
+	      logs::error << prog_name << ": error opening file '"
 			  << filename << "'" << endl;
 	      perror (prog_name.c_str ());
 	    }
@@ -655,7 +715,7 @@ main (int argc, char *argv[])
 
   delete mc;
   delete decoder;
-  
+
  end:
   if (stubfactory)
     delete stubfactory;

@@ -13,8 +13,8 @@ CFGR_COMMON_FLAGS = -c ${top_builddir}/test/cfgrecovery.cfg -f mc
 CFGR_FLD_FLAGS = ${CFGR_COMMON_FLAGS} -d flood
 CFGR_LSW_FLAGS = ${CFGR_COMMON_FLAGS} -d linear
 CFGR_RT_FLAGS = ${CFGR_COMMON_FLAGS} -d recursive
-CFGR_SCONC_FLAGS = ${CFGR_COMMON_FLAGS} -d sim=concrete
-CFGR_SSYMB_FLAGS = ${CFGR_COMMON_FLAGS} -d sim=symbolic
+CFGR_SCONC_FLAGS = ${CFGR_COMMON_FLAGS} -d concrete
+CFGR_SSYMB_FLAGS = ${CFGR_COMMON_FLAGS} -d symbolic
 
 if HAVE_SOLVER
 X86_32_SYM_TESTS = \

@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
- *                          Universite Bordeaux 1.
- * 
+ *                          Universite de Bordeaux.
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -48,7 +48,7 @@ ConfigTable::ConfigTable (const ConfigTable &ct) : Object (ct), table (ct.table)
 ConfigTable::~ConfigTable ()
 {
 }
-  
+
 void
 ConfigTable::set (const std::string &name, const std::string &value)
 {
@@ -61,7 +61,7 @@ ConfigTable::set (const std::string &name, const char *value)
   table[name] = string (value);
 }
 
-void 
+void
 ConfigTable::set (const std::string &name, int value)
 {
   ostringstream oss;
@@ -70,7 +70,7 @@ ConfigTable::set (const std::string &name, int value)
   set (name, oss.str ());
 }
 
-void 
+void
 ConfigTable::set (const std::string &name, long value)
 {
   ostringstream oss;
@@ -79,26 +79,26 @@ ConfigTable::set (const std::string &name, long value)
   set (name, oss.str ());
 }
 
-void 
+void
 ConfigTable::set (const std::string &name, bool value)
 {
   set (name, value ? "true" : "false");
 }
 
-bool 
+bool
 ConfigTable::has (const std::string &key) const
 {
   return table.find (key) != table.end ();
 }
 
-void 
+void
 ConfigTable::add (const ConfigTable &other)
 {
   for (const_iterator i = other.begin (); i != other.end (); i++)
     set (i->first, i->second);
 }
 
-std::string 
+std::string
 ConfigTable::get (const std::string &name, const std::string &def) const
 {
   std::string result;
@@ -106,13 +106,13 @@ ConfigTable::get (const std::string &name, const std::string &def) const
 
   if (i == table.end ())
     result = def;
-  else 
+  else
     result = i->second;
 
   return result;
 }
 
-long 
+long
 ConfigTable::get_integer (const std::string &name, long def) const
 {
   long result;
@@ -121,11 +121,11 @@ ConfigTable::get_integer (const std::string &name, long def) const
     result = strtoll (get (name).c_str (), NULL, 0);
   else
     result = def;
-  
+
   return result;
 }
 
-static bool 
+static bool
 eq_nocase (const string &s1, const string &s2)
 {
   string::const_iterator p1 = s1.begin ();
@@ -139,7 +139,7 @@ eq_nocase (const string &s1, const string &s2)
   return p1 == s1.end () && p2 == s2.end ();
 }
 
-bool 
+bool
 ConfigTable::get_boolean (const std::string &name, bool def) const
 {
   bool result;
@@ -156,7 +156,7 @@ ConfigTable::get_boolean (const std::string &name, bool def) const
   return result;
 }
 
-void 
+void
 ConfigTable::save (std::ostream &out) const
 {
   std::vector<std::string> names(table.size());
@@ -166,6 +166,8 @@ ConfigTable::save (std::ostream &out) const
     names[idx++] = i->first;
 
   std::sort(names.begin(), names.end());
+
+  out << "# CFGRecovery configuration file" << endl << endl;
 
   for (std::vector<std::string>::const_iterator i = names.begin ();
        i != names.end (); i++)
@@ -187,7 +189,7 @@ remove_useless_whitespaces (string &s)
   s = s.substr (0, i + 1);
 }
 
-void 
+void
 ConfigTable::load (std::istream &in)
 {
   while (! in.eof ())
@@ -203,7 +205,7 @@ ConfigTable::load (std::istream &in)
       string::size_type i = line.find ('=');
       if (i == string::npos)
 	{
-	  cerr << "warning: bad configuration line '" << line << "'." 
+	  cerr << "warning: bad configuration line '" << line << "'."
 	       << endl;
 	  continue;
 	}
@@ -212,24 +214,24 @@ ConfigTable::load (std::istream &in)
       remove_useless_whitespaces (name);
       string value = line.substr (i + 1, string::npos);
       remove_useless_whitespaces (value);
-	  
+
       set (name, value);
     }
 }
 
-ConfigTable::Store::const_iterator 
+ConfigTable::Store::const_iterator
 ConfigTable::begin () const
 {
   return table.begin ();
 }
 
-ConfigTable::Store::const_iterator 
+ConfigTable::Store::const_iterator
 ConfigTable::end () const
 {
   return table.end ();
 }
 
-void 
+void
 ConfigTable::output_text (std::ostream &out) const
 {
   save (out);
