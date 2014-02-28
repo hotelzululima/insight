@@ -40,6 +40,8 @@ def add_hook (f, h):
 
 def add_run_hook (h): add_hook (run, h)
 def add_step_hook (h): add_hook (step, h)
+def add_cont_hook (h): add_hook (cont, h)
+def add_microstep_hook (h): add_hook (microstep, h)
 
 def run(ep=None, dom="symbolic"):
     """Start simulation"""
@@ -104,6 +106,7 @@ def microstep(a = 0):
         simulator.microstep (a)
     except:
         simulation_error ()
+    exec_hooks (microstep)
     arrows ()
 
 def step(a = 0):
