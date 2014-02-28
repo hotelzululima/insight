@@ -111,6 +111,8 @@ public:
   virtual ~GenericInsightSimulator ();
 
   virtual MicrocodeArchitecture *get_march () const;
+  virtual const Microcode *get_microcode () const;
+  virtual Program *get_program () const;
 
   virtual void clear_arrows ();
   virtual size_t get_number_of_arrows () const;
@@ -157,10 +159,9 @@ public:
   virtual const StopCondition *check_stop_conditions ();
   virtual void reset_stop_conditions ();
   virtual bool del_stop_condition (int id);
-  virtual const Microcode *get_microcode () const;
 
   virtual Option<bool> eval (const Expr *e) const = 0;
-
+  
 protected:
   Program *prg;  
   ConcreteAddress start;
@@ -914,12 +915,12 @@ s_Simulator_del_breakpoint (PyObject *self, PyObject *args)
     return pynsight::None ();
 }
 
-static PyObject *
+PyObject *
 s_Simulator_get_microcode (PyObject *self, PyObject *)
 {
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
-  return pynsight::microcode_object (self, S->get_microcode ());
+  return pynsight::microcode_object (S->get_program (), S->get_microcode ());
 }
 
 /*****************************************************************************
@@ -964,6 +965,19 @@ GenericInsightSimulator::get_march () const
 {
   return march;
 }
+
+const Microcode * 
+GenericInsightSimulator::get_microcode () const
+{
+  return mc;
+}
+
+Program * 
+GenericInsightSimulator::get_program () const
+{
+  return prg;
+}
+
 
 void 
 GenericInsightSimulator::clear_arrows ()
@@ -1153,12 +1167,6 @@ GenericInsightSimulator::del_stop_condition (int id)
       }
   }
   return false;
-}
-
-const Microcode * 
-GenericInsightSimulator::get_microcode () const
-{
-  return mc;
 }
 
 /*****************************************************************************

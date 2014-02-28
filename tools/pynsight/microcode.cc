@@ -29,16 +29,20 @@
  */
 #include "gengen.hh"
 #include "pynsight.hh"
+#include <io/microcode/asm-writer.hh>
 
 struct PyMicrocode
 {
   PyObject_HEAD
-  PyObject *parent;
+  pynsight::Program *prog;
   const Microcode *mc;
 };
 
 static void
 s_PyMicrocode_dealloc (PyObject *self);
+
+static PyObject *
+s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyTypeObject PyMicrocodeType = {
   PyObject_HEAD_INIT(NULL)
@@ -67,7 +71,8 @@ static PyTypeObject PyMicrocodeType = {
 };
 
 static PyMethodDef PyMicrocodeMethods[] = {
-  // { "run", s_PyMicrocode_run, METH_NOARGS, "\n" },
+  { "asm", (PyCFunction) s_PyMicrocode_asm, METH_VARARGS|METH_KEYWORDS, 
+    "\n" },
   { NULL, NULL, 0, NULL }
 };
 
@@ -89,7 +94,7 @@ s_terminate ()
 static pynsight::Module MICROCODE (NULL, s_init, s_terminate);
 
 PyObject *
-pynsight::microcode_object (PyObject *parent, const Microcode *mc)
+pynsight::microcode_object (Program *prog, const Microcode *mc)
 {
   PyMicrocode *M = PyObject_New (PyMicrocode, &PyMicrocodeType);
 
@@ -98,8 +103,8 @@ pynsight::microcode_object (PyObject *parent, const Microcode *mc)
 
   PyObject_Init ((PyObject *) M, &PyMicrocodeType);
 
-  M->parent = parent;
-  Py_INCREF (parent);
+  M->prog = prog;
+  Py_INCREF ((PyObject *) prog);
   M->mc = mc;
 
   return (PyObject *) M;
@@ -109,6 +114,30 @@ static void
 s_PyMicrocode_dealloc (PyObject *obj) {
   PyMicrocode *M = (PyMicrocode *) obj;
 
-  Py_XDECREF (M->parent);
+  Py_XDECREF (M->prog);
   M->ob_type->tp_free (M);
+}
+
+static PyObject *
+s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  
+    { "addr", "len", "bytes", "holes", "labels", NULL };
+  unsigned long addr;
+  unsigned long len;
+  unsigned char with_bytes = 0;
+  unsigned char with_labels = 0;
+  unsigned char with_holes = 0;  
+  PyMicrocode *M = (PyMicrocode *) self;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "II|bbb", (char **) kwlists, 
+				    &addr, &len, 
+				    &with_bytes, &with_holes, &with_labels))
+    return NULL;
+
+  asm_writer (std::cout, M->mc, M->prog->concrete_memory, 
+	      M->prog->symbol_table, with_bytes, with_holes, with_labels,
+	      addr, len);
+
+  return pynsight::None ();  
 }

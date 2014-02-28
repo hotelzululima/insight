@@ -147,15 +147,18 @@ def dump(addr = None, l = 256):
         for v in simulator.get_memory (addr, l):
             print v
 
-def disas(l=20):
+def disas(addr = None, l=20, labels=True, bytes=False, holes=False):
     global program, simulator
     if simulator == None:
         print "Program is not started. Disas from entrypoint"
-        addr = program.info()["entrypoint"]
+        if addr == None:
+            addr = program.info()["entrypoint"]
+        for inst in program.disas (addr, l):
+            print "0x{:x} : {}".format (inst[0],inst[1])
     else:
-        addr = simulator.get_pc()[0]
-    for inst in program.disas (addr, l):
-        print "0x{:x} : {}".format (inst[0],inst[1])
+        if addr == None:
+            addr = simulator.get_pc()[0]
+        simulator.get_microcode().asm (addr, l, bytes, holes, labels)
 
 def breakpoint(g=None,l=0):
     global simulator,program

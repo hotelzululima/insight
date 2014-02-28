@@ -78,7 +78,7 @@ namespace pynsight {
 
   extern ConfigTable &configTable ();
 
-  extern PyObject *microcode_object (PyObject *parent, const Microcode *mc);
+  extern PyObject *microcode_object (Program *prog, const Microcode *mc);
 
   /* Exceptions & Errors */
 # define PYNSIGHT_EXCEPTIONS			\
