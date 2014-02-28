@@ -34,6 +34,7 @@
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/expressions/expr-parser.hh>
 #include <decoders/binutils/BinutilsDecoder.hh>
+#include <utils/tools.hh>
 
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 #include <kernel/SymbolTable.hh>
@@ -173,7 +174,6 @@ public:
 protected:
   Program *prg;  
   ConcreteAddress start;
-  Decoder *decoder;
   Microcode *mc;
   MicrocodeArchitecture *march;
   ArrowVector *arrows;
@@ -228,19 +228,43 @@ public:
   virtual MicrocodeAddress get_pc ();
 
   virtual Option<bool> eval (const Expr *e) const;
+  virtual Stepper *get_stepper ();
 
-protected:
+protected:  
   Stepper *stepper;
   State *current_state;
+  Decoder *decoder;
 
 private:
   void compute_enabled_arrows (State *s, ArrowVector *result);
   MicrocodeNode *get_node (const ProgramPoint *pp);
 };
 
+template <typename Stepper>
+class RawBytesReader : public Decoder::RawBytesReader 
+{
+public:  
+  RawBytesReader (InsightSimulator<Stepper> *simulator);
+  virtual ~RawBytesReader ();
+
+
+  virtual void read_buffer (address_t from, uint8_t *dest, size_t length)
+    throw (Decoder::Exception);
+  
+private:
+  InsightSimulator<Stepper> *simulator;
+};
+
 struct Simulator {
   PyObject_HEAD
   GenericInsightSimulator *gsim;
+};
+
+class AbstractCodeException : public Decoder::Exception 
+{
+public:
+  AbstractCodeException (address_t addr) 
+    : Decoder::Exception (itos (addr)) {}
 };
 
 static void
@@ -1022,7 +1046,6 @@ GenericInsightSimulator::GenericInsightSimulator (Program *P,
   start = start_addr;
   mc = new Microcode ();
   march = new MicrocodeArchitecture (P->loader->get_architecture ());
-  decoder = new BinutilsDecoder (march, P->concrete_memory);
   arrows = new ArrowVector ();
   stop_conditions = new StopConditionSet;
   if (prg->stubfactory)
@@ -1035,7 +1058,7 @@ GenericInsightSimulator::~GenericInsightSimulator ()
   Py_DECREF (prg);
   delete mc;
   delete march;
-  delete decoder;
+
   delete arrows;
   for (StopConditionSet::iterator i = stop_conditions->begin (); 
        i != stop_conditions->end (); i++) {
@@ -1297,6 +1320,8 @@ InsightSimulator<Stepper>::InsightSimulator (Program *prg, address_t a)
 {
   stepper = new Stepper (prg->concrete_memory, march);
   current_state = NULL;
+  decoder = new BinutilsDecoder (march, 
+				 new RawBytesReader<Stepper>(this));
 }
 
 template <typename Stepper> 
@@ -1305,6 +1330,7 @@ InsightSimulator<Stepper>::~InsightSimulator ()
   delete stepper;
   if (current_state)
     current_state->deref ();
+  delete decoder;
 }
 
 template <typename Stepper> string 
@@ -1726,6 +1752,12 @@ InsightSimulator<Stepper>::eval (const Expr *e) const
   return val.to_bool ();
 }
 
+template <typename Stepper> Stepper *
+InsightSimulator<Stepper>::get_stepper ()
+{
+  return stepper;
+}
+
 template <typename Stepper> void 
 InsightSimulator<Stepper>::compute_enabled_arrows (State *s, 
 						   ArrowVector *result) 
@@ -1928,4 +1960,53 @@ Watchpoint::reset (GenericInsightSimulator *S)
 {
   Option<bool> oval = S->eval (cond);
   last_value = ! oval.hasValue () || oval.getValue ();
+}
+
+/******************************************************************************
+ *
+ * RAW BYTES READERS
+ *
+ ******************************************************************************/
+
+template <typename Stepper>
+RawBytesReader<Stepper>::RawBytesReader (InsightSimulator<Stepper> *simulator)
+  : simulator (simulator)
+{
+  
+}
+
+template <typename Stepper>
+RawBytesReader<Stepper>::~RawBytesReader ()
+{
+}
+
+template <typename Stepper> void
+RawBytesReader<Stepper>::read_buffer (address_t from, uint8_t *dest, 
+				      size_t length)
+  throw (Decoder::Exception)
+{
+  typename Stepper::State *s = 
+    (typename Stepper::State *) simulator->get_state ();
+  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
+  Stepper *stepper = simulator->get_stepper ();
+
+  for (size_t i = 0; i < length; i++)
+    {
+      if (mem->is_defined (from + i))
+	{
+	  bool is_unique = true;
+	  typename Stepper::Value val = 
+	    mem->get(from + i, 1, Architecture::LittleEndian);
+
+	  ConcreteValue cval = 
+	    stepper->value_to_ConcreteValue (s->get_Context (), val, 
+					     &is_unique);
+	  if (! is_unique)
+	    throw AbstractCodeException (from + i);
+	  dest[i] = cval.get ();
+	}
+      else
+	throw Decoder::OutOfBounds (from + i);
+    }
+  simulator->delete_state (s);
 }
