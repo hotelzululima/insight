@@ -184,6 +184,7 @@ template <typename Stepper>
 class InsightSimulator : public GenericInsightSimulator {
 public:
   typedef typename Stepper::State State;
+  typedef typename Stepper::Memory Memory;
   typedef typename Stepper::Value Value;
   typedef typename Stepper::ProgramPoint ProgramPoint;
 
@@ -1426,24 +1427,27 @@ template <> void *
 InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr, 
 						    size_t len, bool keep)
 {
-  SymbolicStepper::State *s = (SymbolicStepper::State *) p;
-  SymbolicStepper::Memory *mem = s->get_Context ()->get_memory ();
-  SymbolicStepper::Value *newvals = new SymbolicStepper::Value[len];
+  State *s = (State *) p;
+  Memory *mem = s->get_Context ()->get_memory ();
+  Value *newvals = new Value[len];
   Expr *cond = keep ? Constant::True () : NULL;
 
+  Value newval (Value::unknown_value (8 * len));
 
   for (size_t i = 0; i < len; i++) 
     {
-      newvals[i] = SymbolicStepper::Value::unknown_value (8);
+      Expr *v = Expr::createExtract (newval.get_Expr ()->ref(), 8 * i, 8);
 
+      newvals[i] = Value (v);
       if (mem->is_defined (addr + i) && keep)
 	{
-	  SymbolicStepper::Value val = get_memory_value (p, addr + i);
+	  Value val = get_memory_value (p, addr + i);
 	  Expr *eq = 
 	    Expr::createEquality (val.get_Expr ()->ref (), 
 				  newvals[i].get_Expr ()->ref ());
 	  cond = Expr::createLAnd (cond, eq);    
 	}
+      v->deref ();
     }
   if (keep)
     {
