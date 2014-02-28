@@ -351,7 +351,7 @@ def instr(addr=None):
     if program == None:
         print "no program is loaded"
     if addr == None:
-        disas(1)
+        disas(l=1)
     else:
         for i in program.disas (addr, 1):
             print i[1]
