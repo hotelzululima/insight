@@ -110,6 +110,14 @@ public:
       Exception ("'" + error + "' : Unexpected error") { }
   };
 
+
+  class RawBytesReader {    
+  public:
+    virtual ~RawBytesReader() {}
+    virtual void read_buffer (address_t from, uint8_t *dest, size_t length)
+      throw (Decoder::Exception) = 0;
+  };
+
   virtual ~Decoder();
 
   /* Translates the assembly instruction at 'addr' into Microcode.
@@ -135,8 +143,11 @@ protected:
   /* Constructor is protected to enforce to use the DecoderFactory */
   Decoder(MicrocodeArchitecture *arch, const ConcreteMemory *memory);
 
+  /* Constructor is protected to enforce to use the DecoderFactory */
+  Decoder(MicrocodeArchitecture *arch, RawBytesReader *reader);
+
   /* A pointer on the memory to decode */
-  ConcreteMemory *memory;
+  RawBytesReader *reader;
   MicrocodeArchitecture *arch;
 };
 

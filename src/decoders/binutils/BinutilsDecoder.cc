@@ -106,7 +106,100 @@ void delete_bfd(bfd* abfd)
 
 BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch, 
 				 ConcreteMemory *mem)
-  : Decoder(arch, mem)
+  : Decoder (arch, mem)
+{
+  init ();
+}
+
+BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch, 
+				 Decoder::RawBytesReader *reader)
+  : Decoder (arch, reader)
+{
+  init ();
+}
+
+
+
+/* --------------- */
+
+BinutilsDecoder::~BinutilsDecoder()
+{
+  delete this->instr_buffer;
+  delete this->info;
+}
+
+/* --------------- */
+
+ConcreteAddress
+BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
+  throw (Decoder::Exception)
+{
+  ConcreteAddress result = this->next(address);
+
+  if (decoder == NULL)
+    throw Decoder::DecoderUnexpectedError("Decoder not implemented for "
+					  "this architecture");
+
+  if (this->decoder(arch, mc, instr_buffer->str(), address, result))
+    {
+      MicrocodeNode *node = 
+	mc->get_node (MicrocodeAddress (address.get_address ()));
+      node->add_annotation (AsmAnnotation::ID,  
+			    new AsmAnnotation (instr_buffer->str ()));
+    }
+  else
+    {
+      throw Decoder::DecoderUnexpectedError ("syntax error @" + 
+					     address.to_string ());
+    }
+
+  return result;
+}
+
+/* --------------- */
+
+ConcreteAddress
+BinutilsDecoder::next(const ConcreteAddress &address)
+{
+  /* Clearing out the previous decoded instruction */
+  this->instr_buffer->str(string());
+
+  /* Initializing the info structure */
+  this->info->buffer = NULL;
+  this->info->buffer_vma = (bfd_vma) address.get_address ();
+  this->info->buffer_length = (bfd_size_type) INSTR_MAX_SIZE;
+  this->info->section = NULL;
+
+  /* Get next instruction address */
+  size_t instr_size = (*this->disassembler_fn)(this->info->buffer_vma, 
+					       this->info);
+
+  return ConcreteAddress(address.get_address () + instr_size);
+}
+
+
+std::string 
+BinutilsDecoder::get_instruction (const ConcreteAddress &addr) 
+{
+  this->next(addr);
+
+  return instr_buffer->str ();
+}
+
+struct disassemble_info *
+BinutilsDecoder::get_disassembler_info()
+{
+  return this->info;
+}
+
+void
+BinutilsDecoder::set_disassembler_info(struct disassemble_info *info)
+{
+  this->info = info;
+}
+
+void 
+BinutilsDecoder::init ()
 {
   /* Initializing BFD framework */
   bfd_init();
@@ -212,93 +305,12 @@ BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
   disassemble_init_for_target (this->info);
 
   /* Setting the application specific information */
-  this->info->application_data = this->memory;
+  this->info->application_data = this->reader;
 
   /* Cleaning memory */
   delete_bfd(abfd);
 }
 
-/* --------------- */
-
-BinutilsDecoder::~BinutilsDecoder()
-{
-  delete this->instr_buffer;
-  delete this->info;
-}
-
-/* --------------- */
-
-ConcreteAddress
-BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
-  throw (Decoder::Exception)
-{
-  assert(memory->is_defined(address));
-  ConcreteAddress result = this->next(address);
-
-  if (decoder == NULL)
-    throw Decoder::DecoderUnexpectedError("Decoder not implemented for this architecture");
-
-  if (this->decoder(arch, mc, instr_buffer->str(), address, result))
-    {
-      MicrocodeNode *node = 
-	mc->get_node (MicrocodeAddress (address.get_address ()));
-      node->add_annotation (AsmAnnotation::ID,  
-			    new AsmAnnotation (instr_buffer->str ()));
-    }
-  else
-    {
-      throw Decoder::DecoderUnexpectedError ("syntax error @" + 
-					     address.to_string ());
-    }
-
-  return result;
-}
-
-/* --------------- */
-
-ConcreteAddress
-BinutilsDecoder::next(const ConcreteAddress &address)
-{
-  /* Clearing out the previous decoded instruction */
-  this->instr_buffer->str(string());
-
-  /* Initializing the info structure */
-  this->info->buffer = NULL;
-  this->info->buffer_vma = (bfd_vma) address.get_address ();
-  this->info->buffer_length = (bfd_size_type) INSTR_MAX_SIZE;
-  this->info->section = NULL;
-
-  /* Get next instruction address */
-  size_t instr_size = (*this->disassembler_fn)(this->info->buffer_vma, 
-					       this->info);
-
-  return ConcreteAddress(address.get_address () + instr_size);
-}
-
-
-std::string 
-BinutilsDecoder::get_instruction (const ConcreteAddress &addr) 
-{
-  this->next(addr);
-
-  return instr_buffer->str ();
-}
-
-/* --------------- */
-
-struct disassemble_info *
-BinutilsDecoder::get_disassembler_info()
-{
-  return this->info;
-}
-
-void
-BinutilsDecoder::set_disassembler_info(struct disassemble_info *info)
-{
-  this->info = info;
-}
-
-/* --------------- */
 
 /* Sprintf to a stringstream */
 static int
@@ -383,8 +395,6 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
       || memaddr - info->buffer_vma + end_addr_offset > max_addr_offset)
     throw Decoder::OutOfBounds(memaddr);
 
-  ConcreteMemory *memory = (ConcreteMemory *) info->application_data;
-
   /* FIXME: It works but I'm extremely doubtful it is really robust or
    * not... The problem comes from the way libopcodes deals with its
    * sliding window on the memory where the instructions to decode
@@ -393,14 +403,10 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
    * strengthen the code here I would be extremely glad to hear it...
    * Anyway, it seems to work as it is now... dodgy, but working...
    * I'm crossing my fingers ! */
-  for (unsigned int i = 0; i < length; i++)
-    {
-      if (memory->is_defined (memaddr + i))
-	myaddr[i] = memory->get(memaddr + i, 1, 
-				Architecture::LittleEndian).get();
-      else
-	throw Decoder::OutOfBounds(memaddr + i);
-    }
+  Decoder::RawBytesReader *R = 
+    (Decoder::RawBytesReader *) info->application_data;
+
+  R->read_buffer (memaddr, myaddr, length);
 
   /* The original code was this one */
   //  memcpy(myaddr, info->buffer + octets, length);

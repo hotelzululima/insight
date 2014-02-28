@@ -55,6 +55,7 @@ class BinutilsDecoder : public Decoder
 {
 public:
   BinutilsDecoder(MicrocodeArchitecture *arch, ConcreteMemory *mem);
+  BinutilsDecoder(MicrocodeArchitecture *arch, RawBytesReader *reader);
   virtual ~BinutilsDecoder();
 
   /***** Using the decoder *****/
@@ -75,6 +76,7 @@ public:
   void set_disassembler_info(struct disassemble_info *info);
 
 private:
+  void init ();
   /* Decoder internal fields */
   decoder_ftype decoder;              /* Decoder function */
   struct disassemble_info *info;      /* Disassembler info */

@@ -30,23 +30,67 @@
 
 #include "Decoder.hh"
 
-Decoder::Decoder(MicrocodeArchitecture *arch, const ConcreteMemory *memory)
+class ConcreteMemoryReader : public Decoder::RawBytesReader 
 {
-  this->memory = (ConcreteMemory*) memory;
-  this->arch = arch;
+public:
+  ConcreteMemoryReader (const ConcreteMemory *M);
+
+  virtual ~ConcreteMemoryReader ();
+
+  virtual void read_buffer (address_t from, uint8_t *dest, size_t length)
+    throw (Decoder::Exception);
+
+private:
+  const ConcreteMemory *memory;
+};
+
+Decoder::Decoder(MicrocodeArchitecture *arch, const ConcreteMemory *memory)
+  : reader (new ConcreteMemoryReader (memory)), arch (arch)                
+{
+}
+
+Decoder::Decoder(MicrocodeArchitecture *arch, RawBytesReader *reader)
+  : reader (reader), arch (arch)
+{
 }
 
 Decoder::~Decoder()
 {
+  delete reader;
 }
 
-void Decoder::set_memory(const ConcreteMemory *memory)
+void 
+Decoder::set_memory (const ConcreteMemory *memory)
 {
-  this->memory = (ConcreteMemory*) memory;
+  if (reader != NULL)
+    delete reader;
+  reader = new ConcreteMemoryReader (memory);
 }
 
 const MicrocodeArchitecture *
 Decoder::get_arch () const
 {
   return arch;
+}
+
+ConcreteMemoryReader::ConcreteMemoryReader (const ConcreteMemory *M)
+  : memory (M)
+{
+}
+
+ConcreteMemoryReader::~ConcreteMemoryReader ()
+{
+}
+
+void 
+ConcreteMemoryReader::read_buffer (address_t from, uint8_t *dest, size_t length)
+  throw (Decoder::Exception)
+{
+  for (size_t i = 0; i < length; i++)
+    {
+      if (memory->is_defined (from + i))
+	dest[i] = memory->get(from + i, 1, Architecture::LittleEndian).get();
+      else
+	throw Decoder::OutOfBounds (from + i);
+    }
 }
