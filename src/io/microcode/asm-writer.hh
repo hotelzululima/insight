@@ -37,11 +37,18 @@
 # include <io/binary/BinaryLoader.hh>
 
 extern std::vector<MicrocodeNode *> * 
-asm_get_successor_instructions (const Microcode *mc, const MicrocodeNode *node);
+asm_get_successor_instructions (const Microcode *mc, 
+				const MicrocodeNode *node);
 
 extern void 
 asm_writer (std::ostream &out, const Microcode *mc, 
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels);
+
+extern void 
+asm_writer (std::ostream &out, const Microcode *mc, 
+	    const ConcreteMemory *memory, const SymbolTable *symboltable,
+	    bool with_bytes, bool with_holes, bool with_labels, 
+	    address_t addr, size_t nb);
 
 #endif /* ! ASM_WRITER_HH */

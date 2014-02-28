@@ -77,7 +77,9 @@ s_is_next_instruction_addr (const MicrocodeNode *node, address_t a)
 }
 
 static SymbolTable *
-s_build_symbol_table (const Microcode *mc, const SymbolTable *symboltable,
+s_build_symbol_table (const Microcode *mc, 
+		      const vector<MicrocodeNode *> &nodes, 
+		      const SymbolTable *symboltable,
 		      bool with_labels)
 {
   const char *label_prefix = "L";
@@ -88,8 +90,8 @@ s_build_symbol_table (const Microcode *mc, const SymbolTable *symboltable,
   if (! with_labels)
     return result;
 
-  for (Microcode::node_iterator pN = mc->begin_nodes (); 
-       pN != mc->end_nodes (); pN++)
+  for (vector<MicrocodeNode *>::const_iterator pN = nodes.begin (); 
+       pN != nodes.end (); pN++)
     {
       MicrocodeNode *N = *pN;
       MicrocodeAddress Nma = N->get_loc ();
@@ -168,28 +170,39 @@ s_dump_memory_between (ostream &out, const ConcreteMemory *M,
     }
 }
 
-void 
-asm_writer (ostream &out, const Microcode *mc, 
-	    const ConcreteMemory *memory, const SymbolTable *symboltable,
-	    bool with_bytes, bool with_holes, bool with_labels)
+static bool 
+s_sort_microcode (MicrocodeNode *e1, MicrocodeNode *e2)
 {
-  vector<MicrocodeNode *> *nodes = mc->get_nodes ();
-  int nb_nodes = nodes->size ();
-  SymbolTable *symbtable = s_build_symbol_table (mc, symboltable, with_labels);
+  return (*e1) < (*e2);
+}
+
+static void 
+s_write_asm (ostream &out, const Microcode *mc, 
+	     const vector<MicrocodeNode *> &nodes,
+	     const ConcreteMemory *memory, const SymbolTable *symboltable,
+	     bool with_bytes, bool with_holes, bool with_labels, 
+	     address_t addr, size_t nb)
+{  
+  int nb_nodes = nodes.size ();
+  SymbolTable *symbtable = 
+    s_build_symbol_table (mc, nodes, symboltable, with_labels);
   int i = 0;
   MicrocodeNode *lastnode = NULL;
 
-  while (i < nb_nodes && ! nodes->at (i)->has_annotation (AsmAnnotation::ID))
+  while (i < nb_nodes && (! nodes.at (i)->has_annotation (AsmAnnotation::ID) 
+			  || nodes.at (i)->get_loc ().getGlobal() < addr))
     i++;
   MicrocodeAddress prev;
   if (i < nb_nodes)
-    prev = nodes->at (i)->get_loc ();
-  for (; i < nb_nodes; i++)
+    prev = nodes.at (i)->get_loc ();
+  for (; i < nb_nodes && nb; i++)
     {
-      MicrocodeNode *node = nodes->at (i);
+      MicrocodeNode *node = nodes.at (i);
 
-      if (! node->has_annotation (AsmAnnotation::ID))
+      if (! node->has_annotation (AsmAnnotation::ID))	  
 	continue;
+
+      nb--;
       lastnode = node;
       MicrocodeAddress ma (node->get_loc ());
 
@@ -230,7 +243,8 @@ asm_writer (ostream &out, const Microcode *mc,
 	  out << left << setw (24) << setfill (' ') << bytes << "\t";
 	}
       out << a->get_value ();      
-      vector<MicrocodeNode *> *succ = asm_get_successor_instructions (mc, node);
+      vector<MicrocodeNode *> *succ = 
+	asm_get_successor_instructions (mc, node);
       int nb_succ = succ->size ();
       bool first = true;
       for (int s = 0; s < nb_succ; s++)
@@ -267,6 +281,31 @@ asm_writer (ostream &out, const Microcode *mc,
   delete symbtable;
 }
 
+void 
+asm_writer (ostream &out, const Microcode *mc, 
+	    const ConcreteMemory *memory, const SymbolTable *symboltable,
+	    bool with_bytes, bool with_holes, bool with_labels)
+{  
+  vector<MicrocodeNode *> nodes(*mc->get_nodes ());
+  std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
+  
+  s_write_asm (out, mc, nodes, memory, symboltable, with_bytes, 
+	       with_holes, with_labels, nodes[0]->get_loc ().getGlobal (),
+	       nodes.size ());
+}
+
+void 
+asm_writer (ostream &out, const Microcode *mc, 
+	    const ConcreteMemory *memory, const SymbolTable *symboltable,
+	    bool with_bytes, bool with_holes, bool with_labels, 
+	    address_t addr, size_t nb)
+{  
+  vector<MicrocodeNode *> nodes(*mc->get_nodes ());
+  std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
+  
+  s_write_asm (out, mc, nodes, memory, symboltable, with_bytes, 
+	       with_holes, with_labels, addr, nb);
+}
 
 static void
 s_successor_instructions_rec (const Microcode *mc, const MicrocodeNode *node, 
