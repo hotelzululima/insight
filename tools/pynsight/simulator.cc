@@ -130,6 +130,10 @@ public:
   virtual bool check_memory_range (address_t addr, size_t len);
   virtual bool check_memory_range (void *s, address_t addr, size_t len) = 0;
 
+  virtual bool abstract_memory (address_t addr, size_t len, bool keep_in_ctx);
+  virtual void *abstract_memory (void *p, address_t addr, size_t len, 
+				 bool keep_in_ctx) = 0;
+
   virtual bool concretize_memory (address_t addr, size_t len);
   virtual bool concretize_memory (address_t addr, const ConcreteValue *values, 
 				  size_t len);
@@ -142,6 +146,10 @@ public:
   virtual string get_register (void *p, const RegisterDesc *reg) = 0;
   virtual bool check_register (const RegisterDesc *reg);
   virtual bool check_register (void *s, const RegisterDesc *reg) = 0;
+
+  virtual bool abstract_register (const RegisterDesc *reg, bool keep_in_ctx);
+  virtual void *abstract_register (void *p, const RegisterDesc *reg, 
+				   bool keep_in_ctx) = 0;
 
   virtual bool concretize_register (const RegisterDesc *reg);
   virtual bool concretize_register (const RegisterDesc *reg, 
@@ -190,20 +198,27 @@ public:
   virtual void *get_state ();
   virtual void *trigger_arrow (void *from, StmtArrow *a);
 
+  virtual void set_memory (void *p, address_t addr, const Value &value);
   virtual void set_memory (void *p, address_t addr, uint8_t value);
   virtual string get_memory (void *p, address_t addr);
   virtual Value get_memory_value (void *p, address_t addr);
   virtual bool check_memory_range (void *s, address_t addr, size_t len);
+  virtual void *abstract_memory (void *p, address_t addr, size_t len, 
+				 bool keep_in_ctx);
   virtual void *concretize_memory (void *s, address_t addr, size_t len);
   virtual void *concretize_memory (void *s, address_t addr, 
 				   const ConcreteValue *values,
 				   size_t len);
 
+  virtual void set_register (void *p, const RegisterDesc *reg, 
+			     const Value &value);
   virtual void set_register (void *p, const RegisterDesc *reg, word_t value);
   virtual string get_register (void *p, const RegisterDesc *reg);
   virtual Value get_register_value (void *p, const RegisterDesc *reg);
   virtual bool check_register (void *s, const RegisterDesc *reg);
 
+  virtual void* abstract_register (void *p, const RegisterDesc *reg, 
+				  bool keep_in_ctx);
   virtual void *concretize_register (void *s, const RegisterDesc *reg);
   virtual void *concretize_register (void *s, const RegisterDesc *reg, 
 				     const ConcreteValue &v);
@@ -246,6 +261,9 @@ static PyObject *
 s_Simulator_set_memory (PyObject *self, PyObject *args);
 
 static PyObject *
+s_Simulator_unset_memory (PyObject *self, PyObject *args, PyObject *kwds);
+
+static PyObject *
 s_Simulator_concretize_memory (PyObject *self, PyObject *args);
 
 static PyObject *
@@ -253,6 +271,9 @@ s_Simulator_get_memory (PyObject *self, PyObject *args);
 
 static PyObject *
 s_Simulator_set_register (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_unset_register (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyObject *
 s_Simulator_get_register (PyObject *self, PyObject *args);
@@ -321,11 +342,17 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" },
  { "set_memory", s_Simulator_set_memory, METH_VARARGS, 
    "\n" },
+ { "unset_memory", 
+   (PyCFunction) s_Simulator_unset_memory, METH_VARARGS|METH_KEYWORDS,
+   "\n" },
  { "get_memory", s_Simulator_get_memory, METH_VARARGS, 
    "\n" },
  { "concretize_memory", s_Simulator_concretize_memory, METH_VARARGS,
    "\n" }, 
  { "set_register", s_Simulator_set_register, METH_VARARGS, 
+   "\n" },
+ { "unset_register", 
+   (PyCFunction) s_Simulator_unset_register, METH_VARARGS|METH_KEYWORDS, 
    "\n" },
  { "get_register", s_Simulator_get_register, METH_VARARGS, 
    "\n" },
@@ -575,6 +602,34 @@ s_Simulator_set_memory (PyObject *self, PyObject *args)
 }
 
 static PyObject *
+s_Simulator_unset_memory (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] = { "addr", "len", "keep", NULL };
+  Py_ssize_t addr;
+  Py_ssize_t len;
+  unsigned char keep;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kkb", (char **) kwlists,
+				    &addr, &len, &keep))
+    return NULL;
+  PyObject *result = NULL;
+  if (S->check_memory_range (addr, len)) 
+    {
+      if (! S->abstract_memory (addr, len, keep))
+	PyErr_SetNone (PyExc_NotImplementedError);
+      else 
+	result = pynsight::None ();    
+    }
+  else
+    {
+      PyErr_SetString (PyExc_IndexError, "memory range out of bounds");
+    }
+
+  return result;
+}
+
+static PyObject *
 s_Simulator_get_memory (PyObject *self, PyObject *args)
 {
   unsigned long addr;
@@ -660,6 +715,35 @@ s_Simulator_set_register (PyObject *self, PyObject *args)
     }
 
   return pynsight::None ();
+}
+
+static PyObject *
+s_Simulator_unset_register (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] = { "reg", "keep", NULL };
+  const char *regname = NULL;
+  unsigned char *keep;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "sb", (char **) kwlists,
+				    &regname, &keep))
+    return NULL;
+
+  PyObject *result= NULL;
+  try 
+    {
+      const RegisterDesc *rd = S->get_march ()->get_register (regname);
+      if (! S->abstract_register (rd, keep))
+	PyErr_SetNone (PyExc_NotImplementedError);
+      else
+	result = pynsight::None ();
+    }
+  catch (Architecture::RegisterDescNotFound &e) 
+    {
+      PyErr_SetString (PyExc_LookupError, "unknown register");
+    }
+
+  return result;
 }
 
 static PyObject *
@@ -1018,6 +1102,22 @@ GenericInsightSimulator::check_memory_range (address_t addr, size_t len)
 }
 
 bool 
+GenericInsightSimulator::abstract_memory (address_t addr, size_t len, 
+					  bool keep_in_ctx)
+{
+  void *s = get_state ();
+  void *ns = abstract_memory (s, addr, len, keep_in_ctx);
+  if (ns != NULL)
+    {
+      set_state (ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+
+  return (ns != NULL);
+}
+
+bool 
 GenericInsightSimulator::concretize_memory (address_t addr, size_t len)
 {
   void *s = get_state ();
@@ -1067,6 +1167,21 @@ GenericInsightSimulator::check_register (const RegisterDesc *reg)
   delete_state (s);  
 
   return result;
+}
+
+bool 
+GenericInsightSimulator::abstract_register (const RegisterDesc *reg, 
+					    bool keep_in_ctx)
+{
+  void *s = get_state ();
+  void *ns = abstract_register (s, reg, keep_in_ctx);
+  if (ns != NULL)
+    {
+      set_state (ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+  return (ns != NULL);
 }
 
 bool
@@ -1261,12 +1376,20 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 }
 
 template <typename Stepper> void 
+InsightSimulator<Stepper>::set_memory (void *p, address_t addr, 
+				       const typename Stepper::Value &value) 
+{
+  assert (value.get_size () == 8);
+  typename Stepper::State *s = (typename Stepper::State *) p;
+  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
+  mem->put (addr, value, Architecture::LittleEndian);
+}
+
+template <typename Stepper> void 
 InsightSimulator<Stepper>::set_memory (void *p, address_t addr, uint8_t value) 
 {
-  typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Value val (8, value);
-  typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
-  mem->put (addr, val, Architecture::LittleEndian);
+  set_memory (p, addr, val);
 }
 
 template <typename Stepper> string 
@@ -1297,6 +1420,54 @@ InsightSimulator<Stepper>::check_memory_range (void *p, address_t addr,
       addr++;
     }
   return true;
+}
+
+template <> void *
+InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr, 
+						    size_t len, bool keep)
+{
+  SymbolicStepper::State *s = (SymbolicStepper::State *) p;
+  SymbolicStepper::Memory *mem = s->get_Context ()->get_memory ();
+  SymbolicStepper::Value *newvals = new SymbolicStepper::Value[len];
+  Expr *cond = keep ? Constant::True () : NULL;
+
+
+  for (size_t i = 0; i < len; i++) 
+    {
+      newvals[i] = SymbolicStepper::Value::unknown_value (8);
+
+      if (mem->is_defined (addr + i) && keep)
+	{
+	  SymbolicStepper::Value val = get_memory_value (p, addr + i);
+	  Expr *eq = 
+	    Expr::createEquality (val.get_Expr ()->ref (), 
+				  newvals[i].get_Expr ()->ref ());
+	  cond = Expr::createLAnd (cond, eq);    
+	}
+    }
+  if (keep)
+    {
+      s = stepper->restrict_state_to_condition (s, cond);
+      cond->deref ();
+    }
+  else
+    s = s->clone ();
+      
+  if (s != NULL)
+    {
+      for (size_t i = 0; i < len; i++)
+	set_memory (s, addr + i, newvals[i]);
+    }
+  delete[] newvals;
+
+  return s;   
+}
+
+template <> void *
+InsightSimulator<ConcreteStepper>::abstract_memory (void *, address_t, 
+						    size_t, bool)
+{
+  return NULL;
 }
 
 template <> void *
@@ -1375,12 +1546,13 @@ InsightSimulator<Stepper>::concretize_memory (void *p, address_t addr,
 
 template <typename Stepper> void 
 InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg, 
-					 word_t v)
+					 const typename Stepper::Value &value) 
 {
+  assert (value.get_size () == reg->get_window_size ());
   typename Stepper::State *s = (typename Stepper::State *) p;
-  typename Stepper::Value val (reg->get_window_size (), v);
   typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
   const RegisterDesc *areg = march->get_register (reg->get_label ());
+  typename Stepper::Value val (value);
 
   if (val.get_size () != areg->get_register_size ())
     {
@@ -1394,6 +1566,14 @@ InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg,
       val = stepper->embed_eval (regval, val, reg->get_window_offset ());
     }     
   mem->put (areg, val);
+}
+
+template <typename Stepper> void 
+InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg, 
+					 word_t v)
+{  
+  typename Stepper::Value val (reg->get_window_size (), v);
+  set_register (p, reg, val);
 }
 
 template <typename Stepper> string
@@ -1432,6 +1612,41 @@ InsightSimulator<Stepper>::check_register (void *p, const RegisterDesc *reg)
   const RegisterDesc *areg = march->get_register (reg->get_label ());
 
   return mem->is_defined (areg);
+}
+
+template <> void *
+InsightSimulator<SymbolicStepper>::abstract_register (void *p, 
+						      const RegisterDesc *reg, 
+						      bool keep_in_ctx)
+{
+  SymbolicStepper::State *s = (SymbolicStepper::State *) p;
+  SymbolicStepper::Value newval = 
+    SymbolicStepper::Value::unknown_value (reg->get_window_size ());
+  if (check_register (p, reg) && keep_in_ctx)
+    {
+      SymbolicStepper::Value val = get_register_value (p, reg);
+      Expr *cond = Expr::createEquality (val.get_Expr ()->ref (), 
+					 newval.get_Expr ()->ref ());
+      s = stepper->restrict_state_to_condition (s, cond);
+      cond->deref ();
+    }
+  else
+    {
+      s = s->clone ();
+    }
+
+  if (s != NULL)
+    set_register (s, reg, newval);
+
+  return s;
+}
+
+template <> void *
+InsightSimulator<ConcreteStepper>::abstract_register (void *, 
+						      const RegisterDesc *, 
+						      bool)
+{
+  return NULL;
 }
 
 template <typename Stepper> void *

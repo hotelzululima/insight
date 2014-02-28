@@ -322,6 +322,24 @@ def set(loc, val = None):
     except insight.error.ConcretizationException:
         print "try to assign an inconsistent value to", loc
 
+def unset(loc, len = 1, keep = True):
+    """Abstract the value of a register or a memory area."""
+    global simulator
+    if simulator == None:
+        print "program is not started"
+        return
+    try:
+        if isinstance (loc, str):
+            regs = prog().info()["registers"]
+            if loc in regs:
+                simulator.unset_register (loc, keep)
+            else:
+                print "unknown register ", loc
+        else:
+            simulator.unset_memory (loc, len, keep)
+    except NotImplementedError:
+        print "abstraction is not supported here."
+
 def instr(addr=None):
     """Assembler instruction at address 'addr'.
 
