@@ -40,6 +40,7 @@
 
 #include <kernel/insight.hh>
 #include <kernel/expressions/ExprSolver.hh>
+#include <kernel/expressions/ExprProcessSolver.hh>
 
 #include <decoders/binutils/BinutilsDecoder.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
