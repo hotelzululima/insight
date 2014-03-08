@@ -28,21 +28,26 @@
  * SUCH DAMAGE.
  */
 
+#include "cfgrecovery.hh"
+#include "algorithms.hh"
+
 #include <fstream>
 #include <iostream>
 #include <map>
 
-#include <signal.h>
 #include <ctype.h>
 #include <getopt.h>
 #include <libgen.h>
+#include <signal.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+
+#include <decoders/binutils/BinutilsDecoder.hh>
 
 #include <kernel/insight.hh>
 #include <kernel/expressions/ExprSolver.hh>
 #include <kernel/expressions/ExprProcessSolver.hh>
 
-#include <decoders/binutils/BinutilsDecoder.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
 #include <io/microcode/xml_microcode_generator.hh>
 #include <io/microcode/xml_microcode_parser.hh>
@@ -50,8 +55,6 @@
 #include <io/microcode/dot-writer.hh>
 
 #include <config.h>
-#include "algorithms.hh"
-#include "cfgrecovery.hh"
 
 using namespace std;
 
@@ -60,7 +63,7 @@ using namespace std;
   FORMAT(OF_ASM_DOT, "asm-dot", "assembler code on a dot graph", ".asm.dot") \
   FORMAT(OF_MC, "mc", "microcode", ".mc") \
   FORMAT(OF_MC_DOT, "mc-dot", "microcode on a dot graph", ".mc.dot") \
-  FORMAT(OF_XML, "xml", "microcode in XML format", ".mc.xml")
+  FORMAT(OF_XML, "mc-xml", "microcode in XML format", ".mc.xml")
 
 #define FORMAT(id,name,desc,ext) id,
 enum OutputFormatID  { OUTPUT_FORMATS OF_UNKNOWN };
@@ -82,6 +85,16 @@ static const OutputFormat FORMATS[] = {
 
 #define DEFAULT_FORMAT (&FORMATS[OF_ASM])
 
+/* List of available supports for SMT solvers */
+enum Solvers {
+  NO_SOLVER = 0,
+#if INTEGRATED_MATHSAT_SOLVER
+  MATHSAT_API = 1,
+#endif
+  MATHSAT_SOLVER = 2,
+  Z3_SOLVER = 3,
+};
+
 /* Global options */
 int verbosity = 0;	           /* verbosity level */
 static ConfigTable CONFIG;
@@ -102,8 +115,8 @@ struct disassembler {
   { "flood", "flood traversal", flood_traversal },
   { "linear", "linear sweep", linear_sweep },
   { "recursive", "recursive traversal", recursive_traversal },
-  { "concrete", "concrete simulation", concrete_simulator },
-  { "symbolic", "symbolic simulation with formula", symbolic_simulator },
+  { "concrete", "simulation within concrete domain", concrete_simulator },
+  { "symbolic", "simulation within formula domain", symbolic_simulator },
   /* List must be kept sorted by name */
   { NULL, NULL, NULL }
 };
@@ -131,14 +144,14 @@ usage (int status)
     }
   else
     {
-      cout << "Usage: " << prog_name << " [OPTION] EXECFILE..." << endl;
+      cout << "Usage: " << prog_name << " [OPTION] EXECUTABLE" << endl;
 
-      cout << "Rebuild the CFG based on the analysis of the binary." << endl
+      cout << "Rebuild the CFG based on the analysis of executable binary files." << endl
 	   << endl
-	   << "  -c, --config FILE\t\tset config file    (default: ~/" << CFGRECOVERY_CONFIG_FILENAME << ")" << endl
-	   << "  -g, --generate-config[=FILE]\tdump a config file (default: ~/"
+	   << "  -c, --config FILE\t\tset config file (default: ~/" << CFGRECOVERY_CONFIG_FILENAME << ")" << endl
+	   << "  -C, --create-config[=FILE]\tcreate a config file (default: ~/"
 	   << CFGRECOVERY_CONFIG_FILENAME << ")" << endl
-	   << "  -x, --in FILE\t\t\tload an XML file FILE from previous analysis" << endl
+	   << "  -i, --input FILE\t\tload an XML file FILE from previous analysis" << endl
 	   << "  -d, --disas TYPE\t\tselect disassembler TYPE (default: linear)" << endl
 	   << "  -l, --list\t\t\tdisplay all available disassembler methods" << endl
 	   << "  -f, --formats FMT\t\tset disassembler output format:" << endl
@@ -152,15 +165,15 @@ usage (int status)
 	   << "  -e, --entrypoint ADDR\t\tforce entrypoint to be ADDR" << endl
 	   << "  -b, --target TARGET\t\tforce BFD target to TARGET" << endl
 	   << "  -m, --architecture ARCH\tforce BFD architecture to ARCH" << endl
-	   << "  -EB|-EL, --endian B|L\t\tforce endianness to big=B|little=L" << endl
+	   << "  -E, --endian B|L\t\tforce endianness to big='B' or little='L'" << endl
 	   << "  -o, --output FILE\t\twrite outputs to FILE" << endl
-	   << "  -v, --verbose\t\t\tincrease verbosity level" << endl
+	   << "  -v, --verbose\t\t\tincrease verbosity level ('-vv'=level 2)" << endl
 	   << "  -D, --debug\t\t\tenable debug traces" << endl
 	   << "  -h, --help\t\t\tdisplay this help" << endl
 	   << "  -V, --version\t\t\tdisplay version and exit" << endl
 	   << "assembler output options:" << endl
-	   << " --asm-with-bytes\t\tdisplay the bytes of the opcodes" << endl
-	   << " --asm-with-holes\t\tdo not skip the empty memory holes"  << endl
+	   << " --asm-with-bytes\t\tdisplay the opcode bytes" << endl
+	   << " --asm-with-holes\t\tdo not skip the empty gaps in memory"  << endl
 	   << " --asm-with-labels\t\tdisplay symbols whenever possible" << endl
 	   << "miscellaneous options:" << endl
 	   << "  --sink-nodes\t\t\tlist sink nodes" << endl;
@@ -177,11 +190,8 @@ version ()
   cout << prog_name << " " << CFG_RECOVERY_VERSION << endl;
 
   cout << endl
-    << "This software tries to rebuild the original CFG based only" << endl
-    << "on an analysis performed on the executable file. It provides" << endl
-    << "several ways of recovering the CFG of a binary. It is" << endl
-    << "programmed for investigation purpose and has no pretention" << endl
-    << "to be exhaustive or trustable for now." << endl;
+    << "This software tries to recover the original CFG based only" << endl
+    << "on an analysis of executable binary files." << endl;
 
   exit (EXIT_SUCCESS);
 }
@@ -247,35 +257,95 @@ s_sighandler (int)
   CTRL_C_HANDLER.output_program = true;
 }
 
+
+static Solvers
+solver_lookup()
+{
+  struct stat sb;
+
+#if INTEGRATED_MATHSAT_SOLVER
+  /* MathSAT library is statically linked */
+  return MATHSAT_API;
+#endif
+
+  /* Found MathSAT solver */
+  if ((stat("mathsat", &sb) == 0) && (sb.st_mode & S_IXOTH))
+    return MATHSAT_SOLVER;
+
+  /* Found Z3 solver */
+  if ((stat("z3", &sb) == 0) && (sb.st_mode & S_IXOTH))
+    return Z3_SOLVER;
+
+  return NO_SOLVER;
+}
+
+void
+set_solver_config(ConfigTable *cfg)
+{
+  /* Scan available solvers and dump proper configuration */
+  switch (solver_lookup())
+    {
+#if INTEGRATED_MATHSAT_SOLVER
+    case MATHSAT_API:
+      cfg->set (ExprSolver::SOLVER_NAME_PROP, "mathsat");
+      break;
+#endif
+
+    case MATHSAT_SOLVER:
+      cfg->set (ExprSolver::SOLVER_NAME_PROP, "process");
+      cfg->set (ExprProcessSolver::COMMAND_PROP, "mathsat");
+      cfg->set (ExprProcessSolver::ARGS_PROP, "");
+      break;
+
+    case Z3_SOLVER:
+      cfg->set (ExprSolver::SOLVER_NAME_PROP, "process");
+      cfg->set (ExprProcessSolver::COMMAND_PROP, "z3");
+      cfg->set (ExprProcessSolver::ARGS_PROP, "-smt2 -in");
+      break;
+
+    default:
+      logs::warning
+	<< prog_name
+	<< ": warning: no smt-solver found !" << endl
+	<< "Try to install MathSAT5 or Z3 to get full benefit of Insight." << endl;
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   /* Various option values */
   int optc;
   const char *output_filename = NULL;
-  const char *preload_filename = NULL;
+  const char *input_filename = NULL;
   const char *architecture = NULL;
   const char *target = NULL;
   const char *endianness = NULL;
 
   string config_filename =
-    string(getenv("HOME")) + "/" + CFGRECOVERY_CONFIG_FILENAME;
+#if defined(_WIN64) || defined(_WIN32)
+    string(getenv("HOMEDRIVE")) + string(getenv("HOMEPATH")) +
+#else
+    string(getenv("HOME")) +
+#endif
+    "/" + CFGRECOVERY_CONFIG_FILENAME;
+
   bool display_symbols = false;
 
-  /* Default output format (asm, _mc_, dot, asm-dot, xml) */
+  /* Default output format (asm, _mc_, mc-dot, asm-dot, mc-xml) */
   list<const OutputFormat *> output_formats;
 
   /* Long options struct */
   struct option const
     long_opts[] = {
     {"config", required_argument, NULL, 'c'},
-    {"generate-config", optional_argument, NULL, 'g'},
+    {"create-config", optional_argument, NULL, 'C'},
     {"disas", required_argument, NULL, 'd'},
     {"list", no_argument, NULL, 'l'},
     {"endian", required_argument, NULL, 'E'},
     {"entrypoint", required_argument, NULL, 'e'},
     {"format", required_argument, NULL, 'f'},
-    {"in", required_argument, NULL, 'x'},
+    {"input", required_argument, NULL, 'i'},
     {"output", required_argument, NULL, 'o'},
     {"architecture", required_argument, NULL, 'm'},
     {"help", no_argument, NULL, 'h'},
@@ -302,7 +372,7 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "b:ld:e:E:f:g::o:hDm:vVc:x:S",
+	  getopt_long (argc, argv, "b:ld:e:E:f:C::i:o:hDm:vVc:S",
 		       long_opts, NULL)) != -1)
     switch (optc)
       {
@@ -326,7 +396,7 @@ main (int argc, char *argv[])
 	}
 	break;
 
-      case 'g':		/* Generate a default configuration file */
+      case 'C':		/* Create a default configuration file */
 	{
 	  string filename = config_filename;
 	  /* Check optional argument */
@@ -339,20 +409,12 @@ main (int argc, char *argv[])
 	    {
 	      config_filename = filename;
 
+	      set_solver_config(&CONFIG);
+
 	      CONFIG.set (logs::STDIO_ENABLED_PROP, true);
-	      CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, verbosity > 0);
+	      CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, true);
 	      CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
-#if INTEGRATED_MATHSAT_SOLVER
-	      CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "mathsat");
-#elif HAVE_MATHSAT_SOLVER
-	      CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
-	      CONFIG.set (ExprProcessSolver::COMMAND_PROP, "mathsat");
-	      CONFIG.set (ExprProcessSolver::ARGS_PROP, "");
-#elif HAVE_Z3_SOLVER
-	      CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
-	      CONFIG.set (ExprProcessSolver::COMMAND_PROP, "z3");
-	      CONFIG.set (ExprProcessSolver::ARGS_PROP, "-smt2 -in");
-#endif
+
 	      CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
 	      if (enable_debug)
 		{
@@ -362,6 +424,9 @@ main (int argc, char *argv[])
 
 	      CONFIG.save (f);
 	      f.close();
+
+	      cout << prog_name << ": default configuration file dumped in '"
+		   << filename << "'" << endl;
 	    }
 	  else
 	    {
@@ -369,6 +434,7 @@ main (int argc, char *argv[])
 		   << filename << "'." << endl;
 	    }
 	}
+	exit(EXIT_SUCCESS);
 	break;
 
       case 'd':		/* Select disassembly type */
@@ -378,8 +444,8 @@ main (int argc, char *argv[])
       case 'l':		/* List disassembly types */
 	cout << "Disassembler types ('value to pass' = description):" << endl;
 	for (size_t i = 1; i < NDISASSEMBLERS; i++) {
-	    cout << "  '" << disassemblers[i].name << "'\t= " <<
-	      disassemblers[i].desc << endl;
+	    cout << "  '" << disassemblers[i].name << "'\t= "
+		 << disassemblers[i].desc << endl;
 	}
 	exit (EXIT_SUCCESS);
 	break;
@@ -420,8 +486,8 @@ main (int argc, char *argv[])
 	output_filename = optarg;
 	break;
 
-      case 'x':		/* Preloaded file name */
-	preload_filename = optarg;
+      case 'i':		/* Input file name */
+	input_filename = optarg;
 	break;
 
       case 'h':		/* Display usage and exit */
@@ -456,20 +522,12 @@ main (int argc, char *argv[])
     }
 
   /* Starting insight and initializing the needed objects */
+  set_solver_config(&CONFIG);
+
   CONFIG.set (logs::STDIO_ENABLED_PROP, true);
   CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, verbosity > 0);
   CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
-#if INTEGRATED_MATHSAT_SOLVER
-  CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "mathsat");
-#elif HAVE_MATHSAT_SOLVER
-  CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
-  CONFIG.set (ExprProcessSolver::COMMAND_PROP, "mathsat");
-  CONFIG.set (ExprProcessSolver::ARGS_PROP, "");
-#elif HAVE_Z3_SOLVER
-  CONFIG.set (ExprSolver::SOLVER_NAME_PROP, "process");
-  CONFIG.set (ExprProcessSolver::COMMAND_PROP, "z3");
-  CONFIG.set (ExprProcessSolver::ARGS_PROP, "-smt2 -in");
-#endif
+
   CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
   if (enable_debug)
     {
@@ -600,9 +658,9 @@ main (int argc, char *argv[])
     logs::display << "Starting " << dis->desc << " disassembly" << endl;
 
 
-  if (preload_filename != NULL)
+  if (input_filename != NULL)
     {
-      mc = xml_parse_mc_program (preload_filename, arch);
+      mc = xml_parse_mc_program (input_filename, arch);
 #ifdef DEBUG
       mc->check ();
 #endif /* DEBUG */

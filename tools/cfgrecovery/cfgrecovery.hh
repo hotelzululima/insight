@@ -1,7 +1,7 @@
 /*-
- * Copyright (C) 2012, Centre National de la Recherche Scientifique,
- *                     Institut Polytechnique de Bordeaux,
- *                     Universite Bordeaux 1.
+ * Copyright (C) 2012-2014, Centre National de la Recherche Scientifique,
+ *                          Institut Polytechnique de Bordeaux,
+ *                          Universite de Bordeaux.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,6 @@ extern std::ostream * output;                  /* output stream */
 extern std::ofstream output_file;              /* output file */
 
 extern const ConfigTable *CFGRECOVERY_CONFIG;
-const std::string CFGRECOVERY_CONFIG_FILENAME = ".cfgrecoveryrc";
+const std::string CFGRECOVERY_CONFIG_FILENAME = ".cfgrecovery";
 
 #endif /* CFGRECOVERY_HH */

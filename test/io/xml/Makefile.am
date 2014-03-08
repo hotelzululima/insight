@@ -4,7 +4,7 @@ TEST_SAMPLES_DIR=@TEST_SAMPLES_DIR@
 
 CFGRECOVERY=${top_builddir}/tools/cfgrecovery/cfgrecovery
 CFGRECOVERY_CONFIG=${top_builddir}/test/cfgrecovery.cfg
-CFGRECOVERYFLAGS=-c ${CFGRECOVERY_CONFIG} -d symbolic -f xml
+CFGRECOVERYFLAGS=-c ${CFGRECOVERY_CONFIG} -d symbolic -f mc-xml
 
 CHECK_RESULTS=${srcdir}/check-results.sh
 EXTRA_DIST = check-results.sh

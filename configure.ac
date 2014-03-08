@@ -196,7 +196,6 @@ dnl ********************************************************************
 dnl Checking for specific programs, headers and libraries
 dnl ********************************************************************
 
-
 dnl Checking for MathSAT solver
 AC_CHECK_PROG([has_mathsat_solver], [mathsat], [yes], [no])
 if test ${has_mathsat_solver} = "yes"; then

@@ -9,12 +9,13 @@ LOG_COMPILER=${SHELL} ${CHECKRESULTS}
 CLEANFILES=${TESTS} ${TMPFILES} ${BUILT_SOURCES} .z3-trace
 
 CFGRECOVERY = ${top_builddir}/tools/cfgrecovery/cfgrecovery
-CFGR_COMMON_FLAGS = -c ${top_builddir}/test/cfgrecovery.cfg -f mc
-CFGR_FLD_FLAGS = ${CFGR_COMMON_FLAGS} -d flood
-CFGR_LSW_FLAGS = ${CFGR_COMMON_FLAGS} -d linear
-CFGR_RT_FLAGS = ${CFGR_COMMON_FLAGS} -d recursive
-CFGR_SCONC_FLAGS = ${CFGR_COMMON_FLAGS} -d concrete
-CFGR_SSYMB_FLAGS = ${CFGR_COMMON_FLAGS} -d symbolic
+CFGR_CFLAGS = -c ${top_builddir}/test/cfgrecovery.cfg -f mc
+
+CFGR_FLD_FLAGS   = ${CFGR_CFLAGS} -d flood
+CFGR_LSW_FLAGS   = ${CFGR_CFLAGS} -d linear
+CFGR_RT_FLAGS    = ${CFGR_CFLAGS} -d recursive
+CFGR_SCONC_FLAGS = ${CFGR_CFLAGS} -d concrete
+CFGR_SSYMB_FLAGS = ${CFGR_CFLAGS} -d symbolic
 
 if HAVE_SOLVER
 X86_32_SYM_TESTS = \

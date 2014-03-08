@@ -2,10 +2,10 @@ kernel.expr.solver.name = @default_solver@
 kernel.expr.solver.process.command = @process_solver_command@
 kernel.expr.solver.process.args = @process_solver_args@
 
-# Set initial value of ESP register in case of x86 architecture.
+# Set initial value of the stack-pointer register.
 # This option is mandatory to simulate programs that use stack.
-disas.simulator.x86_32.init-esp = 0xFFFF0000
-#disas.simulator.x86_32.zero-registers = false
+disas.simulator.init-sp = 0xFFFF0000
+#disas.simulator.zero-registers = false
 
 # Set the maximal number a program point can be visited by symbolic simulator.
 # By default (-1) no bound is set and thus simulation can enter an infinite 
