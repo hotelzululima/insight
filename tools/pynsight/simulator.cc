@@ -185,7 +185,8 @@ public:
   virtual bool del_stop_condition (int id);
 
   virtual Option<bool> eval (const Expr *e) const = 0;
-  
+  virtual Option<string> get_instruction (address_t addr);
+
 protected:
   Program *prg;  
   ConcreteAddress start;
@@ -348,6 +349,9 @@ s_Simulator_del_breakpoint (PyObject *self, PyObject *args);
 static PyObject *
 s_Simulator_get_microcode (PyObject *self, PyObject *);
 
+static PyObject *
+s_Simulator_get_instruction (PyObject *self, PyObject *args);
+
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -418,6 +422,8 @@ static PyMethodDef SimulatorMethods[] = {
  { "del_breakpoint", s_Simulator_del_breakpoint, METH_VARARGS,
    "\n" }, 
  { "get_microcode", s_Simulator_get_microcode, METH_NOARGS,
+   "\n" }, 
+ { "get_instruction", s_Simulator_get_instruction, METH_VARARGS,
    "\n" }, 
  { NULL, NULL, 0, NULL }
 };
@@ -1073,6 +1079,24 @@ s_Simulator_get_microcode (PyObject *self, PyObject *)
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
   return pynsight::microcode_object (S->get_program (), S->get_microcode ());
+
+PyObject *
+s_Simulator_get_instruction (PyObject *self, PyObject *args)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  unsigned long addr;
+
+  if (! PyArg_ParseTuple (args, "k", &addr))
+    return NULL;
+  Option<string> instr = S->get_instruction (addr);
+
+  PyObject *result;
+  if (instr.hasValue ())
+    result = Py_BuildValue ("s", instr.getValue ().c_str ());
+  else
+    result = pynsight::None ();
+
+  return result;
 }
 
 /*****************************************************************************
@@ -1349,6 +1373,28 @@ GenericInsightSimulator::del_stop_condition (int id)
       }
   }
   return false;
+}
+
+Option<string> 
+GenericInsightSimulator::get_instruction (address_t addr)
+{
+  MicrocodeAddress ma (addr);
+  Option<string> result;
+
+  try
+    {
+      MicrocodeNode *node = mc->get_node (ma);
+      assert (node != NULL);
+      AsmAnnotation *aa = (AsmAnnotation *) 
+	node->get_annotation (AsmAnnotation::ID);
+      if (aa != NULL)
+	result = aa->get_value ();
+      else
+	result = node->pp ();
+    } 
+  catch (GetNodeNotFoundExc &) { }
+
+  return result;
 }
 
 /*****************************************************************************

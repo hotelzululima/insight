@@ -345,7 +345,7 @@ def set(loc, val = None):
     except insight.error.ConcretizationException:
         print "try to assign an inconsistent value to", loc
 
-def unset(loc, len = 1, keep = True):
+def unset (loc, len = 1, keep = True):
     """Abstract the value of a register or a memory area."""
     global simulator
     if simulator == None:
@@ -363,23 +363,34 @@ def unset(loc, len = 1, keep = True):
     except NotImplementedError:
         print "abstraction is not supported here."
 
-def instr(addr=None):
+def instr (addr=None):
     """Assembler instruction at address 'addr'.
 
     This method displays the assembler instruction located at 'addr'. If the
     parameter is omitted or is 'None' the program counter of the current 
-    simulation is used. Note that this method directly uses Insight's decoder; 
-    no access to currently built MC is done."""
-    global program
+    simulation is used. """
+    global program, simulator
+
     if program == None:
         print "no program is loaded"
-    if addr == None:
-        disas(l=1)
-    else:
-        for i in program.disas (addr, 1):
-            print i[1]
+        return
 
-def print_state():
+    if addr == None:
+        if simulator == None:
+            addr = entrypoint ()
+        else:
+            addr = pc ()[0]
+    
+    if simulator != None:
+        instr = simulator.get_instruction (addr);
+    else:
+        instr = None
+    if instr == None:
+        for i in program.disas (addr, 1):
+            instr = i[1]
+    print instr
+
+def print_state ():
     global simulator
     if simulator == None:
         print "program is not started"
