@@ -51,6 +51,9 @@ static PyObject *
 s_insight_Program_sym (PyObject *p, PyObject *args);
 
 static PyObject *
+s_insight_Program_add_symbol (PyObject *p, PyObject *args, PyObject *kwds);
+
+static PyObject *
 s_insight_Program_symbols (PyObject *p, PyObject *);
 
 static PyObject *
@@ -101,6 +104,14 @@ static PyMethodDef programMethods[] = {
     METH_VARARGS,
     "Symbol table access method.\n"
     "Accepts an address or a string and returns the corresponding other kind."
+  }, { 
+    "add_symbol", 
+    (PyCFunction) s_insight_Program_add_symbol, 
+    METH_VARARGS|METH_KEYWORDS,
+    "Add new entry in symbol table.\n"   
+    "Keyword parameters:\n"
+    " - name : identifier of the symbol\n"
+    " - addr : address of the symbol\n"
   }, { 
     "symbols", 
     s_insight_Program_symbols, 
@@ -223,6 +234,22 @@ s_insight_Program_sym (PyObject *p, PyObject *args) {
   } else {
     return NULL;
   }
+
+  return pynsight::None ();
+}
+
+static PyObject *
+s_insight_Program_add_symbol (PyObject *p, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  { "name", "addr", NULL };  
+  struct Program *self = (struct Program *) p;
+  const char *name;
+  unsigned long addr;
+
+  if (! PyArg_ParseTupleAndKeywords(args, kwds, "sk", (char **) kwlists, 
+				    &name, &addr))
+    return NULL;
+  self->symbol_table->add_symbol (name, addr);
 
   return pynsight::None ();
 }
