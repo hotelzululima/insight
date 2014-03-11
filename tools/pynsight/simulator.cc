@@ -101,6 +101,21 @@ private:
   bool last_value;
 };
 
+class PyWatchpoint : public StopCondition
+{
+public:
+  PyWatchpoint (PyObject *callable);
+  virtual ~PyWatchpoint ();
+
+  virtual bool stop (GenericInsightSimulator *S);
+  virtual void output_text (std::ostream &out) const;
+  virtual bool equals (const StopCondition *other) const;
+  virtual void reset (GenericInsightSimulator *S);
+
+private:
+  PyObject *cb;
+};
+
 typedef std::set<StopCondition *> StopConditionSet;
 
 class GenericInsightSimulator {
@@ -325,6 +340,9 @@ static PyObject *
 s_Simulator_add_watchpoint (PyObject *self, PyObject *args);
 
 static PyObject *
+s_Simulator_add_pywatchpoint (PyObject *self, PyObject *args);
+
+static PyObject *
 s_Simulator_del_breakpoint (PyObject *self, PyObject *args);
 
 static PyObject *
@@ -394,6 +412,8 @@ static PyMethodDef SimulatorMethods[] = {
  { "set_cond", s_Simulator_set_cond, METH_VARARGS,
    "\n" }, 
  { "add_watchpoint", s_Simulator_add_watchpoint, METH_VARARGS,
+   "\n" }, 
+ { "add_pywatchpoint", s_Simulator_add_pywatchpoint, METH_VARARGS,
    "\n" }, 
  { "del_breakpoint", s_Simulator_del_breakpoint, METH_VARARGS,
    "\n" }, 
@@ -1005,6 +1025,29 @@ s_Simulator_add_watchpoint (PyObject *self, PyObject *args)
     result = pynsight::None ();
   else
     result = Py_BuildValue ("(k,s)", wp->get_id (), wp->to_string ().c_str ());
+
+  return result;
+}
+
+static PyObject *
+s_Simulator_add_pywatchpoint (PyObject *self, PyObject *args)
+{
+  PyObject *callable = NULL;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  if (! PyArg_ParseTuple (args, "O", &callable))
+    return NULL;
+  assert (PyCallable_Check (callable));
+
+  PyObject *result = NULL;
+  StopCondition *newwp = new PyWatchpoint (callable);
+
+  const StopCondition *wp = S->add_stop_condition (newwp);
+  if (wp == NULL)
+    result = pynsight::None ();
+  else
+    result = Py_BuildValue ("(k,s)", wp->get_id (), wp->to_string ().c_str ());
+  Py_DECREF (callable);
 
   return result;
 }
@@ -1962,6 +2005,46 @@ Watchpoint::reset (GenericInsightSimulator *S)
   last_value = ! oval.hasValue () || oval.getValue ();
 }
 
+PyWatchpoint::PyWatchpoint (PyObject *callable) 
+  : StopCondition (), cb (callable)
+{
+  Py_INCREF (cb);
+}
+
+PyWatchpoint::~PyWatchpoint ()
+{
+  Py_DECREF (cb);
+}
+
+bool 
+PyWatchpoint::stop (GenericInsightSimulator *)
+{
+  PyObject *res = PyObject_CallObject (cb, NULL);
+  assert (res != NULL);
+  //return true;
+  bool result = (res != Py_None);
+  Py_DECREF (res);
+  return result;
+}
+
+void 
+PyWatchpoint::output_text (std::ostream &out) const
+{
+  out << "callable object @" << std::hex << cb;
+}
+
+bool 
+PyWatchpoint::equals (const StopCondition *other) const
+{
+  const PyWatchpoint *pw = dynamic_cast<const PyWatchpoint *> (other);
+  return pw != NULL && pw->cb == cb;
+}
+
+void 
+PyWatchpoint::reset (GenericInsightSimulator *)
+{
+}
+
 /******************************************************************************
  *
  * RAW BYTES READERS
@@ -2010,3 +2093,4 @@ RawBytesReader<Stepper>::read_buffer (address_t from, uint8_t *dest,
     }
   simulator->delete_state (s);
 }
+

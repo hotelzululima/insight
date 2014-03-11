@@ -215,6 +215,19 @@ def watchpoint(cond):
     if bp != None:
         print "watchpoint already setid ({}).".format (bp[0])
 
+def pywatchpoint (cb):
+    global simulator
+    if simulator == None:
+        print "Program is not started"
+        return 
+    if cb == None :
+        print "Invalid argument", cb, " is not a callable object"
+        return
+
+    bp = simulator.add_pywatchpoint (cb)
+    if bp != None:
+        print "watchpoint already setid ({}).".format (bp[0])
+
 def delete_breakpoints(l=None):
     global simulator
     if simulator == None:
