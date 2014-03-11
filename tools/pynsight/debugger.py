@@ -50,16 +50,19 @@ def run(ep=None, dom="symbolic"):
     global simulator, program
     if simulator != None:
         simulator.run ()
+        if ep != None and ep != pc()[0]:
+            simulator = program.simulator (start=ep, domain=dom)
+            simulator.run ()
         exec_hooks (run)
         arrows ()
         return
     if program == None:
         if len (sys.argv) == 2:
-            file (sys.argv[1])
+            binfile (sys.argv[1])
         elif len (sys.argv) == 3:
-            file (sys.argv[1],sys.argv[2])
+            binfile (sys.argv[1],sys.argv[2])
     if program == None:
-        raise RuntimeWarning, "No program has been loaded"
+        return
 
     insight.config.set ("kernel.expr.solver.name", "mathsat")
     if ep == None:
