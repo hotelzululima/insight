@@ -164,9 +164,10 @@ def disas(addr = None, l=20, labels=True, bytes=False, holes=False):
         for inst in program.disas (addr, l):
             print "0x{:x} : {}".format (inst[0],inst[1])
     else:
-        if addr == None:
-            addr = simulator.get_pc()[0]
-        simulator.get_microcode().asm (addr, l, bytes, holes, labels)
+        if addr != None:
+            simulator.get_microcode().asm (addr, l, bytes, holes, labels)
+        else:
+            simulator.get_microcode().asmall (bytes, holes, labels)
 
 def breakpoint(g=None,l=0):
     global simulator,program
