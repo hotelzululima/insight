@@ -35,11 +35,17 @@ struct PyMicrocode
 {
   PyObject_HEAD
   pynsight::Program *prog;
-  const Microcode *mc;
+  const pynsight::MicrocodeReference *mc;
 };
 
 static void
 s_PyMicrocode_dealloc (PyObject *self);
+
+static PyObject *
+s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds);
+
+static PyObject *
+s_PyMicrocode_asmall (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyObject *
 s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds);
@@ -73,6 +79,8 @@ static PyTypeObject PyMicrocodeType = {
 static PyMethodDef PyMicrocodeMethods[] = {
   { "asm", (PyCFunction) s_PyMicrocode_asm, METH_VARARGS|METH_KEYWORDS, 
     "\n" },
+  { "asmall", (PyCFunction) s_PyMicrocode_asmall, METH_VARARGS|METH_KEYWORDS, 
+    "\n" },
   { NULL, NULL, 0, NULL }
 };
 
@@ -94,7 +102,8 @@ s_terminate ()
 static pynsight::Module MICROCODE (NULL, s_init, s_terminate);
 
 PyObject *
-pynsight::microcode_object (Program *prog, const Microcode *mc)
+pynsight::microcode_object (Program *prog, 
+			    const pynsight::MicrocodeReference *mc)
 {
   PyMicrocode *M = PyObject_New (PyMicrocode, &PyMicrocodeType);
 
@@ -111,7 +120,8 @@ pynsight::microcode_object (Program *prog, const Microcode *mc)
 }
 
 static void
-s_PyMicrocode_dealloc (PyObject *obj) {
+s_PyMicrocode_dealloc (PyObject *obj) 
+{
   PyMicrocode *M = (PyMicrocode *) obj;
 
   Py_XDECREF (M->prog);
@@ -130,14 +140,33 @@ s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds)
   unsigned char with_holes = 0;  
   PyMicrocode *M = (PyMicrocode *) self;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "II|bbb", (char **) kwlists, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kk|bbb", (char **) kwlists, 
 				    &addr, &len, 
 				    &with_bytes, &with_holes, &with_labels))
     return NULL;
 
-  asm_writer (std::cout, M->mc, M->prog->concrete_memory, 
+  asm_writer (std::cout, M->mc->get_microcode (), M->prog->concrete_memory, 
 	      M->prog->symbol_table, with_bytes, with_holes, with_labels,
 	      addr, len);
+
+  return pynsight::None ();  
+}
+
+static PyObject *
+s_PyMicrocode_asmall (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  { "bytes", "holes", "labels", NULL };
+  unsigned char with_bytes = 0;
+  unsigned char with_labels = 0;
+  unsigned char with_holes = 0;  
+  PyMicrocode *M = (PyMicrocode *) self;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|bbb", (char **) kwlists, 
+				    &with_bytes, &with_holes, &with_labels))
+    return NULL;
+
+  asm_writer (std::cout, M->mc->get_microcode (), M->prog->concrete_memory, 
+	      M->prog->symbol_table, with_bytes, with_holes, with_labels);
 
   return pynsight::None ();  
 }

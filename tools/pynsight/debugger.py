@@ -416,3 +416,16 @@ def info (k = None):
     else:
         print "no such entry"
 
+def save_mc (filename):
+    global simulator
+    if simulator == None:
+        print "program is not started"
+    else:
+        simulator.save_mc (filename)
+
+def load_mc (filename):
+    global simulator
+    if simulator == None:
+        print "program is not started"
+    else:
+        simulator.load_mc (filename)

@@ -28,6 +28,7 @@
  * SUCH DAMAGE.
  */
 #include <stdexcept>
+#include <fstream>
 #include <kernel/annotations/AsmAnnotation.hh>
 #include <kernel/annotations/NextInstAnnotation.hh>
 #include <domains/concrete/ConcreteMemory.hh>
@@ -40,6 +41,8 @@
 #include <kernel/SymbolTable.hh>
 #include <domains/concrete/ConcreteStepper.hh>
 #include <domains/symbolic/SymbolicStepper.hh>
+#include <io/microcode/xml_microcode_parser.hh>
+#include <io/microcode/xml_microcode_generator.hh>
 
 #include "gengen.hh"
 #include "pynsight.hh"
@@ -118,7 +121,7 @@ private:
 
 typedef std::set<StopCondition *> StopConditionSet;
 
-class GenericInsightSimulator {
+class GenericInsightSimulator : public pynsight::MicrocodeReference {
 public:
   typedef vector<StmtArrow *> ArrowVector;
   
@@ -186,6 +189,9 @@ public:
 
   virtual Option<bool> eval (const Expr *e) const = 0;
   virtual Option<string> get_instruction (address_t addr);
+
+  virtual bool load_microcode (const string &filename);
+  virtual bool save_microcode (const string &filename);
 
 protected:
   Program *prg;  
@@ -352,6 +358,12 @@ s_Simulator_get_microcode (PyObject *self, PyObject *);
 static PyObject *
 s_Simulator_get_instruction (PyObject *self, PyObject *args);
 
+static PyObject *
+s_Simulator_load_mc (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_save_mc (PyObject *self, PyObject *args);
+
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -424,6 +436,10 @@ static PyMethodDef SimulatorMethods[] = {
  { "get_microcode", s_Simulator_get_microcode, METH_NOARGS,
    "\n" }, 
  { "get_instruction", s_Simulator_get_instruction, METH_VARARGS,
+   "\n" }, 
+ { "load_mc", s_Simulator_load_mc, METH_VARARGS,
+   "\n" }, 
+ { "save_mc", s_Simulator_save_mc, METH_VARARGS,
    "\n" }, 
  { NULL, NULL, 0, NULL }
 };
@@ -1078,7 +1094,8 @@ s_Simulator_get_microcode (PyObject *self, PyObject *)
 {
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
-  return pynsight::microcode_object (S->get_program (), S->get_microcode ());
+  return pynsight::microcode_object (S->get_program (), S);
+}
 
 PyObject *
 s_Simulator_get_instruction (PyObject *self, PyObject *args)
@@ -1098,6 +1115,33 @@ s_Simulator_get_instruction (PyObject *self, PyObject *args)
 
   return result;
 }
+
+static PyObject *
+s_Simulator_load_mc (PyObject *self, PyObject *args)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  const char *filename;
+
+  if (! PyArg_ParseTuple (args, "s", &filename))
+    return NULL;
+  
+  if (S->load_microcode (filename))
+    return pynsight::None ();
+  return NULL;
+}
+
+static PyObject *
+s_Simulator_save_mc (PyObject *self, PyObject *args)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  const char *filename;
+
+  if (! PyArg_ParseTuple (args, "s", &filename))
+    return NULL;
+  
+  if (S->save_microcode (filename))
+    return pynsight::None ();
+  return NULL;}
 
 /*****************************************************************************
  *
@@ -1395,6 +1439,40 @@ GenericInsightSimulator::get_instruction (address_t addr)
   catch (GetNodeNotFoundExc &) { }
 
   return result;
+}
+
+bool 
+GenericInsightSimulator::load_microcode (const string &filename)
+{
+  try
+    {
+      Microcode *newmc = xml_parse_mc_program (filename, march);
+      delete mc;
+      mc = newmc;
+    }
+  catch (XmlParserException &e)
+    {
+      PyErr_SetString (PyExc_IOError, e.what ());
+      return false;
+    }
+  return true;
+}
+
+bool 
+GenericInsightSimulator::save_microcode (const string &filename)
+{
+  std::ofstream output (filename.c_str ());
+  if (! output.is_open ())
+    {
+      PyErr_SetFromErrno (PyExc_IOError);
+      return false;
+    }
+  
+  xml_of_microcode (output, mc, march);
+  output.flush ();
+  output.close ();
+
+  return true;
 }
 
 /*****************************************************************************

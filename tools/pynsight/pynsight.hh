@@ -61,6 +61,9 @@ namespace pynsight {
     StubFactory *stubfactory;
   };
 
+  struct MicrocodeReference {
+    virtual const Microcode *get_microcode () const = 0;
+  };
 
   extern PyObject *load_program (const char *filename, const char *target, 
 				 const char *mach, 
@@ -78,7 +81,8 @@ namespace pynsight {
 
   extern ConfigTable &configTable ();
 
-  extern PyObject *microcode_object (Program *prog, const Microcode *mc);
+  extern PyObject *microcode_object (Program *prog, 
+				     const MicrocodeReference *mc);
 
   /* Exceptions & Errors */
 # define PYNSIGHT_EXCEPTIONS			\
