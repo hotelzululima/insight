@@ -325,13 +325,17 @@ def set(loc, val = None):
             regs = prog().info()["registers"]
             if loc in regs:
                 if val == None:
-                    simulator.concretize_register (loc)
+                    if simulator.concretize_register (loc) == None:
+                        print "can not choose a value in not-assigned "
+                        "register {}; choose a value by "
+                        "yourself.\n".format (loc)
                 else:
                     simulator.set_register (loc, val)
             else:
                 print "unknown register ", loc
         elif val == None:
-            simulator.concretize_memory (loc)
+            if simulator.concretize_memory (loc) == None:
+                print "can not choose a value in a not-assigned memory cell\n"
         elif isinstance (val, int):
             simulator.set_memory (loc, 0xFF & val)
         else:
