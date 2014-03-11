@@ -2,3 +2,8 @@
 
 import insight.insightdb
 from insight.insightdb import *
+
+try:
+    from mydb import *
+except ImportError:
+    pass
