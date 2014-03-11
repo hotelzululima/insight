@@ -125,7 +125,7 @@ class GenericInsightSimulator : public pynsight::MicrocodeReference {
 public:
   typedef vector<StmtArrow *> ArrowVector;
   
-  GenericInsightSimulator (Program *prg, address_t start_addr);
+  GenericInsightSimulator (Program *prg);
 
   virtual ~GenericInsightSimulator ();
 
@@ -138,7 +138,7 @@ public:
   virtual StmtArrow *get_arrow_at (size_t i) const;
 
   virtual string state_to_string (void *s) = 0;
-  virtual void *get_initial_state () = 0;
+  virtual void *get_initial_state (address_t start) = 0;
   virtual void set_state (void *s) = 0;
   virtual void delete_state (void *s) = 0;
   virtual void *get_state () = 0;
@@ -195,7 +195,6 @@ public:
 
 protected:
   Program *prg;  
-  ConcreteAddress start;
   Microcode *mc;
   MicrocodeArchitecture *march;
   ArrowVector *arrows;
@@ -210,11 +209,11 @@ public:
   typedef typename Stepper::Value Value;
   typedef typename Stepper::ProgramPoint ProgramPoint;
 
-  InsightSimulator (Program *prg, address_t start_addr);
+  InsightSimulator (Program *prg);
   virtual ~InsightSimulator ();
 
   virtual string state_to_string (void *s);
-  virtual void *get_initial_state ();
+  virtual void *get_initial_state (address_t start);
   virtual void set_state (void *ptr);
   virtual void delete_state (void *ptr);
 
@@ -391,7 +390,7 @@ static PyTypeObject SimulatorType = {
 };
 
 static PyMethodDef SimulatorMethods[] = {
- { "run", s_Simulator_run, METH_NOARGS, 
+ { "run", s_Simulator_run, METH_VARARGS, 
    "\n" },
  { "microstep", s_Simulator_microstep, METH_VARARGS, 
    "\n" },
@@ -462,8 +461,7 @@ s_terminate ()
 static pynsight::Module SIMULATOR (NULL, s_init, s_terminate);
 
 PyObject * 
-pynsight::start_simulator (Program *P, address_t start_addr,
-			   SimulationDomain dom)
+pynsight::simulator (Program *P, SimulationDomain dom)
 {
   Simulator *S = PyObject_New (Simulator, &SimulatorType);
 
@@ -473,29 +471,47 @@ pynsight::start_simulator (Program *P, address_t start_addr,
   PyObject_Init ((PyObject *) S, &SimulatorType);
 
   if (dom == pynsight::SIM_SYMBOLIC)
-    S->gsim = new InsightSimulator<SymbolicStepper> (P, start_addr);
+    S->gsim = new InsightSimulator<SymbolicStepper> (P);
   else 
     {
       assert (dom == pynsight::SIM_CONCRETE);
-      S->gsim = new InsightSimulator<ConcreteStepper> (P, start_addr);
+      S->gsim = new InsightSimulator<ConcreteStepper> (P);
     }
 
   return (PyObject *) S;
 }
 
 static void
-s_Simulator_dealloc (PyObject *obj) {
+s_Simulator_dealloc (PyObject *obj) 
+{
   Simulator *S = (Simulator *) obj;
   delete S->gsim;
   S->ob_type->tp_free (S);
 }
 
 static PyObject *
-s_Simulator_run (PyObject *p, PyObject *)
+s_Simulator_run (PyObject *p, PyObject *args)
 {  
   GenericInsightSimulator *S = ((Simulator *) p)->gsim;
+  unsigned long start;
 
-  void *is = S->get_initial_state ();
+  if (! PyArg_ParseTuple (args, "k", &start))
+    {
+      PyErr_Clear ();
+      if (! PyArg_ParseTuple (args, "", args))
+	return NULL;
+      start = S->get_program ()->loader->get_entrypoint ().get_address ();
+    }    
+    
+  address_t s,e;
+
+  S->get_program ()->concrete_memory->get_address_range (s, e);
+  if (! (s <= start && start <= e)) {    
+    PyErr_SetString (PyExc_LookupError, "start address is out of memory");
+    return NULL;
+  }
+
+  void *is = S->get_initial_state (start);
   S->set_state (is);
   S->delete_state (is);
   S->reset_stop_conditions ();
@@ -1149,12 +1165,10 @@ s_Simulator_save_mc (PyObject *self, PyObject *args)
  *
  *****************************************************************************/
 
-GenericInsightSimulator::GenericInsightSimulator (Program *P, 
-						  address_t start_addr)
+GenericInsightSimulator::GenericInsightSimulator (Program *P)
 {
   prg = P;
   Py_INCREF (P);
-  start = start_addr;
   mc = new Microcode ();
   march = new MicrocodeArchitecture (P->loader->get_architecture ());
   arrows = new ArrowVector ();
@@ -1482,8 +1496,8 @@ GenericInsightSimulator::save_microcode (const string &filename)
  *****************************************************************************/
 
 template <typename Stepper> 
-InsightSimulator<Stepper>::InsightSimulator (Program *prg, address_t a)
-  : GenericInsightSimulator (prg, a)
+InsightSimulator<Stepper>::InsightSimulator (Program *prg)
+  : GenericInsightSimulator (prg)
 {
   stepper = new Stepper (prg->concrete_memory, march);
   current_state = NULL;
@@ -1507,7 +1521,7 @@ InsightSimulator<Stepper>::state_to_string (void *s)
 }
 
 template <typename Stepper> void *
-InsightSimulator<Stepper>::get_initial_state ()
+InsightSimulator<Stepper>::get_initial_state (address_t start)
 {
   return stepper->get_initial_state (start);
 }

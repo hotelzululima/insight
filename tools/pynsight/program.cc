@@ -532,24 +532,13 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
 static PyObject *
 s_insight_Program_simulate (PyObject *obj, PyObject *args, PyObject *kwds)
 {
-  static const char *kwlists[] =  { "start", "domain", NULL };
+  static const char *kwlists[] =  { "domain", NULL };
   Program *p = (Program *) obj;
+  const char *domain = NULL;
 
-  address_t s,e;
-
-  p->concrete_memory->get_address_range (s, e);
-
-  Py_ssize_t start = p->loader->get_entrypoint ().get_address ();
-  const char *domain = "symbolic";
-
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|Is", (char **) kwlists, 
-				    &start, &domain))
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s", (char **) kwlists, 
+				    &domain))
     return NULL;
-
-  if (! (s <= start && start <= e)) {    
-    PyErr_SetString (PyExc_LookupError, "start address is out of memory");
-    return NULL;
-  }
 
   pynsight::SimulationDomain sem;
   if (strcmp (domain, "symbolic") == 0) sem = pynsight::SIM_SYMBOLIC;
@@ -559,7 +548,7 @@ s_insight_Program_simulate (PyObject *obj, PyObject *args, PyObject *kwds)
       PyErr_SetString (PyExc_LookupError, "unknown domain");
       return NULL;
     }
-  PyObject *result = pynsight::start_simulator (p, start, sem);
+  PyObject *result = pynsight::simulator (p, sem);
 
   return result;
 }

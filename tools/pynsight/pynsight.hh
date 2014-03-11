@@ -74,8 +74,7 @@ namespace pynsight {
     SIM_CONCRETE
   };
 
-  extern PyObject *start_simulator (Program *P, address_t start_adddr, 
-				    SimulationDomain dom);
+  extern PyObject *simulator (Program *P, SimulationDomain dom);
 
   inline PyObject *None () { Py_INCREF (Py_None); return Py_None; }
 
