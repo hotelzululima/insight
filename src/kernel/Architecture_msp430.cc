@@ -31,9 +31,26 @@
 #include "Architecture_msp430.hh"
 
 Architecture_MSP430::Architecture_MSP430()
-  : Architecture (MSP430, Architecture::LittleEndian, 16, 16)
+  : Architecture (MSP430, Architecture::LittleEndian, 20, 20)
 {
-  /* Setting general purpose registers */
-
-  /* TODO */
+  /*
+   * Registers are defined as 20-bit entities in order to support the
+   * MSP430X variant.
+   */
+  add_register("r0", 20);
+  add_register("r1", 20);
+  add_register("r2", 20);
+  add_register("r3", 20);
+  add_register("r4", 20);
+  add_register("r5", 20);
+  add_register("r6", 20);
+  add_register("r7", 20);
+  add_register("r8", 20);
+  add_register("r9", 20);
+  add_register("r10", 20);
+  add_register("r11", 20);
+  add_register("r12", 20);
+  add_register("r13", 20);
+  add_register("r14", 20);
+  add_register("r15", 20);
 }
