@@ -397,3 +397,22 @@ def print_state ():
         return 
     print simulator.state ()
 
+
+def info (k = None):
+    global program
+    if program == None:
+        print "no program is loaded"
+        return 
+    infos = program.info ()
+    if k == None:
+        for k in infos.keys () :
+            val = infos[k]
+            if isinstance (val, int):
+                print "{:20} : 0x{:x} ({})".format (k,val, val)
+            else:
+                print "{:20} : {}".format (k, val)
+    elif k in infos:
+        print "{:20} : {}".format (k, infos[k])
+    else:
+        print "no such entry"
+
