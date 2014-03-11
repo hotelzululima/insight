@@ -1,6 +1,6 @@
 import insight.debugger 
 
-f = insight.debugger.file
+f = insight.debugger.binfile
 r = insight.debugger.run
 ms = insight.debugger.microstep
 s = insight.debugger.step
@@ -14,11 +14,13 @@ ep = insight.debugger.entrypoint
 cond = insight.debugger.cond
 
 from insight.debugger import *
-if len (sys.argv) == 2:
-    file (sys.argv[1])
-elif len (sys.argv) == 3:
-    file (sys.argv[1],sys.argv[2])
 
 print "Insight Debugger"
 print "Try help(insight.debugger) to get information on debugger commands."
 print
+
+if len (sys.argv) == 2:
+    binfile (sys.argv[1])
+elif len (sys.argv) == 3:
+    binfile (sys.argv[1],sys.argv[2])
+

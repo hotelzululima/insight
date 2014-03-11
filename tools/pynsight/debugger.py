@@ -9,7 +9,7 @@ sys.ps1 = "pynsight:> "
 hooks = {}
 sys.path += [ '.' ]
 
-def file(filename,target=""):
+def binfile(filename,target=""):
     """Load a binary file.
 
     This function loads from 'filename' a binary program into memory. If a BFD 
@@ -21,10 +21,12 @@ def file(filename,target=""):
     Command-line prompt is modified to indicate currently loaded binary.
     """
     global program
-    program = insight.io.load_bfd (filename, target)
-    simulator = None
-    sys.ps1 = prompt.format (filename)
-
+    try:
+        program = insight.io.load_bfd (filename, target)
+        simulator = None
+        sys.ps1 = prompt.format (filename)
+    except insight.error.BFDError, e:
+        print e
 
 def exec_hooks (f):
     global hooks
