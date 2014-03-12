@@ -1,8 +1,36 @@
 import insight.debugger 
 from insight.debugger import *
+import argparse
+import code
+
+# change Python path to load modules from working directory 
+sys.path += [ '.' ]
+# change the prompt
+sys.ps1 = "insightdb> "
+
+banner = """Insight-based Debugger
+Try help (insight.debugger) to get information on debugger commands.
+"""
 
 #
-# Aliases
+# command-line arguments
+#
+parser = argparse.ArgumentParser (prog="insighdb")
+parser.add_argument ('-b', '--target', help='enforce BFD target', 
+                     dest = "target", default = "", 
+                     required = False, 
+                     metavar ="bfd-target")
+
+parser.add_argument ('inputfile', help='binary file', 
+                     default = None, nargs = '?') 
+                     
+
+parser.add_argument ('-q', '--quiet', help='disable verbosity.', 
+                     dest = "quiet", default = False, 
+                     action = "store_true")
+
+#
+# aliases for debugger commands
 # 
 f = insight.debugger.binfile
 r = insight.debugger.run
@@ -17,20 +45,16 @@ pc = insight.debugger.pc
 ep = insight.debugger.entrypoint
 cond = insight.debugger.cond
 
-def main ():
-    print "Insight Debugger"
-    print "Try help(insight.debugger) to get information on debugger commands."
-    print
-
-    if len (sys.argv) == 2:
-        binfile (sys.argv[1])
-    elif len (sys.argv) == 3:
-        binfile (sys.argv[1],sys.argv[2])
-
 
 if __name__ == "__main__":
-    main ()
+    args = parser.parse_args()
+    if not args.quiet:
+        print banner
+    if args.inputfile != None:
+        binfile (args.inputfile, args.target)
     try:
         from mydb import *
     except ImportError:
         pass
+    code.interact ("", local = globals ())
+

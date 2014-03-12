@@ -1,5 +1,5 @@
 #!/bin/sh
 
-exec pynsight -3 -i -m insight.insightdb $*
+exec pynsight -3 -m insight.insightdb $*
 
 

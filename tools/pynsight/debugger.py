@@ -4,15 +4,12 @@ from insight.utils import *
 
 program = None
 simulator = None
-prompt = "pynsight:{}> "
-sys.ps1 = "pynsight:> "
 hooks = {}
-sys.path += [ '.' ]
 startpoint = None
 
 insight.config.set ("kernel.expr.solver.name", "mathsat")
 
-def binfile(filename,target="", domain="symbolic"):
+def binfile(filename, target="", domain="symbolic"):
     """Load a binary file.
 
     This function loads from 'filename' a binary program into memory. If a BFD 
@@ -28,7 +25,6 @@ def binfile(filename,target="", domain="symbolic"):
         program = insight.io.load_bfd (filename, target)
         simulator = program.simulator (domain)
         startpoint = entrypoint ()
-        sys.ps1 = prompt.format (filename)
     except insight.error.BFDError, e:
         print e
 
@@ -52,8 +48,9 @@ def add_microstep_hook (h): add_hook (microstep, h)
 def run(ep=None, dom="symbolic"):
     """Start simulation"""
     global simulator, program, startpoint
-    if not _load_program ():
-        return
+    if program == None:
+        print "no program is loaded"
+        return 
 
     if ep == None:
         ep = startpoint        
@@ -419,12 +416,3 @@ def load_mc (filename):
         print "program is not started"
     else:
         simulator.load_mc (filename)
-
-def _load_program ():
-    if program != None:
-        return True
-    if len (sys.argv) == 2:
-        binfile (sys.argv[1])
-    elif len (sys.argv) == 3:
-        binfile (sys.argv[1],sys.argv[2])
-    return program != None
