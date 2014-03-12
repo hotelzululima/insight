@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser (prog="insighdb")
 parser.add_argument ('-b', '--target', help='enforce BFD target', 
                      dest = "target", default = "", 
                      required = False, 
-                     metavar ="bfd-target")
+                     metavar ="bfd-target-name")
 
 parser.add_argument ('inputfile', help='binary file', 
                      default = None, nargs = '?') 
@@ -28,6 +28,9 @@ parser.add_argument ('inputfile', help='binary file',
 parser.add_argument ('-q', '--quiet', help='disable verbosity.', 
                      dest = "quiet", default = False, 
                      action = "store_true")
+parser.add_argument ('-x', '--xml', help='preload an existing microcode in '
+                     'XML format.', 
+                     dest = "xmlmc", metavar="microcode", default = None)
 
 #
 # aliases for debugger commands
@@ -52,6 +55,8 @@ if __name__ == "__main__":
         print banner
     if args.inputfile != None:
         binfile (args.inputfile, args.target)
+        if args.xmlmc != None and P() != None:
+            load_mc (args.xmlmc)
     try:
         from mydb import *
     except ImportError:
