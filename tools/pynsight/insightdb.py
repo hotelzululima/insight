@@ -1,5 +1,9 @@
 import insight.debugger 
+from insight.debugger import *
 
+#
+# Aliases
+# 
 f = insight.debugger.binfile
 r = insight.debugger.run
 ms = insight.debugger.microstep
@@ -13,14 +17,20 @@ pc = insight.debugger.pc
 ep = insight.debugger.entrypoint
 cond = insight.debugger.cond
 
-from insight.debugger import *
+def main ():
+    print "Insight Debugger"
+    print "Try help(insight.debugger) to get information on debugger commands."
+    print
 
-print "Insight Debugger"
-print "Try help(insight.debugger) to get information on debugger commands."
-print
+    if len (sys.argv) == 2:
+        binfile (sys.argv[1])
+    elif len (sys.argv) == 3:
+        binfile (sys.argv[1],sys.argv[2])
 
-if len (sys.argv) == 2:
-    binfile (sys.argv[1])
-elif len (sys.argv) == 3:
-    binfile (sys.argv[1],sys.argv[2])
 
+if __name__ == "__main__":
+    main ()
+    try:
+        from mydb import *
+    except ImportError:
+        pass

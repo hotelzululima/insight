@@ -1,9 +1,5 @@
-#!/usr/bin/env pynsight -3 -i
+#!/bin/sh
 
-import insight.insightdb
-from insight.insightdb import *
+exec pynsight -3 -i -m insight.insightdb $*
 
-try:
-    from mydb import *
-except ImportError:
-    pass
+
