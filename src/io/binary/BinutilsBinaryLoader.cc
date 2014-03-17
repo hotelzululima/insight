@@ -194,10 +194,10 @@ BinutilsBinaryLoader::fill_memory_from_sections (ConcreteMemory *memory) const {
 			<<" with bad flag." << hex << bfd_section->flags << endl;
 	  continue;
 	}
-	logs::warning << hex <<  bfd_section->flags  << " "
-		      << bfd_section->name 
-		      << " " << bfd_get_reloc_upper_bound (abfd, bfd_section)
-		      << endl;
+      logs::warning << hex <<  bfd_section->flags  << " "
+		    << bfd_section->name 
+		    << " " << bfd_get_reloc_upper_bound (abfd, bfd_section)
+		    << endl;
 
       /* Setting section start address */
       ConcreteAddress start(bfd_section->vma);
