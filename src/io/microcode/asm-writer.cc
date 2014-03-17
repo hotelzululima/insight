@@ -54,8 +54,8 @@ s_instruction_bytes (const ConcreteMemory *memory, const ConcreteAddress &start,
   return result.str ();
 }
 
-static Option<address_t>
-s_next_instruction_addr (const MicrocodeNode *node)
+Option<address_t>
+next_instruction_addr (const MicrocodeNode *node)
 {
   Option<address_t> next;
   if (node->has_annotation (NextInstAnnotation::ID))
@@ -71,7 +71,7 @@ s_next_instruction_addr (const MicrocodeNode *node)
 static bool
 s_is_next_instruction_addr (const MicrocodeNode *node, address_t a)
 {
-  Option<address_t> next = s_next_instruction_addr (node);
+  Option<address_t> next = next_instruction_addr (node);
 
   return next.hasValue () && next.getValue () == a;
 }
@@ -226,7 +226,7 @@ s_write_asm (ostream &out, const Microcode *mc,
 	}
       AsmAnnotation *a = (AsmAnnotation *) 
 	node->get_annotation (AsmAnnotation::ID);
-      Option<address_t> next = s_next_instruction_addr (node);
+      Option<address_t> next = next_instruction_addr (node);
       if (next.hasValue ())
 	prev = next.getValue ();
       out << right << hex << setw (8) << setfill (' ')
@@ -273,7 +273,7 @@ s_write_asm (ostream &out, const Microcode *mc,
 
   if (lastnode != NULL)
     {
-      Option<address_t> next = s_next_instruction_addr (lastnode);
+      Option<address_t> next = next_instruction_addr (lastnode);
       if (next.hasValue ())
 	out << right << hex << setw (8) << setfill (' ')
 	    << next.getValue () << ":" << endl;
