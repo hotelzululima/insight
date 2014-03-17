@@ -159,6 +159,18 @@ s_merge_basic_blocks (vector<MicrocodeNode *> *nodes,
     }
 }
 
+static int 
+s_light_color (int rgb)
+{
+  if ((rgb & 0xFF0000) >> 16 < 0x7F)
+    rgb += 0x7F0000;
+  if ((rgb & 0xFF00) >> 8 < 0x7F)
+    rgb += 0x7F00;
+  if ((rgb & 0xFF) < 0x7F)
+    rgb += 0x7F;
+  return rgb;
+}
+
 void 
 dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	    const std::string &graphlabel, 
@@ -224,7 +236,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	      int b = rgb & 0xFF000000;
 	      rgb ^= (b >> 8)|(b>> 16)|(b>>24);
 	      rgb &= 0x00FFFFFF;
-	      symbols[s] = rgb;
+	      symbols[s] = rgb = s_light_color (rgb);
 	    }
 	  else
 	    {
@@ -233,16 +245,8 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	}
       else
 	{
-	  rgb += ma.getGlobal () *3;
-	  rgb &= 0x00FFFFFF;
+	  rgb = s_light_color (((rgb ^ ma.getGlobal ())*3)&0xFFFFFF);
 	}
-      
-      if ((rgb & 0xFF0000) >> 16 < 0x7F)
-	rgb += 0x7F0000;
-      if ((rgb & 0xFF00) >> 8 < 0x7F)
-	rgb += 0x7F00;
-      if ((rgb & 0xFF) < 0x7F)
-	rgb += 0x7F;
 
       out << NODE_PREFIX << std::hex << ma.getGlobal () 
 	  << "[shape=box,style=filled,fillcolor=\"#" << std::hex << rgb 
