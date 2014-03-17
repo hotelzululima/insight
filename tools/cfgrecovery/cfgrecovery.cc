@@ -398,40 +398,46 @@ main (int argc, char *argv[])
 
       case 'C':		/* Create a default configuration file */
 	{
+	  set_solver_config(&CONFIG);
+
+	  CONFIG.set (logs::STDIO_ENABLED_PROP, true);
+	  CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, true);
+	  CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
+	  
+	  CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
+	  if (enable_debug)
+	    {
+	      CONFIG.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
+	      CONFIG.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+	    }
+	  
 	  string filename = config_filename;
 	  /* Check optional argument */
-	  if (optarg)
-	    filename = string(optarg);
-
-	  /* Check correctness of filename */
-	  fstream f (filename.c_str (), fstream::out);
-	  if (f.is_open ())
+	  if (optarg)	    
 	    {
-	      config_filename = filename;
+	      filename = string (optarg);
 
-	      set_solver_config(&CONFIG);
-
-	      CONFIG.set (logs::STDIO_ENABLED_PROP, true);
-	      CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, true);
-	      CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
-
-	      CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
-	      if (enable_debug)
+	      /* Check correctness of filename */
+	      fstream f (filename.c_str (), fstream::out);
+	      if (f.is_open ())
 		{
-		  CONFIG.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
-		  CONFIG.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
+		  config_filename = filename;
+		  CONFIG.save (f);
+		  f.close();
+
+		  cout << prog_name << ": default configuration file dumped in '"
+		       << filename << "'" << endl;
 		}
-
-	      CONFIG.save (f);
-	      f.close();
-
-	      cout << prog_name << ": default configuration file dumped in '"
-		   << filename << "'" << endl;
+	      else
+		{
+		  cerr << "warning: can't write configuration file '"
+		       << filename << "'." << endl;
+		}
 	    }
 	  else
 	    {
-	      cerr << "warning: can't write configuration file '"
-		   << filename << "'." << endl;
+	      CONFIG.save (std::cout);
+	      std::cout.flush();
 	    }
 	}
 	exit(EXIT_SUCCESS);
