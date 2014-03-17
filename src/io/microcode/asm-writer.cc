@@ -287,6 +287,8 @@ asm_writer (ostream &out, const Microcode *mc,
 	    bool with_bytes, bool with_holes, bool with_labels)
 {  
   vector<MicrocodeNode *> nodes(*mc->get_nodes ());
+  if (nodes.empty ())
+    return;
   std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
   
   s_write_asm (out, mc, nodes, memory, symboltable, with_bytes, 
@@ -301,6 +303,8 @@ asm_writer (ostream &out, const Microcode *mc,
 	    address_t addr, size_t nb)
 {  
   vector<MicrocodeNode *> nodes(*mc->get_nodes ());
+  if (nodes.empty ())
+    return;
   std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
   
   s_write_asm (out, mc, nodes, memory, symboltable, with_bytes, 
