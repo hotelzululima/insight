@@ -231,6 +231,19 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	      rgb = symbols[s];
 	    }
 	}
+      else
+	{
+	  rgb += ma.getGlobal () *3;
+	  rgb &= 0x00FFFFFF;
+	}
+      
+      if ((rgb & 0xFF0000) >> 16 < 0x7F)
+	rgb += 0x7F0000;
+      if ((rgb & 0xFF00) >> 8 < 0x7F)
+	rgb += 0x7F00;
+      if ((rgb & 0xFF) < 0x7F)
+	rgb += 0x7F;
+
       out << NODE_PREFIX << std::hex << ma.getGlobal () 
 	  << "[shape=box,style=filled,fillcolor=\"#" << std::hex << rgb 
 	  << "\",justify=left,label=\"";
