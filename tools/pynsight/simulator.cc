@@ -766,7 +766,7 @@ s_Simulator_concretize_memory (PyObject *self, PyObject *args)
   else if (! S->concretize_memory (addr, len))
     PyErr_SetNone (pynsight::ConcretizationException);
   else
-    result = pynsight::None ();
+    result = pynsight::True ();
 
   return result;
 }
@@ -805,7 +805,7 @@ s_Simulator_unset_register (PyObject *self, PyObject *args, PyObject *kwds)
 {
   static const char *kwlists[] = { "reg", "keep", NULL };
   const char *regname = NULL;
-  unsigned char *keep;
+  unsigned char keep;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
   if (!PyArg_ParseTupleAndKeywords (args, kwds, "sb", (char **) kwlists,
@@ -870,8 +870,11 @@ s_Simulator_concretize_register (PyObject *self, PyObject *args)
   try 
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
-      if (! S->check_register (rd) || S->concretize_register (rd))
+
+      if (! S->check_register (rd))
 	result = pynsight::None ();
+      else if (S->concretize_register (rd))
+	result = pynsight::True ();
       else 
 	PyErr_SetNone (pynsight::ConcretizationException);
     }
@@ -1022,7 +1025,7 @@ s_Simulator_set_cond (PyObject *self, PyObject *args)
   const char *condition = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
-  if (! PyArg_ParseTuple (args, "k|s", &id, &condition))
+  if (! PyArg_ParseTuple (args, "k|z", &id, &condition))
     return NULL;
 
   PyObject *result = NULL;

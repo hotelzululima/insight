@@ -77,6 +77,7 @@ namespace pynsight {
   extern PyObject *simulator (Program *P, SimulationDomain dom);
 
   inline PyObject *None () { Py_INCREF (Py_None); return Py_None; }
+  inline PyObject *True () { Py_INCREF (Py_True); return Py_True; }
 
   extern ConfigTable &configTable ();
 
