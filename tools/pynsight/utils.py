@@ -22,5 +22,8 @@ def pretty_print_memory (P, s, l=16):
                 st += c
         print st
 
-
-
+def pretty_disas_memory (P, s, l=16):
+    if P is None:
+        raise ValueError
+    for instr in P.disas (s, l):
+        print "0x{:x} : {}".format (instr[0], instr[1])
