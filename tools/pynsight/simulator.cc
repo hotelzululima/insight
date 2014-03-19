@@ -889,9 +889,10 @@ s_Simulator_concretize_register (PyObject *self, PyObject *args)
 static PyObject *
 s_Simulator_get_pc (PyObject *self, PyObject *)
 {
-  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  PyObject *result = NULL;
+  PyObject *result;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim; 
   void *st = S->get_state ();
+
   if (st == NULL)
     result = pynsight::None ();
   else
