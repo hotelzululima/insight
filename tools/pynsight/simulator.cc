@@ -1954,7 +1954,11 @@ InsightSimulator<Stepper>::get_pc (void *p)
 template <typename Stepper> MicrocodeAddress 
 InsightSimulator<Stepper>::get_pc ()
 {
-  return get_pc (get_state ());
+  void *s = get_state ();
+  MicrocodeAddress res (get_pc (s));
+  delete_state (s);
+
+  return res;
 }
 
 template <typename Stepper> Option<bool> 
