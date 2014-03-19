@@ -649,9 +649,9 @@ s_Simulator_step (PyObject *self, PyObject *args)
 static PyObject *
 s_Simulator_state (PyObject *self, PyObject *)
 {
+  PyObject *result;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   void *s = S->get_state ();
-  PyObject *result;
 
   if (s == NULL)
     result = pynsight::None ();
@@ -659,9 +659,9 @@ s_Simulator_state (PyObject *self, PyObject *)
     {
       string sstr = S->state_to_string (s);
       result = Py_BuildValue ("s", sstr.c_str ());
+      S->delete_state (s);
     }			    
-  S->delete_state (s);
-  
+
   return result;
 }
 
