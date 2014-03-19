@@ -159,7 +159,7 @@ BinutilsBinaryLoader::BinutilsBinaryLoader(const string &filename,
       for (size_t i = 0; bfd_sec_flags[i].value != 0; i++)
 	if (bfd_section->flags & bfd_sec_flags[i].value)
 	  {
-		section.flags.push_back(bfd_sec_flags[i].label);
+	    section.flags.push_back(bfd_sec_flags[i].label);
 	  }
 
       /* Setting section size */
