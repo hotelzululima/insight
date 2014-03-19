@@ -178,8 +178,8 @@ Architecture::Architecture (processor_t proc, endianness_t endian, int wsize,
   : registerspecs (new RegisterSpecs ()), processor (proc), 
     endianness (endian), word_size (wsize), address_size (asize)
 {
-  assert (wsize > 0 && wsize % 8 == 0);
-  assert (asize > 0 && asize % 8 == 0);
+  assert (wsize > 0);
+  assert (asize > 0);
 }
 
 Architecture::~Architecture()
