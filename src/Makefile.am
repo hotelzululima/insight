@@ -323,6 +323,7 @@ msp430_decoder= \
 	decoders/binutils/msp430/msp430_decoder.cc \
         \
 	decoders/binutils/msp430/msp430_instr.cc \
+	decoders/binutils/msp430/msp430_instr.hh \
         \
 	decoders/binutils/msp430/msp430_translate.cc  \
 	decoders/binutils/msp430/msp430_translate.hh  \
