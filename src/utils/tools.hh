@@ -33,6 +33,8 @@
 
 #include <string>
 
+#define STATIC_ARRAY_COUNT(array) (sizeof (array) / sizeof (array)[0])
+
 /** \brief Convert an int to a string (cf. 'itoa()') */
 std::string itos(int i);
 
