@@ -318,6 +318,26 @@ BUILT_SOURCES+= \
 	decoders/binutils/arm/arm_parser.hh  	\
 	decoders/binutils/arm/arm_parser.cc
 
+msp430_decoder= \
+	decoders/binutils/msp430/msp430_decoder.hh \
+	decoders/binutils/msp430/msp430_decoder.cc \
+        \
+	decoders/binutils/msp430/msp430_instr.cc \
+        \
+	decoders/binutils/msp430/msp430_translate.cc  \
+	decoders/binutils/msp430/msp430_translate.hh  \
+        decoders/binutils/msp430/msp430_parser.yy  \
+        decoders/binutils/msp430/msp430_scanner.ll 
+
+BUILT_SOURCES+= \
+	decoders/binutils/msp430/stack.hh 	      	\
+	decoders/binutils/msp430/location.hh       \
+	decoders/binutils/msp430/position.hh       \
+	decoders/binutils/msp430/msp430_scanner.hh \
+	decoders/binutils/msp430/msp430_scanner.cc \
+	decoders/binutils/msp430/msp430_parser.hh  \
+	decoders/binutils/msp430/msp430_parser.cc 
+
 sparc_decoder= \
 	decoders/binutils/sparc/sparc_cc.def \
 	decoders/binutils/sparc/sparc_decoder.hh \
@@ -398,6 +418,7 @@ decoders_sources = \
 	decoders/binutils/BinutilsDecoder.hh \
 	decoders/binutils/BinutilsDecoder.cc \
         ${arm_decoder}	  \
+	${msp430_decoder} \
         ${sparc_decoder}  \
         ${x86_decoder}
 
@@ -418,6 +439,23 @@ decoders/binutils/arm/arm_scanner.cc : 	\
 	$(LEX) --outfile=decoders/binutils/arm/arm_scanner.cc \
 	       --header-file=decoders/binutils/arm/arm_scanner.hh \
 		${srcdir}/decoders/binutils/arm/arm_scanner.ll
+
+decoders/binutils/msp430/stack.hh		\
+decoders/binutils/msp430/location.hh 	\
+decoders/binutils/msp430/position.hh 	\
+decoders/binutils/msp430/msp430_parser.hh 	\
+decoders/binutils/msp430/msp430_parser.cc:	\
+  decoders/binutils/msp430/msp430_parser.yy
+	$(YACC) --output=decoders/binutils/msp430/msp430_parser.cc \
+		${srcdir}/decoders/binutils/msp430/msp430_parser.yy
+
+decoders/binutils/msp430/msp430_scanner.hh 	\
+decoders/binutils/msp430/msp430_scanner.cc : 	\
+       decoders/binutils/msp430/msp430_scanner.ll 	\
+       decoders/binutils/msp430/msp430_parser.hh
+	$(LEX) --outfile=decoders/binutils/msp430/msp430_scanner.cc \
+	       --header-file=decoders/binutils/msp430/msp430_scanner.hh \
+		${srcdir}/decoders/binutils/msp430/msp430_scanner.ll
 
 decoders/binutils/sparc/stack.hh	\
 decoders/binutils/sparc/location.hh 	\

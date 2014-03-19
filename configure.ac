@@ -362,21 +362,6 @@ dnl
 dnl Test architectures supported by libbfd
 dnl
 
-dnl Check for x86_32 and x86_64 (they share the same print_insn_*)
-x86_32_support="no"
-x86_64_support="no"
-AC_CHECK_FUNC([print_insn_i386], [x86_32_support="yes"])
-AC_CHECK_FUNC([print_insn_i386], [x86_64_support="yes"])
-
-AM_CONDITIONAL([BFD_SUPPORTS_X86_32], [test "${x86_32_support}" = "yes"])
-AM_CONDITIONAL([BFD_SUPPORTS_X86_32], [test "${x86_64_support}" = "yes"])
-
-dnl Check for sparc support
-sparc_support="no"
-AC_CHECK_FUNC([print_insn_sparc], [sparc_support="yes"])
-
-AM_CONDITIONAL([BFD_SUPPORTS_SPARC], [test "${sparc_support}" = "yes"])
-
 dnl Check for arm support
 arm_big_support="no"
 AC_CHECK_FUNC([print_insn_big_arm], [arm_big_support="yes"])
@@ -390,6 +375,27 @@ if test "${arm_little_support}${arm_big_support}" = "yesyes"; then
 fi
 
 AM_CONDITIONAL([BFD_SUPPORTS_ARM], [test "${arm_support}" = "yes"])
+
+dnl Check for msp430 support
+msp430_support="no"
+AC_CHECK_FUNC([print_insn_msp430], [msp430_support="yes"])
+
+AM_CONDITIONAL([BFD_SUPPORTS_MSP430], [test "${msp430_support}" = "yes"])
+
+dnl Check for sparc support
+sparc_support="no"
+AC_CHECK_FUNC([print_insn_sparc], [sparc_support="yes"])
+
+AM_CONDITIONAL([BFD_SUPPORTS_SPARC], [test "${sparc_support}" = "yes"])
+
+dnl Check for x86_32 and x86_64 (they share the same print_insn_*)
+x86_32_support="no"
+x86_64_support="no"
+AC_CHECK_FUNC([print_insn_i386], [x86_32_support="yes"])
+AC_CHECK_FUNC([print_insn_i386], [x86_64_support="yes"])
+
+AM_CONDITIONAL([BFD_SUPPORTS_X86_32], [test "${x86_32_support}" = "yes"])
+AM_CONDITIONAL([BFD_SUPPORTS_X86_32], [test "${x86_64_support}" = "yes"])
 
 dnl Setting the standard flags (CXXFLAGS, CPPFLAGS, LDFLAGS)
 CXXFLAGS="${CXXFLAGS}"
@@ -468,10 +474,11 @@ Here is the configuration of the package:
     BINUTILS_LDFLAGS		: ${BINUTILS_LDFLAGS}
 
 Binutils supported architectures
+    arm                 	: ${arm_support}
+    msp430                 	: ${msp430_support}
+    sparc                 	: ${sparc_support}
     x86-32            		: ${x86_32_support}
     x86-64            		: ${x86_64_support}
-    arm                 	: ${arm_support}
-    sparc                 	: ${sparc_support}
 
 Detected SMT-solvers
     MathSAT ${MATHSAT_VERSION}		: ${has_mathsat_solver}

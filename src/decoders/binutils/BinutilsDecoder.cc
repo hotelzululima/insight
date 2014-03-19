@@ -38,10 +38,11 @@
 #include <cassert>
 
 #include <kernel/annotations/AsmAnnotation.hh>
-#include "arm/arm_decoder.hh"
-#include "sparc/sparc_decoder.hh"
-#include "x86/x86_32_decoder.hh"
-#include "x86/x86_64_decoder.hh"
+#include <decoders/binutils/arm/arm_decoder.hh>
+#include <decoders/binutils/msp430/msp430_decoder.hh>
+#include <decoders/binutils/sparc/sparc_decoder.hh>
+#include <decoders/binutils/x86/x86_32_decoder.hh>
+#include <decoders/binutils/x86/x86_64_decoder.hh>
 
 #include "BinutilsDecoder.hh"
 
@@ -240,7 +241,7 @@ BinutilsDecoder::init ()
       if ((abfd->arch_info = bfd_scan_arch("msp430"))  == NULL)
 	throw Decoder::DecoderUnexpectedError("msp430 is not supported on your system");
       /* Setting the decoder function for arm */
-      this->decoder = NULL;
+      this->decoder = &msp430_decoder_func;
       break;
 
     case Architecture::SPARC:
