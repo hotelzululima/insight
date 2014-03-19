@@ -92,6 +92,7 @@ namespace pynsight {
   PYNSIGHT_EXC(BreakpointReached)		\
   PYNSIGHT_EXC(SinkNodeReached)			\
   PYNSIGHT_EXC(ConcretizationException)		\
+  PYNSIGHT_EXC(SimulationNotStartedException)   \
   PYNSIGHT_EXC(JumpToInvalidAddress) 
 
 # define PYNSIGHT_EXC(e) extern PyObject *e;

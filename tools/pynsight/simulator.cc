@@ -125,6 +125,8 @@ class GenericInsightSimulator : public pynsight::MicrocodeReference {
 public:
   typedef vector<StmtArrow *> ArrowVector;
   
+  class NoStateException { };
+
   GenericInsightSimulator (Program *prg);
 
   virtual ~GenericInsightSimulator ();
@@ -141,7 +143,10 @@ public:
   virtual void *get_initial_state (address_t start) = 0;
   virtual void set_state (void *s) = 0;
   virtual void delete_state (void *s) = 0;
+
+  virtual bool has_state () = 0;
   virtual void *get_state () = 0;
+
   virtual void *trigger_arrow (void *from, StmtArrow *a) = 0;
 
   virtual string get_memory (address_t addr);
@@ -217,6 +222,7 @@ public:
   virtual void set_state (void *ptr);
   virtual void delete_state (void *ptr);
 
+  virtual bool has_state ();
   virtual void *get_state ();
   virtual void *trigger_arrow (void *from, StmtArrow *a);
 
@@ -538,6 +544,17 @@ s_PyMicrocodeAddress (const MicrocodeAddress &addr)
 }
   
 static bool
+s_check_state (GenericInsightSimulator *S)
+{
+  if (! S->has_state ())
+    {
+      PyErr_SetNone (pynsight::SimulationNotStartedException);
+      return false;
+    }
+  return true;
+}
+
+static bool
 s_trigger_arrow (GenericInsightSimulator *S, StmtArrow *a)
 {
   void *st = S->get_state ();
@@ -567,16 +584,17 @@ s_trigger_arrow (GenericInsightSimulator *S, StmtArrow *a)
 
 static bool 
 s_trigger_arrow_from_index (GenericInsightSimulator *S, unsigned int aindex)
+  
 {
+  bool result = false;
   if (aindex >= S->get_number_of_arrows ())
+    PyErr_SetString (PyExc_IndexError, "invalid microcode-arrow index");
+  else if (s_check_state (S))
     {
-      PyErr_SetString (PyExc_IndexError, "invalid microcode-arrow index");
-      return false;
+      StmtArrow *a = S->get_arrow_at (aindex);
+      result = s_trigger_arrow (S, a);
     }
-
-  StmtArrow *a = S->get_arrow_at (aindex);
-
-  return s_trigger_arrow (S, a);
+  return result;
 }
 
 static PyObject *
@@ -585,14 +603,14 @@ s_Simulator_microstep (PyObject *self, PyObject *args)
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   unsigned int aindex = 0;
 
-  if (! PyArg_ParseTuple (args, "I", &aindex))
+  if (! s_check_state (S) || ! PyArg_ParseTuple (args, "I", &aindex))
     return NULL;
   
   PyObject *result = NULL;
 
   if (s_trigger_arrow_from_index (S, aindex))
     result = pynsight::None ();
-
+      
   return result;  
 }
 
@@ -604,7 +622,7 @@ s_Simulator_step (PyObject *self, PyObject *args)
   MicrocodeAddress ep = S->get_pc ();
   int aindex = -1;
 
-  if (! PyArg_ParseTuple (args, "|I", &aindex))
+  if (! s_check_state (S) || ! PyArg_ParseTuple (args, "|I", &aindex))
     return NULL;
 
   if (S->get_number_of_arrows () > 1)
@@ -651,12 +669,12 @@ s_Simulator_state (PyObject *self, PyObject *)
 {
   PyObject *result;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  void *s = S->get_state ();
 
-  if (s == NULL)
+  if (! S->has_state ())
     result = pynsight::None ();
   else
     {
+      void *s = S->get_state ();
       string sstr = S->state_to_string (s);
       result = Py_BuildValue ("s", sstr.c_str ());
       S->delete_state (s);
@@ -672,8 +690,9 @@ s_Simulator_set_memory (PyObject *self, PyObject *args)
   unsigned char byte;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTuple (args, "kb", &addr, &byte))
+  if (! s_check_state (S) || ! PyArg_ParseTuple (args, "kb", &addr, &byte))
     return NULL;
+
   ConcreteValue v (8, byte);
   if (! S->concretize_memory (addr, &v, 1))
     {
@@ -693,7 +712,8 @@ s_Simulator_unset_memory (PyObject *self, PyObject *args, PyObject *kwds)
   unsigned char keep;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kkb", (char **) kwlists,
+  if (! s_check_state (S) || 
+      !PyArg_ParseTupleAndKeywords (args, kwds, "kkb", (char **) kwlists,
 				    &addr, &len, &keep))
     return NULL;
   PyObject *result = NULL;
@@ -720,7 +740,7 @@ s_Simulator_get_memory (PyObject *self, PyObject *args)
   PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTuple (args, "k|k", &addr, &len))
+  if (! s_check_state (S) || !PyArg_ParseTuple (args, "k|k", &addr, &len))
     return NULL;
 
   if (S->check_memory_range (addr, len)) 
@@ -758,7 +778,7 @@ s_Simulator_concretize_memory (PyObject *self, PyObject *args)
   PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTuple (args, "k|k", &addr, &len))
+  if (! s_check_state (S) || !PyArg_ParseTuple (args, "k|k", &addr, &len))
     return NULL;
 
   if (! S->check_memory_range (addr, len)) 
@@ -778,7 +798,7 @@ s_Simulator_set_register (PyObject *self, PyObject *args)
   unsigned long regval;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTuple (args, "sk", &regname, &regval))
+  if (! s_check_state (S) || !PyArg_ParseTuple (args, "sk", &regname, &regval))
     return NULL;
 
   try 
@@ -808,7 +828,8 @@ s_Simulator_unset_register (PyObject *self, PyObject *args, PyObject *kwds)
   unsigned char keep;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "sb", (char **) kwlists,
+  if (! s_check_state (S) || 
+      !PyArg_ParseTupleAndKeywords (args, kwds, "sb", (char **) kwlists,
 				    &regname, &keep))
     return NULL;
 
@@ -833,11 +854,11 @@ static PyObject *
 s_Simulator_get_register (PyObject *self, PyObject *args)
 {
   const char *regname;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
-  if (!PyArg_ParseTuple (args, "s", &regname))
+  if (! s_check_state (S) || !PyArg_ParseTuple (args, "s", &regname))
     return NULL;
 
-  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   PyObject *result = NULL;
 
   try 
@@ -860,11 +881,11 @@ static PyObject *
 s_Simulator_concretize_register (PyObject *self, PyObject *args)
 {
   const char *regname;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
-  if (!PyArg_ParseTuple (args, "s", &regname))
+  if (! s_check_state (S) || !PyArg_ParseTuple (args, "s", &regname))
     return NULL;
 
-  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   PyObject *result = NULL;
 
   try 
@@ -889,17 +910,13 @@ s_Simulator_concretize_register (PyObject *self, PyObject *args)
 static PyObject *
 s_Simulator_get_pc (PyObject *self, PyObject *)
 {
-  PyObject *result;
+  PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim; 
-  void *st = S->get_state ();
 
-  if (st == NULL)
-    result = pynsight::None ();
-  else
+  if (s_check_state (S))
     {
-      MicrocodeAddress a = S->get_pc (st);
+      MicrocodeAddress a = S->get_pc ();
       result = s_PyMicrocodeAddress (a);
-      S->delete_state (st);
     }
 
   return result;
@@ -1239,6 +1256,8 @@ string
 GenericInsightSimulator::get_memory (address_t addr)
 {
   void *s = get_state ();
+  assert (s != NULL);
+
   string result = get_memory (s, addr);
   delete_state (s);  
   return result;
@@ -1248,6 +1267,7 @@ bool
 GenericInsightSimulator::check_memory_range (address_t addr, size_t len)
 {
   void *s = get_state ();
+  assert (s != NULL);
   bool result = check_memory_range (s, addr, len);
   delete_state (s);  
 
@@ -1547,9 +1567,16 @@ InsightSimulator<Stepper>::delete_state (void *ptr)
   ((State *) ptr)->deref ();
 }
 
+template <typename Stepper> bool
+InsightSimulator<Stepper>::has_state ()
+{
+  return (current_state != NULL);
+}
+
 template <typename Stepper> void * 
 InsightSimulator<Stepper>::get_state ()
 {
+  assert (current_state != NULL);
   current_state->ref ();
   return current_state;
 }
@@ -1927,7 +1954,7 @@ InsightSimulator<Stepper>::get_pc (void *p)
 template <typename Stepper> MicrocodeAddress 
 InsightSimulator<Stepper>::get_pc ()
 {
-  return get_pc (current_state);
+  return get_pc (get_state ());
 }
 
 template <typename Stepper> Option<bool> 

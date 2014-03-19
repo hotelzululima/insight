@@ -154,11 +154,14 @@ def arrows():
     if simulator is None:
         print "Program is not started"
         return
-    i = 0
-    print "Arrows from (0x{:x},{}):".format(mcpc()[0], mcpc()[1])
-    for a in simulator.get_arrows():
-        print i, ":", a
-        i += 1
+    try:
+        i = 0
+        print "Arrows from (0x{:x},{}):".format(mcpc()[0], mcpc()[1])
+        for a in simulator.get_arrows():
+            print i, ":", a
+            i += 1
+    except:
+        simulation_error()
 
 
 def microstep(a=0):
@@ -257,11 +260,13 @@ def dump(addr=None, l=256):
     if simulator is None:
         print "Program is not started."
         return
-
-    if addr is None:
-        addr = pc()
-    for v in simulator.get_memory(addr, l):
-        print v
+    try:
+        if addr is None:
+            addr = pc()
+        for v in simulator.get_memory(addr, l):
+            print v
+    except:
+        simulation_error()
 
 
 def disas(addr=None, l=20, labels=True, bytes=False, holes=False):
@@ -319,14 +324,16 @@ def breakpoint(g=None, l=0):
     if simulator is None:
         print "Program is not started."
         return
-
-    if g is None:
-        g = simulator.get_pc()[0]
-        l = simulator.get_pc()[1]
-    bp = simulator.add_breakpoint(g, l)
-    if bp is not None:
-        print "breakpoint already set at(0x{:x},{}) with id({}).".format(g, l,
-                                                                         bp[0])
+    try:
+        if g is None:
+            g = simulator.get_pc()[0]
+            l = simulator.get_pc()[1]
+            bp = simulator.add_breakpoint(g, l)
+        if bp is not None:
+            print "breakpoint already set at(0x{:x},{}) \
+            with id({}).".format(g, l, bp[0])
+    except:
+        simulation_error()
 
 
 def cond(id, e=None):
@@ -460,13 +467,16 @@ def show(what):
     - what : what kind of data to display.
     """
     global program, simulator
-    if "breakpoints".find(what) == 0 and simulator is not None:
-        for(id, s) in simulator.get_breakpoints():
-            print id, " : {}".format(s)
-    elif "pc".find(what) == 0:
-        print "0x{:x}".format(pc())
-    elif "mppc".find(what) == 0:
-        print "0x{:x}".format(mppc())
+    try:
+        if "breakpoints".find(what) == 0 and simulator is not None:
+            for(id, s) in simulator.get_breakpoints():
+                print id, " : {}".format(s)
+        elif "pc".find(what) == 0:
+            print "0x{:x}".format(pc())
+        elif "mppc".find(what) == 0:
+            print "0x{:x}".format(mppc())
+    except:
+        simulation_error()
 
 
 def pc():
@@ -540,13 +550,16 @@ def print_registers(l=None):
     if isinstance(l, str):
         l = [l]
     regs = program.info()["registers"]
-
-    for r in sorted(l):
-        if r in regs:
+    try:
+        for r in sorted(l):
+            if r not in regs:
+                continue
             fmt = "{: <5s} : {}"
             val = simulator.get_register(r)
             if val is not None:
                 print fmt.format(r, simulator.get_register(r))
+    except:
+        simulation_error()
 
 
 def register(regname):
@@ -569,6 +582,8 @@ def register(regname):
         return simulator.get_register(regname)
     except LookupError, e:
         print e, regname
+    except:
+        simulation_error()
 
 
 def prog():
@@ -628,6 +643,8 @@ yourself.\n""".format(loc)
                 loc += 1
     except insight.error.ConcretizationException:
         print "try to assign an inconsistent value to", loc
+    except:
+        simulation_error()
 
 
 def unset(loc, len=1, keep=True):
@@ -665,8 +682,8 @@ def unset(loc, len=1, keep=True):
                 print "unknown register ", loc
         else:
             simulator.unset_memory(loc, len, keep)
-    except NotImplementedError:
-        print "abstraction is not supported here."
+    except:
+        simulation_error()
 
 
 def instr(addr=None):
@@ -684,16 +701,17 @@ def instr(addr=None):
     if simulator is None:
         print "Program is not started."
         return
+    try:
+        if addr is None:
+            addr = pc()
 
-    if addr is None:
-        addr = pc()
-
-    instr = simulator.get_instruction(addr)
-    if instr is None:
-        for i in program.disas(addr, 1):
-            instr = i[1]
-    print instr
-
+        instr = simulator.get_instruction(addr)
+        if instr is None:
+            for i in program.disas(addr, 1):
+                instr = i[1]
+                print instr
+    except:
+        simulation_error ()
 
 def print_state():
     """
@@ -787,5 +805,9 @@ def simulation_error():
         print "try to jump into undefined memory(0x{:x}, {})".format(ga, la)
     elif sys.exc_type is insight.error.NotDeterministicBehaviorError:
         print "stop in a configuration with several output arrows"
+    elif sys.exc_type is insight.error.SimulationNotStartedException:
+        print "simulator is not running"
+    elif sys.exc_type is insight.error.NotImplementedError:
+        print "feature not supported."
     else:
         raise
