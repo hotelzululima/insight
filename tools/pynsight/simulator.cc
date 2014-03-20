@@ -1599,7 +1599,6 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 	    {
 	      PyErr_SetObject (pynsight::JumpToInvalidAddress,
 			       s_PyMicrocodeAddress (tgt));
-	      result->deref ();
 	      result = NULL;
 	    }
 	  else
