@@ -1602,10 +1602,12 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 	      result->deref ();
 	      result = NULL;
 	    }
+	  else
+	    result->ref ();
 	}
       else if (succs->size () != 0)
 	PyErr_SetNone (pynsight::NotDeterministicBehaviorError);
-      delete succs;
+      stepper->destroy_state_set (succs);
     }
   catch (UndefinedValueException &e)
     {
