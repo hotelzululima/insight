@@ -33,11 +33,11 @@ const Annotable::AnnotationId CallRetAnnotation::ID ("callret");
 
 CallRetAnnotation::CallRetAnnotation (const Expr *target)
   : ExprAnnotation (target)
-{  
+{
 }
 
-CallRetAnnotation::~CallRetAnnotation() 
-{ 
+CallRetAnnotation::~CallRetAnnotation()
+{
 }
 
 CallRetAnnotation *
@@ -52,26 +52,26 @@ CallRetAnnotation::create_ret ()
   return new CallRetAnnotation (NULL);
 }
 
-void 
-CallRetAnnotation::output_text (std::ostream &out) const 
+void
+CallRetAnnotation::output_text (std::ostream &out) const
 {
   out << (is_call () ? "CALL" : "RET");
 }
 
 void *
 CallRetAnnotation::clone () const
-{  
+{
   return is_call () ? create_call (get_expr ()) : create_ret ();
 }
 
-bool 
-CallRetAnnotation::is_call () const 
+bool
+CallRetAnnotation::is_call () const
 {
   return get_expr () != NULL;
 }
 
 const Expr *
-CallRetAnnotation::get_target () const 
+CallRetAnnotation::get_target () const
 {
   return get_expr ();
 }

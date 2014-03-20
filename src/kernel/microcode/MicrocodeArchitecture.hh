@@ -33,7 +33,7 @@
 
 #include <kernel/Architecture.hh>
 
-class MicrocodeArchitecture : private Architecture 
+class MicrocodeArchitecture : private Architecture
 {
 public :
   MicrocodeArchitecture (const Architecture *arch);

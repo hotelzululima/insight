@@ -41,7 +41,7 @@ protected:
 
 public:
 
-  virtual ~AbstractAnnotation () { } 
+  virtual ~AbstractAnnotation () { }
 
   virtual void output_text (std::ostream &out) const = 0;
   virtual void *clone () const = 0;

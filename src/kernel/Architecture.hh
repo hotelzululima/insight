@@ -174,24 +174,24 @@ public:
    *  processor name. This method can only be used for processors that
    *  can handle one unique endianness (eg. x86). */
   static const Architecture *getArchitecture (const Architecture::processor_t);
-  
-  inline processor_t get_proc () const { 
+
+  inline processor_t get_proc () const {
     return processor;
   }
 
   const char *get_proc_name () const;
 
-  inline endianness_t get_endian () const { 
+  inline endianness_t get_endian () const {
     return endianness;
   }
 
   const char *get_endian_name () const;
 
-  inline size_in_bits_t get_word_size () const { 
+  inline size_in_bits_t get_word_size () const {
     return word_size;
   }
 
-  inline size_in_bits_t get_address_size () const { 
+  inline size_in_bits_t get_address_size () const {
     return address_size;
   }
 

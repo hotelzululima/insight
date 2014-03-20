@@ -96,7 +96,7 @@ public:
   MicrocodeNode * get_or_create_node(MicrocodeAddress addr);
   void add_node(MicrocodeNode *n);
   std::vector<MicrocodeNode *> * get_nodes() const;
-  
+
   node_iterator begin_nodes () const;
   node_iterator end_nodes () const;
   std::size_t get_number_of_nodes () const;
@@ -193,7 +193,7 @@ public:
   bool is_optimized();
 
   void output_text(std::ostream &out) const;
-  
+
   void check () const;
 };
 /***************************************************************************/

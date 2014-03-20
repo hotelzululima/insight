@@ -84,7 +84,7 @@ void Annotable::del_annotation(const AnnotationId &id)
 
 
 const Annotable::AnnotationMap *
-Annotable::get_annotations() const 
+Annotable::get_annotations() const
 {
   return &amap;
 }
@@ -150,7 +150,7 @@ bool Annotable::is_annotated() const
   return amap.size() > 0;
 }
 
-void 
+void
 Annotable::output_annotations (std::ostream &out) const
 {
   std::vector<Annotable::AnnotationId> *ids = get_sorted_annotation_ids();

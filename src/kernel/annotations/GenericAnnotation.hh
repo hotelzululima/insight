@@ -37,18 +37,18 @@ template <typename T>
 class GenericAnnotation : public AbstractAnnotation<T>
 {
 public:
-  GenericAnnotation (const T &v) : AbstractAnnotation<T> (v) { 
+  GenericAnnotation (const T &v) : AbstractAnnotation<T> (v) {
   }
 
-  virtual ~GenericAnnotation () { 
-  } 
+  virtual ~GenericAnnotation () {
+  }
 
-  virtual void output_text (std::ostream &out) const { 
+  virtual void output_text (std::ostream &out) const {
     out << this->value;
   }
 
-  virtual void *clone () const { 
-    return new GenericAnnotation (this->value); 
+  virtual void *clone () const {
+    return new GenericAnnotation (this->value);
   }
 };
 

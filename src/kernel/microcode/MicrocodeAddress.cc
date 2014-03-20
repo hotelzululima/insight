@@ -49,7 +49,7 @@ MicrocodeAddress::MicrocodeAddress(address_t g, address_t l) :
   local(l)
 {}
 
-MicrocodeAddress::MicrocodeAddress(const MicrocodeAddress &addr) 
+MicrocodeAddress::MicrocodeAddress(const MicrocodeAddress &addr)
   : Object (*this)
 {
   global = addr.global;
@@ -79,7 +79,7 @@ address_t MicrocodeAddress::getLocal() const
   return this->local;
 }
 
-std::size_t 
+std::size_t
 MicrocodeAddress::hashcode () const
 {
   return 19 * getGlobal () + 177 * getLocal ();
@@ -96,7 +96,7 @@ bool MicrocodeAddress::lessThan(const MicrocodeAddress &other) const
           ((global == other.global) && (local < other.local)));
 }
 
-MicrocodeAddress & 
+MicrocodeAddress &
 MicrocodeAddress::operator = (const MicrocodeAddress &other)
 {
   new (this) MicrocodeAddress (other.global, other.local);
@@ -109,13 +109,13 @@ MicrocodeAddress MicrocodeAddress::null_addr()
   return MicrocodeAddress(NULL_ADDRESS);
 }
 
-void 
+void
 MicrocodeAddress::output_text (std::ostream &out) const
 {
   out << "(0x" << hex << global << "," << dec << local << ")";
 }
 
-MicrocodeAddress MicrocodeAddress::operator++ (int) 
+MicrocodeAddress MicrocodeAddress::operator++ (int)
 {
   MicrocodeAddress result (*this);
 

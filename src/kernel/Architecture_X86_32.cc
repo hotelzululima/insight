@@ -30,7 +30,7 @@
 
 #include "Architecture_X86_32.hh"
 
-Architecture_X86_32::Architecture_X86_32() : 
+Architecture_X86_32::Architecture_X86_32() :
   Architecture (X86_32, LittleEndian, 32, 32)
 {
   /* Setting regular registers */

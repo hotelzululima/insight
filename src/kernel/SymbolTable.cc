@@ -54,13 +54,13 @@ SymbolTable::clone () const
   return result;
 }
 
-size_t 
+size_t
 SymbolTable::size () const
 {
   return symbmap.size ();
 }
 
-bool 
+bool
 SymbolTable::empty () const
 {
   return size () == 0;
@@ -75,7 +75,7 @@ SymbolTable::add_symbol (const string &id, address_t a)
   addrmap[a].push_back (id);
 }
 
-void 
+void
 SymbolTable::merge_with (const SymbolTable *table)
 {
   for (const_symbol_iterator i = table->begin_symbols ();
@@ -88,7 +88,7 @@ SymbolTable::has (const string &id) const
 {
   return (find (id) != end_symbols ());
 }
- 
+
 bool
 SymbolTable::has (address_t a) const
 {
@@ -101,7 +101,7 @@ SymbolTable::get (const string &id) const
   assert (has (id));
   return symbmap.find (id)->second;
 }
- 
+
 const std::list<std::string> &
 SymbolTable::get (address_t a) const
 {
@@ -109,16 +109,16 @@ SymbolTable::get (address_t a) const
   return addrmap.find (a)->second;
 }
 
-void 
+void
 SymbolTable::output_text (ostream &out) const
-{  
+{
   vector<address_t> addresses;
 
-  for (const_address_iterator i = begin_addresses (); i != end_addresses (); 
+  for (const_address_iterator i = begin_addresses (); i != end_addresses ();
        i++)
     addresses.push_back (i->first);
   sort (addresses.begin (), addresses.end ());
-  
+
   for (vector<address_t>::size_type i = 0; i < addresses.size (); i++)
     {
       address_t a = addresses[i];
@@ -139,37 +139,37 @@ SymbolTable::output_text (ostream &out) const
     }
 }
 
-SymbolTable::const_address_iterator 
+SymbolTable::const_address_iterator
 SymbolTable::find (address_t a) const
 {
   return addrmap.find (a);
 }
 
-SymbolTable::const_symbol_iterator 
+SymbolTable::const_symbol_iterator
 SymbolTable::find (const string &id) const
 {
   return symbmap.find (id);
 }
 
-SymbolTable::const_symbol_iterator 
+SymbolTable::const_symbol_iterator
 SymbolTable::begin_symbols () const
 {
   return symbmap.begin ();
 }
 
-SymbolTable::const_symbol_iterator 
+SymbolTable::const_symbol_iterator
 SymbolTable::end_symbols () const
 {
   return symbmap.end ();
 }
 
-SymbolTable::const_address_iterator 
+SymbolTable::const_address_iterator
 SymbolTable::begin_addresses () const
 {
   return addrmap.begin ();
 }
 
-SymbolTable::const_address_iterator 
+SymbolTable::const_address_iterator
 SymbolTable::end_addresses () const
 {
   return addrmap.end ();

@@ -57,7 +57,7 @@ public:
   virtual ~RegisterMap ();
 
   /** \brief Retrieve the content of a register */
-  virtual Value get(const RegisterDesc *) const 
+  virtual Value get(const RegisterDesc *) const
     throw (UndefinedValueException);
 
   /** \brief Put the value v into the register */

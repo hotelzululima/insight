@@ -31,8 +31,8 @@
 #include <cassert>
 #include "MicrocodeArchitecture.hh"
 
-MicrocodeArchitecture::MicrocodeArchitecture (const Architecture *arch) 
-  : Architecture (arch->get_proc (), arch->get_endian (), 
+MicrocodeArchitecture::MicrocodeArchitecture (const Architecture *arch)
+  : Architecture (arch->get_proc (), arch->get_endian (),
 		  arch->get_word_size (), arch->get_address_size ()),
     reference_arch (arch)
 {
@@ -48,7 +48,7 @@ MicrocodeArchitecture::get_reference_arch () const
   return reference_arch;
 }
 
-void 
+void
 MicrocodeArchitecture::add_tmp_register (const std::string &label, int size)
 {
   assert (!reference_arch->has_register (label));

@@ -38,7 +38,7 @@ RegisterMap<Value>::RegisterMap() : registermap()
 }
 
 template <typename Value>
-RegisterMap<Value>::RegisterMap(const RegisterMap &other) 
+RegisterMap<Value>::RegisterMap(const RegisterMap &other)
 : Object(other), registermap(other.registermap)
 {
 }
@@ -50,7 +50,7 @@ RegisterMap<Value>::~RegisterMap ()
 
 template <typename Value>
 Value
-RegisterMap<Value>::get(const RegisterDesc *r) const 
+RegisterMap<Value>::get(const RegisterDesc *r) const
   throw (UndefinedValueException)
 {
   assert (!r->is_alias());
@@ -91,7 +91,7 @@ RegisterMap<Value>::output_text(std::ostream &os) const
       os << "All registers are empty";
       return;
     }
-  
+
   os << "Registers: ";
   for (const_reg_iterator reg = registermap.begin(); reg != registermap.end();
        reg++) {
@@ -155,7 +155,7 @@ RegisterMap<Value>::clear(const RegisterDesc *reg)
 }
 
 template <typename Value>
-int 
+int
 RegisterMap<Value>::size () const
 {
   return registermap.size ();

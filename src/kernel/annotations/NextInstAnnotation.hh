@@ -41,7 +41,7 @@ private:
 public:
   static const Annotable::AnnotationId ID;
 
-  NextInstAnnotation (const MicrocodeAddress &ma) 
+  NextInstAnnotation (const MicrocodeAddress &ma)
     : GenericAnnotation<MicrocodeAddress> (ma) { }
   virtual ~NextInstAnnotation() { }
 };

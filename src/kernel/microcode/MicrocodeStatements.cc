@@ -68,7 +68,7 @@ string External::pp()
 
 Statement::Statement() {}
 Statement::Statement(const Statement &) {}
-Statement::~Statement() {} 
+Statement::~Statement() {}
 
 Skip::Skip() : Statement() {}
 Skip::Skip(const Skip &sk) : Statement(sk) {}

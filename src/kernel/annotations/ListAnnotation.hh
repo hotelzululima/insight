@@ -43,14 +43,14 @@ public:
   typedef typename std::list<T>::const_iterator const_iterator;
 
 
-  ListAnnotation () : AbstractAnnotation< std::list<T> > (std::list<T> ()) { 
+  ListAnnotation () : AbstractAnnotation< std::list<T> > (std::list<T> ()) {
   }
 
-  ListAnnotation (const std::list<T> &s) 
-    : AbstractAnnotation< std::list<T> > (s) { 
+  ListAnnotation (const std::list<T> &s)
+    : AbstractAnnotation< std::list<T> > (s) {
   }
 
-  virtual ~ListAnnotation () { } 
+  virtual ~ListAnnotation () { }
 
   virtual void add (const T &t) { this->value.push_back (t); }
   virtual iterator begin () { return this->value.begin (); }

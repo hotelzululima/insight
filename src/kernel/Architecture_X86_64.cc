@@ -32,7 +32,7 @@
 
 #include <kernel/Expressions.hh>
 
-Architecture_X86_64::Architecture_X86_64() : 
+Architecture_X86_64::Architecture_X86_64() :
   Architecture (X86_64, LittleEndian, 64, 64)
 {
   /* Changing default bitvector size to 64 */
@@ -106,7 +106,7 @@ Architecture_X86_64::Architecture_X86_64() :
   add_register_alias("r13b", "r13", 8, 0);
   add_register_alias("r14b", "r14", 8, 0);
   add_register_alias("r15b", "r15", 8, 0);
-  
+
   add_register_alias("ax", "rax", 16, 0);
   add_register_alias("al", "rax", 8, 0);
   add_register_alias("ah", "rax", 8, 8);

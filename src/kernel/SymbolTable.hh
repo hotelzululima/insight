@@ -37,7 +37,7 @@
 # include <utils/Object.hh>
 # include <utils/unordered11.hh>
 
-class SymbolTable : public Object  
+class SymbolTable : public Object
 {
 public:
   typedef std::unordered_map<std::string, address_t> SymbolMap;
@@ -53,10 +53,10 @@ public:
   virtual bool empty () const;
   virtual void add_symbol (const std::string &id, address_t a);
   virtual void merge_with (const SymbolTable *table);
-    
-  virtual bool has (const std::string &id) const; 
+
+  virtual bool has (const std::string &id) const;
   virtual bool has (address_t a) const;
-  virtual address_t get (const std::string &id) const; 
+  virtual address_t get (const std::string &id) const;
   virtual const std::list<std::string> &get (address_t a) const;
   virtual void output_text (std::ostream &out) const;
   virtual const_address_iterator find (address_t a) const;

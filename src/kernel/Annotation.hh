@@ -49,7 +49,7 @@ public:
 
   /*! \brief virtual destructor */
   virtual ~Annotation() {}
-  
+
   virtual void output_text(std::ostream &) const = 0;
 
   /*! \brief clone the annotation for copy constructor for instance.

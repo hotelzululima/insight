@@ -37,7 +37,7 @@
 
 static int init_count = 0;
 
-void 
+void
 insight::init(const ConfigTable &cfg)
 {
   if (init_count == 0)
@@ -49,7 +49,7 @@ insight::init(const ConfigTable &cfg)
   init_count++;
 }
 
-void 
+void
 insight::terminate()
 {
   init_count--;

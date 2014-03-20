@@ -129,13 +129,13 @@ MicrocodeNode::~MicrocodeNode()
 
 void MicrocodeNode::set_father(Microcode * f) { father = f; }
 
-void 
-MicrocodeNode::add_predecessor (StmtArrow * arr) 
+void
+MicrocodeNode::add_predecessor (StmtArrow * arr)
 {
-  if (predecessors == NULL) 
+  if (predecessors == NULL)
     predecessors = new std::vector<StmtArrow *> ();
   for (int k = 0; k < (int) predecessors->size (); k++)
-    if (*((*predecessors)[k]) == (*arr)) 
+    if (*((*predecessors)[k]) == (*arr))
       return;
   predecessors->push_back(arr);
 }
@@ -146,13 +146,13 @@ const MicrocodeAddress &MicrocodeNode::get_loc() const {
 std::vector<StmtArrow *> * MicrocodeNode::get_successors() const { return successors; }
 std::vector<StmtArrow *> * MicrocodeNode::get_predecessors() const { return predecessors; }
 
-std::vector<MicrocodeNode *> 
+std::vector<MicrocodeNode *>
 MicrocodeNode::get_global_parents () const
 {
   set<const MicrocodeNode *> done;
   list<const MicrocodeNode *> todo;
   vector<MicrocodeNode *> result;
-  
+
   todo.push_back (this);
   done.insert (this);
 
@@ -163,8 +163,8 @@ MicrocodeNode::get_global_parents () const
       vector<StmtArrow *> *preds = n->get_predecessors ();
       if (preds == NULL)
 	continue;
-	
-      for (vector<StmtArrow *>::const_iterator i = preds->begin (); 
+
+      for (vector<StmtArrow *>::const_iterator i = preds->begin ();
 	   i != preds->end (); i++)
 	{
 	  MicrocodeNode *src = (*i)->get_src ();
@@ -191,7 +191,7 @@ string MicrocodeNode::pp() const
   oss << "[" << loc << "] ";
 
   /* Annotation */
-  if (is_annotated ()) 
+  if (is_annotated ())
     {
       oss << "@";
       output_annotations (oss);
@@ -207,7 +207,7 @@ string MicrocodeNode::pp() const
 	  StaticArrow *sa = (StaticArrow *) *succ;
 
 	  MicrocodeAddress a = sa->get_target ();
-	  if (loc.getGlobal() == a.getGlobal () && 
+	  if (loc.getGlobal() == a.getGlobal () &&
 	      loc.getLocal() + 1 == a.getLocal ())
 	    {
 	      Expr *cond = sa->get_condition ();
@@ -217,13 +217,13 @@ string MicrocodeNode::pp() const
 	}
       if (is_simple)
 	oss << (*succ)->get_stmt()->pp();
-      else 
+      else
 	oss << (*succ)->pp();
     }
   return oss.str();
 }
 
-StmtArrow * 
+StmtArrow *
 MicrocodeNode::add_successor(Expr *condition, Expr *target, Statement *st)
 {
   StmtArrow *arr = new DynamicArrow(this, target, st, 0, condition);
@@ -231,7 +231,7 @@ MicrocodeNode::add_successor(Expr *condition, Expr *target, Statement *st)
   return arr;
 }
 
-StmtArrow * 
+StmtArrow *
 MicrocodeNode::add_successor(Expr *condition, MicrocodeNode *tgt, Statement *st)
 {
   StmtArrow *arr = new StaticArrow(this, tgt, st, 0, condition);
@@ -330,7 +330,7 @@ bool StmtArrow::operator==(const StmtArrow &other)
   return false;
 }
 
-DynamicArrow::~DynamicArrow() { 
+DynamicArrow::~DynamicArrow() {
   if (target)
     target->deref ();
 }
@@ -368,7 +368,7 @@ string DynamicArrow::pp() const
   s_arrow_to_string(oss, "DynamicArrow", get_origin (), stmt, condition);
   oss << "<< " + target->to_string () + " >>";
   /* Annotation */
-  if (is_annotated ()) 
+  if (is_annotated ())
     {
       oss << "@";
       output_annotations (oss);
@@ -423,12 +423,12 @@ void StaticArrow::set_tgt(MicrocodeNode * n) {
 	tgt = n;
 }
 
-string StaticArrow::pp() const 
+string StaticArrow::pp() const
 {
   ostringstream oss;
   s_arrow_to_string(oss, "StaticArrow", get_origin (), stmt, condition);
   oss << target.to_string ();
-  
+
   return oss.str ();
 }
 
@@ -463,11 +463,11 @@ Option<MicrocodeAddress> DynamicArrow::extract_target() const
     return Option<MicrocodeAddress>();
 }
 
-void 
+void
 DynamicArrow::add_solved_jump (MicrocodeAddress tgt)
 {
   SolvedJmpAnnotation *sja;
-  
+
   if (! has_annotation (SolvedJmpAnnotation::ID))
     {
       sja = new SolvedJmpAnnotation ();
@@ -477,9 +477,9 @@ DynamicArrow::add_solved_jump (MicrocodeAddress tgt)
     {
       sja = (SolvedJmpAnnotation *) get_annotation (SolvedJmpAnnotation::ID);
     }
-		    
+
   bool has_it = false;
-  for (SolvedJmpAnnotation::const_iterator j = sja->begin (); 
+  for (SolvedJmpAnnotation::const_iterator j = sja->begin ();
        j != sja->end () && ! has_it; j++)
     has_it = (j->equals (tgt));
 

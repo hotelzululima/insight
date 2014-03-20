@@ -36,19 +36,19 @@
 # include <kernel/Expressions.hh>
 # include <kernel/annotations/ListAnnotation.hh>
 
-class SolvedJmpAnnotation : public ListAnnotation<MicrocodeAddress> 
+class SolvedJmpAnnotation : public ListAnnotation<MicrocodeAddress>
 {
 public:
   static const Annotable::AnnotationId ID;
 
-  SolvedJmpAnnotation () : ListAnnotation<MicrocodeAddress> () { 
+  SolvedJmpAnnotation () : ListAnnotation<MicrocodeAddress> () {
   }
 
-  SolvedJmpAnnotation (const SolvedJmpAnnotation &o) 
-    : ListAnnotation<MicrocodeAddress> (o.value) { 
+  SolvedJmpAnnotation (const SolvedJmpAnnotation &o)
+    : ListAnnotation<MicrocodeAddress> (o.value) {
   }
 
-  virtual ~SolvedJmpAnnotation () { 
+  virtual ~SolvedJmpAnnotation () {
   }
 
   virtual void *clone () const {
@@ -56,7 +56,7 @@ public:
   }
 
 protected:
-  virtual void output (std::ostream &out, const MicrocodeAddress &sj) const { 
+  virtual void output (std::ostream &out, const MicrocodeAddress &sj) const {
     out << sj;
   }
 };

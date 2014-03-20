@@ -31,11 +31,11 @@
 #include <kernel/annotations/ExprAnnotation.hh>
 
 ExprAnnotation::ExprAnnotation()
-  : Annotation (), expr (NULL) 
+  : Annotation (), expr (NULL)
 {
 }
 
-ExprAnnotation::ExprAnnotation (const ExprAnnotation &other) 
+ExprAnnotation::ExprAnnotation (const ExprAnnotation &other)
   : Annotation (other), expr (NULL)
 {
   set_expr (other.expr);
@@ -53,7 +53,7 @@ ExprAnnotation::~ExprAnnotation()
     expr->deref ();
 }
 
-void 
+void
 ExprAnnotation::output_text (std::ostream &out) const
 {
   expr->output_text (out);
@@ -61,11 +61,11 @@ ExprAnnotation::output_text (std::ostream &out) const
 
 void *
 ExprAnnotation::clone() const
-{ 
+{
   return new ExprAnnotation (expr);
 }
 
-void 
+void
 ExprAnnotation::set_expr (const Expr *F)
 {
   if (expr != NULL)
