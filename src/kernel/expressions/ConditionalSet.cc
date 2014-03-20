@@ -49,7 +49,7 @@ ConditionalSet::EltSymbol (int size)
   return Variable::create ("elt", size);
 }
 
-inline Expr *IsIn (const Expr *elt) 
+inline Expr *IsIn (const Expr *elt)
 {
   return BinaryApp::createEquality(ConditionalSet::EltSymbol (elt->get_bv_size ()), elt->ref ());
 }
@@ -64,7 +64,7 @@ Expr * ConditionalSet::cs_condition_for_belonging (Expr * set, Expr *) {
 
   Expr * simple_set = set->ref ();
   cs_simplify (&simple_set);
-  
+
   throw std::runtime_error ("cs_condition_for_belonging");
   return NULL;
 }
@@ -75,10 +75,10 @@ class ExtractEltRule : public ConstBottomUpApplyVisitor
 public:
   std::vector<Expr *> elt_list;
 
-  void add_elt (Expr * e) 
+  void add_elt (Expr * e)
   {
     for (int i=0; i<(int) elt_list.size(); i++)
-      if (e == elt_list[i]) 
+      if (e == elt_list[i])
 	{
 	  e->deref ();
 	  return;
@@ -86,17 +86,17 @@ public:
     elt_list.push_back (e);
   };
 
-  void apply (const Expr *e) 
+  void apply (const Expr *e)
   {
-    Variable *X = Variable::create ("X", Expr::get_bv_default_size()); 
-    Expr * elt_def_pattern = 
+    Variable *X = Variable::create ("X", Expr::get_bv_default_size());
+    Expr * elt_def_pattern =
       Expr::createEquality(ConditionalSet::EltSymbol (X->get_bv_size ()), X->ref ());
-    std::list<const Variable *> free_variables; 
+    std::list<const Variable *> free_variables;
 
     free_variables.push_back(X);
-    try 
+    try
       {
-	PatternMatching * matchings = 
+	PatternMatching * matchings =
 	  PatternMatching::match (e, elt_def_pattern, free_variables);
 
 	assert (matchings->has (X));
@@ -108,21 +108,21 @@ public:
   }
 };
 
-std::vector<Expr*> 
-ConditionalSet::cs_possible_values (const Expr *set) 
+std::vector<Expr*>
+ConditionalSet::cs_possible_values (const Expr *set)
 {
   ExtractEltRule r;
   set->acceptVisitor (r);
   return r.elt_list;
 }
 
-Expr * 
-ConditionalSet::cs_flatten (const Expr *set) 
+Expr *
+ConditionalSet::cs_flatten (const Expr *set)
 {
   std::vector<Expr*> all_values = cs_possible_values (set);
   Expr *flat_set = Constant::False ();
 
-  for (int i = 0; i< (int) all_values.size (); i++) 
+  for (int i = 0; i< (int) all_values.size (); i++)
     {
       cs_add (&flat_set, all_values[i]);
       all_values[i]->deref ();
@@ -135,14 +135,14 @@ Expr *
 ConditionalSet::cs_contains (const Expr *set, const Expr *elt)
 {
   Variable *eltsym = ConditionalSet::EltSymbol (elt->get_bv_size ());
-  Expr *new_set = exprutils::replace_variable (set, eltsym, elt);  
+  Expr *new_set = exprutils::replace_variable (set, eltsym, elt);
   exprutils::simplify_level0 (&new_set);
   eltsym->deref ();
 
   return new_set;
 }
 
-bool 
+bool
 ConditionalSet::cs_compute_contains (const Expr *set, const Expr *elt)
 {
   Expr *result = ConditionalSet::cs_contains (set, elt);
@@ -164,8 +164,8 @@ bool ConditionalSet::cs_conditional_add(Expr *cond, Expr **set, Expr *elt)
   else return false;
 }
 
-bool 
-ConditionalSet::cs_conditional_union(Expr *cond, Expr **set1, 
+bool
+ConditionalSet::cs_conditional_union(Expr *cond, Expr **set1,
 				     Expr *set2)
 {
   Expr *included = Expr::createImplies (set2->ref (), (*set1)->ref ());
@@ -187,7 +187,7 @@ ConditionalSet::cs_conditional_union(Expr *cond, Expr **set1,
     }
 }
 
-bool 
+bool
 ConditionalSet::cs_remove(Expr **set, const Expr *elt)
 {
   bool was_in = cs_compute_contains (*set, elt);
@@ -197,7 +197,7 @@ ConditionalSet::cs_remove(Expr **set, const Expr *elt)
   return was_in;
 }
 
-bool 
+bool
 ConditionalSet::cs_add(Expr **set, const Expr *elt)
 {
   bool result = ConditionalSet::cs_compute_contains(*set, elt);
@@ -211,7 +211,7 @@ ConditionalSet::cs_add(Expr **set, const Expr *elt)
   return result;
 }
 
-bool 
+bool
 ConditionalSet::cs_union(Expr **set1, const Expr *set2)
 {
   bool result = (set2 == *set1);

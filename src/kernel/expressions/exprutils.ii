@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <kernel/expressions/BottomUpApplyVisitor.hh>
 
-namespace exprutils 
+namespace exprutils
 {
 
   template <typename ContainerType, typename ExprType>
@@ -46,13 +46,13 @@ namespace exprutils
       Collector (bool eliminate_duplicate) : nodup (eliminate_duplicate) {
       }
 
-      ContainerType result;      
+      ContainerType result;
       void apply (const Expr *phi)
       {
 	const ExprType *e = dynamic_cast<const ExprType *> (phi);
 	if (e != NULL)
 	  {
-	    if (!nodup || 
+	    if (!nodup ||
 		std::find (result.begin (), result.end (), e) == result.end ())
 	      result.insert (result.end (), e);
 	  }

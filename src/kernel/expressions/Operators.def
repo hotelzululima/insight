@@ -33,8 +33,8 @@
 
 BINARY_OP(BV_OP_ADD, "ADD", true, true) /*! Addition */
 BINARY_OP(BV_OP_SUB, "SUB", false, false) /*! Substraction */
-BINARY_OP(BV_OP_MUL_S, "MUL_S", true, true) /*! Signed Multiplication */ 
-BINARY_OP(BV_OP_MUL_U, "MUL_U", true, true) /*! Unsigned Multiplication */ 
+BINARY_OP(BV_OP_MUL_S, "MUL_S", true, true) /*! Signed Multiplication */
+BINARY_OP(BV_OP_MUL_U, "MUL_U", true, true) /*! Unsigned Multiplication */
 BINARY_OP(BV_OP_DIV_S, "DIV_S", false, false) /*! Signed Division */
 BINARY_OP(BV_OP_DIV_U, "DIV_U", false, false) /*! Unsigned Division */
 BINARY_OP(BV_OP_MODULO, "MODULO", false, false) /*! Modulo */
@@ -73,7 +73,7 @@ BINARY_OP(BV_OP_EXTEND_U, "EXTEND_U", false, false) /*! unsigned extend */
 #endif
 
 #ifdef UNARY_OP
-/* UNARY_OP(enumvalue, pp_string) */ 
+/* UNARY_OP(enumvalue, pp_string) */
 UNARY_OP(BV_OP_NEG, "NEG") /*! arithmetic negative */
 UNARY_OP(BV_OP_NOT, "NOT") /*! bitwise not */
 #endif

@@ -40,8 +40,8 @@
 using namespace std;
 
 void
-rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func, 
-		  Expr **pF) 
+rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func,
+		  Expr **pF)
 {
   Expr *newF = func (*pF);
 
@@ -53,13 +53,13 @@ rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func,
     }
 }
 
-Expr * 
+Expr *
 not_operator_on_constant (const Expr *phi)
 {
   const UnaryApp *ua = dynamic_cast<const UnaryApp *> (phi);
   Expr *result = NULL;
 
-  if (ua != NULL && ua->get_op () == BV_OP_NOT && 
+  if (ua != NULL && ua->get_op () == BV_OP_NOT &&
       ua->get_arg1()->is_Constant ())
     {
       if (((Constant *) ua->get_arg1())->get_val() == 0)
@@ -71,26 +71,26 @@ not_operator_on_constant (const Expr *phi)
   return result;
 }
 
-Expr * 
+Expr *
 syntaxic_equality_rule (const Expr *phi)
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
   Expr *result = NULL;
 
-  if (ba != NULL && ba->get_op () == BV_OP_EQ && 
+  if (ba != NULL && ba->get_op () == BV_OP_EQ &&
       ba->get_arg1 () == ba->get_arg2 ())
     result = Constant::one (1);
 
   return result;
 }
 
-Expr * 
+Expr *
 zero_shift_rule (const Expr *phi)
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
   Expr *result = NULL;
 
-  if (ba != NULL && (ba->get_op () == BV_OP_RSH_U || 
+  if (ba != NULL && (ba->get_op () == BV_OP_RSH_U ||
 		     ba->get_op () == BV_OP_RSH_S ||
 		     ba->get_op () == BV_OP_LSH)
       && ba->get_arg2 ()->is_Constant ()
@@ -101,10 +101,10 @@ zero_shift_rule (const Expr *phi)
   return result;
 }
 
-Expr * 
-cancel_lnot_not (const Expr *phi) 
+Expr *
+cancel_lnot_not (const Expr *phi)
 {
-  Expr *pattern = 
+  Expr *pattern =
     Expr::createLNot (Expr::createLNot (Variable::create ("X",
 							  Expr::get_bv_default_size())));
   Expr *result = exprutils::extract_v_pattern ("X", phi, pattern);
@@ -113,7 +113,7 @@ cancel_lnot_not (const Expr *phi)
   return result;
 }
 
-Expr * 
+Expr *
 logical_negation_operator_on_constant (const Expr *phi)
 {
   if (!phi->is_NegationFormula ())
@@ -135,7 +135,7 @@ logical_negation_operator_on_constant (const Expr *phi)
 }
 
 Expr *
-conjunction_simplification (const Expr *phi) 
+conjunction_simplification (const Expr *phi)
 {
   if (!phi->is_ConjunctiveFormula ())
     return NULL;
@@ -150,7 +150,7 @@ conjunction_simplification (const Expr *phi)
     result = conj->get_arg2 ()->ref ();
   else if (conj->get_arg2 ()->is_TrueFormula ())
     result = conj->get_arg1 ()->ref ();
-  else if (conj->get_arg1 ()->is_FalseFormula () || 
+  else if (conj->get_arg1 ()->is_FalseFormula () ||
 	   conj->get_arg1 ()->is_FalseFormula ())
     result = Constant::False ();
 
@@ -158,7 +158,7 @@ conjunction_simplification (const Expr *phi)
 }
 
 Expr *
-disjunction_simplification (const Expr *phi) 
+disjunction_simplification (const Expr *phi)
 {
   if (!phi->is_DisjunctiveFormula ())
     return NULL;
@@ -173,14 +173,14 @@ disjunction_simplification (const Expr *phi)
     result = disj->get_arg2 ()->ref ();
   else if (disj->get_arg2 ()->is_FalseFormula ())
     result = disj->get_arg1 ()->ref ();
-  else if (disj->get_arg1 ()->is_TrueFormula () || 
+  else if (disj->get_arg1 ()->is_TrueFormula () ||
 	   disj->get_arg1 ()->is_TrueFormula ())
     result = Constant::True ();
-    
+
   return result;
 }
 
-Expr * 
+Expr *
 and_and_rule (const Expr *phi)
 {
   if (!phi->is_ConjunctiveFormula ())
@@ -193,21 +193,21 @@ and_and_rule (const Expr *phi)
     return NULL;
 
   BinaryApp *arg1 = dynamic_cast <BinaryApp *> (conj->get_arg1 ());
-  assert (arg1 != NULL);  
+  assert (arg1 != NULL);
   // (arg1.1 and  arg1.2) and  arg2 --> arg1.1 and  (arg1.2 and  arg2)
   if (arg1->get_arg1 ()->get_bv_size () == conj->get_arg2 ()->get_bv_size () &&
       arg1->get_arg2 ()->get_bv_size () == conj->get_arg2 ()->get_bv_size ())
     {
-      result = BinaryApp::createLAnd (arg1->get_arg2 ()->ref (), 
+      result = BinaryApp::createLAnd (arg1->get_arg2 ()->ref (),
 				      conj->get_arg2 ()->ref ());
-      result = BinaryApp::createLAnd (arg1->get_arg1 ()->ref (), 
+      result = BinaryApp::createLAnd (arg1->get_arg1 ()->ref (),
 				      result);
     }
 
   return result;
 }
 
-Expr * 
+Expr *
 or_or_rule (const Expr *phi)
 {
   if (!phi->is_DisjunctiveFormula ())
@@ -220,22 +220,22 @@ or_or_rule (const Expr *phi)
     return NULL;
 
   BinaryApp *arg1 = dynamic_cast <BinaryApp *> (disj->get_arg1 ());
-  assert (arg1 != NULL);  
+  assert (arg1 != NULL);
   // (arg1.1 or  arg1.2) or  arg2 --> arg1.1 or  (arg1.2 or  arg2)
 
   if (arg1->get_arg1 ()->get_bv_size () == disj->get_arg2 ()->get_bv_size () &&
       arg1->get_arg2 ()->get_bv_size () == disj->get_arg2 ()->get_bv_size ())
-    {      
-      result = BinaryApp::createLOr (arg1->get_arg2 ()->ref (), 
+    {
+      result = BinaryApp::createLOr (arg1->get_arg2 ()->ref (),
 				     disj->get_arg2 ()->ref ());
-      result = BinaryApp::createLOr (arg1->get_arg1 ()->ref (), 
+      result = BinaryApp::createLOr (arg1->get_arg1 ()->ref (),
 				     result);
     }
 
   return result;
 }
 
-Expr * 
+Expr *
 not_decrease (const Expr *phi)
 {
   if (!phi->is_NegationFormula ())
@@ -309,32 +309,32 @@ disjunctive_normal_form_rule (const Expr *phi)
   return result;
 }
 
-static bool 
+static bool
 s_phi_and_not_phi (const Expr *a1, const Expr *a2)
 {
-  if (a1->is_NegationFormula () && 
+  if (a1->is_NegationFormula () &&
       ((UnaryApp *) a1)->get_arg1 () == a2)
     return true;
 
-  if (a2->is_NegationFormula () && 
+  if (a2->is_NegationFormula () &&
       ((UnaryApp *) a2)->get_arg1 () == a1)
     return true;
 
   return false;
 }
 
-Expr * 
+Expr *
 phi_and_not_phi_rule (const Expr *phi)
 {
   Expr *result = NULL;
   BinaryApp *ba = (BinaryApp *) phi;
 
-  if (phi->is_DisjunctiveFormula() && 
+  if (phi->is_DisjunctiveFormula() &&
       s_phi_and_not_phi (ba->get_arg1 (),ba->get_arg2 ()))
     result = Constant::True ();
-  else if (phi->is_ConjunctiveFormula() && 
+  else if (phi->is_ConjunctiveFormula() &&
 	   s_phi_and_not_phi (ba->get_arg1 (), ba->get_arg2 ()))
-    result = Constant::False (); 
+    result = Constant::False ();
 
   return result;
 }
@@ -346,11 +346,11 @@ compute_constants (const Expr *e)
   int offset = e->get_bv_offset ();
   int size = e->get_bv_size ();
 
-  if (e->is_UnaryApp ()) 
+  if (e->is_UnaryApp ())
     {
       const UnaryApp * ua = (const UnaryApp *) e;
       Expr * arg = ua->get_arg1();
-      if (arg->is_Constant()) 
+      if (arg->is_Constant())
 	{
 	  Constant * c = NULL;
 	  switch (ua->get_op())
@@ -368,12 +368,12 @@ compute_constants (const Expr *e)
 	}
     }
 
-  if (e->is_BinaryApp()) 
+  if (e->is_BinaryApp())
     {
       const BinaryApp * ba = (BinaryApp *) e;
       Expr * arg1 = ba->get_arg1();
       Expr * arg2 = ba->get_arg2();
-      if (arg1->is_Constant() && arg2->is_Constant()) 
+      if (arg1->is_Constant() && arg2->is_Constant())
 	{
 	  Constant * c = NULL;
 	  switch (ba->get_op())
@@ -390,13 +390,13 @@ compute_constants (const Expr *e)
 	}
     }
 
-  if (e->is_TernaryApp()) 
+  if (e->is_TernaryApp())
     {
       const TernaryApp * ta = (TernaryApp *) e;
       Expr * arg1 = ta->get_arg1();
       Expr * arg2 = ta->get_arg2();
       Expr * arg3 = ta->get_arg3();
-      if (arg1->is_Constant() && arg2->is_Constant() && arg3->is_Constant()) 
+      if (arg1->is_Constant() && arg2->is_Constant() && arg3->is_Constant())
 	{
 	  Constant * c = NULL;
 	  switch (ta->get_op())
@@ -427,8 +427,8 @@ void_operations (const Expr *e)
 
   BinaryOp op = ba->get_op();
 
-  if ((op == BV_OP_SUB || op == BV_OP_XOR) && 
-      ba->get_arg1 () == ba->get_arg2 ()) 
+  if ((op == BV_OP_SUB || op == BV_OP_XOR) &&
+      ba->get_arg1 () == ba->get_arg2 ())
     {
       result = Constant::create (0, ba->get_bv_offset(),  ba->get_bv_size());
     }
@@ -436,7 +436,7 @@ void_operations (const Expr *e)
   return result;
 }
 
-Expr * 
+Expr *
 bit_field_computation (const Expr *e)
 {
   Expr *result = NULL;
@@ -458,7 +458,7 @@ bit_field_computation (const Expr *e)
       v = v & mask;
       v = v >> c->get_bv_offset();
       result = Constant::create ((constant_t)v, 0,
-				 c->get_bv_size() - 
+				 c->get_bv_size() -
 				 c->get_bv_offset());
     }
 #endif
@@ -468,7 +468,7 @@ bit_field_computation (const Expr *e)
 static Expr *
 s_simplify_extract (const Expr *e)
 {
-  const TernaryApp *ta = dynamic_cast<const TernaryApp *> (e);  
+  const TernaryApp *ta = dynamic_cast<const TernaryApp *> (e);
 
   if (ta == NULL)
     return NULL;
@@ -479,15 +479,15 @@ s_simplify_extract (const Expr *e)
   if (o == NULL || s == NULL)
     return NULL;
 
-  if (o->get_val () == arg->get_bv_offset () && 
+  if (o->get_val () == arg->get_bv_offset () &&
       s->get_val () == arg->get_bv_size ())
     return arg->ref ();
 
   return NULL;
 }
 
-static Expr * 
-s_concat_extract_simplification (const Expr *cc, 
+static Expr *
+s_concat_extract_simplification (const Expr *cc,
 				 const Expr *op1, const Expr *op2)
 {
   const TernaryApp *ta1 = dynamic_cast<const TernaryApp *> (op1);
@@ -513,15 +513,15 @@ s_concat_extract_simplification (const Expr *cc,
       int offset = o2->get_val ();
       int size = s1->get_val () + s2->get_val ();
 
-      Expr *result = 
+      Expr *result =
 	TernaryApp::create (BV_OP_EXTRACT,
 			    arg->ref (),
 			    Constant::create (offset, 0, 32),
 			    Constant::create (size, 0, 32),
 			    0, size);
-      
+
       if (cc->get_bv_offset () != 0 || cc->get_bv_size () != size)
-	result = 
+	result =
 	  TernaryApp::create (BV_OP_EXTRACT,
 			      result,
 			      Constant::create (cc->get_bv_offset (), 0, 32),
@@ -534,7 +534,7 @@ s_concat_extract_simplification (const Expr *cc,
 
 static Expr *
 s_arithmetic_with_zero (const BinaryApp *e, const Expr *op1, const Expr *op2)
-{  
+{
   const Constant *c1 = dynamic_cast<const Constant *> (op1);
   const Constant *c2 = dynamic_cast<const Constant *> (op2);
 
@@ -562,14 +562,14 @@ s_arithmetic_with_zero (const BinaryApp *e, const Expr *op1, const Expr *op2)
       if (c1 && c1->get_val () == 0)
 	result = UnaryApp::create (BV_OP_NEG, op2->ref (), e->get_bv_offset (),
 				   e->get_bv_size ());
-      else if (c2 && c2->get_val () == 0 && 
+      else if (c2 && c2->get_val () == 0 &&
 	       e->get_bv_size () <= op1->get_bv_size ())
 	result = op1->extract_with_bit_vector_of (e);
     }
   return result;
 }
 
-Expr * 
+Expr *
 binary_operations_simplification (const Expr *e)
 {
   Expr *result = NULL;
@@ -597,13 +597,13 @@ binary_operations_simplification (const Expr *e)
     return NULL;
 
   //Nul element
-  if (((o->get_op () == BV_OP_ADD && op == BV_OP_SUB) || 
+  if (((o->get_op () == BV_OP_ADD && op == BV_OP_SUB) ||
        (o->get_op () == BV_OP_SUB && op == BV_OP_ADD)) &&
       o->get_arg2 () == arg2)
     {
-      if (ba->get_bv_offset () == 0 && 
+      if (ba->get_bv_offset () == 0 &&
 	  o->get_arg1 ()->get_bv_size () < ba->get_bv_size ())
-	result = BinaryApp::createExtend (BV_OP_EXTEND_S, 
+	result = BinaryApp::createExtend (BV_OP_EXTEND_S,
 					  o->get_arg1 ()->ref (),
 					  ba->get_bv_size ());
       else
@@ -614,7 +614,7 @@ binary_operations_simplification (const Expr *e)
       //Distributivity
       constant_t c1 = ((Constant *)arg2)->get_val();
       constant_t c2 = ((Constant *)o->get_arg2())->get_val();
-      if ((op == BV_OP_ADD && o->get_op() == BV_OP_ADD) || 
+      if ((op == BV_OP_ADD && o->get_op() == BV_OP_ADD) ||
 	  (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
@@ -622,16 +622,16 @@ binary_operations_simplification (const Expr *e)
 	  result = BinaryApp::create (op, arg1, arg2, ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
-      else if ((op == BV_OP_DIV_U && o->get_op() == BV_OP_DIV_U) || 
+      else if ((op == BV_OP_DIV_U && o->get_op() == BV_OP_DIV_U) ||
 	       (op == BV_OP_MUL_U && o->get_op() == BV_OP_MUL_U))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
 	  arg2 = Constant::create (c1 * c2, 0, arg1->get_bv_size ());
-	  result = BinaryApp::create (op, arg1, arg2, 
+	  result = BinaryApp::create (op, arg1, arg2,
 				      ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
-      else if ((op == BV_OP_ADD && o->get_op() == BV_OP_SUB) || 
+      else if ((op == BV_OP_ADD && o->get_op() == BV_OP_SUB) ||
 	       (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
@@ -642,11 +642,11 @@ binary_operations_simplification (const Expr *e)
 	    }
 	  else
 	    arg2 = Constant::create (c1 - c2, 0, arg1->get_bv_size ());
-	  result = BinaryApp::create (op, arg1, arg2, 
+	  result = BinaryApp::create (op, arg1, arg2,
 				      ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
-      else if ((op == BV_OP_SUB && o->get_op() == BV_OP_ADD) || 
+      else if ((op == BV_OP_SUB && o->get_op() == BV_OP_ADD) ||
 	       (op == BV_OP_SUB && o->get_op() == BV_OP_SUB))
 	{
 	  arg1 = (Expr *)o->get_arg1()->ref ();
@@ -657,31 +657,31 @@ binary_operations_simplification (const Expr *e)
 	    }
 	  else
 	    arg2 = Constant::create (c1 - c2, 0, arg1->get_bv_size ());
-	  result = BinaryApp::create (op, arg1, arg2, 
-				      ba->get_bv_offset(), 
+	  result = BinaryApp::create (op, arg1, arg2,
+				      ba->get_bv_offset(),
 				      ba->get_bv_size());
 	}
     }
-  
+
   return result;
 }
 
-Expr * 
+Expr *
 simplify_formula (const Expr *phi)
 {
   static FunctionRewritingRule::RewriteExprFunc *functions[] = {
-    cancel_lnot_not, 
-    simplify_expr, 
-    syntaxic_equality_rule, 
-    not_operator_on_constant, 
-    logical_negation_operator_on_constant, 
-    conjunction_simplification, 
-    disjunction_simplification, 
-    phi_and_not_phi_rule, 
+    cancel_lnot_not,
+    simplify_expr,
+    syntaxic_equality_rule,
+    not_operator_on_constant,
+    logical_negation_operator_on_constant,
+    conjunction_simplification,
+    disjunction_simplification,
+    phi_and_not_phi_rule,
     and_and_rule,
     or_or_rule,
-    
-    NULL 
+
+    NULL
   };
 
   FunctionRewritingRule::RewriteExprFunc **f;
@@ -693,7 +693,7 @@ simplify_formula (const Expr *phi)
 }
 
 /* (SHIFT (SHIFT arg n){o,s} m){o,s} --> (SHIFT arg n+m){o,s} */
-static Expr * 
+static Expr *
 s_cumulate_shifts (const Expr *phi)
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
@@ -709,30 +709,30 @@ s_cumulate_shifts (const Expr *phi)
   if (!(barg1 != NULL &&
 	barg1->get_op () == ba->get_op () &&
 	barg1->get_arg2 ()->is_Constant () &&
-	ba->get_bv_size () == barg1->get_bv_size () && 
+	ba->get_bv_size () == barg1->get_bv_size () &&
 	ba->get_bv_offset () == barg1->get_bv_offset ()))
     return NULL;
-  
-  constant_t s = 
+
+  constant_t s =
     dynamic_cast<const Constant *>(ba->get_arg2 ())->get_not_truncated_value();
-  s += 
+  s +=
     dynamic_cast<const Constant *>(barg1->get_arg2 ())->get_not_truncated_value();
 
-  
+
   Constant *shift = Constant::create (s, ba->get_arg2 ()->get_bv_offset (),
 				      ba->get_arg2 ()->get_bv_size ());
   return BinaryApp::create (ba->get_op (),
-			    barg1->get_arg1 ()->ref (), shift, 
+			    barg1->get_arg1 ()->ref (), shift,
 			    ba->get_bv_offset (), ba->get_bv_size ());
 }
 
 /* (AND a a){o,s} --> a {o,s} */
-static Expr * 
+static Expr *
 s_simplify_idempotent (const Expr *phi)
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *> (phi);
   Expr *result;
-  if (ba != NULL && 
+  if (ba != NULL &&
       (ba->get_op () == BV_OP_AND || ba->get_op () == BV_OP_OR) &&
       (ba->get_arg1 () == ba->get_arg2 ()))
     result = ba->get_arg1 ()->extract_bit_vector (ba->get_bv_offset (),
@@ -742,19 +742,19 @@ s_simplify_idempotent (const Expr *phi)
   return result;
 }
 
-Expr * 
+Expr *
 simplify_expr (const Expr *phi)
 {
   static FunctionRewritingRule::RewriteExprFunc *functions[] = {
-    compute_constants, 
-    void_operations, 
-    bit_field_computation, 
-    binary_operations_simplification,     
-    zero_shift_rule, 
-    s_simplify_extract, 
+    compute_constants,
+    void_operations,
+    bit_field_computation,
+    binary_operations_simplification,
+    zero_shift_rule,
+    s_simplify_extract,
     s_simplify_idempotent,
     s_cumulate_shifts,
-    NULL 
+    NULL
   };
 
   FunctionRewritingRule::RewriteExprFunc **f;

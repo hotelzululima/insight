@@ -59,10 +59,10 @@ public:
   virtual bool equal (const PatternMatching *other) const;
 
   static PatternMatching *match (const Expr *F,
-				 const Expr *pattern, 
+				 const Expr *pattern,
 				 const VarList &free_variables)
     throw (Failure);
-				 
+
 private:
   typedef Matching::iterator iterator;
   Matching matching;

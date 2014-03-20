@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -44,7 +44,7 @@ const std::string ExprSolver::DEBUG_TRACES_PROP = PROP_PREFIX + ".debug-traces";
 
 
 
-struct SolverModule 
+struct SolverModule
 {
   void (*init) (const ConfigTable &cfg);
   const string & (*ident) ();
@@ -59,14 +59,14 @@ static SolverModule modules[] = {
 #if INTEGRATED_MATHSAT_SOLVER
   SOLVER_MODULE (ExprMathsatSolver),
 #endif
-  SOLVER_MODULE (ExprProcessSolver)  
+  SOLVER_MODULE (ExprProcessSolver)
 };
 
 static size_t nb_modules = sizeof (modules)/sizeof(modules[0]);
 
 static const ConfigTable *CONFIG = NULL;
 
-static SolverModule *default_solver () 
+static SolverModule *default_solver ()
 {
   SolverModule *result = NULL;
   string sname = CONFIG->get (ExprSolver::SOLVER_NAME_PROP);
@@ -83,7 +83,7 @@ static SolverModule *default_solver ()
 bool ExprSolver::debug_traces = false;
 
 
-void 
+void
 ExprSolver::init (const ConfigTable &cfg)
   throw (UnknownSolverException)
 {
@@ -94,17 +94,17 @@ ExprSolver::init (const ConfigTable &cfg)
     modules[i].init (cfg);
 }
 
-void 
+void
 ExprSolver::terminate ()
 {
   for (size_t i = 0; i < nb_modules; i++)
     modules[i].terminate ();
 }
-  
+
 ExprSolver *
 ExprSolver::create_default_solver (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
-{  
+{
   return default_solver ()->instantiate (mca);
 }
 
@@ -116,8 +116,8 @@ ExprSolver::~ExprSolver ()
 {
 }
 
-Constant * 
-ExprSolver::evaluate (const Expr *e, const Expr *context) 
+Constant *
+ExprSolver::evaluate (const Expr *e, const Expr *context)
   throw (UnexpectedResponseException)
 {
   std::vector<constant_t> *values = evaluate (e, context, 2);
@@ -143,17 +143,17 @@ ExprSolver::evaluate (const Expr *e, const Expr *context)
 }
 
 std::vector<constant_t> *
-ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values) 
+ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values)
   throw (UnexpectedResponseException)
 {
   std::vector<constant_t> *result = new std::vector<constant_t> ();
-  if (nb_values == 0)   
+  if (nb_values == 0)
     return result;
 
-  if (debug_traces)    
-    BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " with context " + 
+  if (debug_traces)
+    BEGIN_DBG_BLOCK ("evaluate : " + e->to_string () + " with context " +
 		     context->to_string ());
-  
+
   Variable *var = Variable::create ("_unk", e->get_bv_size ());
   Expr *phi = Expr::createLAnd (Expr::createEquality (var->ref (), e->ref ()),
 				context->ref ( ));
@@ -170,7 +170,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values)
 
 	  result->push_back (c->get_val ());
 	  Expr *nc = Expr::createDisequality (var->ref (), c->ref ());
-	  add_assertion (nc);	   
+	  add_assertion (nc);
 	  nc->deref ();
 	  c->deref ();
 	  nb_values--;
@@ -181,7 +181,7 @@ ExprSolver::evaluate (const Expr *e, const Expr *context, int nb_values)
       phi->deref ();
     }
 
-  pop ();  
+  pop ();
   var->deref ();
   if (debug_traces)
     END_DBG_BLOCK ();

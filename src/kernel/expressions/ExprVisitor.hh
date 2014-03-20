@@ -31,17 +31,17 @@
 #ifndef KERNEL_EXPRESSIONS_EXPRVISITOR_HH
 #define KERNEL_EXPRESSIONS_EXPRVISITOR_HH
 
-class Constant; 
-class RandomValue; 
-class Variable; 
-class UnaryApp; 
-class BinaryApp; 
-class TernaryApp; 
-class MemCell; 
-class RegisterExpr; 
-class QuantifiedExpr; 
+class Constant;
+class RandomValue;
+class Variable;
+class UnaryApp;
+class BinaryApp;
+class TernaryApp;
+class MemCell;
+class RegisterExpr;
+class QuantifiedExpr;
 
-class ExprVisitor 
+class ExprVisitor
 {
 protected :
   ExprVisitor () { }
@@ -49,18 +49,18 @@ protected :
 public :
   virtual ~ExprVisitor () { }
 
-  virtual void visit (Constant *) { } 
+  virtual void visit (Constant *) { }
   virtual void visit (RandomValue *) = 0;
-  virtual void visit (Variable *) { } 
+  virtual void visit (Variable *) { }
   virtual void visit (UnaryApp *) { }
-  virtual void visit (BinaryApp *) { } 
-  virtual void visit (TernaryApp *) { } 
+  virtual void visit (BinaryApp *) { }
+  virtual void visit (TernaryApp *) { }
   virtual void visit (MemCell *) { }
   virtual void visit (RegisterExpr *) { }
   virtual void visit (QuantifiedExpr *) { }
-};  
+};
 
-class ConstExprVisitor 
+class ConstExprVisitor
 {
 protected :
   ConstExprVisitor () { }
@@ -68,15 +68,15 @@ protected :
 public :
   virtual ~ConstExprVisitor () { }
 
-  virtual void visit (const Constant *) { } 
+  virtual void visit (const Constant *) { }
   virtual void visit (const RandomValue *) = 0;
-  virtual void visit (const Variable *) { } 
+  virtual void visit (const Variable *) { }
   virtual void visit (const UnaryApp *) { }
-  virtual void visit (const BinaryApp *) { } 
-  virtual void visit (const TernaryApp *) { } 
+  virtual void visit (const BinaryApp *) { }
+  virtual void visit (const TernaryApp *) { }
   virtual void visit (const MemCell *) { }
   virtual void visit (const RegisterExpr *) { }
   virtual void visit (const QuantifiedExpr *) { }
-};  
+};
 
 #endif /* KERNEL_EXPRESSIONS_EXPRVISITOR_HH */

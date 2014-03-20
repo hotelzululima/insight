@@ -46,13 +46,13 @@ private:
 
   PatternMatching *result;
 
-public: 
-  PatternMatchingVisitor (const Expr *form, 
+public:
+  PatternMatchingVisitor (const Expr *form,
 			  const VarList &FV)
-    : F (form), free_variables (FV), result (NULL) { 
-  } 
-  
-  virtual ~PatternMatchingVisitor () { 
+    : F (form), free_variables (FV), result (NULL) {
+  }
+
+  virtual ~PatternMatchingVisitor () {
   }
 
   PatternMatching *get_result () {
@@ -63,8 +63,8 @@ public:
     const Constant *pe = dynamic_cast<const Constant *> (F);
 
     if (pe == NULL ||
-	pe->get_bv_offset() != C->get_bv_offset() || 
-	pe->get_bv_size() != C->get_bv_size() || 
+	pe->get_bv_offset() != C->get_bv_offset() ||
+	pe->get_bv_size() != C->get_bv_size() ||
 	pe != C)
       throw PatternMatching::Failure ();
 
@@ -75,8 +75,8 @@ public:
     const RandomValue *pe = dynamic_cast<const RandomValue *> (F);
 
     if (pe == NULL ||
-	pe->get_bv_offset() != C->get_bv_offset() || 
-	pe->get_bv_size() != C->get_bv_size() || 
+	pe->get_bv_offset() != C->get_bv_offset() ||
+	pe->get_bv_size() != C->get_bv_size() ||
 	pe != C)
       throw PatternMatching::Failure ();
 
@@ -89,7 +89,7 @@ public:
     if (find(free_variables.begin(),
 	     free_variables.end(), V) != free_variables.end())
       {
-	result = new PatternMatching (); 
+	result = new PatternMatching ();
 	result->set (V, F->ref ());
       }
     else if (ve == V)
@@ -110,27 +110,27 @@ public:
 	pe->get_bv_size () != E->get_bv_size () ||
 	pe->get_op () != E->get_op ())
       throw PatternMatching::Failure ();
-    
-    result = PatternMatching::match (pe->get_arg1 (), E->get_arg1 (), 
+
+    result = PatternMatching::match (pe->get_arg1 (), E->get_arg1 (),
 				     free_variables);
   }
 
   virtual void visit (const BinaryApp *E) {
     const BinaryApp *pe = dynamic_cast<const BinaryApp *> (F);
 
-    if (pe == NULL || 
+    if (pe == NULL ||
 	pe->get_bv_offset () != E->get_bv_offset () ||
 	pe->get_bv_size () != E->get_bv_size () ||
 	pe->get_op () != E->get_op ())
       throw PatternMatching::Failure ();
 
-    PatternMatching *pm1 = 
+    PatternMatching *pm1 =
       PatternMatching::match (pe->get_arg1 (), E->get_arg1 (), free_variables);
 
     try
       {
-	PatternMatching *pm2 = 
-	  PatternMatching::match (pe->get_arg2 (), E->get_arg2 (), 
+	PatternMatching *pm2 =
+	  PatternMatching::match (pe->get_arg2 (), E->get_arg2 (),
 				  free_variables);
 	pm1->merge (pm2);
 	delete pm2;
@@ -147,28 +147,28 @@ public:
   virtual void visit (const TernaryApp *E) {
     const TernaryApp *pe = dynamic_cast<const TernaryApp *> (F);
 
-    if (pe == NULL || 
+    if (pe == NULL ||
 	pe->get_bv_offset () != E->get_bv_offset () ||
 	pe->get_bv_size () != E->get_bv_size () ||
 	pe->get_op () != E->get_op ())
       throw PatternMatching::Failure ();
 
-    PatternMatching *pm1 = 
+    PatternMatching *pm1 =
       PatternMatching::match (pe->get_arg1 (), E->get_arg1 (), free_variables);
     try
       {
-	PatternMatching *pm = 
-	  PatternMatching::match (pe->get_arg2 (), E->get_arg2 (), 
+	PatternMatching *pm =
+	  PatternMatching::match (pe->get_arg2 (), E->get_arg2 (),
 				  free_variables);
 	pm1->merge (pm);
 	delete pm;
 
-	pm = PatternMatching::match (pe->get_arg3 (), E->get_arg3 (), 
+	pm = PatternMatching::match (pe->get_arg3 (), E->get_arg3 (),
 				     free_variables);
 
 	pm1->merge (pm);
 	delete pm;
-	    
+
 	result = pm1;
       }
     catch (PatternMatching::Failure &)
@@ -185,21 +185,21 @@ public:
 	pe->get_bv_offset() != E->get_bv_offset() ||
 	pe->get_bv_size() != E->get_bv_size())
       throw PatternMatching::Failure ();
-    
-    result = PatternMatching::match (pe->get_addr(), E->get_addr(), 
+
+    result = PatternMatching::match (pe->get_addr(), E->get_addr(),
 				     free_variables);
   }
 
   virtual void visit (const RegisterExpr *E) {
     const RegisterExpr *pe = dynamic_cast<const RegisterExpr *> (F);
 
-    if (pe == NULL || 
-	pe->get_bv_offset() != E->get_bv_offset() || 
-	pe->get_bv_size() != E->get_bv_size() || 
+    if (pe == NULL ||
+	pe->get_bv_offset() != E->get_bv_offset() ||
+	pe->get_bv_size() != E->get_bv_size() ||
 	pe != E)
       throw PatternMatching::Failure ();
 
-    result = new PatternMatching ();  
+    result = new PatternMatching ();
   }
 
   virtual void visit (const QuantifiedExpr *E) {
@@ -211,14 +211,14 @@ public:
     if (E->get_variable () != qf->get_variable ())
       throw PatternMatching::Failure();
 
-    result = PatternMatching::match (qf->get_body (), E->get_body (), 
+    result = PatternMatching::match (qf->get_body (), E->get_body (),
 				     free_variables);
   }
 };
 
 			/* --------------- */
 
-PatternMatching::PatternMatching () : matching () 
+PatternMatching::PatternMatching () : matching ()
 {
 }
 
@@ -228,7 +228,7 @@ PatternMatching::~PatternMatching ()
     i->second->deref ();
 }
 
-void 
+void
 PatternMatching::merge (const PatternMatching *other)
 {
   for (const_iterator i = other->begin(); i != other->end(); i++)
@@ -253,7 +253,7 @@ PatternMatching::has (const Variable *v) const
   return (p != matching.end ());
 }
 
-void 
+void
 PatternMatching::set (const Variable *v, Expr *F)
 {
   iterator p = matching.find (v);
@@ -266,8 +266,8 @@ PatternMatching::set (const Variable *v, Expr *F)
   matching[v] = F;
 }
 
-void 
-PatternMatching::output_text (std::ostream &out) const 
+void
+PatternMatching::output_text (std::ostream &out) const
 {
   if (matching.size () == 0)
     out << "empty pattern matching" << endl;
@@ -278,32 +278,32 @@ PatternMatching::output_text (std::ostream &out) const
     }
 }
 
-PatternMatching::const_iterator 
+PatternMatching::const_iterator
 PatternMatching::begin() const
 {
   return matching.begin ();
 }
 
-PatternMatching::const_iterator 
+PatternMatching::const_iterator
 PatternMatching::end() const
 {
   return matching.end ();
 }
 
-bool 
+bool
 PatternMatching::equal (const PatternMatching *other) const
 {
   bool result = matching.size () == other->matching.size ();
 
   for (const_iterator i = begin (); i != end () && result; i++)
-    result = (other->has (i->first) && 
+    result = (other->has (i->first) &&
 	      get (i->first) == other->get (i->first));
 
   return result;
 }
 
-PatternMatching * 
-PatternMatching::match (const Expr *F, const Expr *pattern, 
+PatternMatching *
+PatternMatching::match (const Expr *F, const Expr *pattern,
 			const VarList &free_variables)
   throw (Failure)
 {

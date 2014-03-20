@@ -33,11 +33,11 @@
 #include <kernel/expressions/exprutils.hh>
 #include <kernel/expressions/BottomUpRewritePatternRule.hh>
 
-BottomUpRewritePatternRule::BottomUpRewritePatternRule (const Expr *p, 
-							const VarList &fv, 
+BottomUpRewritePatternRule::BottomUpRewritePatternRule (const Expr *p,
+							const VarList &fv,
 							const Expr *v)
   : pattern (p), free_variables (fv), value (v)
-{  
+{
 }
 
 BottomUpRewritePatternRule::~BottomUpRewritePatternRule ()
@@ -51,15 +51,15 @@ BottomUpRewritePatternRule::rewrite (const Expr *phi)
 
   try
     {
-      PatternMatching *vm = 
+      PatternMatching *vm =
 	PatternMatching::match (phi, pattern, free_variables);
-            
+
       Expr *value_cpy = value->ref ();
       for (PatternMatching::const_iterator p = vm->begin(); p != vm->end(); p++)
-	exprutils::replace_variable_and_assign (&value_cpy, p->first, 
+	exprutils::replace_variable_and_assign (&value_cpy, p->first,
 						p->second);
       delete vm;
-      
+
       result = value_cpy;
     }
   catch (PatternMatching::Failure &)

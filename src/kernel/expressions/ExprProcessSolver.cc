@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -67,25 +67,25 @@ ExprProcessSolver::ident ()
   return SOLVER_NAME;
 }
 
-void 
+void
 ExprProcessSolver::init (const ConfigTable &cfg)
 {
   CONFIG = &cfg;
 }
 
-void 
+void
 ExprProcessSolver::terminate ()
 {
   CONFIG = NULL;
 }
 
-static string 
+static string
 s_solver_command ()
 {
   return CONFIG->get (ExprProcessSolver::COMMAND_PROP);
 }
 
-static std::vector<std::string> 
+static std::vector<std::string>
 s_solver_args ()
 {
   std::vector<std::string> result;
@@ -105,7 +105,7 @@ s_solver_args ()
       string tmp = args.substr (0, p );
       if (! tmp.empty ())
 	result.push_back (tmp);
-    
+
       args = args.substr (p + 1, string::npos);
     }
 
@@ -116,14 +116,14 @@ static bool
 s_create_pipe (const std::string &cmd, const vector<string> &args,
 	       FILE **rwstreams, pid_t *p_cpid);
 
-ExprProcessSolver::ExprProcessSolver (const MicrocodeArchitecture *mca, 
-				      const string &cmd, 
+ExprProcessSolver::ExprProcessSolver (const MicrocodeArchitecture *mca,
+				      const string &cmd,
 				      istream *r, ostream *w, pid_t cpid)
   : ExprSolver (mca), command (cmd), in (r), out (w), childpid (cpid)
 {
 }
 
-ExprSolver * 
+ExprSolver *
 ExprProcessSolver::create (const MicrocodeArchitecture *mca)
   throw (UnexpectedResponseException, UnknownSolverException)
 {
@@ -153,21 +153,21 @@ ExprProcessSolver::create (const MicrocodeArchitecture *mca)
 	}
     }
 
-  return result;      
+  return result;
 }
 
 ExprProcessSolver::~ExprProcessSolver ()
 {
   kill (childpid, SIGTERM);
-  
+
   delete in->rdbuf ();
   delete out->rdbuf ();
   delete in;
   delete out;
 }
 
-ExprSolver::Result 
-ExprProcessSolver::check_sat (const Expr *e, bool preserve) 
+ExprSolver::Result
+ExprProcessSolver::check_sat (const Expr *e, bool preserve)
   throw (UnexpectedResponseException)
 {
   if (debug_traces)
@@ -175,32 +175,32 @@ ExprProcessSolver::check_sat (const Expr *e, bool preserve)
   if (preserve)
     push ();
   ExprSolver::Result result = ExprSolver::UNKNOWN;
-    
+
   declare_variable (e);
 
   if (debug_traces)
     {
       logs::debug << "(assert ";
-      smtlib_writer (logs::debug, e, MEMORY_VAR, 
-		     mca->get_address_size (), 
+      smtlib_writer (logs::debug, e, MEMORY_VAR,
+		     mca->get_address_size (),
 		     mca->get_endian (), true);
       logs::debug << ") " << endl;
     }
-  *out << "(assert ";  
-  smtlib_writer (*out, e, MEMORY_VAR, mca->get_address_size (), 
+  *out << "(assert ";
+  smtlib_writer (*out, e, MEMORY_VAR, mca->get_address_size (),
 		 mca->get_endian (), true);
   *out << ") " << endl;
 
   if (read_status ())
     {
       string res = exec_command ("(check-sat)");
-      if (res == "sat") 
+      if (res == "sat")
 	result = ExprSolver::SAT;
-      else if (res == "unsat") 
+      else if (res == "unsat")
 	result = ExprSolver::UNSAT;
-      else if (res == "unknown") 
+      else if (res == "unknown")
 	result = ExprSolver::UNKNOWN;
-      else 
+      else
 	throw UnexpectedResponseException ("check-sat: " + res);
       if (debug_traces)
 	logs::debug << res << endl;
@@ -214,43 +214,43 @@ ExprProcessSolver::check_sat (const Expr *e, bool preserve)
   return result;
 }
 
-void 
+void
 ExprProcessSolver::add_assertion (const Expr *e)
-  throw (UnexpectedResponseException) 
+  throw (UnexpectedResponseException)
 {
   if (debug_traces)
     {
       logs::debug << "(assert ";
-      smtlib_writer (logs::debug, e, MEMORY_VAR, 
-		     mca->get_address_size (), 
+      smtlib_writer (logs::debug, e, MEMORY_VAR,
+		     mca->get_address_size (),
 		     mca->get_endian (), true);
       logs::debug << ") " << endl;
     }
 
-  *out << "(assert ";  
-  smtlib_writer (*out, e, MEMORY_VAR, mca->get_address_size (), 
+  *out << "(assert ";
+  smtlib_writer (*out, e, MEMORY_VAR, mca->get_address_size (),
 		 mca->get_endian (), true);
   *out << ") " << endl;
 
   if (! read_status ())
-    throw UnexpectedResponseException ("error while adding assertion" + 
+    throw UnexpectedResponseException ("error while adding assertion" +
 				       e->to_string ());
 }
 
-ExprSolver::Result 
+ExprSolver::Result
 ExprProcessSolver::check_sat ()
   throw (UnexpectedResponseException)
 {
   ExprSolver::Result result = UNKNOWN;
 
   string res = exec_command ("(check-sat)");
-  if (res == "sat") 
+  if (res == "sat")
     result = ExprSolver::SAT;
-  else if (res == "unsat") 
+  else if (res == "unsat")
     result = ExprSolver::UNSAT;
-  else if (res == "unknown") 
+  else if (res == "unknown")
     result = ExprSolver::UNKNOWN;
-  else 
+  else
     throw UnexpectedResponseException ("check-sat: " + res);
 
   return result;
@@ -262,13 +262,13 @@ ExprProcessSolver::init () throw (UnexpectedResponseException)
   return write_header ();
 }
 
-string 
+string
 ExprProcessSolver::exec_command (const std::string &s)
 {
   return exec_command (s.c_str ());
 }
 
-string 
+string
 ExprProcessSolver::exec_command (const char *s)
 {
   if (debug_traces)
@@ -279,7 +279,7 @@ ExprProcessSolver::exec_command (const char *s)
   return get_result ();
 }
 
-bool 
+bool
 ExprProcessSolver::send_command (const char *s, bool allow_unsupported)
 {
   if (debug_traces)
@@ -290,7 +290,7 @@ ExprProcessSolver::send_command (const char *s, bool allow_unsupported)
   return read_status (allow_unsupported);
 }
 
-bool 
+bool
 ExprProcessSolver::send_command (const std::string &s, bool allow_unsupported)
 {
   return send_command (s.c_str (), allow_unsupported);
@@ -306,7 +306,7 @@ ExprProcessSolver::write_header ()
 	  send_command ("(set-logic QF_AUFBV) "));
 }
 
-bool 
+bool
 ExprProcessSolver::read_status (bool allow_unsupported)
   throw (UnexpectedResponseException)
 {
@@ -320,7 +320,7 @@ ExprProcessSolver::read_status (bool allow_unsupported)
   throw UnexpectedResponseException ("read-status: " + st);
 }
 
-bool 
+bool
 ExprProcessSolver::declare_variable (const Expr *e)
 {
   typedef unordered_set<const Expr *> ExprSet;
@@ -331,7 +331,7 @@ ExprProcessSolver::declare_variable (const Expr *e)
 	<< "(_ BitVec " << mca->get_address_size () << " ) "
        << "(_ BitVec 8 ) "
 	<< ")) ";
-    if (! send_command (oss.str ()))      
+    if (! send_command (oss.str ()))
       return false;
   }
 
@@ -343,9 +343,9 @@ ExprProcessSolver::declare_variable (const Expr *e)
       ostringstream oss;
       assert (v != NULL);
       oss << "(declare-fun " << v->get_id () << " () "
-	  << "(_ BitVec " << v->get_bv_size () << ") " 
-	  << ") ";	  
-      if (! send_command (oss.str ()))      
+	  << "(_ BitVec " << v->get_bv_size () << ") "
+	  << ") ";
+      if (! send_command (oss.str ()))
 	return false;
     }
 
@@ -358,23 +358,23 @@ ExprProcessSolver::declare_variable (const Expr *e)
       assert (reg != NULL);
 
       const RegisterDesc *regdesc = reg->get_descriptor ();
-      
+
       if (! (cache.find (regdesc) == cache.end ()))
 	continue;
-      
+
       assert (! regdesc->is_alias ());
       ostringstream oss;
       oss << "(declare-fun " << regdesc->get_label () << " () "
-	  << "(_ BitVec " << regdesc->get_register_size () << ") " 
+	  << "(_ BitVec " << regdesc->get_register_size () << ") "
 	  << ") ";
-      if (! send_command (oss.str ()))      
+      if (! send_command (oss.str ()))
 	return false;
       cache.insert (regdesc);
     }
   return true;
 }
 
-string 
+string
 ExprProcessSolver::get_result ()
 {
   string result;
@@ -383,7 +383,7 @@ ExprProcessSolver::get_result ()
   return result;
 }
 
-void 
+void
 ExprProcessSolver::push ()
   throw (UnexpectedResponseException)
 {
@@ -391,7 +391,7 @@ ExprProcessSolver::push ()
     throw UnexpectedResponseException ("push: failure");
 }
 
-void 
+void
 ExprProcessSolver::pop ()
   throw (UnexpectedResponseException)
 {
@@ -412,19 +412,19 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
     {
       if (st == RFP)
 	{
-	  if (*c == '(') 
+	  if (*c == '(')
 	    st = RSP;
 	  else if (! isspace (*c))
-	    return false;	    
-	}	 
+	    return false;
+	}
       else if (st == RSP)
 	{
-	  if (*c == '(') 
+	  if (*c == '(')
 	    st = RE;
 	  else if (*c == ')')
 	    break;
 	  else if (! isspace (*c))
-	    return false;	    
+	    return false;
 	}
       else if (st == RE)
 	{
@@ -458,7 +458,7 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
 	      if (pos.empty ())
 		{
 		  st = RV;
-		  couple.first = line.substr (spos, i - spos + 1);  
+		  couple.first = line.substr (spos, i - spos + 1);
 		}
 	    }
 	}
@@ -517,14 +517,14 @@ s_parse_result_line (const string &line, vector< pair<string,string> > &result)
   return ! result.empty ();
 }
 
-Constant * 
+Constant *
 ExprProcessSolver::get_value_of (const Expr *e)
   throw (UnexpectedResponseException)
 {
   Constant *result = NULL;
   ostringstream oss;
   oss << "(get-value (";
-  smtlib_writer (oss, e, MEMORY_VAR, mca->get_address_size (), 
+  smtlib_writer (oss, e, MEMORY_VAR, mca->get_address_size (),
 		 mca->get_endian (), false);
   oss << "))";
 
@@ -542,7 +542,7 @@ ExprProcessSolver::get_value_of (const Expr *e)
 	      value[0] = '0';
 	      Constant *c = (Constant *) expr_parser (value, mca);
 	      assert (c->is_Constant ());
-	      result = Constant::create (c->get_val (), 0, 
+	      result = Constant::create (c->get_val (), 0,
 					 e->get_bv_size ());
 	      c->deref ();
 	    }
@@ -574,7 +574,7 @@ ExprProcessSolver::get_value_of (const Expr *e)
 }
 
 
-static bool 
+static bool
 s_create_pipe (const std::string &cmd, const vector<string> &args,
 	       FILE **rwstreams, pid_t *p_cpid)
 {
@@ -586,22 +586,22 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
       perror ("can't create pipe to solver");
       return false;
     }
-  
+
   pid_t cpid = fork();
-  if (cpid == -1) 
+  if (cpid == -1)
     {
       perror ("fork to solver");
       return false;
     }
 
-  if (cpid == 0) 
+  if (cpid == 0)
     {
       int fid;
       setpgid (0, 0);
 
       /* Child code */
       close (parent_child_pipe[1]); // close write part of P --> C
-      close (child_parent_pipe[0]); // close read part of C --> P      
+      close (child_parent_pipe[0]); // close read part of C --> P
       close (0); // close stdin
       fid = dup (parent_child_pipe[0]); // associate read part of P --> C to stdin
       if (fid < 0)
@@ -628,8 +628,8 @@ s_create_pipe (const std::string &cmd, const vector<string> &args,
       tmp[nb_args + 1] = NULL;
       if (execvp (cmd.c_str (), tmp) < 0)
 	kill (getppid (), SIGCHLD);
-    } 
-  else 
+    }
+  else
     {
       /* Parent code */
       *p_cpid = cpid;

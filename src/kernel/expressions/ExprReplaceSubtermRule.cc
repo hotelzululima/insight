@@ -45,7 +45,7 @@ ExprReplaceSubtermRule::~ExprReplaceSubtermRule ()
 Expr *
 ExprReplaceSubtermRule::rewrite (const Expr *phi)
 {
-  if (phi == pattern) 
+  if (phi == pattern)
     return value->ref ();
   return phi->ref ();
 }

@@ -35,7 +35,7 @@
 
 class Expr;
 
-class ExprRewritingRule : public ConstExprVisitor 
+class ExprRewritingRule : public ConstExprVisitor
 {
 
 protected:

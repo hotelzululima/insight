@@ -43,22 +43,22 @@ namespace exprutils
   typedef std::list<const Variable *> VarList;
 
   extern Expr *
-  replace_subterm (const Expr *F, 
+  replace_subterm (const Expr *F,
 		   const Expr *pattern, const Expr *value);
 
-  extern Expr * 
-  replace_variable (const Expr *F, 
+  extern Expr *
+  replace_variable (const Expr *F,
 		    const Variable *v, const Expr *value);
 
-  extern bool 
-  replace_variable_and_assign (Expr **phi, 
+  extern bool
+  replace_variable_and_assign (Expr **phi,
 			       const Variable *v, const Expr *value);
 
 
   extern Expr *
   bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r);
 
-  extern bool 
+  extern bool
   bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r);
 
   extern Expr *
@@ -66,8 +66,8 @@ namespace exprutils
 			     const Expr *pattern,
 			     const VarList &free_variables,
 			     const Expr *value);
-  
-  extern bool 
+
+  extern bool
   bottom_up_rewrite_pattern_and_assign (Expr **phi,
 					const Expr *pattern,
 					const VarList &free_variables,
@@ -84,12 +84,12 @@ namespace exprutils
 
   template <typename ContainerType, typename ExprType>
   ContainerType
-  collect_subterms_of_type (const Expr *F, bool eliminate_duplicate);  
+  collect_subterms_of_type (const Expr *F, bool eliminate_duplicate);
 
-  /* return the matchin of var_id if 'this' matchs phi. Or NULL if 'this' does 
+  /* return the matchin of var_id if 'this' matchs phi. Or NULL if 'this' does
      not match phi. */
-  extern Expr * 
-  extract_v_pattern (std::string var_id, const Expr *phi, 
+  extern Expr *
+  extract_v_pattern (std::string var_id, const Expr *phi,
 		     const Expr *pattern);
 
   extern std::vector<const Expr *> *

@@ -35,61 +35,61 @@
 # include <kernel/expressions/FunctionRewritingRule.hh>
 
 extern void
-rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func, 
+rewrite_in_place (FunctionRewritingRule::RewriteExprFunc *func,
 		  Expr **pF);
-  
-extern Expr * 
+
+extern Expr *
 syntaxic_equality_rule (const Expr *phi);
 
-extern Expr * 
+extern Expr *
 zero_shift_rule (const Expr *phi);
 
-extern Expr * 
+extern Expr *
 not_operator_on_constant (const Expr *phi);
-  
-extern Expr * 
+
+extern Expr *
 cancel_lnot_not (const Expr *phi) ;
-  
-extern Expr * 
+
+extern Expr *
 logical_negation_operator_on_constant (const Expr *phi);
-  
+
 extern Expr *
 conjunction_simplification (const Expr *phi);
-  
+
 extern Expr *
 disjunction_simplification (const Expr *phi);
-  
-extern Expr * 
+
+extern Expr *
 and_and_rule (const Expr *phi);
-  
-extern Expr * 
+
+extern Expr *
 or_or_rule (const Expr *phi);
-  
-extern Expr * 
+
+extern Expr *
 not_decrease (const Expr *phi);
-  
+
 extern Expr *
 disjunctive_normal_form_rule (const Expr *phi);
-  
-extern Expr * 
+
+extern Expr *
 phi_and_not_phi_rule (const Expr *phi);
-  
+
 extern Expr *
 compute_constants (const Expr *phi);
 
 extern Expr *
 void_operations (const Expr *phi);
 
-extern Expr * 
+extern Expr *
 bit_field_computation (const Expr *phi);
 
-extern Expr * 
+extern Expr *
 binary_operations_simplification (const Expr *phi);
 
-extern Expr * 
+extern Expr *
 simplify_formula (const Expr *phi);
 
-extern Expr * 
+extern Expr *
 simplify_expr (const Expr *phi);
 
 

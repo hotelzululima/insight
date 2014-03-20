@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -44,7 +44,7 @@ protected:
   std::ostream *out;
   pid_t childpid;
 
-  ExprProcessSolver (const MicrocodeArchitecture *mca, const std::string &cmd, 
+  ExprProcessSolver (const MicrocodeArchitecture *mca, const std::string &cmd,
 		     std::istream *r, std::ostream *w, pid_t cpid);
 
 public:
@@ -70,9 +70,9 @@ public:
   virtual void add_assertion (const Expr *e)
     throw (UnexpectedResponseException);
 
-  virtual void push () 
+  virtual void push ()
     throw (UnexpectedResponseException);
-  virtual void pop () 
+  virtual void pop ()
     throw (UnexpectedResponseException);
   virtual Constant *get_value_of (const Expr *var)
     throw (UnexpectedResponseException);

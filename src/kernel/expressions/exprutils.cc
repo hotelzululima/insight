@@ -41,7 +41,7 @@
 using namespace exprutils;
 
 Expr *
-exprutils::replace_subterm (const Expr *F, const Expr *pattern, 
+exprutils::replace_subterm (const Expr *F, const Expr *pattern,
 			       const Expr *value)
 {
   ExprReplaceSubtermRule r (pattern, value);
@@ -50,16 +50,16 @@ exprutils::replace_subterm (const Expr *F, const Expr *pattern,
   return r.get_result ();
 }
 
-Expr * 
-exprutils::replace_variable (const Expr *F, 
+Expr *
+exprutils::replace_variable (const Expr *F,
 				const Variable *v, const Expr *value)
 {
   return replace_subterm (F, v, value);
 }
 
-bool 
-exprutils::replace_variable_and_assign (Expr **phi, 
-					   const Variable *v, 
+bool
+exprutils::replace_variable_and_assign (Expr **phi,
+					   const Variable *v,
 					   const Expr *value)
 {
   Expr *F = replace_variable (*phi, v, value);
@@ -78,7 +78,7 @@ exprutils::bottom_up_rewrite (const Expr *phi, ExprRewritingRule &r)
   return r.get_result ();
 }
 
-bool 
+bool
 exprutils::bottom_up_rewrite_and_assign (Expr **phi, ExprRewritingRule &r)
 {
   Expr *new_phi = bottom_up_rewrite (*phi, r);
@@ -100,8 +100,8 @@ exprutils::bottom_up_rewrite_pattern (const Expr *phi,
 
   return exprutils::bottom_up_rewrite (phi, r);
 }
-  
-bool 
+
+bool
 exprutils::bottom_up_rewrite_pattern_and_assign (Expr **phi,
 						    const Expr *pattern,
 						    const VarList &fv,
@@ -152,12 +152,12 @@ exprutils::simplify (Expr **E)
   return result;
 }
 
-Expr * 
-exprutils::extract_v_pattern (std::string var_id, const Expr *phi, 
+Expr *
+exprutils::extract_v_pattern (std::string var_id, const Expr *phi,
 			      const Expr *pattern)
 {
   Expr *result = NULL;
-  Variable *v = Variable::create (var_id, Expr::get_bv_default_size()); 
+  Variable *v = Variable::create (var_id, Expr::get_bv_default_size());
   try
     {
       PatternMatching::VarList fv;
@@ -169,7 +169,7 @@ exprutils::extract_v_pattern (std::string var_id, const Expr *phi,
 	result = (Expr *) vm->get (v)->ref ();
       delete vm;
     }
-  catch (PatternMatching::Failure &) 
+  catch (PatternMatching::Failure &)
     {
     }
   v->deref ();

@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,7 +36,7 @@
 # include <kernel/Expressions.hh>
 # include <utils/ConfigTable.hh>
 
-class ExprSolver 
+class ExprSolver
 {
 public:
   class SolverException : public std::runtime_error {
@@ -47,14 +47,14 @@ public:
 
   class UnexpectedResponseException : public SolverException {
   public:
-    UnexpectedResponseException (const std::string &msg) 
+    UnexpectedResponseException (const std::string &msg)
       : SolverException (msg) {
     }
   };
 
   class UnknownSolverException : public SolverException {
   public:
-    UnknownSolverException (const std::string &msg) 
+    UnknownSolverException (const std::string &msg)
       : SolverException (msg) {
     }
   };
@@ -71,28 +71,28 @@ public:
     throw (UnexpectedResponseException, UnknownSolverException);
 
   enum Result { SAT, UNSAT, UNKNOWN };
- 
+
   virtual ~ExprSolver ();
 
   virtual void add_assertion (const Expr *e)
     throw (UnexpectedResponseException) = 0;
 
-  virtual Result check_sat (const Expr *e, bool preserve) 
+  virtual Result check_sat (const Expr *e, bool preserve)
     throw (UnexpectedResponseException) = 0;
 
   virtual Result check_sat ()
     throw (UnexpectedResponseException) = 0;
 
-  virtual Constant *evaluate (const Expr *e, const Expr *context) 
+  virtual Constant *evaluate (const Expr *e, const Expr *context)
     throw (UnexpectedResponseException);
 
-  virtual std::vector<constant_t> * 
-  evaluate (const Expr *e, const Expr *context, int nb_values) 
+  virtual std::vector<constant_t> *
+  evaluate (const Expr *e, const Expr *context, int nb_values)
     throw (UnexpectedResponseException);
 
-  virtual void push () 
+  virtual void push ()
     throw (UnexpectedResponseException) = 0;
-  virtual void pop () 
+  virtual void pop ()
     throw (UnexpectedResponseException) = 0;
   virtual Constant *get_value_of (const Expr *var)
     throw (UnexpectedResponseException) = 0;

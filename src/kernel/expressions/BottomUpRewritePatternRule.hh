@@ -43,7 +43,7 @@ private:
 
 public :
   typedef std::list<const Variable *> VarList;
-  BottomUpRewritePatternRule (const Expr *p,  const VarList &fv, 
+  BottomUpRewritePatternRule (const Expr *p,  const VarList &fv,
 			      const Expr *value);
   virtual ~BottomUpRewritePatternRule ();
 

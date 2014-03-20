@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -31,78 +31,78 @@
 #include <kernel/Expressions.hh>
 #include "BottomUpApplyVisitor.hh"
 
-BottomUpApplyVisitor::BottomUpApplyVisitor() : ExprVisitor () 
-{ 
+BottomUpApplyVisitor::BottomUpApplyVisitor() : ExprVisitor ()
+{
 }
 
 BottomUpApplyVisitor::~BottomUpApplyVisitor ()
 {
 }
 
-void 
+void
 BottomUpApplyVisitor::visit (Constant *c)
 {
   pre (c);
   apply (c);
 }
 
-void 
+void
 BottomUpApplyVisitor::visit (RandomValue *c)
 {
   pre (c);
   apply (c);
 }
 
-void 
+void
 BottomUpApplyVisitor::visit (Variable *v)
 {
   pre (v);
   apply (v);
 }
 
-void 
+void
 BottomUpApplyVisitor::visit (UnaryApp *ua)
 {
   pre (ua);
   ua->get_arg1 ()->acceptVisitor (this);
-  apply (ua);  
+  apply (ua);
 }
- 
-void 
+
+void
 BottomUpApplyVisitor::visit (BinaryApp *ba)
 {
   pre (ba);
   ba->get_arg1 ()->acceptVisitor (this);
   ba->get_arg2 ()->acceptVisitor (this);
-  apply (ba);  
+  apply (ba);
 }
 
-void 
+void
 BottomUpApplyVisitor::visit (TernaryApp *ta)
 {
   pre (ta);
   ta->get_arg1 ()->acceptVisitor (this);
   ta->get_arg2 ()->acceptVisitor (this);
   ta->get_arg3 ()->acceptVisitor (this);
-  apply (ta);  
+  apply (ta);
 }
 
-void 
+void
 BottomUpApplyVisitor::visit (MemCell *mc)
 {
   pre (mc);
   mc->get_addr ()->acceptVisitor (this);
   apply (mc);
 }
- 
-void 
+
+void
 BottomUpApplyVisitor::visit (RegisterExpr *reg)
 {
   pre (reg);
   apply (reg);
 }
- 
-void 
+
+void
 BottomUpApplyVisitor::visit (QuantifiedExpr *qe)
 {
   pre (qe);
@@ -112,83 +112,83 @@ BottomUpApplyVisitor::visit (QuantifiedExpr *qe)
 }
 
 
-void 
+void
 BottomUpApplyVisitor::pre (Expr *)
 {
 }
 
-ConstBottomUpApplyVisitor::ConstBottomUpApplyVisitor() : ConstExprVisitor () 
-{ 
+ConstBottomUpApplyVisitor::ConstBottomUpApplyVisitor() : ConstExprVisitor ()
+{
 }
 
 ConstBottomUpApplyVisitor::~ConstBottomUpApplyVisitor ()
 {
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const Constant *c)
 {
   pre (c);
   apply (c);
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const RandomValue *c)
 {
   pre (c);
   apply (c);
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const Variable *v)
 {
   pre (v);
   apply (v);
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const UnaryApp *ua)
 {
   pre (ua);
   ua->get_arg1 ()->acceptVisitor (this);
-  apply (ua);  
+  apply (ua);
 }
- 
-void 
+
+void
 ConstBottomUpApplyVisitor::visit (const BinaryApp *ba)
 {
   pre (ba);
   ba->get_arg1 ()->acceptVisitor (this);
   ba->get_arg2 ()->acceptVisitor (this);
-  apply (ba);  
+  apply (ba);
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const TernaryApp *ta)
 {
   pre (ta);
   ta->get_arg1 ()->acceptVisitor (this);
   ta->get_arg2 ()->acceptVisitor (this);
   ta->get_arg3 ()->acceptVisitor (this);
-  apply (ta);  
+  apply (ta);
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const MemCell *mc)
 {
   pre (mc);
   mc->get_addr ()->acceptVisitor (this);
   apply (mc);
 }
- 
-void 
+
+void
 ConstBottomUpApplyVisitor::visit (const RegisterExpr *reg)
 {
   pre (reg);
   apply (reg);
 }
 
-void 
+void
 ConstBottomUpApplyVisitor::visit (const QuantifiedExpr *qe)
 {
   pre (qe);
@@ -196,8 +196,8 @@ ConstBottomUpApplyVisitor::visit (const QuantifiedExpr *qe)
   qe->get_body ()->acceptVisitor (this);
   apply (qe);
 }
- 
-void 
+
+void
 ConstBottomUpApplyVisitor::pre (const Expr *)
 {
 }

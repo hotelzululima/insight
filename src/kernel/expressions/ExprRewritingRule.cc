@@ -34,7 +34,7 @@
 #include <kernel/Expressions.hh>
 
 
-ExprRewritingRule::ExprRewritingRule () 
+ExprRewritingRule::ExprRewritingRule ()
   : ConstExprVisitor ()
 {
   result = NULL;
@@ -44,25 +44,25 @@ ExprRewritingRule::~ExprRewritingRule ()
 {
 }
 
-void 
+void
 ExprRewritingRule::visit (const Constant *c)
 {
   result = rewrite (c);
 }
 
-void 
+void
 ExprRewritingRule::visit (const RandomValue *c)
 {
   result = rewrite (c);
 }
 
-void 
+void
 ExprRewritingRule::visit (const Variable *v)
 {
   result = rewrite (v);
 }
 
-void 
+void
 ExprRewritingRule::visit (const UnaryApp *ua)
 {
   Expr *arg = ua->get_arg1 ();
@@ -72,10 +72,10 @@ ExprRewritingRule::visit (const UnaryApp *ua)
   Expr *tmp = UnaryApp::create (ua->get_op (), arg,
 				ua->get_bv_offset (), ua->get_bv_size ());
   result = rewrite (tmp);
-  tmp->deref ();  
+  tmp->deref ();
 }
 
-void 
+void
 ExprRewritingRule::visit (const BinaryApp *ba)
 {
   Expr *arg1 = ba->get_arg1 ();
@@ -86,13 +86,13 @@ ExprRewritingRule::visit (const BinaryApp *ba)
   arg2->acceptVisitor (this);
   arg2 = dynamic_cast<Expr *> (result);
 
-  Expr *tmp = BinaryApp::create (ba->get_op (), arg1, arg2, 
+  Expr *tmp = BinaryApp::create (ba->get_op (), arg1, arg2,
 				 ba->get_bv_offset (), ba->get_bv_size ());
   result = rewrite (tmp);
-  tmp->deref ();  
+  tmp->deref ();
 }
 
-void 
+void
 ExprRewritingRule::visit (const TernaryApp *ta)
 {
   Expr *arg1 = ta->get_arg1 ();
@@ -110,10 +110,10 @@ ExprRewritingRule::visit (const TernaryApp *ta)
   Expr *tmp = TernaryApp::create (ta->get_op (), arg1, arg2, arg3,
 				  ta->get_bv_offset (), ta->get_bv_size ());
   result = rewrite (tmp);
-  tmp->deref ();  
+  tmp->deref ();
 }
 
-void 
+void
 ExprRewritingRule::visit (const MemCell *mc)
 {
   Expr *arg = mc->get_addr ();
@@ -122,16 +122,16 @@ ExprRewritingRule::visit (const MemCell *mc)
 
   Expr *tmp = MemCell::create (arg, mc->get_bv_offset (), mc->get_bv_size ());
   result = rewrite (tmp);
-  tmp->deref ();  
+  tmp->deref ();
 }
 
-void 
+void
 ExprRewritingRule::visit (const RegisterExpr *reg)
 {
   result = rewrite (reg);
 }
 
-void 
+void
 ExprRewritingRule::visit (const QuantifiedExpr *F)
 {
   F->get_variable ()->acceptVisitor (this);

@@ -33,7 +33,7 @@
 
 # include <kernel/expressions/ExprVisitor.hh>
 
-class BottomUpApplyVisitor : public ExprVisitor 
+class BottomUpApplyVisitor : public ExprVisitor
 {
 protected :
   BottomUpApplyVisitor ();
@@ -44,18 +44,18 @@ public :
   virtual void visit (Constant *);
   virtual void visit (RandomValue *);
   virtual void visit (Variable *);
-  virtual void visit (UnaryApp *); 
+  virtual void visit (UnaryApp *);
   virtual void visit (BinaryApp *);
   virtual void visit (TernaryApp *);
-  virtual void visit (MemCell *); 
-  virtual void visit (RegisterExpr *); 
-  virtual void visit (QuantifiedExpr *); 
+  virtual void visit (MemCell *);
+  virtual void visit (RegisterExpr *);
+  virtual void visit (QuantifiedExpr *);
 
   virtual void pre (Expr *);
   virtual void apply (Expr *) = 0;
-};  
+};
 
-class ConstBottomUpApplyVisitor : public ConstExprVisitor 
+class ConstBottomUpApplyVisitor : public ConstExprVisitor
 {
 protected :
   ConstBottomUpApplyVisitor ();
@@ -66,16 +66,16 @@ public :
   virtual void visit (const Constant *);
   virtual void visit (const RandomValue *);
   virtual void visit (const Variable *);
-  virtual void visit (const UnaryApp *); 
+  virtual void visit (const UnaryApp *);
   virtual void visit (const BinaryApp *);
   virtual void visit (const TernaryApp *);
   virtual void visit (const MemCell *);
   virtual void visit (const RegisterExpr *);
-  virtual void visit (const QuantifiedExpr *); 
+  virtual void visit (const QuantifiedExpr *);
 
   virtual void pre (const Expr *);
   virtual void apply (const Expr *) = 0;
-};  
+};
 
 
 #endif /* ! BOTTOMUPAPPLYVISITOR_HH */

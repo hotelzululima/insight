@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -49,7 +49,7 @@ static const std::string SOLVER_NAME = "mathsat";
 static const std::string PROP_PREFIX = "kernel.expr.solver." + SOLVER_NAME;
 static msat_config MATHSAT_CONFIG;
 
-class Expr2MathsatVisitor : public ConstExprVisitor 
+class Expr2MathsatVisitor : public ConstExprVisitor
 {
   msat_env &env;
   const string &memvar;
@@ -63,14 +63,14 @@ class Expr2MathsatVisitor : public ConstExprVisitor
 public:
 
 
-  Expr2MathsatVisitor (msat_env &me, const string &mv, int bpa, 
+  Expr2MathsatVisitor (msat_env &me, const string &mv, int bpa,
 		       Architecture::endianness_t e)
     : ConstExprVisitor (), env (me), memvar (mv), addrsize (bpa), endian (e) {}
 
   ~Expr2MathsatVisitor () { }
 
 
-  virtual msat_term make_constant (word_t val, int bv_size) {    
+  virtual msat_term make_constant (word_t val, int bv_size) {
     ostringstream oss;
     int base;
     if (bv_size % 8 == 0)
@@ -92,7 +92,7 @@ public:
     return result;
   }
 
-  virtual void visit (const Constant *c) {    
+  virtual void visit (const Constant *c) {
     result = make_constant (c->get_val (), c->get_bv_size ());
   }
 
@@ -121,7 +121,7 @@ public:
 
     if (with_sign)
       result = msat_make_bv_sext (env, ext, result);
-    else 
+    else
       result = msat_make_bv_zext (env, ext, result);
   }
 
@@ -140,7 +140,7 @@ public:
 
     if (e->get_bv_size () == 1)
       cst = make_constant (1, 1);
-    else 
+    else
       cst = make_constant (0, e->get_bv_size ());
 
     result = msat_make_equal (env, result, cst);
@@ -160,12 +160,12 @@ public:
 	extend_bv_window (e, e->get_arg1 (), true);
       }
 
-    if (e->get_bv_offset () != 0 || 
+    if (e->get_bv_offset () != 0 ||
 	e->get_bv_size () != e->get_arg1 ()->get_bv_size ())
       extract_bv_window (e);
     if (MSAT_ERROR_TERM (result))
       {
-	logs::error << "MathSat: " 
+	logs::error << "MathSat: "
 		    << msat_last_error_message (env) << "." << endl;
 	abort ();
       }
@@ -177,7 +177,7 @@ public:
     if (e->get_op () == BV_OP_CONCAT)
       {
 	result = (e->get_bv_offset () != 0 ||
-		  (e->get_bv_size () < e->get_arg1 ()->get_bv_size () + 
+		  (e->get_bv_size () < e->get_arg1 ()->get_bv_size () +
 		   e->get_arg2 ()->get_bv_size ()));
       }
     else if (e->get_op () != BV_OP_EXTEND_U && e->get_op () != BV_OP_EXTEND_S)
@@ -205,111 +205,111 @@ public:
   static msat_term msat_make_bv_sgt (msat_env e, msat_term t1, msat_term t2) {
     return msat_make_not (e, msat_make_bv_sleq (e, t1, t2));
   }
-    
+
   virtual void visit (const BinaryApp *e) {
     binary_operator mop;
     binary_operator_int mopi;
     BinaryOp op = e->get_op ();
-    bool extract = need_extract (e); 	  	
+    bool extract = need_extract (e);
     bool extend = false;
     bool ite = false;
     bool with_sign = false;
     msat_term arg[3];
     switch (op)
       {
-      case BV_OP_AND: 
-	mop = msat_make_bv_and;	
+      case BV_OP_AND:
+	mop = msat_make_bv_and;
 	goto output_binary_1;
       case BV_OP_OR:
 	mop = msat_make_bv_or;
 	goto output_binary_1;
-      case BV_OP_MUL_S: 
+      case BV_OP_MUL_S:
 	with_sign = true;
-      case BV_OP_MUL_U: 
-	mop = msat_make_bv_times; extend = true; 
+      case BV_OP_MUL_U:
+	mop = msat_make_bv_times; extend = true;
 	goto output_binary_1;
-      case BV_OP_ADD: 
-	mop = msat_make_bv_plus; extend = true; 
+      case BV_OP_ADD:
+	mop = msat_make_bv_plus; extend = true;
 	goto output_binary_1;
-      case BV_OP_SUB: 
-	mop = msat_make_bv_minus; extend = true; 
+      case BV_OP_SUB:
+	mop = msat_make_bv_minus; extend = true;
 	goto output_binary_1;
-      case BV_OP_LSH: 
-	mop = msat_make_bv_lshl; 
+      case BV_OP_LSH:
+	mop = msat_make_bv_lshl;
 	goto output_binary_1;
-      case BV_OP_RSH_U: 
-	mop = msat_make_bv_lshr; 
+      case BV_OP_RSH_U:
+	mop = msat_make_bv_lshr;
 	goto output_binary_1;
-      case BV_OP_RSH_S: 
-	mop = msat_make_bv_ashr; 
+      case BV_OP_RSH_S:
+	mop = msat_make_bv_ashr;
 	goto output_binary_1;
       case BV_OP_MODULO:
-	mop = msat_make_bv_urem; 
+	mop = msat_make_bv_urem;
 	goto output_binary_1; // to be fix with signed mod.
-      case BV_OP_DIV_S: 
-	mop = msat_make_bv_sdiv; 
+      case BV_OP_DIV_S:
+	mop = msat_make_bv_sdiv;
 	goto output_binary_1;
-      case BV_OP_DIV_U: 
-	mop = msat_make_bv_udiv; 
+      case BV_OP_DIV_U:
+	mop = msat_make_bv_udiv;
 	goto output_binary_1;
-      case BV_OP_CONCAT: 
-	mop = msat_make_bv_concat; 
+      case BV_OP_CONCAT:
+	mop = msat_make_bv_concat;
 	goto output_binary_1;
-      case BV_OP_XOR: 
-	mop = msat_make_bv_xor; 
+      case BV_OP_XOR:
+	mop = msat_make_bv_xor;
 	goto output_binary_1;
 
 
-      case BV_OP_NEQ: 
+      case BV_OP_NEQ:
 	mop = msat_make_bv_neq;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
 
-      case BV_OP_EQ: 
+      case BV_OP_EQ:
 	mop = msat_make_equal;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
 
-      case BV_OP_GEQ_U: 
+      case BV_OP_GEQ_U:
 	mop = msat_make_bv_uge;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
-      case BV_OP_GEQ_S: 
+      case BV_OP_GEQ_S:
 	ite = true;
 	mop = msat_make_bv_sge;
-	extract = false; 
+	extract = false;
 	goto output_binary_1;
-      case BV_OP_LT_U: 
+      case BV_OP_LT_U:
 	ite = true;
 	mop = msat_make_bv_ult;
-	extract = false; 
+	extract = false;
 	goto output_binary_1;
-      case BV_OP_LT_S: 
+      case BV_OP_LT_S:
 	mop = msat_make_bv_slt;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
-      case BV_OP_GT_U: 
+      case BV_OP_GT_U:
 	mop = msat_make_bv_ugt;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
-      case BV_OP_GT_S: 
+      case BV_OP_GT_S:
 	mop = msat_make_bv_sgt;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
-      case BV_OP_LEQ_U: 
+      case BV_OP_LEQ_U:
 	mop = msat_make_bv_uleq;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
-      case BV_OP_LEQ_S: 
+      case BV_OP_LEQ_S:
 	mop = msat_make_bv_sleq;
-	extract = false; 
+	extract = false;
 	ite = true;
 	goto output_binary_1;
 
@@ -318,7 +318,7 @@ public:
 	if (extend)
 	  extend_bv_window (e, e->get_arg1 (), with_sign);
 	arg[0] = result;
-	
+
 	e->get_arg2 ()->acceptVisitor (this);
 	if (extend)
 	  extend_bv_window (e, e->get_arg2 (), with_sign);
@@ -335,16 +335,16 @@ public:
 	  }
  	break;
 
-      case BV_OP_ROR: 
+      case BV_OP_ROR:
 	mopi = msat_make_bv_ror;
 	goto output_binary_2;
-      case BV_OP_ROL: 
+      case BV_OP_ROL:
 	mopi = msat_make_bv_rol;
 	goto output_binary_2;
-      case BV_OP_EXTEND_U: 
+      case BV_OP_EXTEND_U:
 	mopi = msat_make_bv_zext;
 	goto output_binary_2;
-      case BV_OP_EXTEND_S: 
+      case BV_OP_EXTEND_S:
 	mopi = msat_make_bv_sext;
 	goto output_binary_2;
       output_binary_2:
@@ -368,7 +368,7 @@ public:
       }
     if (MSAT_ERROR_TERM (result))
       {
-	logs::error << "MathSat: " 
+	logs::error << "MathSat: "
 		    << msat_last_error_message (env) << "." << endl;
 	abort ();
       }
@@ -390,8 +390,8 @@ public:
       extract_bv_window (e);
   }
 
-  virtual string stringof (const msat_term &t) { 
-    char *s = msat_to_smtlib2_term (env, t); 
+  virtual string stringof (const msat_term &t) {
+    char *s = msat_to_smtlib2_term (env, t);
     string res (s);
     msat_free (s);
     return res;
@@ -419,7 +419,7 @@ public:
       {
 	int nb_bytes = (e->get_bv_offset () + e->get_bv_size ()) / 8;
 	if (e->get_bv_size () % 8 != 0)
-	  nb_bytes++;	
+	  nb_bytes++;
 	Expr *addr = e->get_addr ()->ref ();
 	Expr *bv = MemCell::create (addr->ref (), 0, 8);
 
@@ -439,7 +439,7 @@ public:
 		aux[0] = bv;
 		aux[1] = byte;
 	      }
-	    tmp = BinaryApp::create (BV_OP_CONCAT, aux[0], aux[1], 
+	    tmp = BinaryApp::create (BV_OP_CONCAT, aux[0], aux[1],
 				     0, 8 * (i + 1));
 	    bv = tmp;
 	  }
@@ -452,35 +452,35 @@ public:
 
   virtual void visit (const RegisterExpr *e) {
     const RegisterDesc *rd = e->get_descriptor ();
-    
+
     msat_decl decl = msat_find_decl (env, rd->get_label ().c_str ());
     assert (!MSAT_ERROR_DECL (decl));
     result = msat_make_constant (env, decl);
-    
-    if (! (e->get_bv_offset () == 0 && 
+
+    if (! (e->get_bv_offset () == 0 &&
 	   e->get_bv_size () == rd->get_register_size ()))
       extract_bv_window (e);
   }
 
   virtual void visit (const QuantifiedExpr *) {
     abort ();
-  }  
+  }
 
-  static msat_term 
+  static msat_term
   translate (msat_env &env, const Expr *ep,
-	     const string &memvar, int addrsize, 
+	     const string &memvar, int addrsize,
 	     Architecture::endianness_t endian, bool as_boolean) {
     Expr2MathsatVisitor e2m (env, memvar, addrsize, endian);
     Expr *e = ep->ref ();
     exprutils::simplify (&e);
 
     if (as_boolean)
-      e2m.output_boolean (e); 
+      e2m.output_boolean (e);
     else
       e->acceptVisitor (&e2m);
     e->deref ();
-    
-    return e2m.result;    
+
+    return e2m.result;
   }
 };
 
@@ -494,7 +494,7 @@ ExprMathsatSolver::ExprMathsatSolver (const MicrocodeArchitecture *mca)
 
 ExprMathsatSolver::~ExprMathsatSolver ()
 {
-  msat_destroy_env (envstack.top ());  
+  msat_destroy_env (envstack.top ());
 }
 
 const std::string &
@@ -503,7 +503,7 @@ ExprMathsatSolver::ident ()
   return SOLVER_NAME;
 }
 
-void 
+void
 ExprMathsatSolver::init (const ConfigTable &)
   throw (UnknownSolverException)
 {
@@ -528,7 +528,7 @@ ExprMathsatSolver::init (const ConfigTable &)
     }
 }
 
-void 
+void
 ExprMathsatSolver::terminate ()
 {
   msat_destroy_config (MATHSAT_CONFIG);
@@ -541,18 +541,18 @@ ExprMathsatSolver::create (const MicrocodeArchitecture *mca)
   return new ExprMathsatSolver (mca);
 }
 
-void 
+void
 ExprMathsatSolver::add_assertion (const Expr *e)
   throw (UnexpectedResponseException)
 {
   msat_env env = envstack.top ();
-  msat_term formula = 
-    Expr2MathsatVisitor::translate (env, e, MEMORY_VAR, 
-				    mca->get_address_size (), 
+  msat_term formula =
+    Expr2MathsatVisitor::translate (env, e, MEMORY_VAR,
+				    mca->get_address_size (),
 				    mca->get_endian (), true);
 
   if (msat_assert_formula (env, formula) != 0)
-    throw UnexpectedResponseException ("error while adding assertion" + 
+    throw UnexpectedResponseException ("error while adding assertion" +
 				       e->to_string ());
   if (debug_traces)
     {
@@ -606,7 +606,7 @@ s_declare_variables (const Expr *e, msat_env &env, int addrsize)
       assert (reg != NULL);
 
       const RegisterDesc *regdesc = reg->get_descriptor ();
-      
+
       assert (! regdesc->is_alias ());
 
       msat_type vtype = msat_get_bv_type (env, regdesc->get_register_size ());
@@ -614,13 +614,13 @@ s_declare_variables (const Expr *e, msat_env &env, int addrsize)
       msat_declare_function (env, vname, vtype);
     }
 
-  
+
 
   return 0;
 }
 
-ExprSolver::Result 
-ExprMathsatSolver::check_sat (const Expr *e, bool preserve) 
+ExprSolver::Result
+ExprMathsatSolver::check_sat (const Expr *e, bool preserve)
     throw (UnexpectedResponseException)
 {
   if (debug_traces)
@@ -642,7 +642,7 @@ ExprMathsatSolver::check_sat (const Expr *e, bool preserve)
   return result;
 }
 
-ExprSolver::Result 
+ExprSolver::Result
 ExprMathsatSolver::check_sat ()
   throw (UnexpectedResponseException)
 {
@@ -659,20 +659,20 @@ ExprMathsatSolver::check_sat ()
   return result;
 }
 
-void 
-ExprMathsatSolver::push () 
+void
+ExprMathsatSolver::push ()
   throw (UnexpectedResponseException)
 {
   msat_env env = envstack.top ();
-  msat_env newenv = 
+  msat_env newenv =
     msat_create_env (MATHSAT_CONFIG);
   envstack.push (newenv);
   if (msat_push_backtrack_point (newenv) != 0)
     throw UnexpectedResponseException (msat_last_error_message (env));
 }
 
-void 
-ExprMathsatSolver::pop () 
+void
+ExprMathsatSolver::pop ()
   throw (UnexpectedResponseException)
 {
   msat_env env = envstack.top ();
@@ -687,22 +687,22 @@ ExprMathsatSolver::get_value_of (const Expr *e)
   throw (UnexpectedResponseException)
 {
   msat_env env = envstack.top ();
-  msat_term msat_e = 
-    Expr2MathsatVisitor::translate (env, e, MEMORY_VAR, 
-				    mca->get_address_size (), 
+  msat_term msat_e =
+    Expr2MathsatVisitor::translate (env, e, MEMORY_VAR,
+				    mca->get_address_size (),
 				    mca->get_endian (), false);
 
   msat_term val = msat_get_model_value (env, msat_e);
-  
+
   if (MSAT_ERROR_TERM(val))
     throw UnexpectedResponseException (msat_last_error_message (env));
 
   if (! msat_term_is_number (env, val))
     {
       ostringstream oss;
-      char *s = msat_to_smtlib2_term (env, val); 
-      char *se = msat_to_smtlib2_term (env, msat_e); 
-      oss << "get_value_of: mathsat return value is not a number '" 
+      char *s = msat_to_smtlib2_term (env, val);
+      char *se = msat_to_smtlib2_term (env, msat_e);
+      oss << "get_value_of: mathsat return value is not a number '"
 	  << s << "' for '" << se << "'";
       msat_free (s);
       msat_free (se);
@@ -716,9 +716,9 @@ ExprMathsatSolver::get_value_of (const Expr *e)
   msat_term_to_number (env, val, out);
   mpq_get_num (num, out);
   mpq_clear (out);
-  Constant *result = Constant::create (mpz_get_ui (num), 0, 
+  Constant *result = Constant::create (mpz_get_ui (num), 0,
 				       e->get_bv_size ());
-  
+
   mpz_clear (num);
 
   return result;
