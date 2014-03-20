@@ -54,7 +54,7 @@ const string Expr::NON_EMPTY_STORE_ABORT_PROP =
   "kernel.expr.non-empty-store-abort";
 
 
-Expr::Expr(int bv_offset, int bv_size) 
+Expr::Expr(int bv_offset, int bv_size)
   : bv_offset(bv_offset), bv_size(bv_size), refcount(0)
 {
 }
@@ -70,7 +70,7 @@ Expr::createLNot (Expr *arg1)
 }
 
 
-Expr * 
+Expr *
 Expr::createImplies (Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
@@ -78,7 +78,7 @@ Expr::createImplies (Expr *A, Expr *B)
   return createLOr (createLNot (A), B);
 }
 
-Expr * 
+Expr *
 Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
@@ -86,14 +86,14 @@ Expr::createIfThenElse (Expr *cond, Expr *A, Expr *B)
 		    createLAnd (createLNot (cond), B));
 }
 
-Expr * 
+Expr *
 Expr::createEquality (Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
   return BinaryApp::create (BV_OP_EQ, A, B, 0, 1);
 }
 
-Expr * 
+Expr *
 Expr::createDisequality (Expr *A, Expr *B)
 {
   assert (A->get_bv_size () == B->get_bv_size ());
@@ -114,12 +114,12 @@ Expr::createLOr (Expr *A, Expr *B)
   return BinaryApp::create (BV_OP_OR,  A, B, 0, 1);
 }
 
-Expr * 
+Expr *
 Expr::createExtend (BinaryOp op, Expr *A, int newsize)
 {
   assert (A->get_bv_size () <= newsize);
   assert (op == BV_OP_EXTEND_S || op == BV_OP_EXTEND_U);
-  return BinaryApp::create (op, A, 
+  return BinaryApp::create (op, A,
 			    Constant::create (newsize, 0,
 					      Expr::get_bv_default_size()),
 			    0, newsize);
@@ -129,7 +129,7 @@ Expr *
 Expr::createExtract (Expr *A, int offset, int size)
 {
   assert (offset + size - 1 < A->get_bv_size ());
-  return TernaryApp::create (BV_OP_EXTRACT, A, 
+  return TernaryApp::create (BV_OP_EXTRACT, A,
 			     Constant::create (offset, 0,
 					       Expr::get_bv_default_size()),
 			     Constant::create (size, 0,
@@ -140,30 +140,30 @@ Expr::createExtract (Expr *A, int offset, int size)
 Expr *
 Expr::createConcat (Expr *A, Expr *B)
 {
-  return BinaryApp::create (BV_OP_CONCAT, A, B, 0, 
+  return BinaryApp::create (BV_OP_CONCAT, A, B, 0,
 			    A->get_bv_size () + B->get_bv_size ());
 }
 
-Option<bool> 
+Option<bool>
 Expr::try_eval_level0() const
 {
   Option<bool> result;
 
-  if (is_TrueFormula ()) 
+  if (is_TrueFormula ())
     result = Option<bool> (true);
-  if (is_FalseFormula ()) 
+  if (is_FalseFormula ())
     result = Option<bool> (false);
-  else if (is_Constant ()) 
+  else if (is_Constant ())
     {
-      if (((Constant *)this)->get_val() == 0) 
+      if (((Constant *)this)->get_val() == 0)
 	result = Option<bool>(false);
-      else 
+      else
 	result = Option<bool>(true);
     }
   return result;
 }
 
-bool 
+bool
 Expr::eval_level0() const
 {
   try { return try_eval_level0().getValue(); }
@@ -204,10 +204,10 @@ Expr::extract_bit_vector (int new_bv_offset, int new_bv_size) const
   assert (0 <= new_bv_size && new_bv_size <= get_bv_size ());
 
   assert (0 <= new_bv_offset && new_bv_offset < get_bv_size ());
-  assert (0 <= new_bv_offset + new_bv_size - 1 && 
+  assert (0 <= new_bv_offset + new_bv_size - 1 &&
 	  new_bv_offset + new_bv_size - 1 < get_bv_size ());
-  
-  Expr *result = change_bit_vector (get_bv_offset () + new_bv_offset, 
+
+  Expr *result = change_bit_vector (get_bv_offset () + new_bv_offset,
 				    new_bv_size);
 
   return result;
@@ -225,7 +225,7 @@ Expr::extract_with_bit_vector_size_of (const Expr *e) const
   return extract_bit_vector (0, e->get_bv_size ());
 }
 
-void 
+void
 Expr::extract_bit_vector (Expr *&e, int new_bv_offset, int new_bv_size)
 {
   Expr *tmp = e->extract_bit_vector (new_bv_offset, new_bv_size);
@@ -233,7 +233,7 @@ Expr::extract_bit_vector (Expr *&e, int new_bv_offset, int new_bv_size)
   e = tmp;
 }
 
-void 
+void
 Expr::extract_with_bit_vector_of (Expr *&e, const Expr *other)
 {
   Expr *tmp = e->extract_with_bit_vector_of (other);
@@ -252,80 +252,80 @@ Expr::extract_with_bit_vector_size_of (Expr *&e, const Expr *other)
 
 /*****************************************************************************/
 
-Variable::Variable(const std::string &id, size_in_bits_t size, 
-		   int bv_offset, int bv_size) 
-  : Expr (bv_offset, bv_size), id(id), size (size) 
+Variable::Variable(const std::string &id, size_in_bits_t size,
+		   int bv_offset, int bv_size)
+  : Expr (bv_offset, bv_size), id(id), size (size)
 {
 }
 
-Variable::~Variable() 
+Variable::~Variable()
 {
 }
 
-Variable * 
+Variable *
 Variable::create (const std::string &id, size_in_bits_t size)
 {
   return find_or_add (new Variable (id, size, 0, size));
 }
 
-size_in_bits_t 
-Variable::get_size () const 
-{ 
+size_in_bits_t
+Variable::get_size () const
+{
   return size;
 }
 
-std::string 
-Variable::get_id() const 
-{ 
-  return id; 
+std::string
+Variable::get_id() const
+{
+  return id;
 }
 
-Expr * 
-Variable::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+Expr *
+Variable::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   return Expr::createExtract (this->ref (), new_bv_offset, new_bv_size);
 }
 
 /*****************************************************************************/
 
-Constant::Constant (constant_t v, int bv_offset, int bv_size) 
-  : Expr (bv_offset, bv_size) 
-{ 
-  val = (constant_t) v; 
+Constant::Constant (constant_t v, int bv_offset, int bv_size)
+  : Expr (bv_offset, bv_size)
+{
+  val = (constant_t) v;
 }
 
-Constant * 
+Constant *
 Constant::create (constant_t v, int bv_offset, int bv_size)
 {
   return find_or_add (new Constant (v, bv_offset, bv_size));
 }
 
-Constant::~Constant() 
+Constant::~Constant()
 {
 }
 
-constant_t 
-Constant::get_val() const 
-{ 
-  return BitVectorManip::extract_from_word (val, get_bv_offset (), 
-					    get_bv_size ()); 
+constant_t
+Constant::get_val() const
+{
+  return BitVectorManip::extract_from_word (val, get_bv_offset (),
+					    get_bv_size ());
 }
 
-constant_t 
+constant_t
 Constant::get_not_truncated_value() const
 {
   return val;
 }
 
-Expr * 
-Constant::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+Expr *
+Constant::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   return Constant::create (val, new_bv_offset, new_bv_size);
 }
 
 /*****************************************************************************/
 
-UnaryApp::UnaryApp(UnaryOp op, Expr *arg1, int bv_offset, int bv_size) 
+UnaryApp::UnaryApp(UnaryOp op, Expr *arg1, int bv_offset, int bv_size)
   : Expr (bv_offset, bv_size), op(op), arg1(arg1)
 {
 }
@@ -346,41 +346,41 @@ UnaryApp::create (UnaryOp op, Expr *arg1, int bv_offset, int bv_size)
   return tmp;
 }
 
-UnaryApp::~UnaryApp() 
-{ 
-  arg1->deref (); 
+UnaryApp::~UnaryApp()
+{
+  arg1->deref ();
 }
 
-UnaryOp 
-UnaryApp::get_op() const 
-{ 
-  return op; 
+UnaryOp
+UnaryApp::get_op() const
+{
+  return op;
 }
 
-Expr * 
-UnaryApp::get_arg1() const 
-{ 
-  return arg1; 
+Expr *
+UnaryApp::get_arg1() const
+{
+  return arg1;
 }
 
-Expr * 
-UnaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+Expr *
+UnaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   return UnaryApp::create (op, arg1->ref (), new_bv_offset, new_bv_size);
 }
 
 /*****************************************************************************/
 
-BinaryApp::BinaryApp(BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset, 
-		     int bv_size) 
-  : Expr (bv_offset, bv_size),  op(op), arg1(arg1), arg2(arg2) 
+BinaryApp::BinaryApp(BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset,
+		     int bv_size)
+  : Expr (bv_offset, bv_size),  op(op), arg1(arg1), arg2(arg2)
 {
 }
 
 BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2)
 {
-  assert (!(op == BV_OP_CONCAT || op == BV_OP_EXTEND_S || 
+  assert (!(op == BV_OP_CONCAT || op == BV_OP_EXTEND_S ||
 	    op == BV_OP_EXTEND_U || op == BV_OP_EQ  || op == BV_OP_NEQ ));
   assert (arg1->get_bv_size () == arg2->get_bv_size ());
   return BinaryApp::create (op, arg1, arg2, 0, arg1->get_bv_size ());
@@ -389,12 +389,12 @@ BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2)
 BinaryApp *
 BinaryApp::create (BinaryOp op, Expr *arg1, int arg2)
 {
-  return BinaryApp::create (op, arg1, 
+  return BinaryApp::create (op, arg1,
 			    Constant::create (arg2, 0, arg1->get_bv_size ()));
 }
 
-BinaryApp * 
-BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset, 
+BinaryApp *
+BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset,
 		   int bv_size)
 {
   assert ((op == BV_OP_CONCAT   || op == BV_OP_EXTEND_S ||
@@ -405,48 +405,48 @@ BinaryApp::create (BinaryOp op, Expr *arg1, Expr *arg2, int bv_offset,
   return find_or_add (new BinaryApp (op, arg1, arg2, bv_offset, bv_size));
 }
 
-BinaryApp * 
-BinaryApp::create (BinaryOp op, Expr *arg1, int arg2,  int bv_offset, 
+BinaryApp *
+BinaryApp::create (BinaryOp op, Expr *arg1, int arg2,  int bv_offset,
 		   int bv_size)
 {
-  return BinaryApp::create (op, arg1, 
+  return BinaryApp::create (op, arg1,
 			    Constant::create (arg2, 0, arg1->get_bv_size ()),
 			    bv_offset, bv_size);
 }
 
-BinaryApp::~BinaryApp() 
+BinaryApp::~BinaryApp()
 {
   arg1->deref ();
   arg2->deref ();
 }
 
-BinaryOp 
-BinaryApp::get_op() const 
-{ 
-  return op; 
-}
-
-Expr * 
-BinaryApp::get_arg1() const 
-{ 
-  return arg1; 
-}
-
-Expr * 
-BinaryApp::get_arg2() const 
-{ 
-  return arg2; 
-}
-
-Expr * 
-BinaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+BinaryOp
+BinaryApp::get_op() const
 {
-  return BinaryApp::create (op, arg1->ref (), arg2->ref (), new_bv_offset, 
+  return op;
+}
+
+Expr *
+BinaryApp::get_arg1() const
+{
+  return arg1;
+}
+
+Expr *
+BinaryApp::get_arg2() const
+{
+  return arg2;
+}
+
+Expr *
+BinaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const
+{
+  return BinaryApp::create (op, arg1->ref (), arg2->ref (), new_bv_offset,
 			    new_bv_size);
 }
 
 /*****************************************************************************/
-TernaryApp::TernaryApp(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3, 
+TernaryApp::TernaryApp(TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3,
 		       int bv_offset, int bv_size)
   : Expr (bv_offset, bv_size),  op(op), arg1(arg1), arg2(arg2), arg3(arg3)
 {
@@ -461,11 +461,11 @@ TernaryApp::create (TernaryOp op, Expr *arg1, Expr *arg2, Expr* arg3)
 
 
 TernaryApp *
-TernaryApp::create (TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3, 
+TernaryApp::create (TernaryOp op, Expr *arg1, Expr *arg2, Expr *arg3,
 		    int bv_offset, int bv_size)
 {
   //XXX: need to check bitvectors size here
-  return find_or_add (new TernaryApp (op, arg1, arg2, arg3, bv_offset, 
+  return find_or_add (new TernaryApp (op, arg1, arg2, arg3, bv_offset,
 				      bv_size));
 }
 
@@ -498,7 +498,7 @@ Expr *
 TernaryApp::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   //XXX: need to check bitvectors size here
-  return TernaryApp::create (op, arg1->ref (), arg2->ref (), arg3->ref(), 
+  return TernaryApp::create (op, arg1->ref (), arg2->ref (), arg3->ref(),
 			     new_bv_offset, new_bv_size);
 }
 
@@ -523,7 +523,7 @@ QuantifiedExpr::~QuantifiedExpr()
   body->deref ();
 }
 
-bool 
+bool
 QuantifiedExpr::is_exists () const
 {
   return exists;
@@ -542,11 +542,11 @@ QuantifiedExpr::get_body () const
 }
 
 Expr *
-QuantifiedExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+QuantifiedExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   assert (new_bv_size == 1 && new_bv_offset == 0);
 
-  return QuantifiedExpr::create (exists, (Variable *) var->ref (), 
+  return QuantifiedExpr::create (exists, (Variable *) var->ref (),
 				 body->ref ());
 }
 
@@ -570,19 +570,19 @@ QuantifiedExpr::createForall (Variable *var, Expr *body)
 
 /*****************************************************************************/
 
-LValue::LValue(int bv_offset, int bv_size) 
-  : Expr (bv_offset, bv_size) 
+LValue::LValue(int bv_offset, int bv_size)
+  : Expr (bv_offset, bv_size)
 {
 }
 
 /*****************************************************************************/
 
-MemCell::MemCell(Expr *addr, Tag tag, int bv_offset, int bv_size) 
-  : LValue (bv_offset, bv_size), addr(addr), tag(tag) 
+MemCell::MemCell(Expr *addr, Tag tag, int bv_offset, int bv_size)
+  : LValue (bv_offset, bv_size), addr(addr), tag(tag)
 {
 }
 
-MemCell * 
+MemCell *
 MemCell::create (Expr *addr, Tag tag, int bv_offset, int bv_size)
 {
   return find_or_add (new MemCell (addr, tag, bv_offset, bv_size));
@@ -594,25 +594,25 @@ MemCell::create (Expr *addr, int bv_offset, int bv_size)
   return create (addr, DEFAULT_TAG, bv_offset, bv_size);
 }
 
-MemCell::~MemCell() 
-{ 
-  addr->deref (); 
+MemCell::~MemCell()
+{
+  addr->deref ();
 }
 
-Tag 
-MemCell::get_tag() const 
-{ 
-  return tag; 
+Tag
+MemCell::get_tag() const
+{
+  return tag;
 }
 
-Expr * 
-MemCell::get_addr() const 
-{ 
-  return addr; 
+Expr *
+MemCell::get_addr() const
+{
+  return addr;
 }
 
-Expr * 
-MemCell::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+Expr *
+MemCell::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   return MemCell::create (addr->ref (), tag, new_bv_offset, new_bv_size);
 }
@@ -621,16 +621,16 @@ MemCell::change_bit_vector (int new_bv_offset, int new_bv_size) const
 
 RegisterExpr::RegisterExpr(const RegisterDesc *reg, int bv_offset, int bv_size)
   : LValue (bv_offset, bv_size), regdesc (reg)
-{ 
+{
   assert (! regdesc->is_alias ());
 }
 
-RegisterExpr::~RegisterExpr() 
+RegisterExpr::~RegisterExpr()
 {
 }
 
 RegisterExpr *
-RegisterExpr::create (const RegisterDesc *reg) 
+RegisterExpr::create (const RegisterDesc *reg)
 {
   return create (reg, 0, reg->get_register_size ());
 }
@@ -639,7 +639,7 @@ RegisterExpr *
 RegisterExpr::create (const RegisterDesc *reg, int bv_offset, int bv_size)
 {
   RegisterExpr *tmp = new RegisterExpr (reg, bv_offset, bv_size);
- 
+
   return find_or_add(tmp);
 }
 
@@ -648,14 +648,14 @@ RegisterExpr::get_descriptor () const {
   return regdesc;
 }
 
-const std::string & 
-RegisterExpr::get_name() const 
-{ 
+const std::string &
+RegisterExpr::get_name() const
+{
   return regdesc->get_label ();
 }
 
-Expr * 
-RegisterExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const 
+Expr *
+RegisterExpr::change_bit_vector (int new_bv_offset, int new_bv_size) const
 {
   return RegisterExpr::create (regdesc, new_bv_offset, new_bv_size);
 }
@@ -823,18 +823,18 @@ Expr::is_DisjunctiveFormula () const
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *>(this);
 
-  return ba != NULL && ba->get_op () == BV_OP_OR && ba->get_bv_size () == 1;  
+  return ba != NULL && ba->get_op () == BV_OP_OR && ba->get_bv_size () == 1;
 }
 
-bool 
+bool
 Expr::is_ConjunctiveFormula () const
 {
   const BinaryApp *ba = dynamic_cast<const BinaryApp *>(this);
 
-  return ba != NULL && ba->get_op () == BV_OP_AND && ba->get_bv_size () == 1;  
+  return ba != NULL && ba->get_op () == BV_OP_AND && ba->get_bv_size () == 1;
 }
 
-bool 
+bool
 Expr::is_NegationFormula () const
 {
   const UnaryApp *ua = dynamic_cast<const UnaryApp *>(this);
@@ -842,7 +842,7 @@ Expr::is_NegationFormula () const
   return ua != NULL && ua->get_op() == BV_OP_NOT && ua->get_bv_size () == 1;
 }
 
-bool 
+bool
 Expr::is_QuantifiedFormula () const
 {
   const QuantifiedExpr *ua = dynamic_cast<const QuantifiedExpr *>(this);
@@ -850,7 +850,7 @@ Expr::is_QuantifiedFormula () const
   return ua != NULL;
 }
 
-bool 
+bool
 Expr::is_ExistentialFormula () const
 {
   const QuantifiedExpr *qe = dynamic_cast<const QuantifiedExpr *>(this);
@@ -858,15 +858,15 @@ Expr::is_ExistentialFormula () const
   return qe != NULL && qe->is_exists ();
 }
 
-bool 
+bool
 Expr::is_UniversalFormula () const
 {
   const QuantifiedExpr *qe = dynamic_cast<const QuantifiedExpr *>(this);
-  
+
   return qe != NULL && ! qe->is_exists ();
 }
 
-bool 
+bool
 Expr::is_TrueFormula () const
 {
   const Constant *bcf = dynamic_cast<const Constant *>(this);
@@ -874,7 +874,7 @@ Expr::is_TrueFormula () const
   return bcf != NULL && (bcf->get_bv_size () == 1) && bcf->get_val ();
 }
 
-bool 
+bool
 Expr::is_FalseFormula () const
 {
   const Constant *bcf = dynamic_cast<const Constant *>(this);
@@ -884,31 +884,31 @@ Expr::is_FalseFormula () const
 
 /*****************************************************************************/
 
-bool 
+bool
 Variable::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const Variable *>(F);
 }
 
-bool 
+bool
 Constant::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const Constant *>(F);
 }
 
-bool 
+bool
 RandomValue::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const RandomValue *>(F);
 }
 
-bool 
+bool
 UnaryApp::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const UnaryApp *>(F);
 }
 
-bool 
+bool
 BinaryApp::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const BinaryApp *>(F);
@@ -920,19 +920,19 @@ TernaryApp::has_type_of (const Expr *F) const
   return dynamic_cast<const TernaryApp *>(F);
 }
 
-bool 
+bool
 MemCell::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const MemCell *>(F);
 }
 
-bool 
+bool
 RegisterExpr::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const RegisterExpr *>(F);
 }
 
-bool 
+bool
 QuantifiedExpr::has_type_of (const Expr *F) const
 {
   return dynamic_cast<const QuantifiedExpr *>(F);
@@ -975,13 +975,13 @@ bool Variable::equal (const Expr *F) const
 bool Constant::equal (const Expr *F) const
 {
   const Constant *e = s_check_bv<Constant> (this, F);
-  
+
   return (e != NULL && val == e->val);
 }
 
-bool 
+bool
 RandomValue::equal (const Expr *F) const
-{  
+{
   const RandomValue *e = s_check_bv<RandomValue> (this, F);
 
   return (e != NULL && e == this);
@@ -1031,40 +1031,40 @@ bool QuantifiedExpr::equal (const Expr *F) const
 }
 
 /*****************************************************************************/
-size_t 
-Expr::hash () const 
+size_t
+Expr::hash () const
 {
   return 23 * bv_offset + 47 * bv_size;
 }
 
-size_t 
-Variable::hash () const 
-{ 
-  return (13 * this->Expr::hash() + 51 * std::hash<string>()(id) + 
+size_t
+Variable::hash () const
+{
+  return (13 * this->Expr::hash() + 51 * std::hash<string>()(id) +
 	  73 * size);
 }
 
-size_t 
+size_t
 RandomValue::hash () const
 {
   return this->Expr::hash ();
 }
 
-size_t 
-Constant::hash () const 
-{ 
+size_t
+Constant::hash () const
+{
   return 13 * this->Expr::hash() + 51 * val;
 }
 
-size_t 
-UnaryApp::hash () const 
-{ 
+size_t
+UnaryApp::hash () const
+{
   return 13 * this->Expr::hash() + 51 * op + 73 * arg1->hash ();
 }
 
-size_t 
-BinaryApp::hash () const 
-{ 
+size_t
+BinaryApp::hash () const
+{
   return (13 * this->Expr::hash() + 51 * op + 73 * arg1->hash () +
 	  119 * arg2->hash ());
 }
@@ -1077,29 +1077,29 @@ TernaryApp::hash () const
 	  119 * arg2->hash () +  227 * arg3->hash ());
 }
 
-size_t 
-MemCell::hash () const 
-{ 
+size_t
+MemCell::hash () const
+{
   return (13 * this->Expr::hash() + 19 * std::hash<string>()(tag) +
 	  111 * addr->hash ());
 }
 
-size_t 
-RegisterExpr::hash () const 
-{   
+size_t
+RegisterExpr::hash () const
+{
   return 13 * this->Expr::hash() + regdesc->hashcode ();
 }
 
-size_t 
-QuantifiedExpr::hash () const 
-{   
+size_t
+QuantifiedExpr::hash () const
+{
   return (exists ? 111 :149) * var->hash () + body->hash ();
 }
 
 
 /*****************************************************************************/
 
-void 
+void
 Expr::output_text (std::ostream &out) const
 {
   expr_writer (out, this);
@@ -1108,148 +1108,148 @@ Expr::output_text (std::ostream &out) const
 /*****************************************************************************/
 
 
-void 
+void
 Expr::acceptVisitor (ExprVisitor &visitor)
 {
   acceptVisitor (&visitor);
 }
 
-void 
+void
 Expr::acceptVisitor (ConstExprVisitor &visitor) const
 {
   acceptVisitor (&visitor);
 }
 
 
-void 
+void
 Constant::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
 
-void 
+void
 RandomValue::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 Variable::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 UnaryApp::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 BinaryApp::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 TernaryApp::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 MemCell::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 RegisterExpr::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 QuantifiedExpr::acceptVisitor (ExprVisitor *visitor)
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
+
 			/* --------------- */
 
-void 
-Constant::acceptVisitor (ConstExprVisitor *visitor) const 
+void
+Constant::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
 
-void 
-RandomValue::acceptVisitor (ConstExprVisitor *visitor) const 
+void
+RandomValue::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-Variable::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+Variable::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-UnaryApp::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+UnaryApp::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-BinaryApp::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+BinaryApp::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-TernaryApp::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+TernaryApp::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-MemCell::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+MemCell::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-RegisterExpr::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+RegisterExpr::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
-QuantifiedExpr::acceptVisitor (ConstExprVisitor *visitor) const 
+
+void
+QuantifiedExpr::acceptVisitor (ConstExprVisitor *visitor) const
 {
-  visitor->visit (this); 
+  visitor->visit (this);
 }
- 
-void 
+
+void
 Expr::init (const ConfigTable &cfg)
 {
-  non_empty_store_abort = 
+  non_empty_store_abort =
     cfg.get_boolean (NON_EMPTY_STORE_ABORT_PROP, false);
 
   expr_store = new ExprStore (100);
   ExprSolver::init (cfg);
 }
 
-void 
-Expr::terminate () 
+void
+Expr::terminate ()
 {
   ExprSolver::terminate ();
   if (Expr::expr_store == NULL)
     return;
   bool abortion = (Expr::expr_store->size () > 0) && non_empty_store_abort;
   if (Expr::expr_store->size () > 0)
-    {      
+    {
       logs::error << "**** some exprs have not been deleted:" << endl;
       dumpStore ();
     }
@@ -1259,7 +1259,7 @@ Expr::terminate ()
     abort ();
 }
 
-void 
+void
 Expr::dumpStore ()
 {
   int nb = Expr::expr_store->size ();
@@ -1268,7 +1268,7 @@ Expr::dumpStore ()
   for (; i != end; i++, nb--)
     {
       assert (nb > 0);
-      logs::error << *i << ": " 
+      logs::error << *i << ": "
 		 << *(*i) << " [refcount =" << (*i)->refcount << "]" << endl;
     }
 }
@@ -1277,38 +1277,38 @@ Expr::dumpStore ()
 // EXPR SHARING
 //
 
-size_t 
-Expr::Hash::operator()(const Expr *const &F) const 
+size_t
+Expr::Hash::operator()(const Expr *const &F) const
 {
   return F->hash ();
 }
 
-bool 
+bool
 Expr::Equal::operator()(const Expr *const &F1, const Expr * const &F2) const
-{  
+{
   return F1->equal (F2);
 }
 
 Expr *
 Expr::ref () const
-{ 
+{
   assert (refcount > 0);
 
-  refcount++; 
+  refcount++;
   return (Expr *) this;
 }
 
-void 
-Expr::deref () 
-{ 
+void
+Expr::deref ()
+{
   assert (refcount > 0);
-  refcount--; 
-  if (refcount == 0) 
+  refcount--;
+  if (refcount == 0)
     {
       assert (expr_store->find (this) != expr_store->end ());
       expr_store->erase (this);
 
-      delete this; 
+      delete this;
     }
 }
 
@@ -1335,7 +1335,7 @@ Expr::find_or_add_expr (Expr *F)
 }
 
 
-RandomValue::RandomValue (int bv_size) 
+RandomValue::RandomValue (int bv_size)
   : Expr (0, bv_size)
 {
 }

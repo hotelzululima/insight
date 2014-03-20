@@ -107,7 +107,7 @@ public:
 
   static void init (const ConfigTable &cfg);
   static void terminate ();
-  
+
   virtual void acceptVisitor (ExprVisitor &visitor);
   virtual void acceptVisitor (ConstExprVisitor &visitor) const;
   virtual void acceptVisitor (ExprVisitor *visitor) = 0;
@@ -223,12 +223,12 @@ public:
 
   virtual void output_text (std::ostream &out) const;
 
-  struct Hash { 
-    size_t operator()(const Expr *const &F) const; 
+  struct Hash {
+    size_t operator()(const Expr *const &F) const;
   };
 
-  struct Equal { 
-    bool operator()(const Expr *const &F1, const Expr * const &F2) const; 
+  struct Equal {
+    bool operator()(const Expr *const &F1, const Expr * const &F2) const;
   };
 
   Expr *ref () const;
@@ -241,13 +241,13 @@ protected:
   static Expr *find_or_add_expr (Expr *F);
 
   template<typename C>
-  static C *find_or_add (C *F) { 
+  static C *find_or_add (C *F) {
     Expr *res = find_or_add_expr (F);
     return dynamic_cast<C *> (res);
   }
-  
+
 private:
-  typedef std::unordered_set<Expr *, Expr::Hash, Expr::Equal> ExprStore;  
+  typedef std::unordered_set<Expr *, Expr::Hash, Expr::Equal> ExprStore;
 
   static ExprStore *expr_store;
   static bool non_empty_store_abort;
@@ -270,7 +270,7 @@ private:
   std::string id;
   size_in_bits_t size;
 
-  Variable(const std::string &id, size_in_bits_t size, 
+  Variable(const std::string &id, size_in_bits_t size,
 	   int bv_offset, int bv_size);
 
   virtual ~Variable();
@@ -289,7 +289,7 @@ public:
   virtual bool equal (const Expr *F) const;
   virtual size_t hash () const;
   virtual bool has_type_of (const Expr *F) const;
-  
+
   bool operator<(const Variable &other) const;  /* needed for using variables as key of maps */
   virtual unsigned int get_depth() const;
   bool contains(const Expr *o) const;
