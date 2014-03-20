@@ -6,6 +6,7 @@ program = None
 simulator = None
 hooks = {}
 startpoint = None
+dotviewer = None
 
 insight.config.set("kernel.expr.solver.name", "mathsat")
 
@@ -811,3 +812,22 @@ def simulation_error():
         print "feature not supported."
     else:
         raise
+
+
+import xdot
+def view_mc(start=None, end=None, ep=None):
+    global simulator, startpoint, dotviewer
+    if simulator is None:
+        print "Program is not started"
+        return
+    if start is None:
+        start = prog().info()["memory_min_address"]
+    if end is None:
+        end = prog().info()["memory_max_address"]
+    if ep is None:
+        ep = pc()
+    dotstring = simulator.get_microcode().dot (ep, start, end)
+    if dotviewer is None:
+        dotviewer = xdot.DotWindow()
+        dotviewer.show()
+    dotviewer.set_dotcode(dotstring)

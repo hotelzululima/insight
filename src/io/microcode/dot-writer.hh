@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * 
@@ -41,5 +41,13 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	    const std::string &graphlabel = std::string (), 
 	    ConcreteAddress *entrypoint = NULL, 
 	    const SymbolTable *symbtable = NULL);
+
+extern void 
+dot_asm_writer (std::ostream &out, const Microcode *mc, 
+		ConcreteAddress *start,
+		ConcreteAddress *end,
+		ConcreteAddress *entrypoint,
+		const SymbolTable *symbtable, 
+		const std::string &graphlabel = std::string ());
 
 #endif /* ! DOT_WRITER_HH */

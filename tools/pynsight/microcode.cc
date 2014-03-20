@@ -30,6 +30,7 @@
 #include "gengen.hh"
 #include "pynsight.hh"
 #include <io/microcode/asm-writer.hh>
+#include <io/microcode/dot-writer.hh>
 
 struct PyMicrocode
 {
@@ -48,7 +49,7 @@ static PyObject *
 s_PyMicrocode_asmall (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyObject *
-s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds);
+s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyTypeObject PyMicrocodeType = {
   PyObject_HEAD_INIT(NULL)
@@ -80,6 +81,8 @@ static PyMethodDef PyMicrocodeMethods[] = {
   { "asm", (PyCFunction) s_PyMicrocode_asm, METH_VARARGS|METH_KEYWORDS, 
     "\n" },
   { "asmall", (PyCFunction) s_PyMicrocode_asmall, METH_VARARGS|METH_KEYWORDS, 
+    "\n" },
+  { "dot", (PyCFunction) s_PyMicrocode_dot, METH_VARARGS|METH_KEYWORDS, 
     "\n" },
   { NULL, NULL, 0, NULL }
 };
@@ -169,4 +172,28 @@ s_PyMicrocode_asmall (PyObject *self, PyObject *args, PyObject *kwds)
 	      M->prog->symbol_table, with_bytes, with_holes, with_labels);
 
   return pynsight::None ();  
+}
+
+static PyObject *
+s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  { "startpoint", "start", "end", NULL };
+  unsigned long ep;
+  unsigned long start;
+  unsigned long end;
+  PyMicrocode *M = (PyMicrocode *) self;
+
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kkk", (char **) kwlists, 
+				    &ep, &start, &end))
+    return NULL;
+
+  std::ostringstream oss;
+  ConcreteAddress ca_ep (ep);
+  ConcreteAddress ca_start (start);
+  ConcreteAddress ca_end (end);
+
+  dot_asm_writer (oss, M->mc->get_microcode (), &ca_start, &ca_end, &ca_ep, 
+		  M->prog->symbol_table, "");
+
+  return Py_BuildValue ("s", oss.str ().c_str ());
 }

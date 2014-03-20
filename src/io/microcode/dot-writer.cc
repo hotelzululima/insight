@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  * 
@@ -76,7 +76,8 @@ s_clear_basic_block (basic_block_t &bb)
 
 static vector<MicrocodeNode *> *
 s_compute_asm_nodes (const Microcode *mc, 
-		     std::map<MicrocodeNode *, basic_block_t> &anodes)
+		     std::map<MicrocodeNode *, basic_block_t> &anodes,
+		     const ConcreteAddress *start, const ConcreteAddress *end)
 {
   const vector<MicrocodeNode *> *nodes = mc->get_nodes ();
   vector<MicrocodeNode *> *result = new vector<MicrocodeNode *> ();
@@ -84,9 +85,15 @@ s_compute_asm_nodes (const Microcode *mc,
   for (size_t i = 0; i < nodes->size (); i++) 
     {
       MicrocodeNode *n = nodes->at (i);
-
+      
       assert (! n->has_annotation (AsmAnnotation::ID) || 
 	      n->get_loc ().getLocal() == 0);
+
+      if (start && n->get_loc ().getGlobal () < start->get_address ())
+	continue;
+      if (end && n->get_loc ().getGlobal () > end->get_address ())
+	continue;
+
       if (! n->has_annotation (AsmAnnotation::ID))
 	continue;
 
@@ -177,11 +184,16 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	    ConcreteAddress *entrypoint, const SymbolTable *symboltable)
 {
   if (! asm_only)
-    {
       mc->toDot (out);
-      return;
-    }
+  else
+    dot_asm_writer (out, mc, NULL, NULL, entrypoint, symboltable, graphlabel);
+}
 
+void 
+dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
+		ConcreteAddress *end, ConcreteAddress *entrypoint, 
+		const SymbolTable *symboltable, const std::string &graphlabel)
+{
   static int primes[] = { 5483, 10967, 21933, 43867,  87731, 175459, 350919, 
 			  701833, 1403667, 2807333 , 5614667, 11229331, 
 			  16777253 };
@@ -197,12 +209,17 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
     out << " label=\"" << graphlabel << "\"; " << endl;
 
   std::map<MicrocodeNode *, basic_block_t> anodes;
-  vector<MicrocodeNode *> *nodes = s_compute_asm_nodes (mc, anodes);
-  MicrocodeNode *entrynode;
+  vector<MicrocodeNode *> *nodes = 
+    s_compute_asm_nodes (mc, anodes, start, end);
+
+  MicrocodeNode *entrynode = NULL;
   if (entrypoint)
-    entrynode = mc->get_node (entrypoint->get_address ());
-  else
-    entrynode = NULL;
+    {
+      try {
+	entrynode = mc->get_node (entrypoint->get_address ());
+      } catch (GetNodeNotFoundExc) {
+      }
+    }
  
   if (entrynode || symboltable)
     s_merge_basic_blocks (nodes, anodes, entrynode, symboltable);
@@ -245,7 +262,7 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
 	}
       else
 	{
-	  rgb = s_light_color (((rgb ^ ma.getGlobal ())*3)&0xFFFFFF);
+	  rgb = s_light_color (21933 * ma.getGlobal () ^ 11229331);
 	}
 
       out << NODE_PREFIX << std::hex << ma.getGlobal () 
