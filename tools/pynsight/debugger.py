@@ -894,6 +894,10 @@ def simulation_error():
 
 
 def view_mc(start=None, end=None, ep=None):
+    def reset_viewer (arg):
+        global dotviewer
+        dotviewer = None
+
     global simulator, startpoint, dotviewer
     if simulator is None:
         print "Program is not started"
@@ -908,5 +912,6 @@ def view_mc(start=None, end=None, ep=None):
     dotstring = simulator.get_microcode().dot(ep, start, end)
     if dotviewer is None:
         dotviewer = xdot.DotWindow()
+        dotviewer.connect('destroy', reset_viewer)
         dotviewer.show()
     dotviewer.set_dotcode(dotstring)
