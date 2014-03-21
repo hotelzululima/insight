@@ -51,6 +51,9 @@ s_PyMicrocode_asmall (PyObject *self, PyObject *args, PyObject *kwds);
 static PyObject *
 s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds);
 
+static PyObject *
+s_PyMicrocode_get_range (PyObject *self, PyObject *);
+
 static PyTypeObject PyMicrocodeType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -83,6 +86,8 @@ static PyMethodDef PyMicrocodeMethods[] = {
   { "asmall", (PyCFunction) s_PyMicrocode_asmall, METH_VARARGS|METH_KEYWORDS, 
     "\n" },
   { "dot", (PyCFunction) s_PyMicrocode_dot, METH_VARARGS|METH_KEYWORDS, 
+    "\n" },
+  { "get_range", (PyCFunction) s_PyMicrocode_get_range, METH_NOARGS, 
     "\n" },
   { NULL, NULL, 0, NULL }
 };
@@ -196,4 +201,33 @@ s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds)
 		  M->prog->symbol_table, "");
 
   return Py_BuildValue ("s", oss.str ().c_str ());
+}
+
+static void
+s_microcode_addrspace (const Microcode *mc, address_t &minaddr, 
+		       address_t &maxaddr)
+{ 
+  minaddr = MAX_ADDRESS;
+  maxaddr = 0;
+
+  Microcode_iterate_nodes (*mc, node)
+    {
+      address_t addr = (*node)->get_loc ().getGlobal ();
+      if (addr < minaddr)
+	minaddr = addr;
+      if (addr > maxaddr)
+	maxaddr = addr;
+    }
+}
+
+static PyObject *
+s_PyMicrocode_get_range (PyObject *self, PyObject *)
+{
+  PyMicrocode *M = (PyMicrocode *) self;
+  address_t minaddr;
+  address_t maxaddr;
+
+  s_microcode_addrspace (M->mc->get_microcode (), minaddr, maxaddr);
+
+  return Py_BuildValue ("(k,k)", minaddr, maxaddr);
 }

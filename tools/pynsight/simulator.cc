@@ -1602,7 +1602,16 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 	      result = NULL;
 	    }
 	  else
-	    result->ref ();
+	    {
+	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (a);
+	      if (da != NULL)
+		{
+		  MicrocodeAddress a =
+		    result->get_ProgramPoint ()->to_MicrocodeAddress ();
+		  da->add_solved_jump (a);
+		}
+	      result->ref ();
+	    }
 	}
       else if (succs->size () != 0)
 	PyErr_SetNone (pynsight::NotDeterministicBehaviorError);
@@ -1936,12 +1945,9 @@ InsightSimulator<ConcreteStepper>::concretize_register
 (void *p, const RegisterDesc *reg, const ConcreteValue &v)
 {
   ConcreteStepper::State *s = (ConcreteStepper::State *) p;
-  ConcreteValue val = get_register_value (p, reg);
-  
-  if (val.equals (v))
-    s->ref ();
-  else
-    s = NULL;
+
+  s = s->clone ();
+  set_register (s, reg, v.get ());
 
   return s;
 }

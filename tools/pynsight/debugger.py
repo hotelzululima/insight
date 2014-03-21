@@ -787,6 +787,8 @@ def instr(addr=None):
             for i in program.disas(addr, 1):
                 instr = i[1]
                 print instr
+        else:
+            print instr
     except:
         simulation_error()
 
@@ -896,10 +898,11 @@ def view_mc(start=None, end=None, ep=None):
     if simulator is None:
         print "Program is not started"
         return
+    addrspace = simulator.get_microcode().get_range()
     if start is None:
-        start = prog().info()["memory_min_address"]
+        start = addrspace[0]
     if end is None:
-        end = prog().info()["memory_max_address"]
+        end = addrspace[1]
     if ep is None:
         ep = pc()
     dotstring = simulator.get_microcode().dot(ep, start, end)
