@@ -2201,8 +2201,8 @@ bool
 PyWatchpoint::stop (GenericInsightSimulator *)
 {
   PyObject *res = PyObject_CallObject (cb, NULL);
-  assert (res != NULL);
-  //return true;
+  if (res == NULL)
+    return false;
   bool result = (res != Py_None);
   Py_DECREF (res);
   return result;
