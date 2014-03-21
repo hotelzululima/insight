@@ -390,7 +390,7 @@ def breakpoint(g=None, l=0):
         if g is None:
             g = simulator.get_pc()[0]
             l = simulator.get_pc()[1]
-            bp = simulator.add_breakpoint(g, l)
+        bp = simulator.add_breakpoint(g, l)
         if bp is not None:
             print "breakpoint already set at(0x{:x},{}) \
             with id({}).".format(g, l, bp[0])
