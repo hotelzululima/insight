@@ -1,5 +1,6 @@
 import sys
 import insight
+import xdot
 from insight.utils import *
 
 program = None
@@ -76,6 +77,26 @@ def add_hook(f, h):
         hooks[f] = [h]
 
 
+def remove_hook(f, hindex):
+    """
+    Remove a hook attached to the simulation function 'f'.
+
+    Parameters:
+    - f : the reference to the simulation function to be hooked.
+    - h : the index of the hook callback as given by 'show("hooks")'
+    """
+    if f in hooks:
+        hlist = hooks[f]
+        if not (0 <= hindex and hindex < len(hooks[f])):
+            print "invalid argument; index should be in range [0, {:d}]."\
+                .format(len(hooks[f]))
+        else:
+            hlist[hindex:hindex+1] = []
+            print hlist
+    else:
+        print "no hook is attached to", f.__name__
+
+
 def add_run_hook(h):
     """
     Add a hook to 'run' function.
@@ -84,6 +105,16 @@ def add_run_hook(h):
     - h : the hook callback attached to 'run' function.
     """
     add_hook(run, h)
+
+
+def del_run_hook(hindex):
+    """
+    Remove a hook attached to 'run' function.
+
+    Parameters:
+    - hindex : index of the hook given by 'show ("hooks")'.
+    """
+    remove_hook(run, hindex)
 
 
 def add_step_hook(h):
@@ -96,6 +127,16 @@ def add_step_hook(h):
     add_hook(step, h)
 
 
+def del_step_hook(hindex):
+    """
+    Remove a hook attached to 'step' function.
+
+    Parameters:
+    - hindex : index of the hook given by 'show ("hooks")'.
+    """
+    remove_hook(step, hindex)
+
+
 def add_cont_hook(h):
     """
     Add a hook to 'cont' function.
@@ -105,6 +146,16 @@ def add_cont_hook(h):
     add_hook(cont, h)
 
 
+def del_cont_hook(hindex):
+    """
+    Remove a hook attached to 'cont' function.
+
+    Parameters:
+    - hindex : index of the hook given by 'show ("hooks")'.
+    """
+    remove_hook(cont, hindex)
+
+
 def add_microstep_hook(h):
     """
     Add a hook to 'microstep' function.
@@ -112,6 +163,16 @@ def add_microstep_hook(h):
     Parameters:
     - h : the hook callback attached to 'microstep' function."""
     add_hook(microstep, h)
+
+
+def del_microstep_hook(hindex):
+    """
+    Remove a hook attached to 'microstep' function.
+
+    Parameters:
+    - hindex : index of the hook given by 'show ("hooks")'.
+    """
+    remove_hook(microstep, hindex)
 
 
 def run(ep=None):
@@ -445,7 +506,7 @@ def delete_breakpoints(l=None):
         l = [l]
     if l is None:
         l = []
-        for (id, a) in simulator.get_breakpoints():
+        for(id, a) in simulator.get_breakpoints():
             l = l + [id]
     for bp in l:
         if not simulator.del_breakpoint(bp):
@@ -461,6 +522,7 @@ def show(what):
                       watchpoints
     - "pc" : display the value of the program counter.
     - "mcpc" : display the microcode address of the current microcode-node.
+    - "hooks" : display hooks attached to simulation functions.
 
     A prefix of the keyword is enough.
 
@@ -476,6 +538,20 @@ def show(what):
             print "0x{:x}".format(pc())
         elif "mppc".find(what) == 0:
             print "0x{:x}".format(mppc())
+        elif "hooks".find(what) == 0:
+            if len(hooks) == 0:
+                print "there is no hook"
+            else:
+                for hf in sorted(hooks.keys()):
+                    print "hooks for function", hf.__name__
+                    index = 0
+                    for h in hooks[hf]:
+                        if h.__name__ is not None:
+                            desc = h.__name__
+                        else:
+                            desc = str(h)
+                        print "{:2d} : {}".format(index, desc)
+                        index += 1
     except:
         simulation_error()
 
@@ -524,7 +600,7 @@ def print_symbols():
     if program is None:
         print "no program is loaded"
         return
-    for (s, a) in program.symbols():
+    for(s, a) in program.symbols():
         print "0x{:x} : {}".format(a, s)
 
 
@@ -712,7 +788,8 @@ def instr(addr=None):
                 instr = i[1]
                 print instr
     except:
-        simulation_error ()
+        simulation_error()
+
 
 def print_state():
     """
@@ -808,13 +885,12 @@ def simulation_error():
         print "stop in a configuration with several output arrows"
     elif sys.exc_type is insight.error.SimulationNotStartedException:
         print "simulator is not running"
-    elif sys.exc_type is insight.error.NotImplementedError:
+    elif sys.exc_type is NotImplementedError:
         print "feature not supported."
     else:
         raise
 
 
-import xdot
 def view_mc(start=None, end=None, ep=None):
     global simulator, startpoint, dotviewer
     if simulator is None:
@@ -826,7 +902,7 @@ def view_mc(start=None, end=None, ep=None):
         end = prog().info()["memory_max_address"]
     if ep is None:
         ep = pc()
-    dotstring = simulator.get_microcode().dot (ep, start, end)
+    dotstring = simulator.get_microcode().dot(ep, start, end)
     if dotviewer is None:
         dotviewer = xdot.DotWindow()
         dotviewer.show()
