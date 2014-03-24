@@ -211,7 +211,7 @@ start: instruction { data.finalize_postincrements(); }
 ;
 
 operand:
-  immediate { $$ = Constant::create ($1, 0, data.arch->get_word_size ()); }
+  immediate { $$ = Constant::create ($1, 0, data.operand_size); }
 | trimmed_register { $$ = $1; }
 | memory_reference { $$ = $1; }
 ;
