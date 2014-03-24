@@ -144,8 +144,13 @@ msp430::parser_data::add_postincrement(RegisterExpr *reg) {
   logs::fatal_error("Too many postincremented registers!");
 }
 
+bool
+msp430::parser_data::has_postincrements() const {
+  return post_increment_registers[0] != NULL;
+}
+
 void
-msp430::parser_data::finalize_postincrements(void) {
+msp430::parser_data::finalize_postincrements(bool mc_follows) {
   for (unsigned int i = 0;
        i < STATIC_ARRAY_COUNT(post_increment_registers);
        i++) {
@@ -153,17 +158,16 @@ msp430::parser_data::finalize_postincrements(void) {
     int bytes_to_add = operand_size == 20? 4 : (operand_size / 8);
 
     if (reg != NULL) {
+      int last = i == STATIC_ARRAY_COUNT(post_increment_registers) - 1 ||
+	post_increment_registers[i + 1] == NULL;
       mc->add_assignment(start_ma, reg->ref(),
 			 BinaryApp::create(BV_OP_ADD, reg->ref(),
 					   Constant::create(bytes_to_add,
 							    0, MSP430_SIZE_A),
 					   0, MSP430_SIZE_A),
-			 start_ma + 1, NULL);
-      start_ma = start_ma + 1;
+			 last && !mc_follows? next_ma : start_ma + 1, NULL);
     }
   }
-
-  mc->add_skip(start_ma, next_ma);
 }
 
 Expr *

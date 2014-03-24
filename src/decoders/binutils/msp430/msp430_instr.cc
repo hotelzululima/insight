@@ -30,16 +30,59 @@
 
 #include <decoders/binutils/msp430/msp430_instr.hh>
 
+MSP430_TRANSLATE_1_OP(CALL) {
+  int bytes = data.is_extended? 4 : 2;
+  LValue *sp = data.get_register(MSP430_REG_SP);
+  bool is_immediate = op1->is_Constant();
+  bool has_postinc = data.has_postincrements();
+  MicrocodeAddress static_dest = dynamic_cast<Constant *>(op1)->get_val();
+  MicrocodeAddress dest = is_immediate && !has_postinc?
+    static_dest : data.start_ma + 2;
+
+  data.mc->add_assignment(data.start_ma, sp->ref(),
+			  BinaryApp::create(BV_OP_SUB, sp->ref(),
+					    Constant::create(bytes,
+							     0, MSP430_SIZE_A),
+					    0, MSP430_SIZE_A),
+			  data.start_ma + 1, NULL);
+
+  data.start_ma = data.start_ma + 1;
+
+  data.mc->add_assignment(data.start_ma + 1, MemCell::create(sp,
+							     0, bytes * 8),
+			  Constant::create(data.next_ma.getGlobal(),
+					   0, bytes * 8),
+			  dest, NULL);
+  if (has_postinc) {
+    data.start_ma = data.start_ma + 1;
+
+    if (is_immediate)
+      data.next_ma = static_dest;
+
+    data.finalize_postincrements(!is_immediate);
+  }
+
+  if (!is_immediate) {
+    data.mc->add_jump(data.start_ma, op1, NULL);
+  }
+
+  op1->deref();
+}
+
 static void
 s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest) {
   Expr *res = msp430_trim_source_operand(data, source);
-
+  MicrocodeAddress next =
+    data.has_postincrements()? data.start_ma + 1 : data.next_ma;
 
   data.mc->add_assignment(data.start_ma,
 			  dynamic_cast<LValue *>(dest),
 			  msp430_stretch_expr_to_dest_size(dest, res),
-			  data.start_ma + 1, NULL);
-  data.start_ma = data.start_ma + 1;
+			  next, NULL);
+  if (data.has_postincrements()) {
+    data.start_ma = data.start_ma + 1;
+    data.finalize_postincrements(false);
+  }
 }
 
 MSP430_TRANSLATE_1_OP(CLR) {

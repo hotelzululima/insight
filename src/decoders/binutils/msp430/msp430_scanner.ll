@@ -101,6 +101,7 @@ varname   [a-z][a-z0-9]+
 "bit"		{ return token::TOK_BIT; }
 "br"		{ return token::TOK_BR; }
 "call"		{ return token::TOK_CALL; }
+"calla"		{ return token::TOK_CALLA; }
 "clr"		{ return token::TOK_CLR; }
 "clra"		{ return token::TOK_CLRA; }
 "clrx"		{ return token::TOK_CLRX; }

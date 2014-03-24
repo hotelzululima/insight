@@ -52,7 +52,8 @@ namespace msp430 {
     Expr *get_memory_reference(int disp, Expr *bis, bool may_truncate);
 
     void add_postincrement(RegisterExpr *);
-    void finalize_postincrements();
+    bool has_postincrements() const;
+    void finalize_postincrements(bool);
 
     std::string instruction;
     MicrocodeAddress start_ma;
@@ -150,6 +151,7 @@ using namespace msp430;
 %token TOK_BIT		"BIT"
 %token TOK_BR		"BR"
 %token TOK_CALL		"CALL"
+%token TOK_CALLA	"CALLA"
 %token TOK_CLR		"CLR"
 %token TOK_CLRA		"CLRA"
 %token TOK_CLRX		"CLRX"
@@ -209,7 +211,7 @@ using namespace msp430;
 
 %% /***** Parser rules *****/
 
-start: instruction { data.finalize_postincrements(); }
+start: instruction
 ;
 
 operand:
@@ -279,10 +281,17 @@ suffix:
 
 instruction:
   TOK_BAD { msp430_translate<MSP430_TOKEN(BAD)> (data); }
+| call operand
+  { msp430_translate<MSP430_TOKEN(CALL)> (data, $2); }
 | clear suffix operand
   { msp430_translate<MSP430_TOKEN(CLR)> (data, $3); }
 | move suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(MOV)> (data, $3, $5); }
+;
+
+call:
+  TOK_CALL
+| TOK_CALLA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 ;
 
 clear:
