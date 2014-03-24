@@ -109,7 +109,7 @@ msp430::parser_data::get_memory_reference (int disp, Expr *bis,
 					   Constant::create(disp,
 							    0, MSP430_SIZE_A)),
 			 do_test, NULL);
-      mc->add_assignment(do_test, reg,
+      mc->add_assignment(do_test, reg->ref(),
 			 BinaryApp::create(BV_OP_AND, reg->ref(),
 					   Constant::create(0xffff,
 							    0, MSP430_SIZE_A)),
@@ -126,7 +126,8 @@ msp430::parser_data::get_memory_reference (int disp, Expr *bis,
   } else
     bis = Constant::create (disp, 0, MSP430_SIZE_A);
 
-  return MemCell::create (bis, 0, MSP430_SIZE_A);
+  return MemCell::create (bis, 0,
+			  operand_size == MSP430_SIZE_A? 32 : operand_size);
 }
 
 void
@@ -165,79 +166,32 @@ msp430::parser_data::finalize_postincrements(void) {
   mc->add_skip(start_ma, next_ma);
 }
 
-void
-msp430_set_operands_size (Expr *&dst, Expr *&src)
-{
-  if (dst->get_bv_size() < src->get_bv_size())
-    Expr::extract_with_bit_vector_size_of (src, dst);
-  else if (dst->get_bv_size() > src->get_bv_size())
-    Expr::extract_with_bit_vector_size_of ((Expr *&) dst, src);
+Expr *
+msp430_trim_source_operand(msp430::parser_data &data, Expr *source) {
+
+  return (source->get_bv_size() == data.operand_size)?
+    source :
+    TernaryApp::create(BV_OP_EXTRACT, source,
+		       Constant::zero(Expr::get_bv_default_size()),
+		       Constant::create(data.operand_size, 0,
+					Expr::get_bv_default_size()),
+		       0, data.operand_size);
 }
 
-			/* --------------- */
+Expr *
+msp430_stretch_expr_to_dest_size(Expr *dest, Expr *expr) {
+  int dest_bvs = dest->get_bv_size();
+  int expr_bvs = expr->get_bv_size();
 
-static void
-s_translate_zero_excess(msp430::parser_data &data, Expr *dest, int size) {
-  int rest = MSP430_SIZE_A - size;
+  assert(dest_bvs >= expr_bvs);
 
-  if (rest > 0 && !dest->is_RegisterExpr())
-    return;
+  if (expr->get_bv_size() == dest->get_bv_size())
+    return expr;
 
-  data.mc->add_assignment(data.start_ma,
-			  dynamic_cast<LValue *>(dest->extract_bit_vector(size, rest)),
-			  Constant::zero(rest), data.start_ma + 1, NULL);
-
-  data.start_ma = data.start_ma + 1;
-}
-
-void
-msp430_translate_with_size (msp430::parser_data &data,
-			    Expr *source, Expr *dest, bool zero,
-			    void (*tr) (msp430::parser_data &,Expr *, Expr *))
-{
-  int size = data.operand_size;
-  Expr *tmp;
-
-  if (zero)
-    s_translate_zero_excess(data, dest, size);
-
-  tmp = source->extract_bit_vector(0, size);
-  source->deref();
-  source = tmp;
-  tmp = dest->extract_bit_vector(0, size);
-  dest->deref();
-  dest = tmp;
-
-  tr (data, source, dest);
-}
-
-void
-msp430_translate_with_size (msp430::parser_data &DEFAULT_DATA,
-			    Expr *op1, bool zero,
-			    void (*tr) (msp430::parser_data &, Expr *))
-{
-  int size = data.operand_size;
-  Expr *tmp;
-
-  if (zero)
-    s_translate_zero_excess(data, tmp, size);
-
-  tmp = op1->extract_bit_vector(0, size);
-  op1->deref();
-
-  tr (data, tmp);
-}
-
-			/* --------------- */
-
-void
-msp430_if_then_else (MicrocodeAddress start, msp430::parser_data &data,
-		     Expr *cond,
-		     MicrocodeAddress ifaddr, MicrocodeAddress elseaddr)
-{
-  data.mc->add_skip (start, ifaddr, cond);
-  data.mc->add_skip (start, elseaddr,
-		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
+  return BinaryApp::create(BV_OP_CONCAT,
+			   Constant::zero(dest_bvs - expr_bvs),
+			   expr->ref(),
+			   0, dest_bvs);
 }
 
 MSP430_TRANSLATE_0_OP(BAD)

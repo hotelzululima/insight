@@ -196,7 +196,7 @@ using namespace msp430;
 %token TOK_XOR		"XOR"
 
 %type <expr> operand memory_reference
-%type <reg> register
+%type <reg> register trimmed_register
 
 %type <intValue> integer immediate
 
@@ -212,8 +212,17 @@ start: instruction { data.finalize_postincrements(); }
 
 operand:
   immediate { $$ = Constant::create ($1, 0, data.arch->get_word_size ()); }
-| register { $$ = $1; }
+| trimmed_register { $$ = $1; }
 | memory_reference { $$ = $1; }
+;
+
+trimmed_register:
+  register {
+    Expr *tmp = $$;
+    $$ =
+     dynamic_cast<RegisterExpr*>(tmp->extract_bit_vector(0, data.operand_size));
+    tmp->deref();
+  }
 ;
 
 register:
@@ -235,7 +244,7 @@ TOK_REGISTER
 
 memory_reference:
   integer TOK_LPAR register TOK_RPAR {
-  $$ = data.get_memory_reference($1, $3, true);
+    $$ = data.get_memory_reference($1, $3, true);
   }
 | TOK_AT register { $$ = data.get_memory_reference(0, $2, false); }
 | TOK_AT register TOK_PLUS {

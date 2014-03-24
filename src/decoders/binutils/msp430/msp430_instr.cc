@@ -32,14 +32,24 @@
 
 static void
 s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest) {
+  Expr *res = msp430_trim_source_operand(data, source);
+
 
   data.mc->add_assignment(data.start_ma,
-			  dynamic_cast<LValue *>(dest), source,
+			  dynamic_cast<LValue *>(dest),
+			  msp430_stretch_expr_to_dest_size(dest, res),
 			  data.start_ma + 1, NULL);
   data.start_ma = data.start_ma + 1;
 }
 
 MSP430_TRANSLATE_2_OP(MOV) {
-  msp430_translate_with_size(data, op1, op2, !data.is_extended,
-			     s_translate_mov);
+  s_translate_mov(data, op1, op2);
+}
+
+MSP430_TRANSLATE_2_OP(MOVA) {
+  s_translate_mov(data, op1, op2);
+}
+
+MSP430_TRANSLATE_2_OP(MOVX) {
+  s_translate_mov(data, op1, op2);
 }

@@ -110,17 +110,7 @@ msp430_translate(msp430::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2)
 
 void msp430_skip (msp430::parser_data &data);
 
-void msp430_translate_with_size (msp430::parser_data &data,
-				 Expr *op1, Expr *op2, bool zero,
-				 void (*tr) (msp430::parser_data &,
-					     Expr *, Expr *));
-
-void msp430_translate_with_size (msp430::parser_data &data,
-				 Expr *op1, bool zero,
-				 void (*tr) (msp430::parser_data &, Expr *));
-
-void msp430_if_then_else (MicrocodeAddress start, msp430::parser_data &data,
-			  Expr *cond,
-			  MicrocodeAddress ifaddr, MicrocodeAddress elseaddr);
+Expr *msp430_trim_source_operand(msp430::parser_data &data, Expr *source);
+Expr *msp430_stretch_expr_to_dest_size(Expr *dest, Expr *expr);
 
 #endif /* ! MSP430_TRANSLATE_HH */
