@@ -284,7 +284,7 @@ instruction:
 move:
   TOK_MOV
 | TOK_MOVA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
-| TOK_MOVX { data.operand_size = MSP430_SIZE_A; data.is_extended = 1; }
+| TOK_MOVX { data.is_extended = 1; }
 ;
 
 %% /***** Parser subroutines *****/
