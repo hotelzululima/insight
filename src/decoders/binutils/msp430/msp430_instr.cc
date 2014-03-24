@@ -42,6 +42,10 @@ s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest) {
   data.start_ma = data.start_ma + 1;
 }
 
+MSP430_TRANSLATE_1_OP(CLR) {
+  s_translate_mov(data, Constant::zero(data.operand_size), op1);
+}
+
 MSP430_TRANSLATE_2_OP(MOV) {
   s_translate_mov(data, op1, op2);
 }

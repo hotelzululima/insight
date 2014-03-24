@@ -151,6 +151,8 @@ using namespace msp430;
 %token TOK_BR		"BR"
 %token TOK_CALL		"CALL"
 %token TOK_CLR		"CLR"
+%token TOK_CLRA		"CLRA"
+%token TOK_CLRX		"CLRX"
 %token TOK_CLRC		"CLRC"
 %token TOK_CLRN		"CLRN"
 %token TOK_CLRZ		"CLRZ"
@@ -277,8 +279,16 @@ suffix:
 
 instruction:
   TOK_BAD { msp430_translate<MSP430_TOKEN(BAD)> (data); }
+| clear suffix operand
+  { msp430_translate<MSP430_TOKEN(CLR)> (data, $3); }
 | move suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(MOV)> (data, $3, $5); }
+;
+
+clear:
+  TOK_CLR
+| TOK_CLRA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
+| TOK_CLRX { data.is_extended = 1; }
 ;
 
 move:
