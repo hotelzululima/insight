@@ -1,8 +1,8 @@
 %{                      /* -*- C++ -*- */
 /*-
- * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
- *                          Universite Bordeaux 1.
+ *                          Universite de Bordeaux.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -973,6 +973,8 @@ optype    [bswlqt]
                 }
 
  /* Registers */
+"%eip" { return token::TOK_EIP; }
+"%rip" { return token::TOK_RIP; }
 "%eiz" { return token::TOK_EIZ; }
 
 "%"{varname} {

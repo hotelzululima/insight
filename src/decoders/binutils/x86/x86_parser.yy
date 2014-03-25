@@ -2,7 +2,7 @@
 /*-
  * Copyright (C) 2010-2013, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
- *                          Universite Bordeaux 1.
+ *                          Universite de Bordeaux.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -974,6 +974,8 @@ using namespace x86;
 %token  TOK_XSAVE            "XSAVE"
 %token  TOK_XSAVEOPT         "XSAVEOPT"
 %token  TOK_XSETBV           "XSETBV"
+%token  TOK_EIP              "EIP"
+%token  TOK_RIP              "RIP"
 %token  TOK_EIZ              "EIZ"
 
 %type <expr> operand register section memory_reference base_index_scale
@@ -1032,7 +1034,9 @@ base_index_scale :
 ;
 
 register :
-TOK_REGISTER 
+  TOK_EIP { $$ = Constant::create (data.next_ma.getGlobal(), 0, 32); }
+| TOK_RIP { $$ = Constant::create (data.next_ma.getGlobal(), 0, 64); }
+| TOK_REGISTER
 { 
   $$ = data.get_register ($1->c_str ()); 
   if ($$ == NULL)
@@ -1046,11 +1050,8 @@ TOK_REGISTER
       delete $1;
     }
 }
-| TOK_EIZ
-{
-  $$ = Constant::zero(data.arch->get_word_size ());
-}
- ;
+| TOK_EIZ { $$ = Constant::zero(data.arch->get_word_size ()); }
+;
 
 immediate:
   TOK_DOLLAR integer { $$ = $2; }
