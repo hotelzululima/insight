@@ -92,7 +92,6 @@ def remove_hook(f, hindex):
                 .format(len(hooks[f]))
         else:
             hlist[hindex:hindex+1] = []
-            print hlist
     else:
         print "no hook is attached to", f.__name__
 
@@ -303,7 +302,7 @@ def cont(a=0):
     arrows()
 
 
-def dump(addr=None, l=256):
+def dump(addr=None, l=256, filter=None):
     """
     Display content of memory.
 
@@ -326,6 +325,8 @@ def dump(addr=None, l=256):
         if addr is None:
             addr = pc()
         for v in simulator.get_memory(addr, l):
+            if filter is not None:
+                v = filter (v)
             print v
     except:
         simulation_error()
