@@ -93,6 +93,7 @@ public:
     GetNodeNotFoundExc if there is no node at this address. */
   MicrocodeNode * get_node(MicrocodeAddress addr) const
     throw(GetNodeNotFoundExc);
+  bool has_node_at (MicrocodeAddress addr) const;
   MicrocodeNode * get_or_create_node(MicrocodeAddress addr);
   void add_node(MicrocodeNode *n);
   std::vector<MicrocodeNode *> * get_nodes() const;
@@ -120,6 +121,8 @@ public:
   add_jump(MicrocodeAddress beg, Expr *target, Expr *guard = 0);
 
   void add_external(MicrocodeAddress beg, Expr *relation, MicrocodeAddress end);
+
+  void merge (const Microcode *other, address_t shift);
 
 /*****************************************************************************/
 

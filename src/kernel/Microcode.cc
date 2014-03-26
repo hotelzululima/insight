@@ -36,6 +36,7 @@
 #include <set>
 #include <vector>
 #include <algorithm>
+#include <kernel/annotations/NextInstAnnotation.hh>
 #include <decoders/DecoderFactory.hh>
 #include <utils/Option.hh>
 #include <utils/logs.hh>
@@ -120,6 +121,16 @@ MicrocodeNode * Microcode::get_node(MicrocodeAddress addr) const
     }
   }
   throw GetNodeNotFoundExc();
+}
+
+bool
+Microcode::has_node_at (MicrocodeAddress addr) const
+{
+  try {
+    return (get_node(addr) != NULL);
+  } catch (GetNodeNotFoundExc e) {
+    return false;
+  }  
 }
 
 MicrocodeNode *
@@ -212,6 +223,74 @@ Microcode::add_external(MicrocodeAddress /* beg */, Expr * /* relation */,
       MicrocodeAddress /* end */) {
   //! \todo Not implemented yet
   cerr << "Microcode::add_external() is not implemented yet." << endl;
+}
+
+
+static void 
+s_copy_annotations (Annotable *dst, const Annotable *src, address_t shift)
+{
+  const Annotable::AnnotationMap *annotations = src->get_annotations ();
+
+  for(Annotable::AnnotationMap::const_iterator i = annotations->begin ();
+      i != annotations->end (); i++)
+    {
+      const NextInstAnnotation *maa = 
+	dynamic_cast<const NextInstAnnotation *>(i ->second);
+      Annotation *newa;
+      if (maa != NULL)
+	newa = new NextInstAnnotation (maa->get_value () + shift);
+      else 
+	newa = (Annotation *) i->second->clone ();
+      dst->add_annotation (i->first, newa);
+    }
+}
+
+void 
+Microcode::merge (const Microcode *other, address_t shift)
+{
+  Microcode_iterate_nodes(*other, in) 
+    {
+      MicrocodeNode *node = *in;
+      MicrocodeAddress loc = node->get_loc ();
+      MicrocodeAddress newloc (loc.getGlobal () + shift, loc.getLocal ());
+      MicrocodeNode *newsrc = get_or_create_node (newloc);
+      
+      s_copy_annotations (newsrc, node, shift);
+    }
+
+  Microcode_iterate_nodes(*other, in) 
+    {
+      MicrocodeNode *node = *in;
+      MicrocodeAddress loc = node->get_loc ();
+      MicrocodeAddress newloc (loc.getGlobal () + shift, loc.getLocal ());
+      MicrocodeNode *newsrc = get_node (newloc);
+      
+      MicrocodeNode_iterate_successors(*node, is) 
+	{
+	  StmtArrow *a = *is;
+	  StmtArrow *na;
+
+	  assert (a->get_src () == node);
+	  if (a->is_static ())
+	    {
+	      StaticArrow *sa = dynamic_cast<StaticArrow *> (a);
+	      MicrocodeAddress natgt (sa->get_target ().getGlobal () + shift,
+				      sa->get_target ().getLocal ());
+	      MicrocodeNode *newtgt = get_node (natgt);
+
+	      na = newsrc->add_successor (sa->get_condition ()->ref (),
+					  newtgt, sa->get_stmt ()->clone ());
+	    }
+	  else
+	    {
+	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (a);
+	      na = newsrc->add_successor (da->get_condition ()->ref (),
+					  da->get_target ()->ref (),  
+					  da->get_stmt ()->clone ());
+	    }
+	  s_copy_annotations (na, a, shift);
+	}
+    }
 }
 
 /*****************************************************************************/
