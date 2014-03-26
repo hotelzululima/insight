@@ -867,6 +867,15 @@ def load_mc(filename):
     else:
         simulator.load_mc(filename)
 
+def load_stub(filename, addr):
+    """
+    """
+    global simulator
+    if simulator is None:
+        print "program is not started"
+    else:
+        simulator.load_stub(filename, addr)
+
 
 def simulation_error():
     """Internal function"""

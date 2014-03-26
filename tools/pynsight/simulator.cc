@@ -195,6 +195,7 @@ public:
   virtual Option<bool> eval (const Expr *e) const = 0;
   virtual Option<string> get_instruction (address_t addr);
 
+  virtual bool load_stub (const string &filename, address_t shift);
   virtual bool load_microcode (const string &filename);
   virtual bool save_microcode (const string &filename);
 
@@ -369,6 +370,9 @@ s_Simulator_load_mc (PyObject *self, PyObject *args);
 static PyObject *
 s_Simulator_save_mc (PyObject *self, PyObject *args);
 
+static PyObject *
+s_Simulator_load_stub (PyObject *self, PyObject *args);
+
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -446,6 +450,7 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" }, 
  { "save_mc", s_Simulator_save_mc, METH_VARARGS,
    "\n" }, 
+ { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" }, 
  { NULL, NULL, 0, NULL }
 };
 
@@ -1178,7 +1183,23 @@ s_Simulator_save_mc (PyObject *self, PyObject *args)
   
   if (S->save_microcode (filename))
     return pynsight::None ();
-  return NULL;}
+  return NULL;
+}
+
+static PyObject *
+s_Simulator_load_stub (PyObject *self, PyObject *args)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  const char *filename;
+  unsigned long addr;
+
+  if (! PyArg_ParseTuple (args, "sk", &filename, &addr))
+    return NULL;
+  
+  if (S->load_stub (filename, addr))
+    return pynsight::None ();
+  return NULL;
+}
 
 /*****************************************************************************
  *
@@ -1497,6 +1518,23 @@ GenericInsightSimulator::load_microcode (const string &filename)
 }
 
 bool 
+GenericInsightSimulator::load_stub (const string &filename, address_t shift)
+{
+  try
+    {
+      Microcode *newmc = xml_parse_mc_program (filename, march);
+      mc->merge (newmc, shift);
+      delete newmc;
+    }
+  catch (XmlParserException &e)
+    {
+      PyErr_SetString (PyExc_IOError, e.what ());
+      return false;
+    }
+  return true;  
+}
+
+bool 
 GenericInsightSimulator::save_microcode (const string &filename)
 {
   std::ofstream output (filename.c_str ());
@@ -1524,6 +1562,8 @@ InsightSimulator<Stepper>::InsightSimulator (Program *prg)
   : GenericInsightSimulator (prg)
 {
   stepper = new Stepper (prg->concrete_memory, march);
+  stepper->set_map_dynamic_jumps_to_memory (true);
+
   current_state = NULL;
   decoder = new BinutilsDecoder (march, 
 				 new RawBytesReader<Stepper>(this));
@@ -1595,13 +1635,8 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 	  result = *(succs->begin ());
 	  MicrocodeAddress tgt = 
 	    result->get_ProgramPoint ()->to_MicrocodeAddress ();
-	  if (! check_memory_range (from, tgt.getGlobal (), 1))
-	    {
-	      PyErr_SetObject (pynsight::JumpToInvalidAddress,
-			       s_PyMicrocodeAddress (tgt));
-	      result = NULL;
-	    }
-	  else
+	  
+	  if (mc->has_node_at (tgt) || check_memory_range (from, tgt.getGlobal (), 1))
 	    {
 	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (a);
 	      if (da != NULL)
@@ -1611,6 +1646,12 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 		  da->add_solved_jump (a);
 		}
 	      result->ref ();
+	    }
+	  else
+	    {
+	      PyErr_SetObject (pynsight::JumpToInvalidAddress,
+			       s_PyMicrocodeAddress (tgt));
+	      result = NULL;
 	    }
 	}
       else if (succs->size () != 0)
@@ -1990,7 +2031,7 @@ InsightSimulator<Stepper>::compute_enabled_arrows (State *s,
   typename Stepper::ProgramPoint *pp = ns->get_ProgramPoint ();
   address_t addr = pp->to_MicrocodeAddress ().getGlobal ();
 
-  if (! prg->concrete_memory->is_defined (addr))
+  if (! prg->concrete_memory->is_defined (addr) && !mc->has_node_at (addr))
     return;
 
   try 
@@ -2034,7 +2075,7 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
 	  // pp.to_address () has not yet been decoded.
 	  MicrocodeAddress addr = result->get_loc ();
 	  assert (addr.getLocal () == 0);
-	  ConcreteAddress next =decoder->decode (mc, addr.getGlobal ());
+	  ConcreteAddress next = decoder->decode (mc, addr.getGlobal ());
 	  MicrocodeAddress nextma (next.get_address ());
 	  result->add_annotation (NextInstAnnotation::ID,
 				  new NextInstAnnotation (nextma));
