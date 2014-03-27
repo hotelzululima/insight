@@ -981,18 +981,30 @@ def replay_steps(s):
     for (addr,action,arg) in s:
         action(arg)
         
-def display_steps(s):
+def display_steps(s, asrecord = False):
     """
     Display a sequence of simulation steps.
 
     Parameters:
-    s : the simulation steps as returned by 'steps()'.
+    s        : the simulation steps as returned by 'steps()'.
+    asrecord : if True the records are displayed as a Python code.
     """
     if s is None:
         print "nothing to display"
-        return
-    for (addr,action,arg) in s:
-        print "0x{:x} : {}({})".format(addr, action.__name__, arg)
+        return    
+    if asrecord:
+        sys.stdout.write("[");
+        l = len(s)
+        for i in range(l):
+            fmt = "(0x{:x},{}, 0x{:x})"
+            if i != l - 1:
+                fmt += ", "
+            rec = s[i]
+            sys.stdout.write(fmt.format(rec[0], rec[1].__name__, rec[2]))
+        print "]"
+    else:
+        for (addr, action, arg) in s:
+            print "0x{:x} : {}({})".format(addr, action.__name__, arg)
     
 def __record(addr, fun, arg, reset = False):
     global recorder;
