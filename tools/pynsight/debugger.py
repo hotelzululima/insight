@@ -925,6 +925,18 @@ def simulation_error():
 
 
 def view_mc(start=None, end=None, ep=None):
+    """
+    Display a CFG of the microcode discovered til then.
+
+    This function display a CFG of the microcode that have been run
+    through til then. It uses the xdot application to visualize the
+    CFG as a DOT graph.
+
+    Parameters:
+    - start : set the address of the starting node (entrypoint if None)
+    - end   : set the address of an end node (no end node if None)
+    - ep    : set the entry point address
+    """
     def reset_viewer (arg):
         global dotviewer
         dotviewer = None
