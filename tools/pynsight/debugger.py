@@ -8,6 +8,7 @@ simulator = None
 hooks = {}
 startpoint = None
 dotviewer = None
+recorder = None
 
 insight.config.set("kernel.expr.solver.name", "mathsat")
 
@@ -43,7 +44,7 @@ def exec_hooks(f):
     """
     Run hooks for the specified debugger function 'f'
 
-    InsightDB allows to attach callbacks to simulation function (run,
+    The simulator allows to attach callbacks to simulation function (run,
     microstep, step, cont). These callbacks are called juste after the
     execution of the corresponding function.
 
@@ -188,13 +189,15 @@ def run(ep=None):
     Parameters:
     - ep : the entrypoint of the simulation.
     """
-    global simulator, program, startpoint
+    global simulator, program, startpoint, recorder
     if program is None:
         print "no program is loaded"
         return
 
     if ep is None:
         ep = startpoint
+
+    __record(ep, run, ep, True)
     simulator.run(ep)
     startpoint = ep
     exec_hooks(run)
@@ -233,11 +236,12 @@ def microstep(a=0):
     - a : indicates the index of an arrow in the list of enabled ones (see
           'help(arrows)').
     """
-    global simulator
+    global simulator, recorder
     if simulator is None:
         print "Program is not started"
         return
-    try:
+    __record(pc(), microstep, a)
+    try:        
         simulator.microstep(a)
     except:
         simulation_error()
@@ -261,10 +265,11 @@ def step(a=0):
     - a : the index of an enabled arrow.
     """
 
-    global simulator
+    global simulator, recorder
     if simulator is None:
         print "Program is not started"
         return
+    __record(pc(), step, a)
     try:
         simulator.step(a)
     except:
@@ -288,10 +293,11 @@ def cont(a=0):
     Parameters:
     - a : the index of an enabled arrow.
     """
-    global simulator
+    global simulator, recorder
     if simulator is None:
         print "Program is not started"
         return
+    __record(pc(), cont, a)
     try:
         simulator.step(a)
         while True:
@@ -311,10 +317,12 @@ def dump(addr=None, l=256, filter=None):
     loaded binary file you must use 'utils.pretty_print_memory'.
 
     Parameters:
-    - addr : start address of the dumped memory area. If 'addr' is not
-             specified then the value of the program-counter is used (see
-             'help(pc)').
-    - l    : the number of bytes to display.
+    - addr   : start address of the dumped memory area. If 'addr' is not
+               specified then the value of the program-counter is used (see
+               'help(pc)').
+    - l      : the number of bytes to display.
+    - filter : a callback to translate domain-specific string into another 
+               value.
     """
     global simulator
 
@@ -870,6 +878,19 @@ def load_mc(filename):
 
 def load_stub(filename, addr):
     """
+    Load a microcode program at a given address.
+
+    This function loads an existing program from file 'filename' and relocates
+    it at the given address 'addr'. The loaded program is merged within the
+    existing microcode; each node is relocated by shifting its location with
+    'addr' bytes. 
+
+    Take care that loaded stubs don't overlap existing nodes. In this case
+    both microcodes exist.
+    
+    Parameters:
+    - filename : input filename
+    - addr     : offset where the microcode is relocated
     """
     global simulator
     if simulator is None:
@@ -925,3 +946,56 @@ def view_mc(start=None, end=None, ep=None):
         dotviewer.connect('destroy', reset_viewer)
         dotviewer.show()
     dotviewer.set_dotcode(dotstring)
+
+
+def steps():
+    """
+    Return current simulation steps.
+
+    The simulator records calls to simulation functions: run, step, cont,
+    microstep. This function returns the list of calls which can be 
+    memorized for later use. The content of the record can be displayed 
+    using 'display_steps' and the sequence can re-executed using 
+    'replay_steps'.
+    """
+    global recorder
+    if recorder is None:
+        print "nothing has been recorded"
+        return None
+    result = []
+    for r in recorder:
+        result += [ r ]
+    return result
+
+
+def replay_steps(s):
+    """
+    Re-execute a sequence of simulation steps.
+
+    Parameters:
+    s : the sequence of steps returned by a prior call to 'steps()'
+    """
+    if s is None:
+        print "nothing to do"
+        return
+    for (addr,action,arg) in s:
+        action(arg)
+        
+def display_steps(s):
+    """
+    Display a sequence of simulation steps.
+
+    Parameters:
+    s : the simulation steps as returned by 'steps()'.
+    """
+    if s is None:
+        print "nothing to display"
+        return
+    for (addr,action,arg) in s:
+        print "0x{:x} : {}({})".format(addr, action.__name__, arg)
+    
+def __record(addr, fun, arg, reset = False):
+    global recorder;
+    if reset:
+        recorder = []
+    recorder += [(addr, fun, arg)]
