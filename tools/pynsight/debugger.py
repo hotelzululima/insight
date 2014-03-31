@@ -1054,7 +1054,7 @@ def display_stack(top, bottom, absconv = None, bp = None, sp = None):
                 if c not in string.printable or \
                    (c in string.whitespace and c != " "):
                     c = "."
-                    strstr += c
+                strstr += c
         fmt = "0x{:" + str(addrsize) + "x} : {} {} ; {} {}"
         if bp is not None:
             bps = "<bp{:+x}>".format(top - bp)
