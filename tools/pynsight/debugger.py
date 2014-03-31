@@ -1028,17 +1028,17 @@ def display_stack(top, bottom, absconv = None, bp = None, sp = None):
     if simulator is None:
         print "program is not started"
         return
-    direction = -1
+
     if top < bottom:
-        direction = 1
+        bottom, top = top, bottom
+
     addrsize = prog().info()["address_size"] / 8
     elsize = prog().info()["word_size"] / 8
-    while (direction == 1)and top < bottom or \
-          (direction == -1) and top > bottom :
-        entry = top
+    
+    top -= top % elsize
+    while top >= bottom :
         bytestr = ""
         strstr = ""
-
         for i in range(elsize):
             try:
                 byte = absconv(simulator.get_memory(top + i, 1)[0])
@@ -1054,19 +1054,18 @@ def display_stack(top, bottom, absconv = None, bp = None, sp = None):
                 if c not in string.printable or \
                    (c in string.whitespace and c != " "):
                     c = "."
-                strstr += c
-                    
-        top += elsize * direction
+                    strstr += c
         fmt = "0x{:" + str(addrsize) + "x} : {} {} ; {} {}"
         if bp is not None:
-            bps = "<bp{:+x}>".format(entry - bp)
+            bps = "<bp{:+x}>".format(top - bp)
         else:
             bps = ""
         if sp is not None:
-            sps = "<sp{:+x}>".format(entry - sp)
+            sps = "<sp{:+x}>".format(top - sp)
         else:
             sps = ""
-        print fmt.format(entry, bytestr, strstr, bps, sps)
+        print fmt.format(top, bytestr, strstr, bps, sps)
+        top -= elsize
 
 
 def eval(expr):
