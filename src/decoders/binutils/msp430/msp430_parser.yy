@@ -158,6 +158,7 @@ using namespace msp430;
 %token TOK_BIT		"BIT"
 %token TOK_BITX		"BITX"
 %token TOK_BR		"BR"
+%token TOK_BRA		"BRA"
 %token TOK_CALL		"CALL"
 %token TOK_CALLA	"CALLA"
 %token TOK_CLR		"CLR"
