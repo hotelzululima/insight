@@ -198,7 +198,7 @@ s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds)
   ConcreteAddress ca_end (end);
 
   dot_asm_writer (oss, M->mc->get_microcode (), &ca_start, &ca_end, &ca_ep, 
-		  M->prog->symbol_table, "");
+		  M->prog->symbol_table, true, "");
 
   return Py_BuildValue ("s", oss.str ().c_str ());
 }

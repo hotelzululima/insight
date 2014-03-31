@@ -186,13 +186,15 @@ dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
   if (! asm_only)
       mc->toDot (out);
   else
-    dot_asm_writer (out, mc, NULL, NULL, entrypoint, symboltable, graphlabel);
+    dot_asm_writer (out, mc, NULL, NULL, entrypoint, symboltable, 
+		    false, graphlabel);
 }
 
 void 
 dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 		ConcreteAddress *end, ConcreteAddress *entrypoint, 
-		const SymbolTable *symboltable, const std::string &graphlabel)
+		const SymbolTable *symboltable, bool arrow_indexes, 
+		const std::string &graphlabel)
 {
   static int primes[] = { 5483, 10967, 21933, 43867,  87731, 175459, 350919, 
 			  701833, 1403667, 2807333 , 5614667, 11229331, 
@@ -285,9 +287,9 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
       out << "];\n";
 
       set<MicrocodeAddress,LessThanFunctor<MicrocodeAddress> > targets;
-
-      for (vector<MicrocodeNode *>::const_iterator s = bb.succs->begin (); 
-	   s != bb.succs->end (); s++)
+      vector<MicrocodeNode *>::const_iterator s = bb.succs->begin ();
+      bool indexes = arrow_indexes && (bb.succs->size () > 1);
+      for (int i = 0; s != bb.succs->end (); s++, i++)
 	{
 	  MicrocodeAddress tgt = (*s)->get_loc ();
 
@@ -299,8 +301,10 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 
 	  out << NODE_PREFIX << std::hex << ma.getGlobal () 
 	      << " -> "
-	      << NODE_PREFIX << std::hex << tgt.getGlobal () 
-	      << "; " << endl;
+	      << NODE_PREFIX << std::hex << tgt.getGlobal ();
+	  if (indexes)
+	    out << " [label = \"#" << i << "\"]";
+	  out << "; " << endl;
 	}
 
     }

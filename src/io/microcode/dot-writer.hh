@@ -48,6 +48,7 @@ dot_asm_writer (std::ostream &out, const Microcode *mc,
 		ConcreteAddress *end,
 		ConcreteAddress *entrypoint,
 		const SymbolTable *symbtable, 
+		bool arrow_indexes,
 		const std::string &graphlabel = std::string ());
 
 #endif /* ! DOT_WRITER_HH */
