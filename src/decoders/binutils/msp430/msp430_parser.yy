@@ -266,7 +266,7 @@ operand:
 
 trimmed_register:
   register {
-    Expr *tmp = $$;
+    Expr *tmp = $1;
     $$ =
      dynamic_cast<RegisterExpr*>(tmp->extract_bit_vector(0, data.operand_size));
     tmp->deref();
