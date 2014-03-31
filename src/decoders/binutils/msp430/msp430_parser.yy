@@ -131,7 +131,7 @@ using namespace msp430;
 %token TOK_PLUS TOK_MINUS
 %token TOK_AMPAND TOK_SHARP TOK_AT
 %token TOK_DOLLAR
-%token TOK_BYTESUFFIX
+%token TOK_ADDRSUFFIX TOK_BYTESUFFIX
 
 %token <stringValue>  TOK_INVALID
 %token                TOK_EOF      0 "end of buffer (EOF)"
