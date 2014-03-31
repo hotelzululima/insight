@@ -244,7 +244,7 @@ using namespace msp430;
 %token TOK_XORX		"XORX"
 
 %type <expr> operand memory_reference
-%type <reg> register trimmed_register
+%type <reg> register
 
 %type <intValue> integer immediate
 
@@ -260,17 +260,8 @@ start: instruction
 
 operand:
   immediate { $$ = Constant::create ($1, 0, data.operand_size); }
-| trimmed_register { $$ = $1; }
+| register { $$ = $1; }
 | memory_reference { $$ = $1; }
-;
-
-trimmed_register:
-  register {
-    Expr *tmp = $1;
-    $$ =
-     dynamic_cast<RegisterExpr*>(tmp->extract_bit_vector(0, data.operand_size));
-    tmp->deref();
-  }
 ;
 
 register:
