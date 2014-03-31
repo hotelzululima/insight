@@ -99,6 +99,22 @@ MSP430_TRANSLATE_2_OP(AND) {
 		  op2);
 }
 
+MSP430_TRANSLATE_2_OP(BIC) {
+  s_translate_mov(data,
+		  s_operation_semantics(data, BV_OP_AND,
+					UnaryApp::create(BV_OP_NOT, op1,
+							 0,
+							 op1->get_bv_size()),
+					op2->ref()),
+		  op2);
+}
+
+MSP430_TRANSLATE_2_OP(BIS) {
+  s_translate_mov(data,
+		  s_operation_semantics(data, BV_OP_OR, op1, op2->ref()),
+		  op2);
+}
+
 MSP430_TRANSLATE_1_OP(CLR) {
   s_translate_mov(data, Constant::zero(data.operand_size), op1);
 }
@@ -132,4 +148,94 @@ MSP430_TRANSLATE_1_OP(POP) {
   Expr *dest = MemCell::create(sp, 0, size * 8);
   source = msp430_stretch_expr_to_dest_size(dest, source);
   s_translate_mov(data, source, dest);
+}
+
+/*** Static jumps ***/
+
+static void
+s_translate_static_jump(msp430::parser_data &data, Expr *op, Expr *guard,
+			bool guard_jumps) {
+  MemCell *memcell = dynamic_cast<MemCell *>(op);
+  Constant *constant = dynamic_cast<Constant *>(memcell->get_addr());
+
+  if (guard != NULL) {
+    Expr *not_guard = UnaryApp::create(BV_OP_NOT, guard->ref(), 0, 1);
+
+    data.mc->add_skip(data.start_ma, data.next_ma,
+		      guard_jumps? not_guard : guard);
+
+    if (!guard_jumps)
+      guard = not_guard;
+  }
+
+  data.mc->add_skip(data.start_ma, MicrocodeAddress(constant->get_val()),
+		    guard);
+  op->deref();
+}
+
+MSP430_TRANSLATE_1_OP(JMP) {
+  s_translate_static_jump(data, op1, NULL, false);
+}
+
+static Expr *
+s_compute_cc_flag(msp430::parser_data &data, int bit) {
+  Expr *sr = data.get_register(MSP430_REG_SR);
+  Expr *ret = sr->extract_bit_vector(bit, 1);
+
+  sr->deref();
+
+  return ret;
+}
+
+MSP430_TRANSLATE_1_OP(JC) {
+  s_translate_static_jump(data, op1,
+			  s_compute_cc_flag(data, MSP430_FLAG_C), true);
+}
+
+MSP430_TRANSLATE_1_OP(JNC) {
+  s_translate_static_jump(data, op1,
+			  s_compute_cc_flag(data, MSP430_FLAG_C), false);
+}
+
+MSP430_TRANSLATE_1_OP(JZ) {
+  s_translate_static_jump(data, op1,
+			  s_compute_cc_flag(data, MSP430_FLAG_Z), true);
+}
+
+MSP430_TRANSLATE_1_OP(JNZ) {
+  s_translate_static_jump(data, op1,
+			  s_compute_cc_flag(data, MSP430_FLAG_Z), false);
+}
+
+MSP430_TRANSLATE_1_OP(JN) {
+  s_translate_static_jump(data, op1,
+			  s_compute_cc_flag(data, MSP430_FLAG_N), true);
+}
+
+MSP430_TRANSLATE_1_OP(JGE) {
+  s_translate_static_jump(data, op1,
+			  BinaryApp::create(BV_OP_XOR,
+					    s_compute_cc_flag(data,
+							      MSP430_FLAG_N),
+					    s_compute_cc_flag(data,
+							      MSP430_FLAG_V),
+					    0, 1),
+			  false);
+}
+
+MSP430_TRANSLATE_1_OP(JL) {
+  s_translate_static_jump(data, op1,
+			  BinaryApp::create(BV_OP_XOR,
+					    s_compute_cc_flag(data,
+							      MSP430_FLAG_N),
+					    s_compute_cc_flag(data,
+							      MSP430_FLAG_V),
+					    0, 1),
+			  true);
+}
+
+/*** Misc ***/
+
+MSP430_TRANSLATE_0_OP(NOP) {
+  data.mc->add_skip(data.start_ma, data.next_ma);
 }

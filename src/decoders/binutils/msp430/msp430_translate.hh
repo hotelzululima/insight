@@ -50,6 +50,17 @@ typedef msp430::parser::token_type TokenType;
 #define MSP430_SIZE_A	20
 
 #define MSP430_REG_SP	"r1"
+#define MSP430_REG_SR	"r2"
+
+#define MSP430_FLAG_C		0
+#define MSP430_FLAG_Z		1
+#define MSP430_FLAG_N		2
+#define MSP430_FLAG_GIE		3
+#define MSP430_FLAG_CPUOFF	4
+#define MSP430_FLAG_OSCOFF	5
+#define MSP430_FLAG_SCG0	6
+#define MSP430_FLAG_SCG1	7
+#define MSP430_FLAG_V		8
 
 typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
 

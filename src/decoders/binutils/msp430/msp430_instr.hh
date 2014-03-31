@@ -34,6 +34,7 @@
 # include "msp430_translate.hh"
 
 MSP430_TRANSLATE_0_OP(BAD); // msp430_translate.cc
+
 MSP430_TRANSLATE_2_OP(AND);
 MSP430_TRANSLATE_1_OP(CALL);
 MSP430_TRANSLATE_1_OP(CLR);
