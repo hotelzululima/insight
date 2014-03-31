@@ -194,7 +194,7 @@ msp430_stretch_expr_to_dest_size(Expr *dest, Expr *expr) {
 
   return BinaryApp::create(BV_OP_CONCAT,
 			   Constant::zero(dest_bvs - expr_bvs),
-			   expr->ref(),
+			   expr,
 			   0, dest_bvs);
 }
 

@@ -31,7 +31,7 @@
 #include <decoders/binutils/msp430/msp430_instr.hh>
 
 MSP430_TRANSLATE_1_OP(CALL) {
-  int bytes = data.is_extended? 4 : 2;
+  int bytes = data.operand_size == MSP430_SIZE_A? 4 : 2;
   LValue *sp = data.get_register(MSP430_REG_SP);
   bool is_immediate = op1->is_Constant();
   bool has_postinc = data.has_postincrements();
@@ -85,6 +85,20 @@ s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest) {
   }
 }
 
+static Expr *
+s_operation_semantics(msp430::parser_data &data, BinaryOp op,
+		      Expr *source, Expr *dest) {
+  source = msp430_trim_source_operand(data, source);
+  dest = msp430_trim_source_operand(data, dest);
+  return BinaryApp::create(op, source, dest, 0, data.operand_size);
+}
+
+MSP430_TRANSLATE_2_OP(AND) {
+  s_translate_mov(data,
+		  s_operation_semantics(data, BV_OP_AND, op1, op2->ref()),
+		  op2);
+}
+
 MSP430_TRANSLATE_1_OP(CLR) {
   s_translate_mov(data, Constant::zero(data.operand_size), op1);
 }
@@ -93,10 +107,29 @@ MSP430_TRANSLATE_2_OP(MOV) {
   s_translate_mov(data, op1, op2);
 }
 
-MSP430_TRANSLATE_2_OP(MOVA) {
-  s_translate_mov(data, op1, op2);
+MSP430_TRANSLATE_1_OP(PUSH) {
+  RegisterExpr *sp = data.get_register(MSP430_REG_SP);
+  int size = data.operand_size == MSP430_SIZE_A? 4 : data.operand_size / 8;
+
+  data.mc->add_assignment(data.start_ma, sp->ref(),
+			  BinaryApp::create(BV_OP_SUB, sp->ref(),
+					    Constant::create(size, 0,
+							     MSP430_SIZE_A),
+					    0, MSP430_SIZE_A));
+  Expr *source = msp430_trim_source_operand(data, op1);
+  Expr *dest = MemCell::create(sp, 0, size * 8);
+  source = msp430_stretch_expr_to_dest_size(dest, source);
+  s_translate_mov(data, source, dest);
 }
 
-MSP430_TRANSLATE_2_OP(MOVX) {
-  s_translate_mov(data, op1, op2);
+MSP430_TRANSLATE_1_OP(POP) {
+  RegisterExpr *sp = data.get_register(MSP430_REG_SP);
+  int size = data.operand_size == MSP430_SIZE_A? 4 : data.operand_size / 8;
+
+  data.add_postincrement((RegisterExpr *) sp->ref());
+
+  Expr *source = msp430_trim_source_operand(data, op1);
+  Expr *dest = MemCell::create(sp, 0, size * 8);
+  source = msp430_stretch_expr_to_dest_size(dest, source);
+  s_translate_mov(data, source, dest);
 }

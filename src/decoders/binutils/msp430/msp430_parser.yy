@@ -325,12 +325,19 @@ suffix:
 
 instruction:
   TOK_BAD { msp430_translate<MSP430_TOKEN(BAD)> (data); }
+| instr_and suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(AND)> (data, $3, $5); }
 | call operand
   { msp430_translate<MSP430_TOKEN(CALL)> (data, $2); }
 | clear suffix operand
   { msp430_translate<MSP430_TOKEN(CLR)> (data, $3); }
 | move suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(MOV)> (data, $3, $5); }
+;
+
+instr_and:
+  TOK_AND
+| TOK_ANDX { data.is_extended = 1; }
 ;
 
 call:
