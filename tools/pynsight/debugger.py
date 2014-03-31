@@ -993,6 +993,7 @@ def replay_steps(s):
     for (addr,action,arg) in s:
         action(arg)
         
+
 def display_steps(s, asrecord = False):
     """
     Display a sequence of simulation steps.
@@ -1018,6 +1019,65 @@ def display_steps(s, asrecord = False):
         for (addr, action, arg) in s:
             print "0x{:x} : {}({})".format(addr, action.__name__, arg)
     
+
+def display_stack(top, bottom, absconv = None, bp = None, sp = None):
+    """
+    Display the content of the stack.
+    """
+    global simulator
+    if simulator is None:
+        print "program is not started"
+        return
+    direction = -1
+    if top < bottom:
+        direction = 1
+    addrsize = prog().info()["address_size"] / 8
+    elsize = prog().info()["word_size"] / 8
+    while (direction == 1)and top < bottom or \
+          (direction == -1) and top > bottom :
+        entry = top
+        bytestr = ""
+        strstr = ""
+
+        for i in range(elsize):
+            try:
+                byte = absconv(simulator.get_memory(top + i, 1)[0])
+            except IndexError:
+                byte = None
+
+            if byte is None:
+                bytestr += ".."
+                strstr += "."
+            else:
+                bytestr += "{:02x}".format (byte)
+                c = chr(byte)
+                if c not in string.printable or \
+                   (c in string.whitespace and c != " "):
+                    c = "."
+                strstr += c
+                    
+        top += elsize * direction
+        fmt = "0x{:" + str(addrsize) + "x} : {} {} ; {} {}"
+        if bp is not None:
+            bps = "<bp{:+x}>".format(entry - bp)
+        else:
+            bps = ""
+        if sp is not None:
+            sps = "<sp{:+x}>".format(entry - sp)
+        else:
+            sps = ""
+        print fmt.format(entry, bytestr, strstr, bps, sps)
+
+
+def eval(expr):
+    global simulator
+
+    if simulator is None:
+        print "program is not running"
+        return
+    return simulator.eval (expr)
+
+
 def __record(addr, fun, arg, reset = False):
     global recorder;
     if reset:

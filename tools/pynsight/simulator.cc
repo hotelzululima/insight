@@ -192,7 +192,8 @@ public:
   virtual void reset_stop_conditions ();
   virtual bool del_stop_condition (int id);
 
-  virtual Option<bool> eval (const Expr *e) const = 0;
+  virtual Option<ConcreteValue> eval (const Expr *e) const = 0;
+  virtual Option<bool> eval_condition (const Expr *e) const = 0;
   virtual Option<string> get_instruction (address_t addr);
 
   virtual bool load_stub (const string &filename, address_t shift);
@@ -255,7 +256,8 @@ public:
   virtual MicrocodeAddress get_pc (void *s);
   virtual MicrocodeAddress get_pc ();
 
-  virtual Option<bool> eval (const Expr *e) const;
+  virtual Option<ConcreteValue> eval (const Expr *e) const;
+  virtual Option<bool> eval_condition (const Expr *e) const;
   virtual Stepper *get_stepper ();
 
 protected:  
@@ -359,6 +361,9 @@ static PyObject *
 s_Simulator_del_breakpoint (PyObject *self, PyObject *args);
 
 static PyObject *
+s_Simulator_eval (PyObject *self, PyObject *args);
+
+static PyObject *
 s_Simulator_get_microcode (PyObject *self, PyObject *);
 
 static PyObject *
@@ -441,6 +446,8 @@ static PyMethodDef SimulatorMethods[] = {
  { "add_pywatchpoint", s_Simulator_add_pywatchpoint, METH_VARARGS,
    "\n" }, 
  { "del_breakpoint", s_Simulator_del_breakpoint, METH_VARARGS,
+   "\n" }, 
+ { "eval", s_Simulator_eval, METH_VARARGS,
    "\n" }, 
  { "get_microcode", s_Simulator_get_microcode, METH_NOARGS,
    "\n" }, 
@@ -1129,6 +1136,34 @@ s_Simulator_del_breakpoint (PyObject *self, PyObject *args)
     return Py_BuildValue ("i", 1);
   else
     return pynsight::None ();
+}
+
+static PyObject *
+s_Simulator_eval (PyObject *self, PyObject *args)
+{
+  const char *condition = NULL;
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  if (! PyArg_ParseTuple (args, "s", &condition))
+    return NULL;
+
+  PyObject *result = NULL;
+  Expr *expr = expr_parser (condition, S->get_march ());
+  if (expr == NULL)
+    {
+      PyErr_SetString(PyExc_SyntaxError, "syntax error");
+
+      return NULL;
+    }
+  Option<ConcreteValue> cv = S->eval (expr);
+  expr->deref ();
+
+  if (cv.hasValue ())
+    result = Py_BuildValue ("k", cv.getValue ().get ());
+  else
+    result = pynsight::None ();
+
+  return result;
 }
 
 PyObject *
@@ -2009,8 +2044,22 @@ InsightSimulator<Stepper>::get_pc ()
   return res;
 }
 
-template <typename Stepper> Option<bool> 
+template <typename Stepper> Option<ConcreteValue> 
 InsightSimulator<Stepper>::eval (const Expr *e) const
+{
+  typename Stepper::Context *ctx = ((State *) current_state)->get_Context ();
+  typename Stepper::Value val = stepper->eval (ctx, e);
+  bool is_unique = false;
+  ConcreteValue cv = stepper->value_to_ConcreteValue (ctx, val, &is_unique);
+
+  if (! is_unique)
+    return Option<ConcreteValue> ();  
+  
+  return Option<ConcreteValue> (cv);
+}
+
+template <typename Stepper> Option<bool> 
+InsightSimulator<Stepper>::eval_condition (const Expr *e) const
 {
   typename Stepper::Value val = 
     stepper->eval (((State *) current_state)->get_Context (), e);
@@ -2144,7 +2193,7 @@ Breakpoint::stop (GenericInsightSimulator *S)
   if (cond == NULL)
     return true;
 
-  Option<bool> val = S->eval (cond);
+  Option<bool> val = S->eval_condition (cond);
   return ! val.hasValue () || val.getValue ();
 }
 
@@ -2196,7 +2245,7 @@ Watchpoint::~Watchpoint ()
 bool 
 Watchpoint::stop (GenericInsightSimulator *S)
 {
-  Option<bool> oval = S->eval (cond);
+  Option<bool> oval = S->eval_condition (cond);
   bool val = ! oval.hasValue () || oval.getValue ();
   bool result = (val != last_value);
   
@@ -2223,7 +2272,7 @@ Watchpoint::equals (const StopCondition *other) const
 void
 Watchpoint::reset (GenericInsightSimulator *S) 
 {
-  Option<bool> oval = S->eval (cond);
+  Option<bool> oval = S->eval_condition (cond);
   last_value = ! oval.hasValue () || oval.getValue ();
 }
 
