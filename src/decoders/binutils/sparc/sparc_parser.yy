@@ -90,7 +90,7 @@ namespace sparc {
 %language "c++"
 %require "2.4"
 %defines
-%define namespace "sparc"
+%define api.namespace { sparc }
 
  /* Initial rule is named 'start' */
 %start start

@@ -76,7 +76,7 @@ namespace msp430 {
 %language "c++"
 %require "2.4"
 %defines
-%define namespace "msp430"
+%define api.namespace { msp430 }
 
  /* Initial rule is named 'start' */
 %start start

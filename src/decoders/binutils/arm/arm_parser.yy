@@ -63,7 +63,7 @@ namespace arm {
 %language "c++"
 %require "2.4"
 %defines
-%define namespace "arm"
+%define api.namespace { arm }
 
  /* Initial rule is named 'start' */
 %start start
