@@ -259,33 +259,26 @@ s_sighandler (int)
 static Solvers
 solver_lookup()
 {
-  struct stat sb;
+  /* Checks are ordered by preference */
+  FILE * res;
 
 #if INTEGRATED_MATHSAT_SOLVER
-  /* MathSAT library is statically linked */
+  /* Check if MathSAT library is statically linked */
   return MATHSAT_API;
 #endif
 
-  string delimiter = ":";
-  string path = string(getenv("PATH"));
-  size_t start_pos = 0, end_pos = 0;
-
-  while ((end_pos = path.find(':', start_pos)) != string::npos)
+  /* Checking for MathSAT */
+  if ((res = popen("mathsat -version", "r")))
     {
-      string current_path =
-	path.substr(start_pos, end_pos - start_pos) + "/";
+      pclose(res);
+      return MATHSAT_SOLVER;
+    }
 
-      /* Search MathSAT solver */
-      string mathsat_path = current_path + "mathsat";
-      if ((stat(mathsat_path.c_str(), &sb) == 0) && (sb.st_mode & S_IXOTH))
-	return MATHSAT_SOLVER;
-
-      /* Search Z3 solver */
-      string z3_path = current_path + "z3";
-      if ((stat(z3_path.c_str(), &sb) == 0) && (sb.st_mode & S_IXOTH))
-	return Z3_SOLVER;
-
-      start_pos = end_pos + 1;
+  /* Checking for Z3 */
+  if ((res = popen("z3 -version", "r")))
+    {
+      pclose(res);
+      return Z3_SOLVER;
     }
 
   return NO_SOLVER;
