@@ -88,9 +88,7 @@ static const OutputFormat FORMATS[] = {
 /* List of available supports for SMT solvers */
 enum Solvers {
   NO_SOLVER = 0,
-#if INTEGRATED_MATHSAT_SOLVER
   MATHSAT_API = 1,
-#endif
   MATHSAT_SOLVER = 2,
   Z3_SOLVER = 3,
 };
@@ -268,13 +266,27 @@ solver_lookup()
   return MATHSAT_API;
 #endif
 
-  /* Found MathSAT solver */
-  if ((stat("mathsat", &sb) == 0) && (sb.st_mode & S_IXOTH))
-    return MATHSAT_SOLVER;
+  string delimiter = ":";
+  string path = string(getenv("PATH"));
+  size_t start_pos = 0, end_pos = 0;
 
-  /* Found Z3 solver */
-  if ((stat("z3", &sb) == 0) && (sb.st_mode & S_IXOTH))
-    return Z3_SOLVER;
+  while ((end_pos = path.find(':', start_pos)) != string::npos)
+    {
+      string current_path =
+	path.substr(start_pos, end_pos - start_pos) + "/";
+
+      /* Search MathSAT solver */
+      string mathsat_path = current_path + "mathsat";
+      if ((stat(mathsat_path.c_str(), &sb) == 0) && (sb.st_mode & S_IXOTH))
+	return MATHSAT_SOLVER;
+
+      /* Search Z3 solver */
+      string z3_path = current_path + "z3";
+      if ((stat(z3_path.c_str(), &sb) == 0) && (sb.st_mode & S_IXOTH))
+	return Z3_SOLVER;
+
+      start_pos = end_pos + 1;
+    }
 
   return NO_SOLVER;
 }
