@@ -30,6 +30,16 @@
 
 #include <decoders/binutils/msp430/msp430_instr.hh>
 
+static LValue *
+s_flag_lvalue(msp430::parser_data &data, int bit) {
+  LValue *sr = data.get_register(MSP430_REG_SR);
+  LValue *ret = (LValue *) sr->extract_bit_vector(bit, 1);
+
+  sr->deref();
+
+  return ret;
+}
+
 MSP430_TRANSLATE_1_OP(CALL) {
   int bytes = data.operand_size == MSP430_SIZE_A? 4 : 2;
   LValue *sp = data.get_register(MSP430_REG_SP);
@@ -70,57 +80,199 @@ MSP430_TRANSLATE_1_OP(CALL) {
 }
 
 static void
-s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest) {
+s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest,
+		bool leave_open) {
   Expr *res = msp430_trim_source_operand(data, source);
-  MicrocodeAddress next =
-    data.has_postincrements()? data.start_ma + 1 : data.next_ma;
+  MicrocodeAddress next = (leave_open || data.has_postincrements())?
+    data.start_ma + 1 : data.next_ma;
 
   data.mc->add_assignment(data.start_ma,
 			  dynamic_cast<LValue *>(dest),
 			  msp430_stretch_expr_to_dest_size(dest, res),
 			  next, NULL);
-  if (data.has_postincrements()) {
-    data.start_ma = data.start_ma + 1;
+  data.start_ma = data.start_ma + 1;
+
+  if (!leave_open && data.has_postincrements())
     data.finalize_postincrements(false);
-  }
 }
 
 static Expr *
 s_operation_semantics(msp430::parser_data &data, BinaryOp op,
-		      Expr *source, Expr *dest) {
-  source = msp430_trim_source_operand(data, source);
-  dest = msp430_trim_source_operand(data, dest);
-  return BinaryApp::create(op, source, dest, 0, data.operand_size);
+		      Expr *op1, Expr *op2, int dest_size) {
+  op1 = msp430_trim_source_operand(data, op1);
+  op2 = msp430_trim_source_operand(data, op2);
+  return BinaryApp::create(op, op2, op1, 0, dest_size);
+}
+
+static void
+s_update_flag(msp430::parser_data &data, Expr *val, LValue *flag,
+	      bool leave_open) {
+  MicrocodeAddress next = (leave_open || data.has_postincrements())?
+    data.start_ma + 1 : data.next_ma;
+
+  data.mc->add_assignment(data.start_ma, flag, val, next, NULL);
+  data.start_ma = data.start_ma + 1;
+
+  if (!leave_open && data.has_postincrements())
+    data.finalize_postincrements(false);
+}
+
+/** pflags is the set of flags we should NOT update */
+static void
+s_translate_arithmetic_op(msp430::parser_data &data, BinaryOp op,
+			  Expr *source, Expr *dest, int pflags,
+			  bool leave_open, bool discard_result = false) {
+  bool update_c = !(pflags & (1 << MSP430_FLAG_C));
+  bool update_n = !(pflags & (1 << MSP430_FLAG_N));
+  bool update_v = !(pflags & (1 << MSP430_FLAG_V));
+  bool update_z = !(pflags & (1 << MSP430_FLAG_Z));
+  int nupdates = update_c + update_n + update_v + update_z;
+  int nupleft = nupdates;
+  int size = data.operand_size;
+  Expr *tmpr;
+
+  if (update_c) {
+    size++;
+    tmpr = data.get_tmp_register(size);
+  }
+  else
+    tmpr = dest->ref();
+
+  s_translate_mov(data,
+		  s_operation_semantics(data, op, source->ref(), tmpr->ref(),
+					size),
+		  tmpr->ref(),
+		  leave_open || nupdates > 0);
+
+  if (update_c) {
+    if (!discard_result)
+      s_translate_mov(data, tmpr->ref(), dest->ref(), false);
+
+    s_update_flag(data, tmpr->extract_bit_vector(size - 1, 1),
+		  s_flag_lvalue(data, MSP430_FLAG_C),
+		  leave_open || nupleft > 1);
+
+    if (discard_result) {
+      dest->deref();
+      dest = tmpr->extract_bit_vector(0, size - 1);
+    }
+
+    nupleft--;
+  }
+
+  if (update_n) {
+    s_update_flag(data, dest->extract_bit_vector(dest->get_bv_size() - 1, 1),
+		  s_flag_lvalue(data, MSP430_FLAG_N),
+		  leave_open || nupleft > 1);
+    nupleft--;
+  }
+
+  if (update_v) {
+    s_update_flag(data, Constant::zero(1),
+		  s_flag_lvalue(data, MSP430_FLAG_V),
+		  leave_open || nupleft > 1);
+    nupleft--;
+  }
+
+  if (update_z) {
+    s_update_flag(data, BinaryApp::create(BV_OP_EQ, dest->ref(),
+					  Constant::zero(dest->get_bv_size()),
+					  0, 1),
+		  s_flag_lvalue(data, MSP430_FLAG_Z),
+		  leave_open || nupleft > 1);
+    nupleft--;
+  }
+
+  tmpr->deref();
+  source->deref();
+  dest->deref();
+}
+
+MSP430_TRANSLATE_2_OP(ADD) {
+  s_translate_arithmetic_op(data, BV_OP_ADD, op1, op2, (1 << MSP430_FLAG_V),
+			    true);
+  /* XXX Compute overflow flag */
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), false);
 }
 
 MSP430_TRANSLATE_2_OP(AND) {
-  s_translate_mov(data,
-		  s_operation_semantics(data, BV_OP_AND, op1, op2->ref()),
-		  op2);
+  s_translate_arithmetic_op(data, BV_OP_AND, op1, op2, (1 << MSP430_FLAG_C),
+			    true);
+  s_update_flag(data, UnaryApp::create(BV_OP_NOT,
+				       s_flag_lvalue(data, MSP430_FLAG_Z),
+				       0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_C), false);
 }
 
 MSP430_TRANSLATE_2_OP(BIC) {
-  s_translate_mov(data,
-		  s_operation_semantics(data, BV_OP_AND,
-					UnaryApp::create(BV_OP_NOT, op1,
-							 0,
-							 op1->get_bv_size()),
-					op2->ref()),
-		  op2);
+  s_translate_arithmetic_op(data, BV_OP_AND,
+			    UnaryApp::create(BV_OP_NOT, op1,
+					     0, op1->get_bv_size()),
+			    op2,
+			    (1 << MSP430_FLAG_C) |
+			    (1 << MSP430_FLAG_N) |
+			    (1 << MSP430_FLAG_V) |
+			    (1 << MSP430_FLAG_Z),
+			    false);
 }
 
 MSP430_TRANSLATE_2_OP(BIS) {
-  s_translate_mov(data,
-		  s_operation_semantics(data, BV_OP_OR, op1, op2->ref()),
-		  op2);
+  s_translate_arithmetic_op(data, BV_OP_OR, op1, op2,
+			    (1 << MSP430_FLAG_C) |
+			    (1 << MSP430_FLAG_N) |
+			    (1 << MSP430_FLAG_V) |
+			    (1 << MSP430_FLAG_Z),
+			    false);
 }
 
+MSP430_TRANSLATE_2_OP(CMP) {
+  s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
+			    true, true);
+  /* XXX Compute overflow flag */
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), false);
+}
+
+MSP430_TRANSLATE_1_OP(DEC) {
+  msp430_translate<MSP430_TOKEN(SUB)>(data,
+				      Constant::create(1, 0, data.operand_size),
+				      op1);
+}
+
+MSP430_TRANSLATE_1_OP(DECD) {
+  msp430_translate<MSP430_TOKEN(SUB)>(data,
+				      Constant::create(2, 0, data.operand_size),
+				      op1);
+}
+
+MSP430_TRANSLATE_1_OP(INC) {
+  msp430_translate<MSP430_TOKEN(ADD)>(data,
+				      Constant::create(1, 0, data.operand_size),
+				      op1);
+}
+
+MSP430_TRANSLATE_1_OP(INCD) {
+  msp430_translate<MSP430_TOKEN(ADD)>(data,
+				      Constant::create(2, 0, data.operand_size),
+				      op1);
+}
+
+MSP430_TRANSLATE_2_OP(SUB) {
+  s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
+			    true);
+  /* XXX Compute overflow flag */
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), false);
+}
+
+
 MSP430_TRANSLATE_1_OP(CLR) {
-  s_translate_mov(data, Constant::zero(data.operand_size), op1);
+  s_translate_mov(data, Constant::zero(data.operand_size), op1, false);
 }
 
 MSP430_TRANSLATE_2_OP(MOV) {
-  s_translate_mov(data, op1, op2);
+  s_translate_mov(data, op1, op2, false);
 }
 
 MSP430_TRANSLATE_1_OP(PUSH) {
@@ -135,7 +287,7 @@ MSP430_TRANSLATE_1_OP(PUSH) {
   Expr *source = msp430_trim_source_operand(data, op1);
   Expr *dest = MemCell::create(sp, 0, size * 8);
   source = msp430_stretch_expr_to_dest_size(dest, source);
-  s_translate_mov(data, source, dest);
+  s_translate_mov(data, source, dest, false);
 }
 
 MSP430_TRANSLATE_1_OP(POP) {
@@ -147,7 +299,7 @@ MSP430_TRANSLATE_1_OP(POP) {
   Expr *source = msp430_trim_source_operand(data, op1);
   Expr *dest = MemCell::create(sp, 0, size * 8);
   source = msp430_stretch_expr_to_dest_size(dest, source);
-  s_translate_mov(data, source, dest);
+  s_translate_mov(data, source, dest, false);
 }
 
 /*** Static jumps ***/
@@ -177,48 +329,36 @@ MSP430_TRANSLATE_1_OP(JMP) {
   s_translate_static_jump(data, op1, NULL, false);
 }
 
-static Expr *
-s_compute_cc_flag(msp430::parser_data &data, int bit) {
-  Expr *sr = data.get_register(MSP430_REG_SR);
-  Expr *ret = sr->extract_bit_vector(bit, 1);
-
-  sr->deref();
-
-  return ret;
-}
-
 MSP430_TRANSLATE_1_OP(JC) {
   s_translate_static_jump(data, op1,
-			  s_compute_cc_flag(data, MSP430_FLAG_C), true);
+			  s_flag_lvalue(data, MSP430_FLAG_C), true);
 }
 
 MSP430_TRANSLATE_1_OP(JNC) {
   s_translate_static_jump(data, op1,
-			  s_compute_cc_flag(data, MSP430_FLAG_C), false);
+			  s_flag_lvalue(data, MSP430_FLAG_C), false);
 }
 
 MSP430_TRANSLATE_1_OP(JZ) {
   s_translate_static_jump(data, op1,
-			  s_compute_cc_flag(data, MSP430_FLAG_Z), true);
+			  s_flag_lvalue(data, MSP430_FLAG_Z), true);
 }
 
 MSP430_TRANSLATE_1_OP(JNZ) {
   s_translate_static_jump(data, op1,
-			  s_compute_cc_flag(data, MSP430_FLAG_Z), false);
+			  s_flag_lvalue(data, MSP430_FLAG_Z), false);
 }
 
 MSP430_TRANSLATE_1_OP(JN) {
   s_translate_static_jump(data, op1,
-			  s_compute_cc_flag(data, MSP430_FLAG_N), true);
+			  s_flag_lvalue(data, MSP430_FLAG_N), true);
 }
 
 MSP430_TRANSLATE_1_OP(JGE) {
   s_translate_static_jump(data, op1,
 			  BinaryApp::create(BV_OP_XOR,
-					    s_compute_cc_flag(data,
-							      MSP430_FLAG_N),
-					    s_compute_cc_flag(data,
-							      MSP430_FLAG_V),
+					    s_flag_lvalue(data, MSP430_FLAG_N),
+					    s_flag_lvalue(data, MSP430_FLAG_V),
 					    0, 1),
 			  false);
 }
@@ -226,10 +366,8 @@ MSP430_TRANSLATE_1_OP(JGE) {
 MSP430_TRANSLATE_1_OP(JL) {
   s_translate_static_jump(data, op1,
 			  BinaryApp::create(BV_OP_XOR,
-					    s_compute_cc_flag(data,
-							      MSP430_FLAG_N),
-					    s_compute_cc_flag(data,
-							      MSP430_FLAG_V),
+					    s_flag_lvalue(data, MSP430_FLAG_N),
+					    s_flag_lvalue(data, MSP430_FLAG_V),
 					    0, 1),
 			  true);
 }

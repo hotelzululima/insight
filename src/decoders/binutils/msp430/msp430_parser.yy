@@ -328,6 +328,8 @@ suffix:
 
 instruction:
   TOK_BAD { msp430_translate<MSP430_TOKEN(BAD)> (data); }
+| add suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(ADD)> (data, $3, $5); }
 | and suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(AND)> (data, $3, $5); }
 | bic suffix operand TOK_COMMA operand
@@ -338,10 +340,20 @@ instruction:
   { msp430_translate<MSP430_TOKEN(CALL)> (data, $2); }
 | clear suffix operand
   { msp430_translate<MSP430_TOKEN(CLR)> (data, $3); }
+| cmp suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(CMP)> (data, $3, $5); }
+| dec suffix operand
+  { msp430_translate<MSP430_TOKEN(DEC)> (data, $3); }
+| decd suffix operand
+  { msp430_translate<MSP430_TOKEN(DECD)> (data, $3); }
 | TOK_DINT
   { msp430_translate<MSP430_TOKEN(NOP)> (data); }
 | TOK_EINT
   { msp430_translate<MSP430_TOKEN(NOP)> (data); }
+| inc suffix operand
+  { msp430_translate<MSP430_TOKEN(INC)> (data, $3); }
+| incd suffix operand
+  { msp430_translate<MSP430_TOKEN(INCD)> (data, $3); }
 | TOK_JC operand
   { msp430_translate<MSP430_TOKEN(JC)> (data, $2); }
 | TOK_JGE operand
@@ -356,6 +368,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(JNC)> (data, $2); }
 | TOK_JNZ operand
   { msp430_translate<MSP430_TOKEN(JNZ)> (data, $2); }
+| TOK_JZ operand
+  { msp430_translate<MSP430_TOKEN(JZ)> (data, $2); }
 | move suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(MOV)> (data, $3, $5); }
 | TOK_NOP
@@ -364,6 +378,14 @@ instruction:
   { msp430_translate<MSP430_TOKEN(POP)> (data, $3); }
 | push suffix operand
   { msp430_translate<MSP430_TOKEN(PUSH)> (data, $3); }
+| sub suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(SUB)> (data, $3, $5); }
+;
+
+add:
+  TOK_ADD
+| TOK_ADDA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
+| TOK_ADDX { data.is_extended = 1; }
 ;
 
 and:
@@ -392,6 +414,34 @@ clear:
 | TOK_CLRX { data.is_extended = 1; }
 ;
 
+cmp:
+  TOK_CMP
+| TOK_CMPA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
+| TOK_CMPX { data.is_extended = 1; }
+;
+
+dec:
+  TOK_DEC
+| TOK_DECX { data.is_extended = 1; }
+;
+
+decd:
+  TOK_DECD
+| TOK_DECDA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
+| TOK_DECDX { data.is_extended = 1; }
+;
+
+inc:
+  TOK_INC
+| TOK_INCX { data.is_extended = 1; }
+;
+
+incd:
+  TOK_INCD
+| TOK_INCDA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
+| TOK_INCDX { data.is_extended = 1; }
+;
+
 move:
   TOK_MOV
 | TOK_MOVA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
@@ -406,6 +456,12 @@ pop:
 push:
   TOK_PUSH
 | TOK_PUSHX { data.is_extended = 1; }
+;
+
+sub:
+  TOK_SUB
+| TOK_SUBA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
+| TOK_SUBX { data.is_extended = 1; }
 ;
 
 %% /***** Parser subroutines *****/
