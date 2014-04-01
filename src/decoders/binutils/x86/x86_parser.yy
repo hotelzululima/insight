@@ -93,7 +93,7 @@ namespace x86 {
 %language "c++"
 %require "2.4"
 %defines
-%define api.namespace { x86 }
+%define namespace "x86"
 
  /* Initial rule is named 'start' */
 %start start
