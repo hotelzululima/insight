@@ -201,7 +201,7 @@ s_generate_annotations_for_nodes (xmlNodePtr root, const Microcode *prg)
   xmlNodePtr annotations = 
     xmlNewChild (root, NULL, BAD_CAST "nodes-annotations", NULL);
 
-  for (Microcode::node_iterator n = prg->begin_nodes (); 
+  for (Microcode::const_node_iterator n = prg->begin_nodes (); 
        n != prg->end_nodes (); n++)
     s_add_annotations (annotations, *n, &((*n)->get_loc ()));
 }
@@ -538,7 +538,7 @@ s_generate_code (xmlNodePtr root, const Microcode *prg)
   xmlNodePtr code = xmlNewNode (NULL, BAD_CAST "code");
   xmlAddChild (root, code);
 
-  for (Microcode::node_iterator n = prg->begin_nodes (); 
+  for (Microcode::const_node_iterator n = prg->begin_nodes (); 
        n != prg->end_nodes (); n++)
     xml_of_microcode_element (code, *n);
 }

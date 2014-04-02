@@ -90,7 +90,7 @@ enum Solvers {
   NO_SOLVER = 0,
   MATHSAT_API = 1,
   MATHSAT_SOLVER = 2,
-  Z3_SOLVER = 3,
+  Z3_SOLVER = 3
 };
 
 /* Global options */
@@ -775,11 +775,10 @@ main (int argc, char *argv[])
   if (sink_nodes)
     {
       bool first = true;
-      std::vector<MicrocodeNode *> *nodes = mc->get_nodes();
-      int nb_nodes = nodes->size ();
-      for (int i = 0; i < nb_nodes; i++)
+      for (Microcode::const_node_iterator i = mc->begin_nodes (); 
+	   i != mc->end_nodes (); i++)
 	{
-	  MicrocodeNode *n = nodes->at (i);
+	  MicrocodeNode *n = *i;
 	  if (n->get_successors ()->size () > 0)
 	    continue;
 	  if (first)

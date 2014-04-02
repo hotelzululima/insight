@@ -741,7 +741,7 @@ DataDependency::slice_it(Microcode *prg,
       logs::debug << logs::separator << endl
 		 << "Dependencies:" << endl;
 
-      for (Microcode::node_iterator n = prg->begin_nodes ();
+      for (Microcode::const_node_iterator n = prg->begin_nodes ();
 	   n != prg->end_nodes (); n++)
 	{
 	  logs::debug << (*n)->get_loc() << " <== ";
@@ -873,7 +873,7 @@ DataDependency::useless_statements (Microcode * prg)
 {
   vector<StmtArrow*> result;
 
-  for (Microcode::node_iterator n = prg->begin_nodes (); 
+  for (Microcode::const_node_iterator n = prg->begin_nodes (); 
        n != prg->end_nodes (); n++)
     {
       vector<StmtArrow *> *succs = (*n)->get_successors ();

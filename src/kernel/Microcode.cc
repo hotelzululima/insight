@@ -69,7 +69,7 @@ Microcode::Microcode(vector<MicrocodeNode *> * nodes, MicrocodeAddress start) :
 
 Microcode::Microcode(const Microcode &prg) :
   MicrocodeStore(prg),
-  GraphInterface<MicrocodeNode, StmtArrow>(),
+  GraphInterface<MicrocodeNode, StmtArrow, NodeStore>(),
   start(prg.start),
   optimized(false),
   arrow_callbacks (prg.arrow_callbacks)
@@ -328,9 +328,9 @@ bool Microcode::is_optimized() {
 /*****************************************************************************/
 
 void
-Microcode::output_text(ostream & out) const
+Microcode::output_text (ostream & out) const
 {
-  Microcode::node_iterator stmt = begin_nodes ();
+  Microcode::const_node_iterator stmt = begin_nodes ();
   for (; stmt != end_nodes (); stmt++)
     out << (*stmt)->pp() << endl;
 }
@@ -544,25 +544,32 @@ MicrocodeNode * Microcode::get_entry_point()  const
   return get_node(start);
 }
 
-vector<MicrocodeNode *> * Microcode::get_nodes()   const
-{
-  return nodes;
-}
-
 std::size_t
 Microcode::get_number_of_nodes () const
 {
   return nodes->size ();
 }
 
-Microcode::node_iterator
+Microcode::const_node_iterator
 Microcode::begin_nodes () const
 {
   return nodes->begin ();
 }
 
-Microcode::node_iterator
+Microcode::const_node_iterator
 Microcode::end_nodes () const
+{
+  return nodes->end ();
+}
+
+Microcode::node_iterator
+Microcode::begin_nodes () 
+{
+  return nodes->begin ();
+}
+
+Microcode::node_iterator
+Microcode::end_nodes () 
 {
   return nodes->end ();
 }

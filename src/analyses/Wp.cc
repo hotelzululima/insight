@@ -194,7 +194,8 @@ Expr * weakest_precondition(Expr * post, MCPath &p)
 }
 
 
-class SequentialisationVisitor : public GraphVisitor<MicrocodeNode, StmtArrow> {
+class SequentialisationVisitor : 
+  public GraphVisitor<MicrocodeNode, StmtArrow> {
 
 public:
 

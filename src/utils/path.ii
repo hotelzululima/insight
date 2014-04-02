@@ -35,8 +35,8 @@
 /*
  * pp
  */
-template<typename Node, typename Edge>
-std::string ConcreteEdgePath<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string ConcreteEdgePath<Node, Edge, NodeStore>::pp() const
 {
 
   std::ostringstream oss;
@@ -51,8 +51,8 @@ std::string ConcreteEdgePath<Node, Edge>::pp() const
 
 }
 
-template<typename Node, typename Edge>
-std::string ConcreteNodePath<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string ConcreteNodePath<Node, Edge, NodeStore>::pp() const
 {
 
   std::ostringstream oss;
@@ -68,20 +68,20 @@ std::string ConcreteNodePath<Node, Edge>::pp() const
 }
 
 
-template<typename Node, typename Edge>
-std::string EmptyPath<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string EmptyPath<Node, Edge, NodeStore>::pp() const
 {
   return std::string("~");
 }
 
 
 
-template<typename Node, typename Edge>
-std::string ConcatenationPath<Node, Edge>::pp()  const
+template<typename Node, typename Edge, typename NodeStore>
+std::string ConcatenationPath<Node, Edge, NodeStore>::pp()  const
 {
   std::ostringstream oss;
   oss << " (";
-  for (typename std::list<GraphPath<Node, Edge>*>::const_iterator arr = this->begin(); arr != this->end(); ++arr)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::const_iterator arr = this->begin(); arr != this->end(); ++arr)
     {
       if (arr != this->begin()) oss << " + ";
       oss << (*arr)->pp();
@@ -91,13 +91,13 @@ std::string ConcatenationPath<Node, Edge>::pp()  const
 
 }
 
-template<typename Node, typename Edge>
-std::string UnionPath<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string UnionPath<Node, Edge, NodeStore>::pp() const
 {
 
   std::ostringstream oss;
   oss << " (";
-  for (typename std::list<GraphPath<Node, Edge>*>::const_iterator arr = this->begin(); arr != this->end(); ++arr)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::const_iterator arr = this->begin(); arr != this->end(); ++arr)
     {
       if (arr != this->begin()) oss << " U ";
       oss << (*arr)->pp();
@@ -107,8 +107,8 @@ std::string UnionPath<Node, Edge>::pp() const
 
 }
 
-template<typename Node, typename Edge>
-std::string StarPath<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string StarPath<Node, Edge, NodeStore>::pp() const
 {
   std::ostringstream oss;
   oss << " (";
@@ -117,8 +117,8 @@ std::string StarPath<Node, Edge>::pp() const
   return oss.str();
 }
 
-template<typename Node, typename Edge>
-std::string VariablePath<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string VariablePath<Node, Edge, NodeStore>::pp() const
 {
   std::ostringstream oss;
   oss << "$" << this->id;
@@ -128,31 +128,31 @@ std::string VariablePath<Node, Edge>::pp() const
 /*
  * replace_variable_in_place
  */
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* EmptyPath<Node, Edge>::replace_variable_in_place(std::string, GraphPath<Node, Edge>*)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* EmptyPath<Node, Edge, NodeStore>::replace_variable_in_place(std::string, GraphPath<Node, Edge, NodeStore>*)
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteEdgePath<Node, Edge>::replace_variable_in_place(std::string, GraphPath<Node, Edge>*)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteEdgePath<Node, Edge, NodeStore>::replace_variable_in_place(std::string, GraphPath<Node, Edge, NodeStore>*)
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteNodePath<Node, Edge>::replace_variable_in_place(std::string, GraphPath<Node, Edge>*)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteNodePath<Node, Edge, NodeStore>::replace_variable_in_place(std::string, GraphPath<Node, Edge, NodeStore>*)
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcatenationPath<Node, Edge, NodeStore>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value)
 {
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->replace_variable_in_place(v_id, value);
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->replace_variable_in_place(v_id, value);
       nvo.push_back(rep);
       if (rep != *it)
         {
@@ -164,13 +164,13 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::replace_variable_in_place(
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* UnionPath<Node, Edge>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* UnionPath<Node, Edge, NodeStore>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value)
 {
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->replace_variable_in_place(v_id, value);
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->replace_variable_in_place(v_id, value);
       nvo.push_back(rep);
       if (rep != *it)
         {
@@ -182,10 +182,10 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::replace_variable_in_place(std::str
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* StarPath<Node, Edge>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* StarPath<Node, Edge, NodeStore>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value)
 {
-  GraphPath<Node, Edge>* rep = this->path->replace_variable_in_place(v_id, value);
+  GraphPath<Node, Edge, NodeStore>* rep = this->path->replace_variable_in_place(v_id, value);
   if (rep != this->path)
     {
       delete this->path;
@@ -194,8 +194,8 @@ GraphPath<Node, Edge>* StarPath<Node, Edge>::replace_variable_in_place(std::stri
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* VariablePath<Node, Edge>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* VariablePath<Node, Edge, NodeStore>::replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value)
 {
   if (this->id == v_id)
     {
@@ -211,35 +211,35 @@ GraphPath<Node, Edge>* VariablePath<Node, Edge>::replace_variable_in_place(std::
 /*
  * Simplify
  */
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteEdgePath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteEdgePath<Node, Edge, NodeStore>::simplify()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteNodePath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteNodePath<Node, Edge, NodeStore>::simplify()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* EmptyPath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* EmptyPath<Node, Edge, NodeStore>::simplify()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcatenationPath<Node, Edge, NodeStore>::simplify()
 {
   if (this->size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->simplify();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->simplify();
       if (rep != *it)
         {
           delete(*it);
@@ -250,23 +250,23 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::simplify()
           /*if(nvo.size()!=0 && rep->is_concrete_edge()
           		&& nvo.back()->is_concrete_edge()) {
           	//Concatenate two adjacent concrete paths: x :: y = xy
-          	ConcreteEdgePath<Node,Edge>* last=(ConcreteEdgePath<Node,Edge>*)nvo.back();
-          	ConcreteEdgePath<Node,Edge>* cur=(ConcreteEdgePath<Node,Edge>*)rep;
+          	ConcreteEdgePath<Node,Edge, NodeStore>* last=(ConcreteEdgePath<Node,Edge, NodeStore>*)nvo.back();
+          	ConcreteEdgePath<Node,Edge, NodeStore>* cur=(ConcreteEdgePath<Node,Edge, NodeStore>*)rep;
           	last->insert(last->end(),cur->begin(),cur->end());
           	delete cur;
           }
           else if(nvo.size()!=0 && rep->is_concrete_node()
           		&& nvo.back()->is_concrete_node()) {
           	//Concatenate two adjacent concrete paths: x :: y = xy
-          	ConcreteNodePath<Node,Edge>* last=(ConcreteNodePath<Node,Edge>*)nvo.back();
-          	ConcreteNodePath<Node,Edge>* cur=(ConcreteNodePath<Node,Edge>*)rep;
+          	ConcreteNodePath<Node,Edge, NodeStore>* last=(ConcreteNodePath<Node,Edge, NodeStore>*)nvo.back();
+          	ConcreteNodePath<Node,Edge, NodeStore>* cur=(ConcreteNodePath<Node,Edge, NodeStore>*)rep;
           	last->insert(last->end(),cur->begin(),cur->end());
           	delete cur;
           }*/
           if (rep->is_concatenation())
             {
               //A :: (B :: C) = A :: B :: C
-              ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) rep;
+              ConcatenationPath<Node, Edge, NodeStore>* cc = (ConcatenationPath<Node, Edge, NodeStore>*) rep;
               nvo.insert(nvo.end(), cc->begin(), cc->end());
               //Moche mais evite un clone()
               cc->clear();
@@ -287,7 +287,7 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::simplify()
   this->clear();
   if (nvo.size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
   if (nvo.size() == 1)
     {
@@ -298,17 +298,17 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::simplify()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* UnionPath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* UnionPath<Node, Edge, NodeStore>::simplify()
 {
   if (this->size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->simplify();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->simplify();
       if (rep != *it)
         {
           delete(*it);
@@ -316,7 +316,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::simplify()
       if (rep->is_union())
         {
           //A U (B U C) = A U B U C
-          UnionPath<Node, Edge>* un = (UnionPath<Node, Edge>*) rep;
+          UnionPath<Node, Edge, NodeStore>* un = (UnionPath<Node, Edge, NodeStore>*) rep;
           nvo.insert(nvo.end(), un->begin(), un->end());
           //Moche mais evite un clone()
           un->clear();
@@ -339,10 +339,10 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::simplify()
     }
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* StarPath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* StarPath<Node, Edge, NodeStore>::simplify()
 {
-  GraphPath<Node, Edge>* rep = this->path->simplify();
+  GraphPath<Node, Edge, NodeStore>* rep = this->path->simplify();
   if (rep != path)
     {
       delete this->path;
@@ -358,8 +358,8 @@ GraphPath<Node, Edge>* StarPath<Node, Edge>::simplify()
     }
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* VariablePath<Node, Edge>::simplify()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* VariablePath<Node, Edge, NodeStore>::simplify()
 {
   return this;
 }
@@ -367,35 +367,35 @@ GraphPath<Node, Edge>* VariablePath<Node, Edge>::simplify()
 /*
  * normalize
  */
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteEdgePath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteEdgePath<Node, Edge, NodeStore>::normalize()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteNodePath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteNodePath<Node, Edge, NodeStore>::normalize()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* EmptyPath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* EmptyPath<Node, Edge, NodeStore>::normalize()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcatenationPath<Node, Edge, NodeStore>::normalize()
 {
   if (this->size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->normalize();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->normalize();
       if (rep != *it)
         {
           delete(*it);
@@ -415,7 +415,7 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::normalize()
   this->clear();
   if (nvo.size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
   if (nvo.size() == 1)
     {
@@ -426,13 +426,13 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::normalize()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* UnionPath<Node, Edge, NodeStore>::normalize()
 {
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->normalize();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->normalize();
       if (rep != *it)
         {
           delete(*it);
@@ -441,11 +441,11 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
     }
   //Determine si forme gauche ou droite
   bool left = true, right = true, none = true;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = nvo.begin(); it != nvo.end(); ++it)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = nvo.begin(); it != nvo.end(); ++it)
     {
       assert((*it)->is_concatenation());
-      ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) * it;
-      for (typename std::list<GraphPath<Node, Edge>*>::iterator it2 = cc->begin(); it2 != cc->end(); ++it2)
+      ConcatenationPath<Node, Edge, NodeStore>* cc = (ConcatenationPath<Node, Edge, NodeStore>*) * it;
+      for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it2 = cc->begin(); it2 != cc->end(); ++it2)
         {
           //assert(!(*it2)->is_concatenation() && !(*it2)->is_union());
           if (cc->size() <= 1)
@@ -468,24 +468,24 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
     }
   //Calcul du polynome
   assert((left ^ right) || none);
-  std::unordered_map<std::string, GraphPath<Node, Edge>*> polynome;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = nvo.begin(); it != nvo.end(); ++it)
+  std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*> polynome;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = nvo.begin(); it != nvo.end(); ++it)
     {
-      ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) * it;
+      ConcatenationPath<Node, Edge, NodeStore>* cc = (ConcatenationPath<Node, Edge, NodeStore>*) * it;
       std::string var_id;
       if (cc->contains_variable())
         {
-          VariablePath<Node, Edge>* var;
+          VariablePath<Node, Edge, NodeStore>* var;
           if (left)
             {
-              var = (VariablePath<Node, Edge>*)cc->front();
+              var = (VariablePath<Node, Edge, NodeStore>*)cc->front();
               cc->pop_front();
               var_id = var->get_id();
               //delete var;
             }
           else if (right)
             {
-              var = (VariablePath<Node, Edge>*)cc->back();
+              var = (VariablePath<Node, Edge, NodeStore>*)cc->back();
               cc->pop_back();
               var_id = var->get_id();
               //delete var;
@@ -502,28 +502,28 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
         }
       else
         {
-          GraphPath<Node, Edge>* present = polynome[var_id];
+          GraphPath<Node, Edge, NodeStore>* present = polynome[var_id];
           if (!present->is_union())
             {
-              UnionPath<Node, Edge>* un = new UnionPath<Node, Edge>(present->get_graph());
+              UnionPath<Node, Edge, NodeStore>* un = new UnionPath<Node, Edge, NodeStore>(present->get_graph());
               un->push_back(present);
               polynome[var_id] = un;
               present = un;
             }
-          UnionPath<Node, Edge>* un = (UnionPath<Node, Edge>*)present;
+          UnionPath<Node, Edge, NodeStore>* un = (UnionPath<Node, Edge, NodeStore>*)present;
           un->push_back(cc);
         }
     }
 
   this->clear();
-  for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = polynome.begin(); it != polynome.end(); ++it)
+  for (typename std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*>::iterator it = polynome.begin(); it != polynome.end(); ++it)
     {
-      VariablePath<Node, Edge>* var = NULL;
+      VariablePath<Node, Edge, NodeStore>* var = NULL;
       if (it->first != "None")
         {
-          var = new VariablePath<Node, Edge>(this->get_graph(), it->first);
+          var = new VariablePath<Node, Edge, NodeStore>(this->get_graph(), it->first);
         }
-      ConcatenationPath<Node, Edge>* cc = new ConcatenationPath<Node, Edge>(this->get_graph());
+      ConcatenationPath<Node, Edge, NodeStore>* cc = new ConcatenationPath<Node, Edge, NodeStore>(this->get_graph());
       cc->push_back(it->second);
       if (var != NULL)
         {
@@ -546,10 +546,10 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::normalize()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* StarPath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* StarPath<Node, Edge, NodeStore>::normalize()
 {
-  GraphPath<Node, Edge>* rep = this->path->normalize();
+  GraphPath<Node, Edge, NodeStore>* rep = this->path->normalize();
   if (rep != path)
     {
       delete this->path;
@@ -565,8 +565,8 @@ GraphPath<Node, Edge>* StarPath<Node, Edge>::normalize()
     }
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* VariablePath<Node, Edge>::normalize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* VariablePath<Node, Edge, NodeStore>::normalize()
 {
   return this;
 }
@@ -574,35 +574,35 @@ GraphPath<Node, Edge>* VariablePath<Node, Edge>::normalize()
 /*
  * factorize
  */
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteEdgePath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteEdgePath<Node, Edge, NodeStore>::factorize()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteNodePath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteNodePath<Node, Edge, NodeStore>::factorize()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* EmptyPath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* EmptyPath<Node, Edge, NodeStore>::factorize()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcatenationPath<Node, Edge, NodeStore>::factorize()
 {
   if (this->size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->factorize();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->factorize();
       if (rep != *it)
         {
           delete(*it);
@@ -613,7 +613,7 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::factorize()
   this->clear();
   if (nvo.size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
   if (nvo.size() == 1)
     {
@@ -623,17 +623,17 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::factorize()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* UnionPath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* UnionPath<Node, Edge, NodeStore>::factorize()
 {
   if (this->size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->factorize();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->factorize();
       if (rep != *it)
         {
           delete(*it);
@@ -652,10 +652,10 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::factorize()
     }
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* StarPath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* StarPath<Node, Edge, NodeStore>::factorize()
 {
-  GraphPath<Node, Edge>* rep = this->path->factorize();
+  GraphPath<Node, Edge, NodeStore>* rep = this->path->factorize();
   if (rep != path)
     {
       delete this->path;
@@ -671,8 +671,8 @@ GraphPath<Node, Edge>* StarPath<Node, Edge>::factorize()
     }
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* VariablePath<Node, Edge>::factorize()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* VariablePath<Node, Edge, NodeStore>::factorize()
 {
   return this;
 }
@@ -680,28 +680,28 @@ GraphPath<Node, Edge>* VariablePath<Node, Edge>::factorize()
 /*
  * distribute
  */
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteEdgePath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteEdgePath<Node, Edge, NodeStore>::distribute()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcreteNodePath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcreteNodePath<Node, Edge, NodeStore>::distribute()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* EmptyPath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* EmptyPath<Node, Edge, NodeStore>::distribute()
 {
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* ConcatenationPath<Node, Edge, NodeStore>::distribute()
 {
-  std::list<GraphPath<Node, Edge>*> nvo;
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
   nvo.insert(nvo.begin(), this->begin(), this->end());
   bool distributed;
   do
@@ -710,23 +710,23 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::distribute()
       this->insert(this->begin(), nvo.begin(), nvo.end());
       distributed = false;
 
-      for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end() && true && !distributed; ++it)
+      for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end() && true && !distributed; ++it)
         {
-          GraphPath<Node, Edge>* cur = *it;
+          GraphPath<Node, Edge, NodeStore>* cur = *it;
           //Distributivité (A+(C | D)+X) -> ( (A+C) | (A+D) + X)
           if (cur->is_union() && it != this->begin())
             {
               distributed = true;
-              UnionPath<Node, Edge>* uni = (UnionPath<Node, Edge>*)cur;
+              UnionPath<Node, Edge, NodeStore>* uni = (UnionPath<Node, Edge, NodeStore>*)cur;
               //dis=((A+C) | (A+D))
-              UnionPath<Node, Edge>* dis = new UnionPath<Node, Edge>(this->get_graph());
+              UnionPath<Node, Edge, NodeStore>* dis = new UnionPath<Node, Edge, NodeStore>(this->get_graph());
               bool first = true;
-              for (typename std::list<GraphPath<Node, Edge>*>::iterator milieu = uni->begin(); milieu != uni->end(); ++milieu)
+              for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator milieu = uni->begin(); milieu != uni->end(); ++milieu)
                 {
                   //cp=(A+C) puis (A+D) puis ...
-                  ConcatenationPath<Node, Edge>* cp = new ConcatenationPath<Node, Edge>(this->get_graph());
+                  ConcatenationPath<Node, Edge, NodeStore>* cp = new ConcatenationPath<Node, Edge, NodeStore>(this->get_graph());
                   //Copie de A
-                  for (typename std::list<GraphPath<Node, Edge>*>::iterator avant = this->begin(); avant != it; ++avant)
+                  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator avant = this->begin(); avant != it; ++avant)
                     {
                       if (first)
                         {
@@ -762,7 +762,7 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::distribute()
   this->clear();
   if (nvo.size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
   if (nvo.size() == 1)
     {
@@ -772,13 +772,13 @@ GraphPath<Node, Edge>* ConcatenationPath<Node, Edge>::distribute()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* UnionPath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* UnionPath<Node, Edge, NodeStore>::distribute()
 {
-  std::list<GraphPath<Node, Edge>*> nvo;
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  std::list<GraphPath<Node, Edge, NodeStore>*> nvo;
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
-      GraphPath<Node, Edge>* rep = (*it)->distribute();
+      GraphPath<Node, Edge, NodeStore>* rep = (*it)->distribute();
       if (rep != *it)
         {
           delete(*it);
@@ -787,7 +787,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::distribute()
         {
           if (!rep->is_concatenation())
             {
-              ConcatenationPath<Node, Edge>* cc = new ConcatenationPath<Node, Edge>(this->get_graph());
+              ConcatenationPath<Node, Edge, NodeStore>* cc = new ConcatenationPath<Node, Edge, NodeStore>(this->get_graph());
               cc->push_back(rep);
               rep = cc;
             }
@@ -797,7 +797,7 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::distribute()
   this->clear();
   if (nvo.size() == 0)
     {
-      return new EmptyPath<Node, Edge>(this->get_graph());
+      return new EmptyPath<Node, Edge, NodeStore>(this->get_graph());
     }
   if (nvo.size() == 1)
     {
@@ -807,10 +807,10 @@ GraphPath<Node, Edge>* UnionPath<Node, Edge>::distribute()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* StarPath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* StarPath<Node, Edge, NodeStore>::distribute()
 {
-  GraphPath<Node, Edge>* rep = this->path->distribute();
+  GraphPath<Node, Edge, NodeStore>* rep = this->path->distribute();
   if (rep != path)
     {
       delete this->path;
@@ -819,8 +819,8 @@ GraphPath<Node, Edge>* StarPath<Node, Edge>::distribute()
   return this;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* VariablePath<Node, Edge>::distribute()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* VariablePath<Node, Edge, NodeStore>::distribute()
 {
   return this;
 }
@@ -829,40 +829,40 @@ GraphPath<Node, Edge>* VariablePath<Node, Edge>::distribute()
 /*
  * contains_variable
  */
-template<typename Node, typename Edge>
-bool VariablePath<Node, Edge>::contains_variable(std::string v_id)
+template<typename Node, typename Edge, typename NodeStore>
+bool VariablePath<Node, Edge, NodeStore>::contains_variable(std::string v_id)
 {
   return v_id == "" || this->id == v_id;
 }
 
-template<typename Node, typename Edge>
-bool StarPath<Node, Edge>::contains_variable(std::string v_id)
+template<typename Node, typename Edge, typename NodeStore>
+bool StarPath<Node, Edge, NodeStore>::contains_variable(std::string v_id)
 {
   return path->contains_variable(v_id);
 }
 
-template<typename Node, typename Edge>
-bool EmptyPath<Node, Edge>::contains_variable(std::string)
+template<typename Node, typename Edge, typename NodeStore>
+bool EmptyPath<Node, Edge, NodeStore>::contains_variable(std::string)
 {
   return false;
 }
 
-template<typename Node, typename Edge>
-bool ConcreteEdgePath<Node, Edge>::contains_variable(std::string)
+template<typename Node, typename Edge, typename NodeStore>
+bool ConcreteEdgePath<Node, Edge, NodeStore>::contains_variable(std::string)
 {
   return false;
 }
 
-template<typename Node, typename Edge>
-bool ConcreteNodePath<Node, Edge>::contains_variable(std::string)
+template<typename Node, typename Edge, typename NodeStore>
+bool ConcreteNodePath<Node, Edge, NodeStore>::contains_variable(std::string)
 {
   return false;
 }
 
-template<typename Node, typename Edge>
-bool UnionPath<Node, Edge>::contains_variable(std::string v_id)
+template<typename Node, typename Edge, typename NodeStore>
+bool UnionPath<Node, Edge, NodeStore>::contains_variable(std::string v_id)
 {
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
       if ((*it)->contains_variable(v_id))
         {
@@ -872,10 +872,10 @@ bool UnionPath<Node, Edge>::contains_variable(std::string v_id)
   return false;
 }
 
-template<typename Node, typename Edge>
-bool ConcatenationPath<Node, Edge>::contains_variable(std::string v_id)
+template<typename Node, typename Edge, typename NodeStore>
+bool ConcatenationPath<Node, Edge, NodeStore>::contains_variable(std::string v_id)
 {
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
       if ((*it)->contains_variable(v_id))
         {
@@ -889,46 +889,46 @@ bool ConcatenationPath<Node, Edge>::contains_variable(std::string v_id)
 /*
  * gather_variables
  */
-template<typename Node, typename Edge>
-void VariablePath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>* vars)
+template<typename Node, typename Edge, typename NodeStore>
+void VariablePath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars)
 {
   vars->push_back(this);
 }
 
-template<typename Node, typename Edge>
-void StarPath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>* vars)
+template<typename Node, typename Edge, typename NodeStore>
+void StarPath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars)
 {
   path->gather_variables(vars);
 }
 
-template<typename Node, typename Edge>
-void EmptyPath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>*)
+template<typename Node, typename Edge, typename NodeStore>
+void EmptyPath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>*)
 {
 }
 
-template<typename Node, typename Edge>
-void ConcreteEdgePath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>*)
+template<typename Node, typename Edge, typename NodeStore>
+void ConcreteEdgePath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>*)
 {
 }
 
-template<typename Node, typename Edge>
-void ConcreteNodePath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>*)
+template<typename Node, typename Edge, typename NodeStore>
+void ConcreteNodePath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>*)
 {
 }
 
-template<typename Node, typename Edge>
-void UnionPath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>* vars)
+template<typename Node, typename Edge, typename NodeStore>
+void UnionPath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars)
 {
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
       (*it)->gather_variables(vars);
     }
 }
 
-template<typename Node, typename Edge>
-void ConcatenationPath<Node, Edge>::gather_variables(std::list<VariablePath<Node, Edge>*>* vars)
+template<typename Node, typename Edge, typename NodeStore>
+void ConcatenationPath<Node, Edge, NodeStore>::gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars)
 {
-  for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it)
     {
       (*it)->gather_variables(vars) ;
     }
@@ -938,14 +938,14 @@ void ConcatenationPath<Node, Edge>::gather_variables(std::list<VariablePath<Node
 /*
  * operator==
  */
-template<typename Node, typename Edge>
-bool ConcreteEdgePath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool ConcreteEdgePath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const ConcreteEdgePath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const ConcreteEdgePath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
-  ConcreteEdgePath<Node, Edge>* const o = (ConcreteEdgePath<Node, Edge>* const) &e;
+  ConcreteEdgePath<Node, Edge, NodeStore>* const o = (ConcreteEdgePath<Node, Edge, NodeStore>* const) &e;
   if (this->size() != o->size())
     {
       return false;
@@ -960,14 +960,14 @@ bool ConcreteEdgePath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) c
   return true;
 }
 
-template<typename Node, typename Edge>
-bool ConcreteNodePath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool ConcreteNodePath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const ConcreteNodePath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const ConcreteNodePath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
-  ConcreteNodePath<Node, Edge>* const o = (ConcreteNodePath<Node, Edge>* const) &e;
+  ConcreteNodePath<Node, Edge, NodeStore>* const o = (ConcreteNodePath<Node, Edge, NodeStore>* const) &e;
   if (this->size() != o->size())
     {
       return false;
@@ -982,29 +982,29 @@ bool ConcreteNodePath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) c
   return true;
 }
 
-template<typename Node, typename Edge>
-bool EmptyPath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool EmptyPath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const EmptyPath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const EmptyPath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
   return true;
 }
 
-template<typename Node, typename Edge>
-bool ConcatenationPath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool ConcatenationPath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const ConcatenationPath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const ConcatenationPath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
-  ConcatenationPath<Node, Edge>* const o = (ConcatenationPath<Node, Edge>* const) &e;
+  ConcatenationPath<Node, Edge, NodeStore>* const o = (ConcatenationPath<Node, Edge, NodeStore>* const) &e;
   if (this->size() != o->size())
     {
       return false;
     }
-  for (typename std::list<GraphPath<Node, Edge>*>::const_iterator it = this->begin(), it2 = o->begin(); it != this->end(); ++it, ++it2)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::const_iterator it = this->begin(), it2 = o->begin(); it != this->end(); ++it, ++it2)
     {
       if (!(**it == **it2))
         {
@@ -1014,19 +1014,19 @@ bool ConcatenationPath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) 
   return true;
 }
 
-template<typename Node, typename Edge>
-bool UnionPath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool UnionPath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const UnionPath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const UnionPath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
-  UnionPath<Node, Edge>* const o = (UnionPath<Node, Edge>* const) &e;
+  UnionPath<Node, Edge, NodeStore>* const o = (UnionPath<Node, Edge, NodeStore>* const) &e;
   if (this->size() != o->size())
     {
       return false;
     }
-  for (typename std::list<GraphPath<Node, Edge>*>::const_iterator it = this->begin(), it2 = o->begin(); it != this->end(); ++it, ++it2)
+  for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::const_iterator it = this->begin(), it2 = o->begin(); it != this->end(); ++it, ++it2)
     {
       if (!(**it == **it2))
         {
@@ -1036,24 +1036,24 @@ bool UnionPath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
   return true;
 }
 
-template<typename Node, typename Edge>
-bool StarPath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool StarPath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const StarPath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const StarPath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
-  StarPath<Node, Edge>* const o = (StarPath<Node, Edge>* const) &e;
+  StarPath<Node, Edge, NodeStore>* const o = (StarPath<Node, Edge, NodeStore>* const) &e;
   return *(this->path) == *(o->path);
 }
 
-template<typename Node, typename Edge>
-bool VariablePath<Node, Edge>::operator==(const GraphPath<Node, Edge> & e) const
+template<typename Node, typename Edge, typename NodeStore>
+bool VariablePath<Node, Edge, NodeStore>::operator==(const GraphPath<Node, Edge, NodeStore> & e) const
 {
-  if (dynamic_cast<const VariablePath<Node, Edge> *>(&e) == NULL)
+  if (dynamic_cast<const VariablePath<Node, Edge, NodeStore> *>(&e) == NULL)
     {
       return false;
     }
-  VariablePath<Node, Edge>* const o = (VariablePath<Node, Edge>* const) &e;
+  VariablePath<Node, Edge, NodeStore>* const o = (VariablePath<Node, Edge, NodeStore>* const) &e;
   return this->id == o->id;
 }

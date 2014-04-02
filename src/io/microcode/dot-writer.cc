@@ -79,12 +79,12 @@ s_compute_asm_nodes (const Microcode *mc,
 		     std::map<MicrocodeNode *, basic_block_t> &anodes,
 		     const ConcreteAddress *start, const ConcreteAddress *end)
 {
-  const vector<MicrocodeNode *> *nodes = mc->get_nodes ();
   vector<MicrocodeNode *> *result = new vector<MicrocodeNode *> ();
 
-  for (size_t i = 0; i < nodes->size (); i++) 
+  for (Microcode::const_node_iterator i = mc->begin_nodes ();
+       i != mc->end_nodes (); i++)
     {
-      MicrocodeNode *n = nodes->at (i);
+      MicrocodeNode *n = *i;
       
       assert (! n->has_annotation (AsmAnnotation::ID) || 
 	      n->get_loc ().getLocal() == 0);

@@ -34,19 +34,19 @@
 
 #include <utils/graph.hh>
 
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class EmptyPath;
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class ConcreteEdgePath;
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class ConcreteNodePath;
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class UnionPath;
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class ConcatenationPath;
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class StarPath;
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class VariablePath;
 
 /* ***************************************************/
@@ -54,26 +54,26 @@ class VariablePath;
  * \brief  Abstract class for graph paths
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class GraphPath
 {
 
 private:
-  const GraphInterface<Node, Edge>* graph;
+  const GraphInterface<Node, Edge, NodeStore>* graph;
 
 public:
   /*! \brief Constructor */
-  GraphPath(const GraphInterface<Node, Edge>* graph): graph(graph) {};
+  GraphPath(const GraphInterface<Node, Edge, NodeStore>* graph): graph(graph) {};
   /*! \brief Copy constructor */
-  GraphPath(const GraphPath<Node, Edge>& o): graph(o.graph) {};
+  GraphPath(const GraphPath<Node, Edge, NodeStore>& o): graph(o.graph) {};
   /*! Destructor */
   virtual ~GraphPath() {};
 
   /*! \brief Clone */
-  virtual GraphPath<Node, Edge>* clone() const = 0;
+  virtual GraphPath<Node, Edge, NodeStore>* clone() const = 0;
 
   /*! \brief accessor */
-  const GraphInterface<Node, Edge>* get_graph()
+  const GraphInterface<Node, Edge, NodeStore>* get_graph()
   {
     return graph;
   };
@@ -89,7 +89,7 @@ public:
    * Note that this address may be the same as the current instance.
    */
   /* ***************************************************/
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value) = 0;
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value) = 0;
 
   /* ***************************************************/
   /**
@@ -98,7 +98,7 @@ public:
    * Note that this address may be the same as the current instance.
    */
   /* ***************************************************/
-  virtual GraphPath<Node, Edge>* simplify() = 0;
+  virtual GraphPath<Node, Edge, NodeStore>* simplify() = 0;
 
   /* ***************************************************/
   /**
@@ -107,7 +107,7 @@ public:
    * Note that this address may be the same as the current instance.
    */
   /* ***************************************************/
-  virtual GraphPath<Node, Edge>* distribute() = 0;
+  virtual GraphPath<Node, Edge, NodeStore>* distribute() = 0;
 
   /* ***************************************************/
   /**
@@ -121,7 +121,7 @@ public:
    *
    */
   /* ***************************************************/
-  virtual GraphPath<Node, Edge>* normalize() = 0;
+  virtual GraphPath<Node, Edge, NodeStore>* normalize() = 0;
 
   /* ***************************************************/
   /**
@@ -130,7 +130,7 @@ public:
    * Note that this address may be the same as the current instance.
    */
   /* ***************************************************/
-  virtual GraphPath<Node, Edge>* factorize() = 0;
+  virtual GraphPath<Node, Edge, NodeStore>* factorize() = 0;
 
 
   /* ***************************************************/
@@ -141,7 +141,7 @@ public:
   /* ***************************************************/
   virtual bool is_empty()
   {
-    return dynamic_cast<EmptyPath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<EmptyPath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -152,7 +152,7 @@ public:
   /* ***************************************************/
   virtual bool is_concrete_edge()
   {
-    return dynamic_cast<ConcreteEdgePath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<ConcreteEdgePath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -163,7 +163,7 @@ public:
   /* ***************************************************/
   virtual bool is_concrete_node()
   {
-    return dynamic_cast<ConcreteNodePath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<ConcreteNodePath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -174,7 +174,7 @@ public:
   /* ***************************************************/
   virtual bool is_union()
   {
-    return dynamic_cast<UnionPath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<UnionPath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -185,7 +185,7 @@ public:
   /* ***************************************************/
   virtual bool is_concatenation()
   {
-    return dynamic_cast<ConcatenationPath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<ConcatenationPath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -196,7 +196,7 @@ public:
   /* ***************************************************/
   virtual bool is_star()
   {
-    return dynamic_cast<StarPath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<StarPath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -207,7 +207,7 @@ public:
   /* ***************************************************/
   virtual bool is_variable()
   {
-    return dynamic_cast<VariablePath<Node, Edge>*>(this) != NULL;
+    return dynamic_cast<VariablePath<Node, Edge, NodeStore>*>(this) != NULL;
   };
 
   /* ***************************************************/
@@ -218,13 +218,13 @@ public:
   /* ***************************************************/
   virtual bool contains_variable(std::string v_id = "") = 0;
 
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars) = 0;
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars) = 0;
 
   /*! \brief Pretty Printing */
   virtual std::string pp() const = 0;
 
   /*! \brief Syntaxic equality */
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const = 0;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const = 0;
 };
 
 
@@ -235,36 +235,37 @@ public:
  path (concatenation, insersion, etc.
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class ConcreteEdgePath : public std::list<Edge *>, public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class ConcreteEdgePath : public std::list<Edge *>, 
+			 public GraphPath<Node, Edge, NodeStore>
 {
 
 public:
   /*! \brief Constructor */
-  ConcreteEdgePath(const GraphInterface<Node, Edge>* graph) : std::list<Edge *>(), GraphPath<Node, Edge>(graph) {};
+  ConcreteEdgePath(const GraphInterface<Node, Edge, NodeStore>* graph) : std::list<Edge *>(), GraphPath<Node, Edge, NodeStore>(graph) {};
   /*! \brief Copy constructor */
-  ConcreteEdgePath(const ConcreteEdgePath<Node, Edge>& o) : std::list<Edge *>(o), GraphPath<Node, Edge>(o) {};
+  ConcreteEdgePath(const ConcreteEdgePath<Node, Edge, NodeStore>& o) : std::list<Edge *>(o), GraphPath<Node, Edge, NodeStore>(o) {};
   /*! Destructor : do not delete the Edges !*/
   virtual ~ConcreteEdgePath() { };
 
   /*! \brief Clone */
-  virtual ConcreteEdgePath<Node, Edge>* clone() const
+  virtual ConcreteEdgePath<Node, Edge, NodeStore>* clone() const
   {
-    return new ConcreteEdgePath<Node, Edge>(*this);
+    return new ConcreteEdgePath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   /*! \brief Pretty Printing */
   std::string pp() const;
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 };
 
 /* ***************************************************/
@@ -274,36 +275,36 @@ public:
  path (concatenation, insersion, etc.
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class ConcreteNodePath : public std::list<Node *>, public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class ConcreteNodePath : public std::list<Node *>, public GraphPath<Node, Edge, NodeStore>
 {
 
 public:
   /*! \brief Constructor */
-  ConcreteNodePath(const GraphInterface<Node, Edge>* graph): std::list<Node *>(), GraphPath<Node, Edge>(graph) {};
+  ConcreteNodePath(const GraphInterface<Node, Edge, NodeStore>* graph): std::list<Node *>(), GraphPath<Node, Edge, NodeStore>(graph) {};
   /*! \brief Copy constructor */
-  ConcreteNodePath(const ConcreteEdgePath<Node, Edge>& o): std::list<Node *>(o), GraphPath<Node, Edge>(o) {};
+  ConcreteNodePath(const ConcreteEdgePath<Node, Edge, NodeStore>& o): std::list<Node *>(o), GraphPath<Node, Edge, NodeStore>(o) {};
   /*! Destructor : do not delete the Edges !*/
   virtual ~ConcreteNodePath() { };
 
   /*! \brief Clone */
-  virtual ConcreteNodePath<Node, Edge>* clone() const
+  virtual ConcreteNodePath<Node, Edge, NodeStore>* clone() const
   {
-    return new ConcreteNodePath<Node, Edge>(*this);
+    return new ConcreteNodePath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   /*! \brief Pretty Printing */
   std::string pp() const;
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 };
 
 
@@ -312,36 +313,36 @@ public:
  * \brief empty path
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class EmptyPath :  public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class EmptyPath :  public GraphPath<Node, Edge, NodeStore>
 {
 
 public:
   /*! \brief Constructor */
-  EmptyPath(const GraphInterface<Node, Edge>* graph): GraphPath<Node, Edge>(graph) {};
+  EmptyPath(const GraphInterface<Node, Edge, NodeStore>* graph): GraphPath<Node, Edge, NodeStore>(graph) {};
   /*! \brief Copy constructor */
-  EmptyPath(const EmptyPath<Node, Edge>& o): GraphPath<Node, Edge>(o) {};
+  EmptyPath(const EmptyPath<Node, Edge, NodeStore>& o): GraphPath<Node, Edge, NodeStore>(o) {};
   /*! Destructor */
   virtual ~EmptyPath() { };
 
   /*! \brief Clone */
-  virtual EmptyPath<Node, Edge>* clone() const
+  virtual EmptyPath<Node, Edge, NodeStore>* clone() const
   {
-    return new EmptyPath<Node, Edge>(*this);
+    return new EmptyPath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   /*! \brief Pretty Printing */
   std::string pp() const;
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 };
 
 
@@ -350,48 +351,48 @@ public:
  * \brief  concatenation of several paths
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class ConcatenationPath : public std::list<GraphPath<Node, Edge>*>, public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class ConcatenationPath : public std::list<GraphPath<Node, Edge, NodeStore>*>, public GraphPath<Node, Edge, NodeStore>
 {
 public:
   /*! \brief basic constructor */
-  ConcatenationPath(const GraphInterface<Node, Edge>* p): GraphPath<Node, Edge>(p) {};
+  ConcatenationPath(const GraphInterface<Node, Edge, NodeStore>* p): GraphPath<Node, Edge, NodeStore>(p) {};
   /*! \brief Constructor */
-  ConcatenationPath(GraphPath<Node, Edge>* u1, GraphPath<Node, Edge>* u2) : std::list<GraphPath<Node, Edge>*>(), GraphPath<Node, Edge>(u1->get_graph())
+  ConcatenationPath(GraphPath<Node, Edge, NodeStore>* u1, GraphPath<Node, Edge, NodeStore>* u2) : std::list<GraphPath<Node, Edge, NodeStore>*>(), GraphPath<Node, Edge, NodeStore>(u1->get_graph())
   {
     this->push_back(u1);
     this->push_back(u2);
   };
   /*! \brief Copy constructor */
-  ConcatenationPath(const ConcatenationPath<Node, Edge>& o) : std::list<GraphPath<Node, Edge>*>(), GraphPath<Node, Edge>(o)
+  ConcatenationPath(const ConcatenationPath<Node, Edge, NodeStore>& o) : std::list<GraphPath<Node, Edge, NodeStore>*>(), GraphPath<Node, Edge, NodeStore>(o)
   {
-    for (typename std::list<GraphPath<Node, Edge>*>::const_iterator it = o.begin(); it != o.end(); ++it)
+    for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::const_iterator it = o.begin(); it != o.end(); ++it)
       this->push_back((*it)->clone());
   };
   /*! Destructor */
   virtual ~ConcatenationPath()
   {
-    for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it) delete(*it);
+    for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it) delete(*it);
   };
 
   /*! \brief Clone */
-  virtual ConcatenationPath<Node, Edge>* clone() const
+  virtual ConcatenationPath<Node, Edge, NodeStore>* clone() const
   {
-    return new ConcatenationPath<Node, Edge>(*this);
+    return new ConcatenationPath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   /*! \brief Pretty Printing */
   std::string pp() const;
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 
 };
 
@@ -400,48 +401,48 @@ public:
  * \brief  Union of several paths
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class UnionPath : public std::list<GraphPath<Node, Edge>*>, public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class UnionPath : public std::list<GraphPath<Node, Edge, NodeStore>*>, public GraphPath<Node, Edge, NodeStore>
 {
 public:
   /*! \brief basic constructor */
-  UnionPath(const GraphInterface<Node, Edge>* p): GraphPath<Node, Edge>(p) {};
+  UnionPath(const GraphInterface<Node, Edge, NodeStore>* p): GraphPath<Node, Edge, NodeStore>(p) {};
   /*! \brief Constructor */
-  UnionPath(GraphPath<Node, Edge>* u1, GraphPath<Node, Edge>* u2) : std::list<GraphPath<Node, Edge>*>(), GraphPath<Node, Edge>(u1->get_graph())
+  UnionPath(GraphPath<Node, Edge, NodeStore>* u1, GraphPath<Node, Edge, NodeStore>* u2) : std::list<GraphPath<Node, Edge, NodeStore>*>(), GraphPath<Node, Edge, NodeStore>(u1->get_graph())
   {
     this->push_back(u1);
     this->push_back(u2);
   };
   /*! \brief Copy constructor */
-  UnionPath(const UnionPath<Node, Edge>& o) : std::list<GraphPath<Node, Edge>*>(), GraphPath<Node, Edge>(o)
+  UnionPath(const UnionPath<Node, Edge, NodeStore>& o) : std::list<GraphPath<Node, Edge, NodeStore>*>(), GraphPath<Node, Edge, NodeStore>(o)
   {
-    for (typename std::list<GraphPath<Node, Edge>*>::const_iterator it = o.begin(); it != o.end(); ++it)
+    for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::const_iterator it = o.begin(); it != o.end(); ++it)
       this->push_back((*it)->clone());
   };
   /*! Destructor */
   virtual ~UnionPath()
   {
-    for (typename std::list<GraphPath<Node, Edge>*>::iterator it = this->begin(); it != this->end(); ++it) delete(*it);
+    for (typename std::list<GraphPath<Node, Edge, NodeStore>*>::iterator it = this->begin(); it != this->end(); ++it) delete(*it);
   };
 
   /*! \brief Clone */
-  virtual UnionPath<Node, Edge>* clone() const
+  virtual UnionPath<Node, Edge, NodeStore>* clone() const
   {
-    return new UnionPath<Node, Edge>(*this);
+    return new UnionPath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   /*! \brief Pretty Printing */
   std::string pp() const;
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 };
 
 /* ***************************************************/
@@ -449,17 +450,17 @@ public:
  * \brief Repetition of a path
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class StarPath : public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class StarPath : public GraphPath<Node, Edge, NodeStore>
 {
 public:
-  GraphPath<Node, Edge>* path;
+  GraphPath<Node, Edge, NodeStore>* path;
 
 public:
   /*! \brief Constructor */
-  StarPath(GraphPath<Node, Edge>* p): GraphPath<Node, Edge>(p->get_graph()), path(p) {};
+  StarPath(GraphPath<Node, Edge, NodeStore>* p): GraphPath<Node, Edge, NodeStore>(p->get_graph()), path(p) {};
   /*! \brief Copy constructor */
-  StarPath(const StarPath<Node, Edge>& o): GraphPath<Node, Edge>(o), path(o.path->clone()) {};
+  StarPath(const StarPath<Node, Edge, NodeStore>& o): GraphPath<Node, Edge, NodeStore>(o), path(o.path->clone()) {};
   /*! Destructor */
   virtual ~StarPath()
   {
@@ -467,24 +468,24 @@ public:
   };
 
   /*! \brief Clone */
-  virtual StarPath<Node, Edge>* clone() const
+  virtual StarPath<Node, Edge, NodeStore>* clone() const
   {
-    return new StarPath<Node, Edge>(*this);
+    return new StarPath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   /*! \brief Pretty Printing */
   std::string pp() const;
 
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 };
 
 /* ***************************************************/
@@ -492,40 +493,40 @@ public:
  * \brief  a symbolic path
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
-class VariablePath : public GraphPath<Node, Edge>
+template<typename Node, typename Edge, typename NodeStore>
+class VariablePath : public GraphPath<Node, Edge, NodeStore>
 {
 private:
   const std::string id;
 
 public:
   /*! \brief Constructor */
-  VariablePath(const GraphInterface<Node, Edge>* p, const std::string id): GraphPath<Node, Edge>(p), id(id) {};
+  VariablePath(const GraphInterface<Node, Edge, NodeStore>* p, const std::string id): GraphPath<Node, Edge, NodeStore>(p), id(id) {};
   /*! \brief Copy constructor */
-  VariablePath(const VariablePath<Node, Edge>& o): GraphPath<Node, Edge>(o), id(o.id) {};
+  VariablePath(const VariablePath<Node, Edge, NodeStore>& o): GraphPath<Node, Edge, NodeStore>(o), id(o.id) {};
 
   /*! \brief Clone */
-  virtual VariablePath<Node, Edge>* clone() const
+  virtual VariablePath<Node, Edge, NodeStore>* clone() const
   {
-    return new VariablePath<Node, Edge>(*this);
+    return new VariablePath<Node, Edge, NodeStore>(*this);
   };
 
-  virtual GraphPath<Node, Edge>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge>* value);
+  virtual GraphPath<Node, Edge, NodeStore>* replace_variable_in_place(std::string v_id, GraphPath<Node, Edge, NodeStore>* value);
 
   const std::string get_id() const
   {
     return id;
   };
 
-  virtual GraphPath<Node, Edge>* simplify();
-  virtual GraphPath<Node, Edge>* distribute();
-  virtual GraphPath<Node, Edge>* factorize();
-  virtual GraphPath<Node, Edge>* normalize();
+  virtual GraphPath<Node, Edge, NodeStore>* simplify();
+  virtual GraphPath<Node, Edge, NodeStore>* distribute();
+  virtual GraphPath<Node, Edge, NodeStore>* factorize();
+  virtual GraphPath<Node, Edge, NodeStore>* normalize();
   virtual bool contains_variable(std::string v_id = "");
-  virtual void gather_variables(std::list<VariablePath<Node, Edge>*>* vars);
+  virtual void gather_variables(std::list<VariablePath<Node, Edge, NodeStore>*>* vars);
 
   std::string pp() const;
-  virtual bool operator==(const GraphPath<Node, Edge> & e) const;
+  virtual bool operator==(const GraphPath<Node, Edge, NodeStore> & e) const;
 };
 
 #include "path.ii"

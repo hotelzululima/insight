@@ -60,10 +60,11 @@
 /*
  * Default implementation: linear time :(
  */
-template<typename Node, typename Edge>
-std::pair<Edge *, Node *> GraphInterface<Node, Edge>::get_first_predecessor(Node *n) const
+template<typename Node, typename Edge, typename NodeStore>
+std::pair<Edge *, Node *> GraphInterface<Node, Edge, NodeStore>::get_first_predecessor(Node *n) const
 {
-  for (typename std::vector<Node *>::iterator it = this->get_nodes()->begin(); it != this->get_nodes()->end(); ++it)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes (); 
+       ++it)
     {
       Node *c = *it;
       GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, c)
@@ -81,11 +82,12 @@ std::pair<Edge *, Node *> GraphInterface<Node, Edge>::get_first_predecessor(Node
 /*
  * Default implementation: linear time :(
  */
-template<typename Node, typename Edge>
-std::pair<Edge *, Node *> GraphInterface<Node, Edge>::get_next_predecessor(Node *n, Edge *e) const
+template<typename Node, typename Edge, typename NodeStore>
+std::pair<Edge *, Node *> GraphInterface<Node, Edge, NodeStore>::get_next_predecessor(Node *n, Edge *e) const
 {
   bool trouve = false;
-  for (typename std::vector<Node *>::iterator it = this->get_nodes()->begin(); it != this->get_nodes()->end(); ++it)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes (); 
+       ++it)
     {
       Node *c = *it;
       GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, c)
@@ -110,8 +112,8 @@ std::pair<Edge *, Node *> GraphInterface<Node, Edge>::get_next_predecessor(Node 
 /*
  * Default implementation: linear time :(
  */
-template<typename Node, typename Edge>
-int GraphInterface<Node, Edge>::get_nb_successors(Node *n) const
+template<typename Node, typename Edge, typename NodeStore>
+int GraphInterface<Node, Edge, NodeStore>::get_nb_successors(Node *n) const
 {
   int nb = 0;
   GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, n)
@@ -125,8 +127,8 @@ int GraphInterface<Node, Edge>::get_nb_successors(Node *n) const
 /*
  * Default implementation: linear time :(
  */
-template<typename Node, typename Edge>
-int GraphInterface<Node, Edge>::get_nb_predecessors(Node *n) const
+template<typename Node, typename Edge, typename NodeStore>
+int GraphInterface<Node, Edge, NodeStore>::get_nb_predecessors(Node *n) const
 {
   int nb = 0;
   GRAPH_INTERFACE_ITERATE_PREDECESSORS(this, n)
@@ -164,8 +166,8 @@ void dfr_pop(std::list< std::vector<Edge *> > & stack)
 }
 
 
-template<typename Node, typename Edge>
-void GraphInterface<Node, Edge>::depth_first_run(Node *start, GraphVisitor<Node, Edge>& visitor)  const
+template<typename Node, typename Edge, typename NodeStore>
+void GraphInterface<Node, Edge, NodeStore>::depth_first_run(Node *start, GraphVisitor<Node, Edge>& visitor)  const
 {
   std::set<Edge *> vus;
   std::list< std::vector<Edge *> > current_path;  // The current path is encoded by the list of the last arrows
@@ -272,8 +274,8 @@ void GraphInterface<Node, Edge>::depth_first_run(Node *start, GraphVisitor<Node,
 /*
  * bread_first_run
  */
-template<typename Node, typename Edge>
-void GraphInterface<Node, Edge>::bread_first_traversal(Node * , GraphVisitor<Node, Edge>&)  const
+template<typename Node, typename Edge, typename NodeStore>
+void GraphInterface<Node, Edge, NodeStore>::bread_first_traversal(Node * , GraphVisitor<Node, Edge>&)  const
 {
   /*! \todo */
 }
@@ -281,8 +283,8 @@ void GraphInterface<Node, Edge>::bread_first_traversal(Node * , GraphVisitor<Nod
 /*
  * depth_first_traversal
  */
-template<typename Node, typename Edge>
-void GraphInterface<Node, Edge>::depth_first_traversal(Node *start, GraphVisitor<Node, Edge>& vis)  const
+template<typename Node, typename Edge, typename NodeStore>
+void GraphInterface<Node, Edge, NodeStore>::depth_first_traversal(Node *start, GraphVisitor<Node, Edge>& vis)  const
 {
   std::set<Edge *> vus;
   std::list<Edge *> traversal;
@@ -349,8 +351,8 @@ void GraphInterface<Node, Edge>::depth_first_traversal(Node *start, GraphVisitor
 /*
  * topological_traversal
  */
-template<typename Node, typename Edge>
-void GraphInterface<Node, Edge>::topological_traversal(Node *start, GraphVisitor<Node, Edge>& vis)  const
+template<typename Node, typename Edge, typename NodeStore>
+void GraphInterface<Node, Edge, NodeStore>::topological_traversal(Node *start, GraphVisitor<Node, Edge>& vis)  const
 {
   std::set<Edge *> vus;
   std::list<Edge *> traversal;
@@ -436,7 +438,7 @@ void GraphInterface<Node, Edge>::topological_traversal(Node *start, GraphVisitor
 }
 
 
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class TestVisitor : public GraphVisitor<Node, Edge>
 {
 private:
@@ -469,15 +471,15 @@ public:
 };
 
 
-template<typename Node, typename Edge>
-void GraphInterface<Node, Edge>::depth_first_test()
+template<typename Node, typename Edge, typename NodeStore>
+void GraphInterface<Node, Edge, NodeStore>::depth_first_test()
 {
-  TestVisitor<Node, Edge> v;
+  TestVisitor<Node, Edge, NodeStore> v;
   this->depth_first_run(this->get_entry_point(), v);
 }
 
-template<typename Node, typename Edge>
-std::string GraphInterface<Node, Edge>::get_label_edge(Edge *n) const
+template<typename Node, typename Edge, typename NodeStore>
+std::string GraphInterface<Node, Edge, NodeStore>::get_label_edge(Edge *n) const
 {
   std::ostringstream oss;
   oss << this->get_label_node(this->get_source(n)) << "_to_" << this->get_label_node(this->get_target(n));
@@ -510,11 +512,11 @@ std::string GraphInterface<Node, Edge>::get_label_edge(Edge *n) const
 /*
  * Simplifie un chemin: simplification + forme disjonctive
  */
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* optimize(GraphPath<Node, Edge>* nvo)
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* optimize(GraphPath<Node, Edge, NodeStore>* nvo)
 {
   bool optimised;
-  GraphPath<Node, Edge>* old;
+  GraphPath<Node, Edge, NodeStore>* old;
   do
     {
       optimised = false;
@@ -544,34 +546,33 @@ GraphPath<Node, Edge>* optimize(GraphPath<Node, Edge>* nvo)
   return nvo;
 }
 
-template<typename Node, typename Edge>
-GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
+template<typename Node, typename Edge, typename NodeStore>
+GraphPath<Node, Edge, NodeStore>* GraphInterface<Node, Edge, NodeStore>::get_regular_node_paths()
 {
-  std::unordered_map<std::string, GraphPath<Node, Edge>*> eqns;
-  std::unordered_map<size_t, VariablePath<Node, Edge>*> names;
+  std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*> eqns;
+  std::unordered_map<size_t, VariablePath<Node, Edge, NodeStore>*> names;
 
   int idl = 0;
-  std::vector<Node *>* nodes = this->get_nodes();
 
-  for (typename std::vector<Node *>::iterator it = nodes->begin(); it != nodes->end(); ++it)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes (); ++it)
     {
       std::ostringstream oss;
       oss << "L" << idl++;
       Node *n = *it;
-      names[(size_t)n] = new VariablePath<Node, Edge>(this, (const std::string)oss.str());
+      names[(size_t)n] = new VariablePath<Node, Edge, NodeStore>(this, (const std::string)oss.str());
     }
 
   /*
    * Initial equations
    */
-  for (typename std::vector<Node *>::iterator it = nodes->begin(); it != nodes->end(); ++it)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes (); ++it)
     {
       Node *n = *it;
-      GraphPath<Node, Edge>* eqn;
+      GraphPath<Node, Edge, NodeStore>* eqn;
 
-      ConcreteNodePath<Node, Edge>* p1 = new ConcreteNodePath<Node, Edge>(this);
+      ConcreteNodePath<Node, Edge, NodeStore>* p1 = new ConcreteNodePath<Node, Edge, NodeStore>(this);
       p1->push_back(n);
-      UnionPath<Node, Edge>* p2 = new UnionPath<Node, Edge>(this);
+      UnionPath<Node, Edge, NodeStore>* p2 = new UnionPath<Node, Edge, NodeStore>(this);
       GRAPH_INTERFACE_ITERATE_SUCCESSORS(this, n)
       {
         Node *target = this->get_target(succ.first);
@@ -580,8 +581,8 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
             p2->push_back(names[(size_t)succ.second]->clone());
           }
       }
-      eqn = new ConcatenationPath<Node, Edge>(p1, p2);
-      GraphPath<Node, Edge>* simpl = eqn->simplify();
+      eqn = new ConcatenationPath<Node, Edge, NodeStore>(p1, p2);
+      GraphPath<Node, Edge, NodeStore>* simpl = eqn->simplify();
       if (eqn != simpl)
         {
           delete eqn;
@@ -600,19 +601,19 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
       replaced = false;
       rewrited = false;
       std::string tosolve;
-      GraphPath<Node, Edge>* solution = NULL;
+      GraphPath<Node, Edge, NodeStore>* solution = NULL;
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
       std::cout << "Simplification..." << std::endl;
-      for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
+      for (typename std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
         {
-          std::pair<std::string, GraphPath<Node, Edge>*>elem = *it;
+          std::pair<std::string, GraphPath<Node, Edge, NodeStore>*>elem = *it;
           std::cout << elem.first << " := " << elem.second->pp() << std::endl;
         }
 #endif
       //Choisit une simplification à faire ...
-      for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); eqns.size() > 1 && it != eqns.end() && !replaced && !rewrited; ++it)
+      for (typename std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*>::iterator it = eqns.begin(); eqns.size() > 1 && it != eqns.end() && !replaced && !rewrited; ++it)
         {
-          GraphPath<Node, Edge>* eqn = it->second;
+          GraphPath<Node, Edge, NodeStore>* eqn = it->second;
           tosolve = it->first;
 
           //Solution trouvee
@@ -624,44 +625,44 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
           //Lemme d'Ardenn X = AX: Lx= c0 + ... + cn-1 + Lx
           else if (eqn->is_concatenation())
             {
-              ConcatenationPath<Node, Edge>* cc = (ConcatenationPath<Node, Edge>*) eqn;
+              ConcatenationPath<Node, Edge, NodeStore>* cc = (ConcatenationPath<Node, Edge, NodeStore>*) eqn;
               assert(cc->size() > 0);
-              GraphPath<Node, Edge>* last = cc->back();
+              GraphPath<Node, Edge, NodeStore>* last = cc->back();
               //cn==Lx ?
-              if (last->is_variable() && ((VariablePath<Node, Edge>*)last)->get_id() == tosolve)
+              if (last->is_variable() && ((VariablePath<Node, Edge, NodeStore>*)last)->get_id() == tosolve)
                 {
                   //solution= (c0 ... cn-1)^{*}
-                  ConcatenationPath<Node, Edge>* scc = (ConcatenationPath<Node, Edge>*)cc->clone();
+                  ConcatenationPath<Node, Edge, NodeStore>* scc = (ConcatenationPath<Node, Edge, NodeStore>*)cc->clone();
                   delete scc->back();
                   scc->pop_back();
-                  solution = new StarPath<Node, Edge>(scc);
+                  solution = new StarPath<Node, Edge, NodeStore>(scc);
                   rewrited = true;
                 }
             }
           //Lemme d'Ardenn X = AX U B avec B!=epsilon
           else if (eqn->is_union())
             {
-              UnionPath<Node, Edge>* un = (UnionPath<Node, Edge>*) eqn;
-              GraphPath<Node, Edge>* first = un->front();
-              GraphPath<Node, Edge>* last = un->back();
+              UnionPath<Node, Edge, NodeStore>* un = (UnionPath<Node, Edge, NodeStore>*) eqn;
+              GraphPath<Node, Edge, NodeStore>* first = un->front();
+              GraphPath<Node, Edge, NodeStore>* last = un->back();
               if (first->is_concatenation() && un->size() == 2)
                 {
-                  ConcatenationPath<Node, Edge>* g = (ConcatenationPath<Node, Edge>*)first;
+                  ConcatenationPath<Node, Edge, NodeStore>* g = (ConcatenationPath<Node, Edge, NodeStore>*)first;
                   assert(g->size() > 0);
                   //X
                   if (g->back()->is_variable())
                     {
-                      VariablePath<Node, Edge>* v = (VariablePath<Node, Edge>*)g->back();
+                      VariablePath<Node, Edge, NodeStore>* v = (VariablePath<Node, Edge, NodeStore>*)g->back();
                       //X==AX U B ?
                       if (v->get_id() == tosolve)
                         {
                           rewrited = true;
-                          g = (ConcatenationPath<Node, Edge>*)g->clone();
+                          g = (ConcatenationPath<Node, Edge, NodeStore>*)g->clone();
                           //Supprime le X
                           delete g->back();
                           g->pop_back();
-                          ConcatenationPath<Node, Edge>* scc = new ConcatenationPath<Node, Edge>(this);
-                          scc->push_back(new StarPath<Node, Edge>(g));
+                          ConcatenationPath<Node, Edge, NodeStore>* scc = new ConcatenationPath<Node, Edge, NodeStore>(this);
+                          scc->push_back(new StarPath<Node, Edge, NodeStore>(g));
                           scc->push_back(last->clone());
                           solution = scc;
                         }
@@ -670,27 +671,27 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
               if (!rewrited)
                 {
                   //essaye X==B U AX?
-                  GraphPath<Node, Edge>* tmp = first;
+                  GraphPath<Node, Edge, NodeStore>* tmp = first;
                   first = last;
                   last = tmp;
                   if (first->is_concatenation() && un->size() == 2)
                     {
-                      ConcatenationPath<Node, Edge>* g = (ConcatenationPath<Node, Edge>*)first;
+                      ConcatenationPath<Node, Edge, NodeStore>* g = (ConcatenationPath<Node, Edge, NodeStore>*)first;
                       assert(g->size() > 0);
                       //X
                       if (g->back()->is_variable())
                         {
-                          VariablePath<Node, Edge>* v = (VariablePath<Node, Edge>*)g->back();
+                          VariablePath<Node, Edge, NodeStore>* v = (VariablePath<Node, Edge, NodeStore>*)g->back();
                           //X==B U AX ?
                           if (v->get_id() == tosolve)
                             {
                               rewrited = true;
-                              g = (ConcatenationPath<Node, Edge>*)g->clone();
+                              g = (ConcatenationPath<Node, Edge, NodeStore>*)g->clone();
                               //Supprime le X
                               delete g->back();
                               g->pop_back();
-                              ConcatenationPath<Node, Edge>* scc = new ConcatenationPath<Node, Edge>(this);
-                              scc->push_back(new StarPath<Node, Edge>(g));
+                              ConcatenationPath<Node, Edge, NodeStore>* scc = new ConcatenationPath<Node, Edge, NodeStore>(this);
+                              scc->push_back(new StarPath<Node, Edge, NodeStore>(g));
                               scc->push_back(last->clone());
                               solution = scc;
                             }
@@ -702,10 +703,10 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
       //Si pas de simplification, cherche une substitution utile
       if (!replaced && !rewrited)
         {
-          std::list<VariablePath<Node, Edge>*> vars;
-          for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end() && !replaced; ++it)
+          std::list<VariablePath<Node, Edge, NodeStore>*> vars;
+          for (typename std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*>::iterator it = eqns.begin(); it != eqns.end() && !replaced; ++it)
             {
-              GraphPath<Node, Edge>* eqn = it->second;
+              GraphPath<Node, Edge, NodeStore>* eqn = it->second;
               tosolve = it->first;
               //Ne substitue pas L0, inutile ...
               if (tosolve != "L0")
@@ -716,12 +717,12 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
                   if (vars.size() == 1)
                     {
                       int times_used = 0;
-                      //VariablePath<Node,Edge>* var=(VariablePath<Node,Edge>*)vars.back();
-                      for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it2 = eqns.begin(); it2 != eqns.end() && times_used <= 1; ++it2)
+                      //VariablePath<Node,Edge, NodeStore>* var=(VariablePath<Node,Edge, NodeStore>*)vars.back();
+                      for (typename std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*>::iterator it2 = eqns.begin(); it2 != eqns.end() && times_used <= 1; ++it2)
                         {
                           vars.clear();
                           (it2->second)->gather_variables(&vars);
-                          for (typename std::list<VariablePath<Node, Edge>*>::iterator itv = vars.begin(); itv != vars.end(); ++itv)
+                          for (typename std::list<VariablePath<Node, Edge, NodeStore>*>::iterator itv = vars.begin(); itv != vars.end(); ++itv)
                             {
                               if ((*itv)->get_id() == tosolve)
                                 {
@@ -748,16 +749,16 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
           std::cout << "Remplace " << tosolve << " avec " << solution->pp() << std::endl;
 #endif
-          for (typename std::unordered_map<std::string, GraphPath<Node, Edge>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
+          for (typename std::unordered_map<std::string, GraphPath<Node, Edge, NodeStore>*>::iterator it = eqns.begin(); it != eqns.end(); ++it)
             {
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
               std::cout << "*" << it->first << std::endl;
 #endif
-              GraphPath<Node, Edge>* old = it->second;
+              GraphPath<Node, Edge, NodeStore>* old = it->second;
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
               std::cout << "  Old :" << old->pp() << std::endl;
 #endif
-              GraphPath<Node, Edge>* nvo = old->replace_variable_in_place(tosolve, solution);
+              GraphPath<Node, Edge, NodeStore>* nvo = old->replace_variable_in_place(tosolve, solution);
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
               std::cout << "  Nvo :" << nvo->pp() << std::endl;
 #endif
@@ -784,10 +785,10 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
 #endif
 
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
-          GraphPath<Node, Edge>* old = eqns[tosolve];
+          GraphPath<Node, Edge, NodeStore>* old = eqns[tosolve];
           std::cout << "  Old :" << old->pp() << std::endl;
 #endif
-          GraphPath<Node, Edge>* nvo = solution;
+          GraphPath<Node, Edge, NodeStore>* nvo = solution;
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
           std::cout << "  Nvo :" << nvo->pp() << std::endl;
 #endif
@@ -800,8 +801,8 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
         }
 #ifdef GRAPH_PATH_DEBUG_EQN_SOLVING
       std::cout << "Fin simplification..." << std::endl;
-      /*for(typename std::unordered_map<std::string,GraphPath<Node,Edge>*>::iterator it=eqns.begin();it!=eqns.end();++it) {
-        std::pair<std::string,GraphPath<Node,Edge>*>elem=*it;
+      /*for(typename std::unordered_map<std::string,GraphPath<Node,Edge, NodeStore>*>::iterator it=eqns.begin();it!=eqns.end();++it) {
+        std::pair<std::string,GraphPath<Node,Edge, NodeStore>*>elem=*it;
         std::cout << elem.first <<" := "<<elem.second->pp()<<std::endl;
         }*/
       std::cout << "\n";
@@ -809,7 +810,7 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
     }
   while (replaced || rewrited);
 
-  GraphPath<Node, Edge> *old, *nvo;
+  GraphPath<Node, Edge, NodeStore> *old, *nvo;
   nvo = eqns[std::string("L0")];
   for (int i = 0; i < 10; ++i)
     {
@@ -835,7 +836,7 @@ GraphPath<Node, Edge>* GraphInterface<Node, Edge>::get_regular_node_paths()
  * \brief  Visitor that collects the nodes it goes through
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class CollectingVisitor : public GraphVisitor<Node, Edge>
 {
 private:
@@ -871,8 +872,8 @@ public:
 };
 
 
-template<typename Node, typename Edge>
-std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, Node *end)
+template<typename Node, typename Edge, typename NodeStore>
+std::list<Node *>* GraphInterface<Node, Edge, NodeStore>::get_nodes_between(Node *start, Node *end)
 {
   std::list<Node *> stop;
   stop.push_back(end);
@@ -880,11 +881,11 @@ std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, No
   return res;
 }
 
-template<typename Node, typename Edge>
-std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, std::list<Node *>& end)
+template<typename Node, typename Edge, typename NodeStore>
+std::list<Node *>* GraphInterface<Node, Edge, NodeStore>::get_nodes_between(Node *start, std::list<Node *>& end)
 {
   std::list<Node *>* res = new std::list<Node *>();
-  CollectingVisitor<Node, Edge> cv(res, &end);
+  CollectingVisitor<Node, Edge, NodeStore> cv(res, &end);
   this->depth_first_traversal(start, cv);
   return res;
 }
@@ -893,19 +894,18 @@ std::list<Node *>* GraphInterface<Node, Edge>::get_nodes_between(Node *start, st
 /*
  * Misc
  */
-template<typename Node, typename Edge>
-std::string GraphInterface<Node, Edge>::pp() const
+template<typename Node, typename Edge, typename NodeStore>
+std::string GraphInterface<Node, Edge, NodeStore>::pp() const
 {
   std::ostringstream oss;
   this->output_text (oss);
   return oss.str();
 }
 
-template<typename Node, typename Edge>
-bool GraphInterface<Node, Edge>::contains(Node *n) const
+template<typename Node, typename Edge, typename NodeStore>
+bool GraphInterface<Node, Edge, NodeStore>::contains(Node *n) const
 {
-  std::vector<Node *>* ns = this->get_nodes();
-  for (typename std::vector<Node *>::iterator it = ns->begin(); it != ns->end(); ++it)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes (); ++it)
     {
       if (*n == **it)
         {
@@ -915,7 +915,7 @@ bool GraphInterface<Node, Edge>::contains(Node *n) const
   return false;
 }
 
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 void formatDot(std::string &pp)
 {
   std::string searchString("\n");
@@ -928,8 +928,8 @@ void formatDot(std::string &pp)
     }
 }
 
-template<typename Node, typename Edge> void
-GraphInterface<Node, Edge>::toDot(std::string filename) const
+template<typename Node, typename Edge, typename NodeStore> void
+GraphInterface<Node, Edge, NodeStore>::toDot(std::string filename) const
 {
   std::ofstream out(filename.c_str());
   toDot(out);
@@ -937,28 +937,29 @@ GraphInterface<Node, Edge>::toDot(std::string filename) const
   out.close();
 }
 
-template<typename Node, typename Edge> void
-GraphInterface<Node, Edge>::toDot(std::ostream &out) const
+template<typename Node, typename Edge, typename NodeStore> void
+GraphInterface<Node, Edge, NodeStore>::toDot(std::ostream &out) const
 {
   out << "digraph G {\n";
-  std::vector<Node *>* ns = this->get_nodes();
-  for (typename std::vector<Node *>::iterator it = ns->begin(); it != ns->end(); ++it)
+
+  for (const_node_iterator it = begin_nodes(); it != end_nodes(); ++it)
     {
       Node *n = *it;
       std::string pp = n->pp();
-      formatDot<Node, Edge>(pp);
+      formatDot<Node, Edge, NodeStore>(pp);
       out << "cfg" << this->get_label_node(n) << "[shape=box,style=filled,color=oldlace,label=\"" << pp << "\"];\n";
     }
-  for (typename std::vector<Node *>::iterator it = ns->begin(); it != ns->end(); ++it)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes (); ++it)
     {
       Node *n = *it;
 
-      for (Edge *e = this->get_first_successor(n).first; e != NULL; e = this->get_next_successor(n, e).first)
+      for (Edge *e = this->get_first_successor(n).first; e != NULL; 
+	   e = this->get_next_successor(n, e).first)
         {
           Node *src = this->get_source(e);
           Node *tgt = this->get_target(e);
           std::string pp = e->pp();
-          formatDot<Node, Edge>(pp);
+          formatDot<Node, Edge, NodeStore>(pp);
           if (src != NULL && tgt != NULL)
             {
               out << "cfg" << this->get_label_node(src) << "->cfg" << this->get_label_node(tgt) << "[label=\"" << pp << "\"];\n";

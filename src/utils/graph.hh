@@ -36,7 +36,7 @@
 #include <utility>
 #include <string>
 
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class GraphPath;
 
 class GetNodeNotFoundExc {};
@@ -96,20 +96,23 @@ public:
  * and should contain a full graph default implementation.
  */
 /* ***************************************************/
-template<typename Node, typename Edge>
+template<typename Node, typename Edge, typename NodeStore>
 class GraphInterface
 {
-
-
-
 public:
+  typedef typename NodeStore::store_type store_type;
+  typedef typename NodeStore::node_iterator node_iterator;
+  typedef typename NodeStore::const_node_iterator const_node_iterator;
 
   /* ***************************************************/
   /**
    * \brief  return graph nodes
    */
   /* ***************************************************/
-  virtual std::vector<Node *>* get_nodes() const = 0;
+  virtual const_node_iterator begin_nodes () const = 0;
+  virtual const_node_iterator end_nodes () const = 0;
+  virtual node_iterator begin_nodes () = 0;
+  virtual node_iterator end_nodes () = 0;
 
   /* ***************************************************/
   /**
@@ -255,7 +258,8 @@ public:
    * \param  visitor callback class
    */
   /* ***************************************************/
-  virtual void depth_first_run(Node *start, GraphVisitor<Node, Edge>& visitor) const;
+  virtual void depth_first_run(Node *start, 
+			       GraphVisitor<Node, Edge>& visitor) const;
 
 
   /* ***************************************************/
@@ -294,7 +298,8 @@ public:
    * \param  visitor callback class
    */
   /* ***************************************************/
-  virtual void bread_first_traversal(Node *start, GraphVisitor<Node, Edge>& visitor) const;
+  virtual void bread_first_traversal(Node *start, 
+				     GraphVisitor<Node, Edge>& visitor) const;
 
 
   /* ***************************************************/
@@ -313,7 +318,7 @@ public:
    * \returns a regular path
    */
   /* ***************************************************/
-  virtual GraphPath<Node, Edge>* get_regular_node_paths();
+  virtual GraphPath<Node, Edge, NodeStore>* get_regular_node_paths();
 
   /* ***************************************************/
   /**

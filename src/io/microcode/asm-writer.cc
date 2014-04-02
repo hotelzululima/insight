@@ -34,6 +34,7 @@
 #include <cstring>
 #include <cstdio>
 #include <list>
+#include <algorithm>
 #include <kernel/annotations/NextInstAnnotation.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
 #include <kernel/annotations/SolvedJmpAnnotation.hh>
@@ -286,7 +287,8 @@ asm_writer (ostream &out, const Microcode *mc,
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels)
 {  
-  vector<MicrocodeNode *> nodes(*mc->get_nodes ());
+  vector<MicrocodeNode *> nodes;
+  std::copy (mc->begin_nodes(), mc->end_nodes (), nodes.begin ());
   if (nodes.empty ())
     return;
   std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
@@ -302,7 +304,9 @@ asm_writer (ostream &out, const Microcode *mc,
 	    bool with_bytes, bool with_holes, bool with_labels, 
 	    address_t addr, size_t nb)
 {  
-  vector<MicrocodeNode *> nodes(*mc->get_nodes ());
+  vector<MicrocodeNode *> nodes;
+  std::copy (mc->begin_nodes (), mc->end_nodes (), nodes.begin ());
+
   if (nodes.empty ())
     return;
   std::sort (nodes.begin (), nodes.end (), s_sort_microcode);

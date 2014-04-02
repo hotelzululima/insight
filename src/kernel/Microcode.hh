@@ -46,23 +46,30 @@ class Expr;
 /*! \brief This class defines the concept of Microcode Program.
  *  This is a list of nodes, each node containing its successors.
  *****************************************************************************/
+struct NodeStore 
+{
+  typedef std::vector<MicrocodeNode *> store_type;
+  typedef store_type::iterator node_iterator;
+  typedef store_type::const_iterator const_node_iterator;
+};
+
 class Microcode
-  : public MicrocodeStore, public GraphInterface<MicrocodeNode, StmtArrow> {
+  : public MicrocodeStore, 
+    public GraphInterface<MicrocodeNode, StmtArrow, NodeStore> {
 
 public:
   struct ArrowCreationCallback {
     virtual void add_node (Microcode *mc, StmtArrow *e) = 0;
   };
 
-  typedef std::vector<MicrocodeNode *> NodeStore;
-  typedef NodeStore::iterator node_iterator;
+
 
 /*****************************************************************************/
 private:
 
   /*! \brief A microcode program is simply defined as a collection of
    * nodes. */
-  NodeStore * nodes;
+  store_type *nodes;
   /*! \brief the entry point of the program */
   MicrocodeAddress start;
 
@@ -96,10 +103,11 @@ public:
   bool has_node_at (MicrocodeAddress addr) const;
   MicrocodeNode * get_or_create_node(MicrocodeAddress addr);
   void add_node(MicrocodeNode *n);
-  std::vector<MicrocodeNode *> * get_nodes() const;
 
-  node_iterator begin_nodes () const;
-  node_iterator end_nodes () const;
+  const_node_iterator begin_nodes () const;
+  const_node_iterator end_nodes () const;
+  node_iterator begin_nodes ();
+  node_iterator end_nodes ();
   std::size_t get_number_of_nodes () const;
 
   void add_arrow_creation_callback (ArrowCreationCallback *cb);
@@ -203,13 +211,13 @@ public:
 
 /*! \brief Iterator syntaxic sugar */
 #define Microcode_iterate_nodes(prg, node)				\
-  for (Microcode::node_iterator node = (prg).begin_nodes ();		\
-       node != (prg).end_nodes ();					\
+  for (Microcode::const_node_iterator node = (prg).begin_nodes (); \
+       node != (prg).end_nodes ();				\
        node++)
 
 /*! \brief Iterator syntaxic sugar */
 #define Microcode_nodes_pass(node)			     \
-  for (Microcode::node_iterator node = begin_nodes ();       \
+  for (Microcode::const_node_iterator node = begin_nodes ();       \
        node != end_nodes ();				     \
        node++)
 
@@ -217,10 +225,11 @@ public:
 /*! \brief A path in a MC Program. This is a list of Microcode
   Nodes. The choice of lists makes it easier to do operation on
   path (concatenation, insersion, etc. */
-class MCPath : public ConcreteEdgePath<MicrocodeNode, StmtArrow> {
+class MCPath : 
+  public ConcreteEdgePath<MicrocodeNode, StmtArrow, NodeStore> {
 public:
-  MCPath(Microcode *prog) : ConcreteEdgePath<MicrocodeNode, StmtArrow>(prog) {};
-  MCPath(const MCPath &o) : ConcreteEdgePath<MicrocodeNode, StmtArrow>(o) {};
+  MCPath(Microcode *prog) : ConcreteEdgePath<MicrocodeNode, StmtArrow, NodeStore>(prog) {};
+  MCPath(const MCPath &o) : ConcreteEdgePath<MicrocodeNode, StmtArrow, NodeStore>(o) {};
 };
 
 #define MCPath_iterator std::list<StmtArrow*>::iterator
