@@ -70,7 +70,7 @@ private:
   std::vector<StmtArrow *> * successors;
   /* computed during the optimization step */
   std::vector<StmtArrow *> * predecessors;
-  Microcode * father;
+
   // TODO *** TODO *** TODO *** TODO ***
   // OPTIMIZATION : set-up the father at initialization !
 
@@ -83,7 +83,6 @@ public:
   ~MicrocodeNode();
   MicrocodeNode * clone() const;
 
-  void set_father(Microcode * f);
   void add_predecessor(StmtArrow * arr);
 
   const MicrocodeAddress &get_loc() const;
@@ -134,7 +133,6 @@ class StmtArrow: public Annotable {
 protected:
 
   /*! points on the origin of the arrow if it is different to NULL (for optimization) */
-  Microcode * father; // \todo changer le nom. Ok a supprimer
 
   /* Pointer to the node which has us as a successor */
   MicrocodeNode *src;
@@ -157,7 +155,6 @@ public:
   virtual StmtArrow *clone() = 0;
 
   void set_src(MicrocodeNode * n);
-  void set_father(Microcode * f);
 
   MicrocodeAddress get_origin() const;
   MicrocodeNode *get_src() const;

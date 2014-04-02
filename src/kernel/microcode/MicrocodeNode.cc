@@ -63,8 +63,7 @@ vector<Expr **> * MicrocodeNode::expr_list()
 MicrocodeNode::MicrocodeNode(MicrocodeAddress loc) :
   Annotable(),
   loc(loc),
-  predecessors(NULL),
-  father(NULL)
+  predecessors(NULL)
 {
   successors = new vector<StmtArrow *>;
 }
@@ -74,16 +73,14 @@ MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
   Annotable(),
   loc(loc),
   successors(successors),
-  predecessors(NULL),
-  father(NULL)
+  predecessors(NULL)
 {}
 
 MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
                              StmtArrow *unique_succ) :
   Annotable(),
   loc(loc),
-  predecessors(NULL),
-  father(NULL)
+  predecessors(NULL)
 {
   successors = new vector<StmtArrow *>;
   successors->push_back(unique_succ);
@@ -94,8 +91,7 @@ MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
                              StmtArrow *succ2) :
   Annotable(),
   loc(loc),
-  predecessors(NULL),
-  father(NULL)
+  predecessors(NULL)
 {
   successors = new vector<StmtArrow *>;
   successors->push_back(succ1);
@@ -104,8 +100,7 @@ MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
 
 MicrocodeNode::MicrocodeNode(const MicrocodeNode &snode) :
   Annotable(snode),
-  predecessors(NULL),
-  father(NULL)
+  predecessors(NULL)
 {
   loc = snode.loc;
   successors = new vector<StmtArrow *>;
@@ -126,8 +121,6 @@ MicrocodeNode::~MicrocodeNode()
   delete predecessors;
   delete successors;
 }
-
-void MicrocodeNode::set_father(Microcode * f) { father = f; }
 
 void
 MicrocodeNode::add_predecessor (StmtArrow * arr)
@@ -279,7 +272,6 @@ StmtArrow::~StmtArrow()
     condition->deref ();
 }
 
-void StmtArrow::set_father(Microcode * f) { father = f; }
 void StmtArrow::set_src(MicrocodeNode * n) { src = n; }
 
 MicrocodeAddress StmtArrow::get_origin() const

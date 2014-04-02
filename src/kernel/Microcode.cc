@@ -302,12 +302,10 @@ void Microcode::optimize()
   opt_nodes.clear();
   Microcode_iterate_nodes(*this, node) {
     opt_nodes[((MicrocodeNode *) *node)->get_loc()] = *node;
-    (*node)->set_father(this);
   }
 
   Microcode_iterate_nodes(*this, node) {
 	  MicrocodeNode_iterate_successors((*(*node)), succ) {
-		  (*succ)->set_father(this);
 		  (*succ)->set_src(*node);
 		  if ((*succ)->is_static()) {
 			  StaticArrow * sarr = (StaticArrow*) *succ;
