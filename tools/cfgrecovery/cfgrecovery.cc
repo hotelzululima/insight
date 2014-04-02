@@ -259,26 +259,45 @@ s_sighandler (int)
 static Solvers
 solver_lookup()
 {
-  /* Checks are ordered by preference */
-  FILE * res;
+  /* Checks are ordered by preference (best choices first) */
+  struct stat sb;
 
 #if INTEGRATED_MATHSAT_SOLVER
   /* Check if MathSAT library is statically linked */
   return MATHSAT_API;
 #endif
 
-  /* Checking for MathSAT */
-  if ((res = popen("mathsat -version", "r")))
+  string delimiter = ":";
+  string path = string(getenv("PATH"));
+  size_t start_pos = 0, end_pos = 0;
+
+  /* Look for MathSAT solver */
+  while ((end_pos = path.find(':', start_pos)) != string::npos)
     {
-      pclose(res);
-      return MATHSAT_SOLVER;
+      string current_path =
+	path.substr(start_pos, end_pos - start_pos) + "/";
+
+      string mathsat_path = current_path + "mathsat";
+      if ((stat(mathsat_path.c_str(), &sb) == 0) && (sb.st_mode & S_IXOTH))
+	return MATHSAT_SOLVER;
+
+      start_pos = end_pos + 1;
     }
 
-  /* Checking for Z3 */
-  if ((res = popen("z3 -version", "r")))
+  /* Look for Z3 solver */
+  start_pos = 0;
+  end_pos   = 0;
+
+  while ((end_pos = path.find(':', start_pos)) != string::npos)
     {
-      pclose(res);
-      return Z3_SOLVER;
+      string current_path =
+	path.substr(start_pos, end_pos - start_pos) + "/";
+
+      string z3_path = current_path + "z3";
+      if ((stat(z3_path.c_str(), &sb) == 0) && (sb.st_mode & S_IXOTH))
+	return Z3_SOLVER;
+
+      start_pos = end_pos + 1;
     }
 
   return NO_SOLVER;
@@ -408,17 +427,17 @@ main (int argc, char *argv[])
 	  CONFIG.set (logs::STDIO_ENABLED_PROP, true);
 	  CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, true);
 	  CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
-	  
+
 	  CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
 	  if (enable_debug)
 	    {
 	      CONFIG.set (logs::STDIO_DEBUG_IS_CERR_PROP, true);
 	      CONFIG.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 	    }
-	  
+
 	  string filename = config_filename;
 	  /* Check optional argument */
-	  if (optarg)	    
+	  if (optarg)
 	    {
 	      filename = string (optarg);
 
