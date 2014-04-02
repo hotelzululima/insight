@@ -205,7 +205,7 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
   int rgb = 0xfdf5e6;
 
   out << "digraph G { " << endl
-      << " splines=ortho; " << endl;
+      << " splines=ortho; { " << endl;
 
   if (! graphlabel.empty ())
     out << " label=\"" << graphlabel << "\"; " << endl;
@@ -239,7 +239,7 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 
       MicrocodeAddress ma = n->get_loc ();
       assert (ma.getLocal () == 0);
-      
+
       if (symboltable && symboltable->has (ma.getGlobal ()))
 	{	  
 	  string s = *symboltable->get (ma.getGlobal ()).begin ();
@@ -302,15 +302,14 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	  out << NODE_PREFIX << std::hex << ma.getGlobal () 
 	      << " -> "
 	      << NODE_PREFIX << std::hex << tgt.getGlobal ();
+	  out << " [";
 	  if (indexes)
-	    out << " [label = \"#" << i << "\"]";
-	  out << "; " << endl;
+	    out << " label = \"#" << i << "\"";
+	  out << "]; " << endl;
 	}
 
     }
-
-  out << " subgraph cluster_legend { " << endl
-      << "  label=\"Symbols\"; " << endl;
+  out << " }" << endl;
   int k = 0;
   for (map<string,int>::const_iterator i = symbols.begin (); 
        i != symbols.end (); i++, k++)
@@ -319,7 +318,6 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	  << "shape=box,style=filled,color=\"#" << std::hex << i->second 
 	  << "\"]; " << endl;
     }
-  out << " }; " << endl;
   k = 0;
   assert (symbols.size () == 0 || symboltable != NULL);
   for (map<string,int>::const_iterator i = symbols.begin (); 
