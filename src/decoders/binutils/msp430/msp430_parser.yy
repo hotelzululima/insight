@@ -260,7 +260,7 @@ start: instruction
 
 operand:
   immediate { $$ = Constant::create ($1, 0, data.operand_size); }
-| trimmed_register
+| trimmed_register { $$ = $1; }
 | memory_reference
 ;
 
