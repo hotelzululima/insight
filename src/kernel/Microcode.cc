@@ -43,98 +43,65 @@
 
 using namespace std;
 
-Microcode::Microcode() :
-  start(MicrocodeAddress::null_addr()),
-  optimized(false),
+Microcode::Microcode () :
+  MicrocodeStore (),
+  GraphInterface<MicrocodeNode, StmtArrow, NodeStore> (),
+  nodes (),
+  opt_nodes (),
+  start (MicrocodeAddress::null_addr ()),
   arrow_callbacks ()
 {
-  nodes = new vector<MicrocodeNode *>;
 }
 
-Microcode::Microcode(vector<MicrocodeNode *> * nodes) :
-  nodes(nodes),
-  optimized(false),
-  arrow_callbacks ()
-{
-  if (nodes->size() > 0) start = (*nodes)[0]->get_loc();
-  else start = MicrocodeAddress::null_addr();
-}
-
-Microcode::Microcode(vector<MicrocodeNode *> * nodes, MicrocodeAddress start) :
-  nodes(nodes),
-  start(start),
-  optimized(false),
-  arrow_callbacks ()
-{}
-
-Microcode::Microcode(const Microcode &prg) :
-  MicrocodeStore(prg),
-  GraphInterface<MicrocodeNode, StmtArrow, NodeStore>(),
-  start(prg.start),
-  optimized(false),
+Microcode::Microcode (const Microcode &prg) :
+  MicrocodeStore (prg),
+  GraphInterface<MicrocodeNode, StmtArrow, NodeStore> (),
+  nodes (),
+  opt_nodes (),
+  start (prg.start),
   arrow_callbacks (prg.arrow_callbacks)
 {
-  nodes = new vector<MicrocodeNode *>;
-  Microcode_iterate_nodes(prg, node)
-  nodes->push_back(new MicrocodeNode(*(*node)));
-
-  if (prg.optimized)
-    this->optimize();
+  Microcode_iterate_nodes (prg, node)
+    add_node (new MicrocodeNode (*(*node)));
 }
 
 Microcode::~Microcode()
 {
-  Microcode_iterate_nodes(*this, node)
+  Microcode_iterate_nodes (*this, node)
     delete *node;
-  delete nodes;
 }
 
-/*****************************************************************************/
-
-MicrocodeAddress Microcode::entry_point()
+MicrocodeAddress 
+Microcode::entry_point ()
 {
   return start;
 }
 
-void Microcode::set_entry_point(MicrocodeAddress addr)
+void 
+Microcode::set_entry_point (MicrocodeAddress addr)
 {
   start = addr;
 }
 
-/*****************************************************************************/
-
-MicrocodeNode * Microcode::get_node(MicrocodeAddress addr) const
-	throw(GetNodeNotFoundExc)
+MicrocodeNode *
+Microcode::get_node (MicrocodeAddress addr) const
+  throw (GetNodeNotFoundExc)
 {
-  if (optimized) {
-    std::unordered_map<MicrocodeAddress, MicrocodeNode *,
-		       std::hash<MicrocodeAddress>,
-		       EqualsFunctor<MicrocodeAddress> >::const_iterator it;
-    it = opt_nodes.find(addr);
-    if (it != opt_nodes.end())
-      return it->second;
-  }
-  else {
-    Microcode_iterate_nodes(*this, node) {
-      if ((*node)->get_loc().equals(addr))
-	return (*node);
-    }
-  }
-  throw GetNodeNotFoundExc();
+  node_map_type::const_iterator it = opt_nodes.find (addr);
+  if (it == opt_nodes.end ())
+    throw GetNodeNotFoundExc ();
+  return it->second;
 }
 
 bool
 Microcode::has_node_at (MicrocodeAddress addr) const
 {
-  try {
-    return (get_node(addr) != NULL);
-  } catch (GetNodeNotFoundExc e) {
-    return false;
-  }  
+  return (opt_nodes.find (addr) != opt_nodes.end ());
 }
 
 MicrocodeNode *
-Microcode::get_or_create_node(MicrocodeAddress addr) {
+Microcode::get_or_create_node (MicrocodeAddress addr) 
+{
   MicrocodeNode *node;
 
   try {
@@ -146,8 +113,6 @@ Microcode::get_or_create_node(MicrocodeAddress addr) {
 
   return node;
 }
-
-/*****************************************************************************/
 
 StmtArrow *
 Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard)
@@ -173,7 +138,7 @@ Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard)
     }
 
   StmtArrow *a = b->add_successor (guard, get_or_create_node(end),
-				       new Skip());
+				   new Skip());
   apply_callbacks (a);
 
   return a;
@@ -181,7 +146,8 @@ Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard)
 
 StmtArrow *
 Microcode::add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
-        MicrocodeAddress end, Expr *guard) {
+			  MicrocodeAddress end, Expr *guard) 
+{
   MicrocodeNode *b = get_or_create_node(beg);
 
   if (guard == NULL)
@@ -206,7 +172,8 @@ Microcode::add_assignment(MicrocodeAddress &beg, LValue *lvalue, Expr *expr,
 }
 
 StmtArrow *
-Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) {
+Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) 
+{
   MicrocodeNode *b = get_or_create_node(beg);
 
   if (guard == NULL)
@@ -293,38 +260,6 @@ Microcode::merge (const Microcode *other, address_t shift)
     }
 }
 
-/*****************************************************************************/
-
-void Microcode::optimize()
-{
-  regular_form();
-
-  opt_nodes.clear();
-  Microcode_iterate_nodes(*this, node) {
-    opt_nodes[((MicrocodeNode *) *node)->get_loc()] = *node;
-  }
-
-  Microcode_iterate_nodes(*this, node) {
-	  MicrocodeNode_iterate_successors((*(*node)), succ) {
-		  (*succ)->set_src(*node);
-		  if ((*succ)->is_static()) {
-			  StaticArrow * sarr = (StaticArrow*) *succ;
-			  MicrocodeNode * t = opt_nodes[ sarr->get_concrete_target() ];
-              sarr->set_tgt(t);
-              t->add_predecessor(sarr);
-		  }
-	  }
-  }
-
-  optimized = true;
-}
-
-bool Microcode::is_optimized() {
-  return optimized;
-}
-
-/*****************************************************************************/
-
 void
 Microcode::output_text (ostream & out) const
 {
@@ -334,40 +269,16 @@ Microcode::output_text (ostream & out) const
 }
 
 
-/*****************************************************************************/
-
-void Microcode::regroup_nodes() {
-  optimized = false;
-
-  vector<MicrocodeNode *>::iterator node = nodes->begin();
-  while (node != nodes->end()) {
-    bool new_node = true;
-    for (vector<MicrocodeNode *>::iterator past_node = nodes->begin();
-	 past_node != node; past_node++) {
-      if ((*past_node)->get_loc().equals((*node)->get_loc())) {
-	MicrocodeNode_iterate_successors(*(*node), succ) {
-	  (*past_node)->get_successors()->push_back((*succ)->clone());
-	}
-	delete *node;
-	nodes->erase(node);
-	new_node = false;
-	break;
-      }
-    }
-    if (new_node) node++;
-  }
-}
-
-/*****************************************************************************/
-
-bool microcode_sort_ordering(MicrocodeNode *e1, MicrocodeNode *e2)
+static bool 
+microcode_sort_ordering (MicrocodeNode *e1, MicrocodeNode *e2)
 {
   return (*e1) < (*e2);
 }
 
-void Microcode::sort()
+void 
+Microcode::sort ()
 {
-  std::sort(nodes->begin(), nodes->end(), microcode_sort_ordering);
+  std::sort (begin_nodes (), end_nodes (), microcode_sort_ordering);
 }
 
 /*! \brief Produces a (new) static arrow from the current dynamic arrow
@@ -381,14 +292,9 @@ make_static (Microcode *mc, DynamicArrow *da)
   if (t.hasValue())
     {
       MicrocodeNode *tgt = NULL;
-      try
-	{
-	  tgt = mc->get_node (t.getValue ());
-	}
-      catch (GetNodeNotFoundExc)
-	{
-	  return Option<StaticArrow*>();
-	}
+      if (! mc->has_node_at (t.getValue ()))
+	return Option<StaticArrow*>();
+
       StaticArrow * static_arrow =
 	new StaticArrow(da->get_src(),
 			tgt,
@@ -401,91 +307,83 @@ make_static (Microcode *mc, DynamicArrow *da)
     return Option<StaticArrow*>();
 }
 
-void Microcode::simplify_and_clean_targets()
+void 
+Microcode::simplify_and_clean_targets()
 {
-  optimized = false;
-
   set<MicrocodeNode *> new_nodes; // temporary list to record nodes to be added.
 
-  Microcode_nodes_pass(node) {
-	  vector<StmtArrow *> * succs = (*node)->get_successors();
-	  vector<StmtArrow *>::iterator arr = succs->begin();
-
-	  while (arr != succs->end())
-	    {
-	      // For static arrow, one tests that the target well
-	      // exists, if not, one adds it in the new node list.
-	      if ((*arr)->is_static()) {
-		StaticArrow * the_arrow = (StaticArrow *) *arr;
-		MicrocodeAddress addr = the_arrow->get_concrete_target();
-		try {
-		  get_node(addr);
-		}
-		catch (GetNodeNotFoundExc &)
-		  {
-		    new_nodes.insert(new MicrocodeNode(addr));
-		  }
+  Microcode_nodes_pass(node) 
+  {
+    vector<StmtArrow *> * succs = (*node)->get_successors();
+    vector<StmtArrow *>::iterator arr = succs->begin();
+    
+    while (arr != succs->end())
+      {
+	// For static arrow, one tests that the target well
+	// exists, if not, one adds it in the new node list.
+	if ((*arr)->is_static()) {
+	  StaticArrow * the_arrow = (StaticArrow *) *arr;
+	  MicrocodeAddress addr = the_arrow->get_concrete_target();
+	  if (! has_node_at (addr))
+	    new_nodes.insert(new MicrocodeNode(addr));
+	}
+	else
+	  {
+	    // For dynamic arrow, one tests if we can get the
+	    // target directly
+	    if ((*arr)->is_dynamic() && ((*arr)->extract_target().hasValue()))
+	      {
+		DynamicArrow *old_arrow = (DynamicArrow *) * arr;
+		StaticArrow * static_arrow =
+		  make_static (this, old_arrow).getValue();
+		delete old_arrow;
+		(*succs).erase(arr);
+		succs->push_back(static_arrow);
+		// \todo: adds the target node if it does not
+		// exists (at the moment this is done, but not
+		// optimized !!
+		arr = succs->begin();   // \todo optimisation...
 	      }
-	      else
-		{
-		  // For dynamic arrow, one tests if we can get the
-		  // target directly
-		  if ((*arr)->is_dynamic() && ((*arr)->extract_target().hasValue()))
-		    {
-		      DynamicArrow *old_arrow = (DynamicArrow *) * arr;
-		      StaticArrow * static_arrow =
-			make_static (this, old_arrow).getValue();
-		      delete old_arrow;
-		      (*succs).erase(arr);
-		      succs->push_back(static_arrow);
-		      // \todo: adds the target node if it does not
-		      // exists (at the moment this is done, but not
-		      // optimized !!
-		      arr = succs->begin();   // \todo optimisation...
-		    }
-		}
-	      arr++;
-	    }
+	  }
+	arr++;
+      }
   }
 
   for (set<MicrocodeNode *>::iterator new_node = new_nodes.begin();
        new_node != new_nodes.end(); new_node++)
-    nodes->push_back( *new_node );
+    add_node (*new_node );
 }
 
-
-/*****************************************************************************/
-
-void Microcode::regular_form() {
-  regroup_nodes();
-  simplify_and_clean_targets();
-  sort();
+void 
+Microcode::regular_form () 
+{
+  simplify_and_clean_targets ();
+  sort ();
 }
 
-/*****************************************************************************/
-
-vector<Expr **> * Microcode::expr_list() {
+vector<Expr **> * 
+Microcode::expr_list() 
+{
   vector<Expr **> * all_expr = new vector<Expr **>;
 
-  Microcode_iterate_nodes(*this, node) {
-    vector<Expr **> * exprs = (*node)->expr_list();
-    for (vector<Expr **>::iterator e = exprs->begin();
-         e != exprs->end();
-         e++) {
+  Microcode_iterate_nodes(*this, node) 
+    {
+      vector<Expr **> * exprs = (*node)->expr_list();
+      for (vector<Expr **>::iterator e = exprs->begin(); e != exprs->end();
+	   e++) 
         all_expr->push_back(*e);
-      }
-    delete exprs;
-  }
+      delete exprs;
+    }
 
   return all_expr;
 }
 
-/*****************************************************************************/
-pair<StmtArrow *, MicrocodeNode *> Microcode::get_first_successor(MicrocodeNode *n)  const
+pair<StmtArrow *, MicrocodeNode *> 
+Microcode::get_first_successor(MicrocodeNode *n)  const
 {
-  if (n == NULL || n->get_successors()->size() == 0) {
+  if (n == NULL || n->get_successors()->size() == 0) 
       return pair<StmtArrow *, MicrocodeNode *>(NULL, NULL);
-  }
+
   StmtArrow *out = n->get_successors()->at(0);
   MicrocodeNode *dst = NULL;
   try { dst = this->get_target(out); }
@@ -493,89 +391,95 @@ pair<StmtArrow *, MicrocodeNode *> Microcode::get_first_successor(MicrocodeNode 
   return pair<StmtArrow *, MicrocodeNode *>(out, dst);
 }
 
-pair<StmtArrow *, MicrocodeNode *> Microcode::get_next_successor(MicrocodeNode *n, StmtArrow *e) const
+pair<StmtArrow *, MicrocodeNode *> 
+Microcode::get_next_successor(MicrocodeNode *n, StmtArrow *e) const
 {
-	vector<StmtArrow *>::iterator it = n->get_successors()->begin();
-	vector<StmtArrow *>::iterator end = n->get_successors()->end();
-	StmtArrow *ne = NULL;
-	MicrocodeNode *nn = NULL;
-	try {
-		bool found = false;
-		while (it != end && ne == NULL) {
-			if (found && !(**it == *e)) {
-				ne = *it;
-				nn = this->get_target(ne);
-			}
-			else {
-				if (**it == *e)	found = true;
+  vector<StmtArrow *>::iterator it = n->get_successors()->begin();
+  vector<StmtArrow *>::iterator end = n->get_successors()->end();
+  StmtArrow *ne = NULL;
+  MicrocodeNode *nn = NULL;
+  try {
+    bool found = false;
+    while (it != end && ne == NULL) {
+      if (found && !(**it == *e)) {
+	ne = *it;
+	nn = this->get_target(ne);
+      }
+      else {
+	if (**it == *e)	found = true;
 				*it++;
-			}
-		}
-	}
-	catch (GetNodeNotFoundExc &) {}
-	return pair<StmtArrow *, MicrocodeNode *>(ne, nn);
+      }
+    }
+  }
+  catch (GetNodeNotFoundExc &) {}
+  return pair<StmtArrow *, MicrocodeNode *>(ne, nn);
 }
 
-int Microcode::get_nb_successors(MicrocodeNode *n) const
+int 
+Microcode::get_nb_successors(MicrocodeNode *n) const
 {
   return n->get_successors()->size();
 }
 
-MicrocodeNode *Microcode::get_source(StmtArrow *e) const
+MicrocodeNode *
+Microcode::get_source(StmtArrow *e) const
 {
-  return get_node(e->get_origin());
+  return get_node (e->get_origin());
 }
 
-MicrocodeNode * Microcode::get_target(StmtArrow *e) const
+MicrocodeNode * 
+Microcode::get_target(StmtArrow *e) const
 {
   Option<MicrocodeAddress> target = e->extract_target();
   try {
-	  if (target.hasValue())
-		  return get_node(target.getValue());
+    if (target.hasValue())
+      return get_node(target.getValue());
   }
   catch (GetNodeNotFoundExc &) {}
   return NULL;
 }
 
-MicrocodeNode * Microcode::get_entry_point()  const
+MicrocodeNode *
+Microcode::get_entry_point ()  const
 {
-  return get_node(start);
+  return get_node (start);
 }
 
 std::size_t
 Microcode::get_number_of_nodes () const
 {
-  return nodes->size ();
+  return nodes.size ();
 }
 
 Microcode::const_node_iterator
 Microcode::begin_nodes () const
 {
-  return nodes->begin ();
+  return nodes.begin ();
 }
 
 Microcode::const_node_iterator
 Microcode::end_nodes () const
 {
-  return nodes->end ();
+  return nodes.end ();
 }
 
 Microcode::node_iterator
 Microcode::begin_nodes () 
 {
-  return nodes->begin ();
+  return nodes.begin ();
 }
 
 Microcode::node_iterator
 Microcode::end_nodes () 
 {
-  return nodes->end ();
+  return nodes.end ();
 }
 
-void Microcode::add_node(MicrocodeNode *n)
+void Microcode::add_node (MicrocodeNode *n)
 {
-  // TODO: optimization !
-  nodes->push_back(n);
+  assert (! has_node_at (n->get_loc ()));
+  nodes.push_back(n);
+  opt_nodes[n->get_loc ()] = n;
 }
 
 void
@@ -614,7 +518,7 @@ string Microcode::get_label_node(MicrocodeNode *n) const
 void Microcode::replace_nodes(MicrocodeNodeSet &to_replace, MicrocodeNode *nvo, bool delete_nodes = true)
 {
 
-  for (vector<MicrocodeNode *>::iterator it = nodes->begin(); it != nodes->end();)
+  for (node_iterator it = begin_nodes(); it != end_nodes ();)
     {
       MicrocodeNode *elem = *it;
       for (StmtArrow *a = this->get_first_successor(elem).first; a != NULL; a = this->get_next_successor(elem, a).first)
@@ -634,7 +538,7 @@ void Microcode::replace_nodes(MicrocodeNodeSet &to_replace, MicrocodeNode *nvo, 
       //Remove from graph
       if (to_replace.find(elem) != to_replace.end())
         {
-          it = nodes->erase(it);
+          it = nodes.erase(it);
         }
       else
         {
@@ -647,9 +551,7 @@ void Microcode::replace_nodes(MicrocodeNodeSet &to_replace, MicrocodeNode *nvo, 
       delete *it;
     }
   //Add new one
-  nodes->push_back(nvo);
-  if (optimized)
-    this->optimize();
+  nodes.push_back(nvo);
 }
 
 /*****************************************************************************/
@@ -725,8 +627,7 @@ Microcode *Microcode::get_subgraph(list<MicrocodeNode *>* subset)
 void
 Microcode::check () const
 {
-  for (vector<MicrocodeNode *>::const_iterator it = nodes->begin();
-       it != nodes->end(); it++)
+  for (const_node_iterator it = begin_nodes (); it != end_nodes(); it++)
     {
       const MicrocodeNode *e = *it;
       MicrocodeNode_iterate_successors (*e, succ) {

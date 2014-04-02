@@ -542,7 +542,6 @@ DataDependency::DataDependency (Microcode *prg,
   fixpoint_reached (false)
 {
   prg->regular_form ();
-  prg->optimize ();
 
   for (list<LocatedLValue>::const_iterator llv = seeds.begin (); 
        llv != seeds.end (); llv++)

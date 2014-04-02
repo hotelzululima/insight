@@ -62,22 +62,18 @@ public:
     virtual void add_node (Microcode *mc, StmtArrow *e) = 0;
   };
 
-
-
-/*****************************************************************************/
 private:
-
+  
   /*! \brief A microcode program is simply defined as a collection of
    * nodes. */
-  store_type *nodes;
+  store_type nodes;
+  typedef std::unordered_map<MicrocodeAddress, MicrocodeNode *,
+			     std::hash<MicrocodeAddress>,
+			     EqualsFunctor<MicrocodeAddress> > node_map_type;
+  node_map_type opt_nodes;
+
   /*! \brief the entry point of the program */
   MicrocodeAddress start;
-
-  /*! for optimization purpose */
-  std::unordered_map<MicrocodeAddress, MicrocodeNode *,
-		     std::hash<MicrocodeAddress>,
-		     EqualsFunctor<MicrocodeAddress> > opt_nodes;
-  bool optimized;
 
   void apply_callbacks (StmtArrow *e);
   std::vector<ArrowCreationCallback *> arrow_callbacks;
@@ -85,11 +81,6 @@ private:
 /*****************************************************************************/
 public:
   Microcode();
-  /*! \brief Here the entry point is set to be the first element of nodes
-   *  there is one, null otherwise. */
-  Microcode(std::vector<MicrocodeNode *> * nodes);
-  /*! \brief Note that nodes is not cloned. */
-  Microcode(std::vector<MicrocodeNode *> * nodes, MicrocodeAddress start);
   Microcode(const Microcode &prg);
   virtual ~Microcode();
 
@@ -166,10 +157,6 @@ public:
   // Simplification
   /***************************************************************************/
 
-  /*! \brief Makes a pass on all the nodes in order to regroup nodes with the
-   *  same location. */
-  void regroup_nodes();
-
   /*! \brief Sort the nodes of the program regarding locations */
   void sort();
 
@@ -200,9 +187,6 @@ public:
   bool parse_stream(std::istream &in);
 
   /***************************************************************************/
-  void optimize();
-  bool is_optimized();
-
   void output_text(std::ostream &out) const;
 
   void check () const;
