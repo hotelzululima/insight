@@ -448,6 +448,7 @@ Microcode::get_entry_point ()  const
 std::size_t
 Microcode::get_number_of_nodes () const
 {
+  assert (nodes.size () == opt_nodes.size ());
   return nodes.size ();
 }
 

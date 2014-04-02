@@ -287,7 +287,7 @@ asm_writer (ostream &out, const Microcode *mc,
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels)
 {  
-  vector<MicrocodeNode *> nodes;
+  vector<MicrocodeNode *> nodes (mc->get_number_of_nodes ());
   std::copy (mc->begin_nodes(), mc->end_nodes (), nodes.begin ());
   if (nodes.empty ())
     return;
@@ -304,7 +304,7 @@ asm_writer (ostream &out, const Microcode *mc,
 	    bool with_bytes, bool with_holes, bool with_labels, 
 	    address_t addr, size_t nb)
 {  
-  vector<MicrocodeNode *> nodes;
+  vector<MicrocodeNode *> nodes (mc->get_number_of_nodes ());
   std::copy (mc->begin_nodes (), mc->end_nodes (), nodes.begin ());
 
   if (nodes.empty ())
