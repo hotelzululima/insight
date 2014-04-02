@@ -54,6 +54,17 @@ using pynsight::Program;
 
 class GenericInsightSimulator;
 
+class CodeChangedException : public std::runtime_error {
+public:
+  CodeChangedException (address_t where) 
+    : std::runtime_error (""), addr (where) {
+  }
+
+  address_t where () { return addr; }
+private:
+  address_t addr;
+};
+
 class StopCondition : public Object 
 {
 public:
@@ -141,7 +152,7 @@ public:
 
   virtual string state_to_string (void *s) = 0;
   virtual void *get_initial_state (address_t start) = 0;
-  virtual void set_state (void *s) = 0;
+  virtual void set_state (void *s) throw (CodeChangedException) = 0;
   virtual void delete_state (void *s) = 0;
 
   virtual bool has_state () = 0;
@@ -221,7 +232,7 @@ public:
 
   virtual string state_to_string (void *s);
   virtual void *get_initial_state (address_t start);
-  virtual void set_state (void *ptr);
+  virtual void set_state (void *ptr) throw (CodeChangedException);
   virtual void delete_state (void *ptr);
 
   virtual bool has_state ();
@@ -263,11 +274,13 @@ public:
 protected:  
   Stepper *stepper;
   State *current_state;
-  Decoder *decoder;
+  BinutilsDecoder *decoder;
 
 private:
-  void compute_enabled_arrows (State *s, ArrowVector *result);
-  MicrocodeNode *get_node (const ProgramPoint *pp);
+  void compute_enabled_arrows (State *s, ArrowVector *result)
+    throw (CodeChangedException);
+  MicrocodeNode *get_node (const ProgramPoint *pp)
+    throw (CodeChangedException);
 };
 
 template <typename Stepper>
@@ -508,6 +521,19 @@ s_Simulator_dealloc (PyObject *obj)
 }
 
 static PyObject *
+s_PyMicrocodeAddress (const MicrocodeAddress &addr)
+{
+  return Py_BuildValue ("(k,k)", addr.getGlobal (), addr.getLocal ());
+}
+  
+static void
+s_CodeChangedException (CodeChangedException &e)
+{
+  PyObject *ma = s_PyMicrocodeAddress (e.where ());
+  PyErr_SetObject (pynsight::CodeChangedException, ma);
+}
+
+static PyObject *
 s_Simulator_run (PyObject *p, PyObject *args)
 {  
   GenericInsightSimulator *S = ((Simulator *) p)->gsim;
@@ -529,12 +555,21 @@ s_Simulator_run (PyObject *p, PyObject *args)
     return NULL;
   }
 
+  PyObject *result = NULL;
   void *is = S->get_initial_state (start);
-  S->set_state (is);
+  try
+    {
+      S->set_state (is);
+      S->reset_stop_conditions ();
+      result = pynsight::None ();
+    }
+  catch (CodeChangedException &e)
+    {
+      s_CodeChangedException (e);
+    }
   S->delete_state (is);
-  S->reset_stop_conditions ();
 
-  return pynsight::None ();
+  return result;
 }
 
 static PyObject *
@@ -549,12 +584,6 @@ s_StopConditionReached (const StopCondition *sc)
   return NULL;
 }
 
-static PyObject *
-s_PyMicrocodeAddress (const MicrocodeAddress &addr)
-{
-  return Py_BuildValue ("(k,k)", addr.getGlobal (), addr.getLocal ());
-}
-  
 static bool
 s_check_state (GenericInsightSimulator *S)
 {
@@ -574,19 +603,25 @@ s_trigger_arrow (GenericInsightSimulator *S, StmtArrow *a)
 
   if (newst != NULL)
     {
-      S->set_state (newst); 
+      try {
+	S->set_state (newst); 	
 
-      if (S->get_number_of_arrows () == 0)
-	{
-	  MicrocodeAddress a = S->get_pc (st);
-	  PyErr_SetObject (pynsight::SinkNodeReached, s_PyMicrocodeAddress (a));
-	}
-      else if (! PyErr_Occurred ()) 
-	{
-	  const StopCondition *bp = S->check_stop_conditions ();
-	  if (bp != NULL)
-	    s_StopConditionReached (bp);
-	}
+	if (S->get_number_of_arrows () == 0)
+	  {
+	    MicrocodeAddress a = S->get_pc (st);
+	    PyErr_SetObject (pynsight::SinkNodeReached, 
+			     s_PyMicrocodeAddress (a));
+	  }
+	else if (! PyErr_Occurred ()) 
+	  {
+	    const StopCondition *bp = S->check_stop_conditions ();
+	    if (bp != NULL)
+	      s_StopConditionReached (bp);
+	  }
+      } catch (CodeChangedException &e) {
+	s_CodeChangedException (e);
+      }
+
       S->delete_state (newst);
     }
   S->delete_state (st);
@@ -1330,6 +1365,18 @@ GenericInsightSimulator::check_memory_range (address_t addr, size_t len)
   return result;
 }
 
+static bool
+s_try_set_state (GenericInsightSimulator *S, void *s)
+{
+  try { 
+    S->set_state (s); 
+    return true;
+  } catch (CodeChangedException &e) { 
+    s_CodeChangedException (e);
+    return false;
+  }
+}
+
 bool 
 GenericInsightSimulator::abstract_memory (address_t addr, size_t len, 
 					  bool keep_in_ctx)
@@ -1338,12 +1385,12 @@ GenericInsightSimulator::abstract_memory (address_t addr, size_t len,
   void *ns = abstract_memory (s, addr, len, keep_in_ctx);
   if (ns != NULL)
     {
-      set_state (ns);
+      s_try_set_state (this, ns); 
       delete_state (ns);  
     }
   delete_state (s);  
 
-  return (ns != NULL);
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 bool 
@@ -1353,12 +1400,12 @@ GenericInsightSimulator::concretize_memory (address_t addr, size_t len)
   void *ns = concretize_memory (s, addr, len);
   if (ns != NULL)
     {
-      set_state (ns);
+      s_try_set_state (this, ns); 
       delete_state (ns);  
     }
   delete_state (s);  
 
-  return (ns != NULL);
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 bool 
@@ -1370,12 +1417,12 @@ GenericInsightSimulator::concretize_memory (address_t addr,
   void *ns = concretize_memory (s, addr, values, len);
   if (ns != NULL)
     {
-      set_state (ns);
+      s_try_set_state (this, ns); 
       delete_state (ns);  
     }
   delete_state (s);  
 
-  return (ns != NULL);
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 string 
@@ -1406,11 +1453,11 @@ GenericInsightSimulator::abstract_register (const RegisterDesc *reg,
   void *ns = abstract_register (s, reg, keep_in_ctx);
   if (ns != NULL)
     {
-      set_state (ns);
+      s_try_set_state (this, ns);
       delete_state (ns);  
     }
   delete_state (s);  
-  return (ns != NULL);
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 bool
@@ -1420,11 +1467,11 @@ GenericInsightSimulator::concretize_register (const RegisterDesc *reg)
   void *ns = concretize_register (s, reg);
   if (ns != NULL)
     {
-      set_state (ns);
+      s_try_set_state (this, ns);
       delete_state (ns);  
     }
   delete_state (s);  
-  return (ns != NULL);
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 bool
@@ -1435,11 +1482,11 @@ GenericInsightSimulator::concretize_register (const RegisterDesc *reg,
   void *ns = concretize_register (s, reg, v);
   if (ns != NULL)
     {
-      set_state (ns);
+      s_try_set_state (this, ns);
       delete_state (ns);  
     }
   delete_state (s);  
-  return (ns != NULL);
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 const StopCondition * 
@@ -1627,6 +1674,7 @@ InsightSimulator<Stepper>::get_initial_state (address_t start)
 
 template <typename Stepper> void 
 InsightSimulator<Stepper>::set_state (void *ptr)
+  throw (CodeChangedException)
 { 
   if (current_state != NULL)
     current_state->deref ();
@@ -2075,6 +2123,7 @@ InsightSimulator<Stepper>::get_stepper ()
 template <typename Stepper> void 
 InsightSimulator<Stepper>::compute_enabled_arrows (State *s, 
 						   ArrowVector *result) 
+  throw (CodeChangedException)
 {
   typename Stepper::State *ns = (typename Stepper::State *) s;
   typename Stepper::ProgramPoint *pp = ns->get_ProgramPoint ();
@@ -2104,11 +2153,12 @@ InsightSimulator<Stepper>::compute_enabled_arrows (State *s,
       logs::warning << "warning: decoder says at "
 		    << pp->to_MicrocodeAddress () << ":"
 		    << e.what () << std::endl;
-    }  
+    } 
 }
 
 template <typename Stepper> MicrocodeNode *
-InsightSimulator<Stepper>::get_node (const ProgramPoint *pp) 
+InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
+  throw (CodeChangedException)
 {
   MicrocodeAddress ma = pp->to_MicrocodeAddress ();
   bool is_global = (ma.getLocal () == 0);
@@ -2117,8 +2167,21 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
   try
     {
       result = mc->get_node (ma);
+      if (!is_global)
+	return result;
 
-      if (is_global && ! result->has_annotation (AsmAnnotation::ID))
+      if (result->has_annotation (AsmAnnotation::ID))
+	{
+	  AsmAnnotation *aa = (AsmAnnotation *) 
+	    result->get_annotation (AsmAnnotation::ID);
+	  if (dynamic_cast<StubAsmAnnotation *> (aa) == NULL)
+	    {
+	      string instr = decoder->get_instruction (ma.getGlobal ());
+	      if (!(instr == aa->get_value ()))
+		throw CodeChangedException (ma.getGlobal ());
+	    }
+	}
+      else
 	{
 	  // result is a node added by the decoder but asm instruction at
 	  // pp.to_address () has not yet been decoded.

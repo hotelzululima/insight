@@ -918,6 +918,10 @@ def simulation_error():
         print "stop in a configuration with several output arrows"
     elif sys.exc_type is insight.error.SimulationNotStartedException:
         print "simulator is not running"
+    elif sys.exc_type is insight.error.CodeChangedException:
+        (ga, la) = sys.exc_value
+        print "code has been changed since last visit at address", \
+            "(0x{:x}, {:d})".format (ga, la)
     elif sys.exc_type is NotImplementedError:
         print "feature not supported."
     else:

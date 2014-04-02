@@ -28,6 +28,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-# include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/AsmAnnotation.hh>
 
 const Annotable::AnnotationId AsmAnnotation::ID ("asm");

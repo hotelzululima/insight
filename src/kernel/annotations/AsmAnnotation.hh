@@ -41,6 +41,11 @@ public :
   AsmAnnotation (const std::string &instr) : StringAnnotation (instr) { }
 };
 
+class StubAsmAnnotation : public AsmAnnotation {
+public :
+  StubAsmAnnotation (const std::string &instr) : AsmAnnotation (instr) { }
+};
+
 
 
 #endif /* ! KERNEL_ANNOTATIONS_ASM_ANNOTATION_HH */

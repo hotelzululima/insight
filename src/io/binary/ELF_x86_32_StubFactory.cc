@@ -242,7 +242,8 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
 	{
 	  string a("insight-stub/");
 	  a += name;
-	  start_node->add_annotation (AsmAnnotation::ID, new AsmAnnotation (a));
+	  start_node->add_annotation (AsmAnnotation::ID, 
+				      new StubAsmAnnotation (a));
 	}
       dest_slot += 4;
     }

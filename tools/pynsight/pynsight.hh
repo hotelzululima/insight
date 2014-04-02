@@ -88,6 +88,7 @@ namespace pynsight {
 # define PYNSIGHT_EXCEPTIONS			\
   PYNSIGHT_EXC(BFDError)			\
   PYNSIGHT_EXC(NotDeterministicBehaviorError)	\
+  PYNSIGHT_EXC(CodeChangedException)		\
   PYNSIGHT_EXC(UndefinedValueError)		\
   PYNSIGHT_EXC(BreakpointReached)		\
   PYNSIGHT_EXC(SinkNodeReached)			\
