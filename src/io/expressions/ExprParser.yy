@@ -49,7 +49,7 @@ namespace ExprParser {
  }
 
 %define namespace "ExprParser"
-%define parser_class_name { Parser }
+%define parser_class_name Parser 
 %language "c++"
 %defines
 %start start
