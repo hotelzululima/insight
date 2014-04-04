@@ -55,9 +55,11 @@ public:
   virtual void output_text (std::ostream &out) const;
   virtual void simplify ();
   virtual bool equals (const SymbolicValue &sv) const;
-  static SymbolicValue unknown_value (int size);
+  static UnknownValueGenerator<SymbolicValue> *unknown_value_generator ();
+
 private:
   Expr *value;
 };
+
 
 #endif /* ! SYMBOLICVALUE_HH */

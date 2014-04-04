@@ -292,7 +292,8 @@ exec(Statement *st)
 	      if (new_ctxt->memory->is_defined(rdesc))
 		regval = new_ctxt->memory->get(rdesc);
 	      else 
-		regval = Value::unknown_value (rdesc->get_window_size());
+		regval = 
+		  Value::unknown_value_generator ()->unknown_value (rdesc->get_window_size());
 
 	      v = Semantics::embed_eval(regval, v, reg->get_bv_offset());
 	    }

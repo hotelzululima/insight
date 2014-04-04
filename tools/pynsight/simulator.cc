@@ -1805,7 +1805,7 @@ InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
   Value *newvals = new Value[len];
   Expr *cond = keep ? Constant::True () : NULL;
 
-  Value newval (Value::unknown_value (8 * len));
+  Value newval (stepper->unknown_value (8 * len));
 
   for (size_t i = 0; i < len; i++) 
     {
@@ -1939,7 +1939,7 @@ InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg,
       if (mem->is_defined (areg))
 	regval = mem->get (areg);
       else 
-	regval = Stepper::Value::unknown_value (areg->get_register_size ());
+	regval = stepper->unknown_value (areg->get_register_size ());
       
       val = stepper->embed_eval (regval, val, reg->get_window_offset ());
     }     
@@ -1999,7 +1999,7 @@ InsightSimulator<SymbolicStepper>::abstract_register (void *p,
 {
   SymbolicStepper::State *s = (SymbolicStepper::State *) p;
   SymbolicStepper::Value newval = 
-    SymbolicStepper::Value::unknown_value (reg->get_window_size ());
+    stepper->unknown_value (reg->get_window_size ());
   if (check_register (p, reg) && keep_in_ctx)
     {
       SymbolicStepper::Value val = get_register_value (p, reg);

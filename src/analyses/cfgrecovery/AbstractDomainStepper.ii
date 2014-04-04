@@ -2,8 +2,8 @@
 # define ABSTRACTDOMAINSTEPPER_II
 
 template <typename CTX, typename PP>
-AbstractDomainStepper<CTX,PP>::AbstractDomainStepper (const Architecture *arch) 
-  : arch (arch), 
+AbstractDomainStepper<CTX,PP>::AbstractDomainStepper (const Architecture *arch)
+  : arch (arch), unkgen (Value::unknown_value_generator ()), 
     map_dynamic_jumps_to_memory (false), 
     dynamic_jump_threshold (10) 
 { 
@@ -147,12 +147,35 @@ AbstractDomainStepper<CTX,PP>::exec (Context *newctx, const Statement *st)
 	  if (memory->is_defined (rdesc))
 	    regval = memory->get (rdesc);
 	  else 
-	    regval = Value::unknown_value (rdesc->get_window_size ());
+	    regval = unkgen->unknown_value (rdesc->get_window_size ());
 
 	  v = embed_eval (regval, v, reg->get_bv_offset());
 	}     
       memory->put (rdesc, v);
     }
+}
+
+template <typename CTX, typename PP> 
+typename AbstractDomainStepper<CTX,PP>::Value 
+AbstractDomainStepper<CTX,PP>::unknown_value (int size)
+{
+  return unkgen->unknown_value (size);
+}
+
+template <typename CTX, typename PP> 
+typename AbstractDomainStepper<CTX,PP>::UnknownGenerator *
+AbstractDomainStepper<CTX,PP>::get_unknown_value_generator ()
+{
+  return unkgen;
+}
+
+template <typename CTX, typename PP> 
+void 
+AbstractDomainStepper<CTX,PP>::set_unknown_value_generator 
+(typename AbstractDomainStepper<CTX,PP>::UnknownGenerator *gen)
+{
+  assert (gen != NULL);
+  unkgen = gen;
 }
 
 #endif /* ! ABSTRACTDOMAINSTEPPER_II */

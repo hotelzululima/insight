@@ -53,11 +53,21 @@ SetsValue::SetsValue(const SetsValue &other) :
   is_TOP(other.is_TOP)
 {}
 
-SetsValue SetsValue::unknown_value(int size)
+struct UnknownSetsValue : public UnknownValueGenerator<SetsValue>
 {
-  SetsValue dv(size);
-  dv.any();
-  return dv;
+  SetsValue unknown_value (int size) {
+    SetsValue dv (size);
+    dv.any ();
+    return dv;
+  }
+};
+
+UnknownValueGenerator<SetsValue> *
+SetsValue::unknown_value_generator ()
+{
+  static UnknownSetsValue gen;
+
+  return &gen;  
 }
 
 SetsValue::SetsValue(int size, word_t val) :

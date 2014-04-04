@@ -10,8 +10,8 @@ template <typename PP, typename CTX>
 class AbstractDomainStepper 
   : public AbstractStepper<AbstractState <PP, CTX> > 
 {  
-protected :
-  AbstractDomainStepper (const Architecture *arch); 
+protected:
+  AbstractDomainStepper (const Architecture *arch);
 
 public:
   typedef AbstractState<PP, CTX> State;
@@ -21,6 +21,7 @@ public:
   typedef typename Context::Memory Memory;
   typedef typename Memory::Value Value;
   typedef typename Memory::Address Address;
+  typedef UnknownValueGenerator<Value> UnknownGenerator;
 
   virtual ~AbstractDomainStepper  ();
 
@@ -56,8 +57,13 @@ public:
 
   virtual void destroy_state_set (StateSet *s);
 
+  virtual Value unknown_value (int size);
+  virtual UnknownGenerator *get_unknown_value_generator ();
+  virtual void set_unknown_value_generator (UnknownGenerator *gen);
+
 protected:
   const Architecture *arch;
+  UnknownGenerator *unkgen;
   bool map_dynamic_jumps_to_memory;
   int dynamic_jump_threshold;
 

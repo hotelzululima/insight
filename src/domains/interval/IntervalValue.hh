@@ -78,7 +78,8 @@ public:
 
   /*! \brief Return the default value. This is used when some read
     access is done to an unknown value */
-  static IntervalValue unknown_value(int size);
+  static UnknownValueGenerator<IntervalValue> *unknown_value_generator ();
+
 
   virtual word_t getMin() const
   {

@@ -60,4 +60,11 @@ public:
   virtual Option<MicrocodeAddress> to_MicrocodeAddress () const  = 0;
 };
 
+template <typename V>
+class UnknownValueGenerator 
+{
+public:
+  virtual V unknown_value (int size) = 0;
+};
+
 #endif /* KERNEL_VALUE_HH */

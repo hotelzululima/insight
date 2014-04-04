@@ -64,9 +64,7 @@ public:
   /*! \brief Construct the ConcreteValue object from a real value. */
   ConcreteValue(const Constant *c);
 
-  /** \brief Return the default value. This is used when some read
-    access is done to an unknown value */
-  static ConcreteValue unknown_value (int size);
+  static UnknownValueGenerator<ConcreteValue> *unknown_value_generator ();
 
   /** \return the actual value stored */
   word_t get() const;

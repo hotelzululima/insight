@@ -11,10 +11,13 @@ namespace SymbStepper {
   class RewriteWithAssignedValues : public ExprRewritingRule {
     const SymbolicContext *ctx;  
     const Architecture::endianness_t endianness;
-  public:
+    SymbolicStepper::UnknownGenerator *unkgen;
+
+public:
     RewriteWithAssignedValues (const SymbolicContext *ctx, 
+			       SymbolicStepper::UnknownGenerator *unkgen,
 			       Architecture::endianness_t e) 
-      : ctx (ctx), endianness (e) {
+      : ctx (ctx), endianness (e), unkgen (unkgen) {
     }
 
     virtual Expr *rewrite (const Expr *F) {
@@ -24,7 +27,7 @@ namespace SymbStepper {
       Option<SymbolicValue> val;
 
       if (F->is_RandomValue ()) 
-	val = SymbolicValue::unknown_value (size);
+	val = unkgen->unknown_value (size);
       else if (F->is_RegisterExpr ()) 
 	{
 	  RegisterExpr *regexpr = (RegisterExpr *) F;
@@ -33,7 +36,7 @@ namespace SymbStepper {
 	  if (! ctx->get_memory ()->is_defined (rdesc))
 	    {
 	      int regsize = rdesc->get_register_size ();
-	      SymbolicValue unk = SymbolicValue::unknown_value (regsize);
+	      SymbolicValue unk = unkgen->unknown_value (regsize);
 	      ctx->get_memory ()->put (rdesc, unk);
 	    }
 	  val = ctx->get_memory ()->get (rdesc);
@@ -47,7 +50,8 @@ namespace SymbStepper {
 	  if (c != NULL)
 	    {
 	      int i;
-	      int size = (mc->get_bv_offset() + mc->get_bv_size () - 1) / 8 + 1;
+	      int size = 
+		(mc->get_bv_offset() + mc->get_bv_size () - 1) / 8 + 1;
 	      for (i = 0; i < size; i++)
 		if (! ctx->get_memory ()->is_defined (c->get_val () + i))
 		  break;
@@ -56,7 +60,7 @@ namespace SymbStepper {
 		val = ctx->get_memory ()->get (c->get_val (), size, endianness);
 	      else
 		{
-		  SymbolicValue v = SymbolicValue::unknown_value (size * 8);
+		  SymbolicValue v = unkgen->unknown_value (size * 8);
 		  ctx->get_memory ()->put (ConcreteAddress (c->get_val ()), v,
 					   endianness);
 		  val = v;
@@ -107,7 +111,7 @@ SymbolicStepper::value_to_ConcreteValue (const Context *ctx, const Value &v,
 
   const SymbolicContext *sc = dynamic_cast<const SymbolicContext *> (ctx);
   assert (sc != NULL);
-  RewriteWithAssignedValues r (sc, this->arch->get_endian ());
+  RewriteWithAssignedValues r (sc, unkgen, this->arch->get_endian ());
   Expr *f = v.get_Expr ()->ref ();
 
   for (;;)
@@ -163,6 +167,7 @@ s_expr_in_range (const Expr *e, address_t min, address_t max)
 
 void
 s_expand_memcell_indexes_rec (class ExprSolver *solver,
+			      SymbolicStepper::UnknownGenerator *unkgen,
 			      std::vector<const Expr *> *indexes, 
 			      std::vector<Expr *>::size_type current, 
 			      const SymbolicContext *ctx, const Expr *e, 
@@ -185,8 +190,9 @@ s_expand_memcell_indexes_rec (class ExprSolver *solver,
 					    index->get_bv_offset (),
 					    index->get_bv_size ());
 	  Expr *ne = exprutils::replace_subterm (e, index, cst);
-	  s_expand_memcell_indexes_rec (solver, indexes, current + 1, ctx, ne,
-					cond, arch, result, jmpthreshold);
+	  s_expand_memcell_indexes_rec (solver, unkgen, indexes, current + 1, 
+					ctx, ne, cond, arch, result, 
+					jmpthreshold);
 	  ne->deref ();
 	  cst->deref ();
 	}
@@ -194,7 +200,7 @@ s_expand_memcell_indexes_rec (class ExprSolver *solver,
     }
   else
     {
-      RewriteWithAssignedValues r (ctx, arch->get_endian ());
+      RewriteWithAssignedValues r (ctx, unkgen, arch->get_endian ());
       Expr *f = e->ref ();
 
       for (;;)
@@ -212,14 +218,16 @@ s_expand_memcell_indexes_rec (class ExprSolver *solver,
 }
 
 std::vector<Expr *> *
-s_expand_memcell_indexes (class ExprSolver *solver, const Architecture *arch, 
+s_expand_memcell_indexes (class ExprSolver *solver, 
+			  SymbolicStepper::UnknownGenerator *unkgen, 
+			  const Architecture *arch, 
 			  const SymbolicContext *ctx, const Expr *e,
 			  const Expr *cond, int jmpthreshold)
 {
   std::vector<Expr *> *result = new std::vector<Expr *>;
   std::vector<const Expr *> *indexes = exprutils::collect_memcell_indexes (e);
-  s_expand_memcell_indexes_rec (solver, indexes, 0, ctx, e, cond, arch, result,
-				jmpthreshold);
+  s_expand_memcell_indexes_rec (solver, unkgen, indexes, 0, ctx, e, cond, 
+				arch, result, jmpthreshold);
   delete (indexes);
 
   return result;
@@ -234,7 +242,7 @@ SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
   assert (sc != NULL);
 
   std::vector<address_t> *result = new std::vector<address_t> ();
-  RewriteWithAssignedValues r (sc, this->arch->get_endian ());
+  RewriteWithAssignedValues r (sc, unkgen, this->arch->get_endian ());
   const Expr *e = v.get_Expr ();
   Expr *f = e->ref ();
 
@@ -266,7 +274,7 @@ SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
     }
 
   std::vector<Expr *> *expaddr = 
-    s_expand_memcell_indexes (solver, this->arch, sc, f, cond, 
+    s_expand_memcell_indexes (solver, unkgen, this->arch, sc, f, cond, 
 			      this->dynamic_jump_threshold);
   for (std::vector<Expr *>::size_type i = 0; i < expaddr->size (); i++)
     {
@@ -299,7 +307,7 @@ SymbolicStepper::eval (const Context *ctx, const Expr *e)
   SymbolicStepper::Value result;
   const SymbolicContext *sc = dynamic_cast<const SymbolicContext *> (ctx);
   assert (sc != NULL);
-  RewriteWithAssignedValues r (sc, this->arch->get_endian ());
+  RewriteWithAssignedValues r (sc, unkgen, this->arch->get_endian ());
   Expr *f = e->ref ();
 
   for (;;)
@@ -338,12 +346,13 @@ SymbolicStepper::embed_eval (const SymbolicStepper::Value &v1,
     
 
 static Option<bool> 
-s_to_bool (ExprSolver *solver, const Architecture *arch, 
+s_to_bool (ExprSolver *solver, SymbolicStepper::UnknownGenerator *unkgen, 
+	   const Architecture *arch, 
 	   const SymbolicContext *ctx, const Expr *e, 
 	   Expr **symbval) 
 {
   Option<bool> result;
-  RewriteWithAssignedValues r (ctx, arch->get_endian ());
+  RewriteWithAssignedValues r (ctx, unkgen, arch->get_endian ());
   Expr *f = e->ref ();
   f->acceptVisitor (r);
   f->deref ();
@@ -379,7 +388,7 @@ SymbolicStepper::restrict_to_condition (const Context *ctx, const Expr *cond)
   SymbolicContext *result = NULL;
   Expr *e = Expr::createLAnd (sc->get_path_condition ()->ref (), cond->ref ());
   Expr *val = NULL;
-  Option<bool> eval = s_to_bool (solver, this->arch, sc, e, &val);
+  Option<bool> eval = s_to_bool (solver, unkgen, this->arch, sc, e, &val);
 
   if (eval.hasValue ())
     {

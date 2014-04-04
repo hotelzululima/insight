@@ -61,9 +61,19 @@ ConcreteValue * ConcreteValue::clone() const
   return new ConcreteValue(get_size(), this->value);
 }
 
-ConcreteValue ConcreteValue::unknown_value(int size)
+struct UnknownConcreteValue : public UnknownValueGenerator<ConcreteValue>
 {
-  return ConcreteValue(size, 0);
+  ConcreteValue unknown_value (int size) {
+    return ConcreteValue(size, 0);
+  }
+};
+
+UnknownValueGenerator<ConcreteValue> *
+ConcreteValue::unknown_value_generator ()
+{
+  static UnknownConcreteValue gen;
+
+  return &gen;  
 }
 
 word_t ConcreteValue::get() const

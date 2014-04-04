@@ -71,9 +71,19 @@ IntervalValue::clone() const
 }
 
 
-IntervalValue IntervalValue::unknown_value(int size)
+struct UnknownIntervalValue : public UnknownValueGenerator<IntervalValue>
 {
-  return IntervalValue (size, 0);
+  IntervalValue unknown_value (int size) {
+    return IntervalValue (size, 0);
+  }
+};
+
+UnknownValueGenerator<IntervalValue> *
+IntervalValue::unknown_value_generator ()
+{
+  static UnknownIntervalValue gen;
+
+  return &gen;  
 }
 
 

@@ -104,7 +104,7 @@ public:
 
   /*! \brief Return the default value. This is used when some read
    *  access is done to an unknown value */
-  static SetsValue unknown_value(int size);
+  static UnknownValueGenerator<SetsValue> *unknown_value_generator ();
 
   /*! \brief None means ANY value, i.e. TOP. Otherwise, this returns
    *  the list of all the possible values.

@@ -153,17 +153,25 @@ SymbolicValue::equals (const SymbolicValue &sv) const
   return value == sv.value;
 }
 
-SymbolicValue 
-SymbolicValue::unknown_value (int size)
+struct UnknownSymbolicValue : public UnknownValueGenerator<SymbolicValue>
 {
-  static int vid = 0;
-  std::ostringstream oss;
-  oss <<  "unkval_" << vid++;
-  Expr *var = Variable::create (oss.str (), size);
-  
-  SymbolicValue result (var);
-  var->deref ();
+  SymbolicValue unknown_value (int size) {
+    static int vid = 0;
+    std::ostringstream oss;
+    oss <<  "unkval_" << vid++;
+    Expr *var = Variable::create (oss.str (), size);
+    
+    SymbolicValue result (var);
+    var->deref ();
 
-  return result;
+    return result;
+  }
+};
+
+UnknownValueGenerator<SymbolicValue> *
+SymbolicValue::unknown_value_generator ()
+{
+  static UnknownSymbolicValue gen;
+
+  return &gen;
 }
-
