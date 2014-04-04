@@ -29,6 +29,7 @@
  */
 
 #include <decoders/binutils/msp430/msp430_instr.hh>
+#include <kernel/annotations/CallRetAnnotation.hh>
 
 static LValue *
 s_flag_lvalue(msp430::parser_data &data, int bit) {
@@ -38,45 +39,6 @@ s_flag_lvalue(msp430::parser_data &data, int bit) {
   sr->deref();
 
   return ret;
-}
-
-MSP430_TRANSLATE_1_OP(CALL) {
-  int bytes = data.operand_size == MSP430_SIZE_A? 4 : 2;
-  LValue *sp = data.get_register(MSP430_REG_SP);
-  bool is_immediate = op1->is_Constant();
-  bool has_postinc = data.has_postincrements();
-  MicrocodeAddress static_dest = dynamic_cast<Constant *>(op1)->get_val();
-  MicrocodeAddress dest = is_immediate && !has_postinc?
-    static_dest : data.start_ma + 2;
-
-  data.mc->add_assignment(data.start_ma, sp->ref(),
-			  BinaryApp::create(BV_OP_SUB, sp->ref(),
-					    Constant::create(bytes,
-							     0, MSP430_SIZE_A),
-					    0, MSP430_SIZE_A),
-			  data.start_ma + 1, NULL);
-
-  data.start_ma = data.start_ma + 1;
-
-  data.mc->add_assignment(data.start_ma + 1, MemCell::create(sp,
-							     0, bytes * 8),
-			  Constant::create(data.next_ma.getGlobal(),
-					   0, bytes * 8),
-			  dest, NULL);
-  if (has_postinc) {
-    data.start_ma = data.start_ma + 1;
-
-    if (is_immediate)
-      data.next_ma = static_dest;
-
-    data.finalize_postincrements(!is_immediate);
-  }
-
-  if (!is_immediate) {
-    data.mc->add_jump(data.start_ma, op1, NULL);
-  }
-
-  op1->deref();
 }
 
 static void
@@ -226,6 +188,15 @@ MSP430_TRANSLATE_2_OP(BIS) {
 			    false);
 }
 
+MSP430_TRANSLATE_2_OP(BIT) {
+  s_translate_arithmetic_op(data, BV_OP_AND, op1, op2, (1 << MSP430_FLAG_C),
+			    true, true);
+  s_update_flag(data, UnaryApp::create(BV_OP_NOT,
+				       s_flag_lvalue(data, MSP430_FLAG_Z),
+				       0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_C), false);
+}
+
 MSP430_TRANSLATE_2_OP(CMP) {
   s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
 			    true, true);
@@ -370,6 +341,95 @@ MSP430_TRANSLATE_1_OP(JL) {
 					    s_flag_lvalue(data, MSP430_FLAG_V),
 					    0, 1),
 			  true);
+}
+
+/*** Potentially dynamic jumps ***/
+
+static void
+s_translate_dynamic_jump(msp430::parser_data &data, Expr *op1, bool is_call) {
+  Constant *op1_as_constant = dynamic_cast<Constant *>(op1);
+  bool is_immediate = op1_as_constant != NULL;
+  bool has_postinc = data.has_postincrements();
+  MicrocodeAddress static_dest = is_immediate? op1_as_constant->get_val() : 0;
+
+  if (is_call) {
+    int bytes = data.operand_size == MSP430_SIZE_A? 4 : 2;
+    LValue *sp = data.get_register(MSP430_REG_SP);
+    MicrocodeAddress dest = is_immediate && !has_postinc?
+      static_dest : data.start_ma + 2;
+
+    data.mc->add_assignment(data.start_ma, sp->ref(),
+			    BinaryApp::create(BV_OP_SUB, sp->ref(),
+					      Constant::create(bytes,
+							       0,
+							       MSP430_SIZE_A),
+					      0, MSP430_SIZE_A),
+			    data.start_ma + 1, NULL);
+
+    data.start_ma = data.start_ma + 1;
+
+    data.mc->add_assignment(data.start_ma + 1, MemCell::create(sp,
+							       0, bytes * 8),
+			    Constant::create(data.next_ma.getGlobal(),
+					     0, bytes * 8),
+			    dest, NULL);
+    data.start_ma = data.start_ma + 1;
+  }
+
+  if (has_postinc) {
+
+    if (is_immediate)
+      data.next_ma = static_dest;
+
+    data.finalize_postincrements(!is_immediate);
+  } else if (!is_call && is_immediate) {
+    /* BR #imm simple static jump case */
+    data.mc->add_skip(data.start_ma, static_dest);
+  }
+
+  if (!is_immediate) {
+    data.mc->add_jump(data.start_ma, op1, NULL);
+  }
+
+  op1->deref();
+}
+
+MSP430_TRANSLATE_1_OP(BR) {
+  s_translate_dynamic_jump(data, op1, false);
+}
+
+MSP430_TRANSLATE_1_OP(CALL) {
+  MicrocodeAddress here(data.start_ma);
+
+  s_translate_dynamic_jump(data, op1->ref(), true);
+
+  MicrocodeNode *start_node = data.mc->get_node (here);
+  start_node->add_annotation (CallRetAnnotation::ID,
+			      CallRetAnnotation::create_call (op1));
+
+  op1->deref();
+}
+
+MSP430_TRANSLATE_0_OP(RET) {
+  MicrocodeAddress here(data.start_ma);
+
+  Expr *address = data.get_memory_reference(0,
+					    data.get_register(MSP430_REG_SP),
+					    false);
+  RegisterExpr *tmpreg = data.get_tmp_register(MSP430_SIZE_A);
+  data.mc->add_assignment(data.start_ma, tmpreg,
+			  msp430_trim_source_operand(data, address),
+			  data.start_ma + 1,
+			  NULL);
+  data.start_ma = data.start_ma + 1;
+
+  data.add_postincrement(tmpreg);
+
+  s_translate_dynamic_jump(data, tmpreg->ref(), false);
+
+  MicrocodeNode *start_node = data.mc->get_node (here);
+  start_node->add_annotation (CallRetAnnotation::ID,
+			      CallRetAnnotation::create_ret ());
 }
 
 /*** Misc ***/

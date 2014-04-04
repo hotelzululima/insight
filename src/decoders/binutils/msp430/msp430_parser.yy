@@ -336,6 +336,10 @@ instruction:
   { msp430_translate<MSP430_TOKEN(BIC)> (data, $3, $5); }
 | bis suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(BIS)> (data, $3, $5); }
+| bit suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(BIT)> (data, $3, $5); }
+| br operand
+  { msp430_translate<MSP430_TOKEN(BR)> (data, $2); }
 | call operand
   { msp430_translate<MSP430_TOKEN(CALL)> (data, $2); }
 | clear suffix operand
@@ -378,6 +382,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(POP)> (data, $3); }
 | push suffix operand
   { msp430_translate<MSP430_TOKEN(PUSH)> (data, $3); }
+| ret
+  { msp430_translate<MSP430_TOKEN(RET)> (data); }
 | sub suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(SUB)> (data, $3, $5); }
 ;
@@ -401,6 +407,16 @@ bic:
 bis:
   TOK_BIS
 | TOK_BISX { data.is_extended = 1; }
+;
+
+bit:
+  TOK_BIT
+| TOK_BITX { data.is_extended = 1; }
+;
+
+br:
+  TOK_BR
+| TOK_BRA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 ;
 
 call:
@@ -456,6 +472,11 @@ pop:
 push:
   TOK_PUSH
 | TOK_PUSHX { data.is_extended = 1; }
+;
+
+ret:
+  TOK_RET
+| TOK_RETA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 ;
 
 sub:
