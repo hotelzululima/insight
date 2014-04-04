@@ -97,7 +97,7 @@ s_generic_call (const list<ConcreteAddress >&entrypoint,
 
   if (CFGRECOVERY_CONFIG->has (SIMULATOR_INIT_SP_PROP))
     {
-      Constant *c;
+      Constant *c = NULL;
       long valsp = CFGRECOVERY_CONFIG->get_integer (SIMULATOR_INIT_SP_PROP);
 
       if (verbosity)
@@ -122,7 +122,8 @@ s_generic_call (const list<ConcreteAddress >&entrypoint,
 			<< " is not supported for this architecture"
 			<< endl;
 	}
-      c->deref ();
+      if (c != NULL)
+	c->deref ();
     }
 
   bool show_states = 
