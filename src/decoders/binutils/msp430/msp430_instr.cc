@@ -197,6 +197,21 @@ MSP430_TRANSLATE_2_OP(BIT) {
 		s_flag_lvalue(data, MSP430_FLAG_C), false);
 }
 
+MSP430_TRANSLATE_0_OP(CLRC) {
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_C), false);
+}
+
+MSP430_TRANSLATE_0_OP(CLRN) {
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_N), false);
+}
+
+MSP430_TRANSLATE_0_OP(CLRZ) {
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_Z), false);
+}
+
 MSP430_TRANSLATE_2_OP(CMP) {
   s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
 			    true, true);
@@ -229,6 +244,21 @@ MSP430_TRANSLATE_1_OP(INCD) {
 				      op1);
 }
 
+MSP430_TRANSLATE_0_OP(SETC) {
+  s_update_flag(data, Constant::one(1),
+		s_flag_lvalue(data, MSP430_FLAG_C), false);
+}
+
+MSP430_TRANSLATE_0_OP(SETN) {
+  s_update_flag(data, Constant::one(1),
+		s_flag_lvalue(data, MSP430_FLAG_N), false);
+}
+
+MSP430_TRANSLATE_0_OP(SETZ) {
+  s_update_flag(data, Constant::one(1),
+		s_flag_lvalue(data, MSP430_FLAG_Z), false);
+}
+
 MSP430_TRANSLATE_2_OP(SUB) {
   s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
 			    true);
@@ -237,6 +267,20 @@ MSP430_TRANSLATE_2_OP(SUB) {
 		s_flag_lvalue(data, MSP430_FLAG_V), false);
 }
 
+MSP430_TRANSLATE_1_OP(SXT) {
+#if 1
+  data.mc->add_skip(data.start_ma, data.next_ma);
+  op1->deref();
+#else
+  /* XXX not implemented */
+  s_translate_arithmetic_op(data, BV_OP_AND, op1, op2, (1 << MSP430_FLAG_C),
+			    true);
+  s_update_flag(data, UnaryApp::create(BV_OP_NOT,
+				       s_flag_lvalue(data, MSP430_FLAG_Z),
+				       0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_C), false);
+#endif
+}
 
 MSP430_TRANSLATE_1_OP(CLR) {
   s_translate_mov(data, Constant::zero(data.operand_size), op1, false);

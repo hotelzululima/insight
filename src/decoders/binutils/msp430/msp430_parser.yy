@@ -344,6 +344,12 @@ instruction:
   { msp430_translate<MSP430_TOKEN(CALL)> (data, $2); }
 | clear suffix operand
   { msp430_translate<MSP430_TOKEN(CLR)> (data, $3); }
+| TOK_CLRC
+  { msp430_translate<MSP430_TOKEN(CLRC)> (data); }
+| TOK_CLRN
+  { msp430_translate<MSP430_TOKEN(CLRN)> (data); }
+| TOK_CLRZ
+  { msp430_translate<MSP430_TOKEN(CLRZ)> (data); }
 | cmp suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(CMP)> (data, $3, $5); }
 | dec suffix operand
@@ -384,8 +390,16 @@ instruction:
   { msp430_translate<MSP430_TOKEN(PUSH)> (data, $3); }
 | ret
   { msp430_translate<MSP430_TOKEN(RET)> (data); }
+| TOK_SETC
+  { msp430_translate<MSP430_TOKEN(SETC)> (data); }
+| TOK_SETN
+  { msp430_translate<MSP430_TOKEN(SETN)> (data); }
+| TOK_SETZ
+  { msp430_translate<MSP430_TOKEN(SETZ)> (data); }
 | sub suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(SUB)> (data, $3, $5); }
+| sxt operand
+  { msp430_translate<MSP430_TOKEN(SXT)> (data, $2); }
 ;
 
 add:
@@ -483,6 +497,11 @@ sub:
   TOK_SUB
 | TOK_SUBA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 | TOK_SUBX { data.is_extended = 1; }
+;
+
+sxt:
+  TOK_SXT
+| TOK_SXTX { data.is_extended = 1; }
 ;
 
 %% /***** Parser subroutines *****/
