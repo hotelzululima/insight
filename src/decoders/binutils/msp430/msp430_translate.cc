@@ -98,13 +98,18 @@ msp430::parser_data::get_memory_reference (int disp, Expr *bis,
       /* We may need to truncate the address to 16-bit, so put it in a
 	 temporary register */
       LValue *reg = get_tmp_register(MSP430_SIZE_A);
-      MicrocodeAddress do_test = start_ma + 1;
-      MicrocodeAddress test_target = start_ma + 2;
-      Expr *cond =
-	BinaryApp::create(BV_OP_LT_U, reg->ref(),
-			  Constant::create(0x10000, 0, MSP430_SIZE_A), 0, 1);
+      LValue *cond = get_tmp_register(1);
+      MicrocodeAddress do_test = start_ma + 2;
+      MicrocodeAddress test_target = start_ma + 3;
 
-      mc->add_assignment(start_ma, reg->ref(),
+      mc->add_assignment(start_ma, cond->ref(),
+			 BinaryApp::create(BV_OP_LT_U, bis->ref(),
+					   Constant::create(0x10000,
+							    0, MSP430_SIZE_A),
+					   0, 1),
+			 start_ma + 1);
+
+      mc->add_assignment(start_ma + 1, reg->ref(),
 			 BinaryApp::create(BV_OP_ADD, bis,
 					   Constant::create(disp,
 							    0, MSP430_SIZE_A)),
@@ -117,7 +122,7 @@ msp430::parser_data::get_memory_reference (int disp, Expr *bis,
       mc->add_skip(do_test, test_target,
 		   UnaryApp::create(BV_OP_NOT, cond->ref (), 0, 1));
 
-      start_ma = start_ma + 2;
+      start_ma = start_ma + 3;
       bis = reg;
     } else
       bis = BinaryApp::create(BV_OP_ADD, bis,
