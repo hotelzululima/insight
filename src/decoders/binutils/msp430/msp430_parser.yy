@@ -390,6 +390,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(PUSH)> (data, $3); }
 | ret
   { msp430_translate<MSP430_TOKEN(RET)> (data); }
+| rla operand
+  { msp430_translate<MSP430_TOKEN(RLA)> (data, $2); }
 | TOK_SETC
   { msp430_translate<MSP430_TOKEN(SETC)> (data); }
 | TOK_SETN
@@ -398,6 +400,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(SETZ)> (data); }
 | sub suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(SUB)> (data, $3, $5); }
+| swpb operand
+  { msp430_translate<MSP430_TOKEN(SWPB)> (data, $2); }
 | sxt operand
   { msp430_translate<MSP430_TOKEN(SXT)> (data, $2); }
 ;
@@ -493,10 +497,20 @@ ret:
 | TOK_RETA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 ;
 
+rla:
+  TOK_RLA
+| TOK_RLAX { data.is_extended = 1; }
+;
+
 sub:
   TOK_SUB
 | TOK_SUBA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 | TOK_SUBX { data.is_extended = 1; }
+;
+
+swpb:
+  TOK_SWPB
+| TOK_SWPBX { data.is_extended = 1; }
 ;
 
 sxt:
