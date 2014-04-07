@@ -244,6 +244,12 @@ MSP430_TRANSLATE_1_OP(INCD) {
 				      op1);
 }
 
+MSP430_TRANSLATE_1_OP(RLA) {
+  msp430_translate<MSP430_TOKEN(ADD)>(data,
+				      op1->ref(),
+				      op1);
+}
+
 MSP430_TRANSLATE_0_OP(SETC) {
   s_update_flag(data, Constant::one(1),
 		s_flag_lvalue(data, MSP430_FLAG_C), false);
@@ -265,6 +271,23 @@ MSP430_TRANSLATE_2_OP(SUB) {
   /* XXX Compute overflow flag */
   s_update_flag(data, Constant::zero(1),
 		s_flag_lvalue(data, MSP430_FLAG_V), false);
+}
+
+MSP430_TRANSLATE_1_OP(SWPB) {
+  MicrocodeAddress dest = data.has_postincrements()?
+    data.start_ma + 1 : data.next_ma;
+
+  Expr *res = BinaryApp::create(BV_OP_CONCAT,
+				op1->extract_bit_vector(0, 8),
+				op1->extract_bit_vector(8, 8),
+				0, 16);
+  data.mc->add_assignment(data.start_ma,
+			  dynamic_cast<LValue *>(op1),
+			  msp430_stretch_expr_to_dest_size(op1, res),
+			  dest);
+  data.start_ma = data.start_ma + 1;
+
+  data.finalize_postincrements(false);
 }
 
 MSP430_TRANSLATE_1_OP(SXT) {
