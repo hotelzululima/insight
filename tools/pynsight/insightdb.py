@@ -23,6 +23,11 @@ parser.add_argument('-b', '--target', help='enforce BFD target',
                     required=False,
                     metavar="bfd-target-name")
 
+parser.add_argument('-m', '--architecture', help='enforce BFD architecture',
+                    dest="architecture", default="",
+                    required=False,
+                    metavar="bfd-architecture-name")
+
 parser.add_argument('inputfile', help='binary file',
                     default=None, nargs='?')
 
@@ -64,7 +69,7 @@ if __name__ == "__main__":
     if not args.quiet:
         print banner
     if args.inputfile is not None:
-        binfile(args.inputfile, args.target)
+        binfile(args.inputfile, "symbolic", args.target, args.architecture)
         if args.xmlmc is not None and P() is not None:
             load_mc(args.xmlmc)
     try:

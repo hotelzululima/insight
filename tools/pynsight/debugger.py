@@ -13,7 +13,7 @@ recorder = None
 insight.config.set("kernel.expr.solver.name", "mathsat")
 
 
-def binfile(filename, target="", domain="symbolic"):
+def binfile(filename, domain="symbolic", target="", architecture=""):
     """
     Load a binary file.
 
@@ -27,13 +27,14 @@ def binfile(filename, target="", domain="symbolic"):
 
     Parameters:
     - filename : name of the file containing bytes to read.
-    - target   : name of a BFD target supported by Insight (e.g elf32-i386).
     - domain   : the interpretation domain used by the simulator. It can be
                  'symbolic' or 'concrete'
+    - target   : name of a BFD target supported by Insight (e.g elf32-i386).
+    - architecture : name of a BFD architecture supported by Insight
     """
     global program, simulator, startpoint
     try:
-        program = insight.io.load_bfd(filename, target)
+        program = insight.io.load_bfd(filename, target, architecture)
         simulator = program.simulator(domain)
         startpoint = entrypoint()
     except insight.error.BFDError, e:
