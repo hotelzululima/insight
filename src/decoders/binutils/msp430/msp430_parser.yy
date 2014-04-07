@@ -392,6 +392,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(RET)> (data); }
 | rla operand
   { msp430_translate<MSP430_TOKEN(RLA)> (data, $2); }
+| rrc operand
+  { msp430_translate<MSP430_TOKEN(RRC)> (data, $2); }
 | TOK_SETC
   { msp430_translate<MSP430_TOKEN(SETC)> (data); }
 | TOK_SETN
@@ -500,6 +502,11 @@ ret:
 rla:
   TOK_RLA
 | TOK_RLAX { data.is_extended = 1; }
+;
+
+rrc:
+  TOK_RRC
+| TOK_RRCX { data.is_extended = 1; }
 ;
 
 sub:
