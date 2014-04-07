@@ -101,7 +101,7 @@ s_translate_arithmetic_op(msp430::parser_data &data, BinaryOp op,
     tmpr = dest->ref();
 
   s_translate_mov(data,
-		  s_operation_semantics(data, op, source->ref(), tmpr->ref(),
+		  s_operation_semantics(data, op, source->ref(), dest->ref(),
 					size),
 		  tmpr->ref(),
 		  leave_open || nupdates > 0);
@@ -248,6 +248,11 @@ MSP430_TRANSLATE_1_OP(RLA) {
   msp430_translate<MSP430_TOKEN(ADD)>(data,
 				      op1->ref(),
 				      op1);
+}
+
+MSP430_TRANSLATE_1_OP(RRC) {
+  data.mc->add_skip(data.start_ma, data.next_ma);
+  op1->deref();
 }
 
 MSP430_TRANSLATE_0_OP(SETC) {
