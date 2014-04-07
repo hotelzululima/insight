@@ -108,7 +108,7 @@ s_translate_arithmetic_op(msp430::parser_data &data, BinaryOp op,
 
   if (update_c) {
     if (!discard_result)
-      s_translate_mov(data, tmpr->ref(), dest->ref(), false);
+      s_translate_mov(data, tmpr->ref(), dest->ref(), true);
 
     s_update_flag(data, tmpr->extract_bit_vector(size - 1, 1),
 		  s_flag_lvalue(data, MSP430_FLAG_C),
@@ -343,6 +343,7 @@ MSP430_TRANSLATE_1_OP(POP) {
   Expr *dest = MemCell::create(sp, 0, size * 8);
   source = msp430_stretch_expr_to_dest_size(dest, source);
   s_translate_mov(data, source, dest, false);
+  sp->deref();
 }
 
 /*** Static jumps ***/
@@ -440,8 +441,8 @@ s_translate_dynamic_jump(msp430::parser_data &data, Expr *op1, bool is_call) {
 
     data.start_ma = data.start_ma + 1;
 
-    data.mc->add_assignment(data.start_ma + 1, MemCell::create(sp,
-							       0, bytes * 8),
+    data.mc->add_assignment(data.start_ma, MemCell::create(sp,
+							   0, bytes * 8),
 			    Constant::create(data.next_ma.getGlobal(),
 					     0, bytes * 8),
 			    dest, NULL);
@@ -461,9 +462,8 @@ s_translate_dynamic_jump(msp430::parser_data &data, Expr *op1, bool is_call) {
 
   if (!is_immediate) {
     data.mc->add_jump(data.start_ma, op1, NULL);
-  }
-
-  op1->deref();
+  } else
+    op1->deref();
 }
 
 MSP430_TRANSLATE_1_OP(BR) {
@@ -484,10 +484,8 @@ MSP430_TRANSLATE_1_OP(CALL) {
 
 MSP430_TRANSLATE_0_OP(RET) {
   MicrocodeAddress here(data.start_ma);
-
-  Expr *address = data.get_memory_reference(0,
-					    data.get_register(MSP430_REG_SP),
-					    false);
+  RegisterExpr *sp = data.get_register(MSP430_REG_SP);
+  Expr *address = data.get_memory_reference(0, sp->ref(), false);
   RegisterExpr *tmpreg = data.get_tmp_register(MSP430_SIZE_A);
   data.mc->add_assignment(data.start_ma, tmpreg,
 			  msp430_trim_source_operand(data, address),
@@ -495,9 +493,11 @@ MSP430_TRANSLATE_0_OP(RET) {
 			  NULL);
   data.start_ma = data.start_ma + 1;
 
-  data.add_postincrement(tmpreg);
+  data.add_postincrement(sp);
 
   s_translate_dynamic_jump(data, tmpreg->ref(), false);
+
+  sp->deref();
 
   MicrocodeNode *start_node = data.mc->get_node (here);
   start_node->add_annotation (CallRetAnnotation::ID,
