@@ -35,14 +35,14 @@
 static PyObject *
 io_load_bfd (PyObject *, PyObject *args, PyObject *kwds) {
   static const char *kwlists[] = 
-    { "filename", "target", "machine", "endianness", NULL };
+    { "filename", "target", "architecture", "endianness", NULL };
   const char *c_fname;
   const char *c_bfdtarget = "";
-  const char *c_machine = "";
+  const char *c_architecture = "";
   const char *c_endianness = NULL;
 
   if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|sss", (char **) kwlists, 
-				    &c_fname, &c_bfdtarget, &c_machine, 
+				    &c_fname, &c_bfdtarget, &c_architecture, 
 				    &c_endianness))
     return NULL;
 
@@ -59,7 +59,7 @@ io_load_bfd (PyObject *, PyObject *args, PyObject *kwds) {
     }
   }
 
-  return pynsight::load_program (c_fname, c_bfdtarget, c_machine, endian);
+  return pynsight::load_program (c_fname, c_bfdtarget, c_architecture, endian);
 }
 
 static PyMethodDef IO_Methods[] = {
