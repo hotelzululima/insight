@@ -9,6 +9,7 @@ hooks = {}
 startpoint = None
 dotviewer = None
 recorder = None
+displayed_expressions = []
 
 insight.config.set("kernel.expr.solver.name", "mathsat")
 
@@ -1082,8 +1083,43 @@ def eval(expr):
     return simulator.eval (expr)
 
 
+def display(expr, alias = None):
+    global simulator, displayed_expressions    
+
+    if simulator is None:
+        print "program is not running"
+        return
+    if not isinstance(expr, str) or (alias is not None and \
+                                     not isinstance(alias, str)):
+        raise TypeError
+    if not __display_expressions in hooks[run]:
+        add_run_hook (__display_expressions)
+        add_step_hook (__display_expressions)
+        add_cont_hook (__display_expressions)
+        add_microstep_hook (__display_expressions)
+    displayed_expressions += [(alias, expr)]
+
+def undisplay(index):
+    global simulator, displayed_expressions    
+
+    if simulator is None:
+        print "program is not running"
+        return
+    if index in range (len(displayed_expressions)):
+        displayed_expressions[index:index+1] = []
+    
 def __record(addr, fun, arg, reset = False):
     global recorder;
     if reset:
         recorder = []
     recorder += [(addr, fun, arg)]
+
+
+def __display_expressions():
+    global simulator, displayed_expressions    
+    i = 0
+    for alias,expr in displayed_expressions:        
+        if alias is None:
+            alias = expr
+        print "{:d}) {} = {}".format(i, alias, eval(expr))
+        i += 1
