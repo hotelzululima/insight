@@ -334,8 +334,10 @@ BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
 	  string name = bfd_asymbol_name (syms[i]);
 	  address_t addr = bfd_asymbol_value(syms[i]);
 	  if (table->has (name) && table->get (name) != addr)
-	    logs::error << "error: symbol '" << name << "' already defined "
-			<< "with a different value." << std::endl;
+	    logs::warning << "warning: symbol '" << name << "' already defined "
+			<< "with a different value. Current is 0x" 
+			<< std::hex << table->get (name) << " and new is 0x"
+			<< addr << "." << std::endl;
 	  else
 	    table->add_symbol (name, addr);
 	}
