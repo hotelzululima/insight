@@ -110,6 +110,8 @@ kernel_source = \
 	kernel/annotations/NextInstAnnotation.hh	\
 	kernel/annotations/AsmAnnotation.hh	\
 	kernel/annotations/AsmAnnotation.cc     \
+	kernel/annotations/StubAnnotation.hh	\
+	kernel/annotations/StubAnnotation.cc     \
 	kernel/annotations/StringAnnotation.hh	\
 	kernel/annotations/BooleanAnnotation.hh \
 	kernel/annotations/CallRetAnnotation.hh \

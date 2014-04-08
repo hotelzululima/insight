@@ -30,6 +30,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/StubAnnotation.hh>
 #include <kernel/annotations/NextInstAnnotation.hh>
 #include <domains/concrete/ConcreteMemory.hh>
 #include <io/binary/BinutilsBinaryLoader.hh>
@@ -1605,6 +1606,16 @@ GenericInsightSimulator::load_stub (const string &filename, address_t shift)
   try
     {
       Microcode *newmc = xml_parse_mc_program (filename, march);
+
+      for (Microcode::const_node_iterator i = newmc->begin_nodes ();
+	   i != newmc->end_nodes (); i++)
+	{
+	  if (!(*i)->has_annotation (StubAnnotation::ID))
+	    (*i)->add_annotation (StubAnnotation::ID,
+				  new StubAnnotation ("insight-stub/" + 
+						      filename));
+	}
+
       mc->merge (newmc, shift);
       delete newmc;
     }
@@ -2172,10 +2183,11 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
 
       if (result->has_annotation (AsmAnnotation::ID))
 	{
-	  AsmAnnotation *aa = (AsmAnnotation *) 
-	    result->get_annotation (AsmAnnotation::ID);
-	  if (dynamic_cast<StubAsmAnnotation *> (aa) == NULL)
+	  if (! result->has_annotation (StubAnnotation::ID) &&
+	      result->has_annotation (AsmAnnotation::ID))
 	    {
+	      AsmAnnotation *aa = (AsmAnnotation *)
+		result->get_annotation (AsmAnnotation::ID);
 	      string instr = decoder->get_instruction (ma.getGlobal ());
 	      if (!(instr == aa->get_value ()))
 		throw CodeChangedException (ma.getGlobal ());

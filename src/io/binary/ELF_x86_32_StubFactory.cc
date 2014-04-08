@@ -38,6 +38,7 @@
 #include <string>
 
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/StubAnnotation.hh>
 #include <kernel/annotations/CallRetAnnotation.hh>
 
 using namespace std;
@@ -242,8 +243,8 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
 	{
 	  string a("insight-stub/");
 	  a += name;
-	  start_node->add_annotation (AsmAnnotation::ID, 
-				      new StubAsmAnnotation (a));
+	  start_node->add_annotation (StubAnnotation::ID, 
+				      new StubAnnotation (a));
 	}
       dest_slot += 4;
     }

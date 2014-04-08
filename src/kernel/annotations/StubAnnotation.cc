@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite Bordeaux 1.
  *
@@ -28,18 +28,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef KERNEL_ANNOTATIONS_ASM_ANNOTATION_HH
-# define KERNEL_ANNOTATIONS_ASM_ANNOTATION_HH
+#include <kernel/annotations/StubAnnotation.hh>
 
-# include <kernel/Annotable.hh>
-# include <kernel/annotations/StringAnnotation.hh>
-
-class AsmAnnotation : public StringAnnotation {
-public :
-  static const Annotable::AnnotationId ID;
-
-  AsmAnnotation (const std::string &instr) : StringAnnotation (instr) { }
-};
-
-
-#endif /* ! KERNEL_ANNOTATIONS_ASM_ANNOTATION_HH */
+const Annotable::AnnotationId StubAnnotation::ID ("stub");
