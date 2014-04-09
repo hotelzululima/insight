@@ -1084,11 +1084,9 @@ s_Simulator_add_breakpoint (PyObject *self, PyObject *args)
   MicrocodeAddress a (gaddr, laddr);
   StopCondition *newbp = new Breakpoint (a);
 
-  const StopCondition *bp = S->add_stop_condition (newbp);
-  if (bp == NULL)
-    result = pynsight::None ();
-  else
-    result = Py_BuildValue ("(k,s)", bp->get_id (), bp->to_string ().c_str ());
+  S->add_stop_condition (newbp);
+  result = Py_BuildValue ("(k,s)", newbp->get_id (), 
+			  newbp->to_string ().c_str ());
 
   return result;
 }
