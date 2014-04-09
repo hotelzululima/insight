@@ -1027,9 +1027,28 @@ def display_steps(s, asrecord = False):
             print "0x{:x} : {}({})".format(addr, action.__name__, arg)
     
 
-def display_stack(top, bottom, absconv = None, bp = None, sp = None):
+def display_stack(start, end, absconv, bp = None, sp = None):
     """
     Display the content of the stack.
+    ########################################################################
+    The function dumps the content of a memory area identified as the stack
+    of the program. Dump is done from greatest addresses to lowest. The user
+    has to furnish a function able to convert abstract values (according to
+    current evaluation domain) in concrete ones.
+
+    Each line of the output contains: 
+    - the address aligned to the size of a word (see 'info("word_size")'), 
+    - the raw and hexadecimal value of bytes; a dot is displayed in place
+      of a non-convertible or non-printable byte
+    - if values of the frame and stack pointer are given ('bp' and 'sp' pa-
+      rameters) the relative position to these pointers are given.
+    
+    Parameters:
+    - start   : start address of the stack
+    - start   : end address of the stack
+    - absconv : a function that convert an abstract byte into a concrete byte
+    - bp      : current value of the frame pointer
+    - sp      : current value of the stack pointer
     """
     global simulator
     if simulator is None:
@@ -1076,6 +1095,15 @@ def display_stack(top, bottom, absconv = None, bp = None, sp = None):
 
 
 def eval(expr):
+    """
+    Evaluate an expression according to the current state of the memory.
+
+    Parameters:
+    - expr : a string containing the expression to be evaluated
+
+    Returns:
+    - a string with the value of 'expr'.
+    """
     global simulator
 
     if simulator is None:
@@ -1085,6 +1113,21 @@ def eval(expr):
 
 
 def display(expr, alias = None):
+    """
+    Display an expression after each simulation step.
+
+    The simulator maintains a list of expressions evaluated and displayed 
+    after each simulation function (step, microstep, run, cont). The 
+    function display couples of 'expr = val' where 'expr' is the string 
+    specified by the user and 'val' the evaluation of 'expr' according to 
+    the current state and simulation domain. In the displayed list' expr' 
+    can be replaced by an 'alias'. 
+
+    Parameters:
+    - expr  : a string containing the expression to display
+    - alias : if not None the value is display in place of expr as a 
+              description of the expression
+    """
     global simulator, displayed_expressions    
 
     if simulator is None:
@@ -1101,6 +1144,12 @@ def display(expr, alias = None):
     displayed_expressions += [(alias, expr)]
 
 def undisplay(index):
+    """
+    Remove a displayed expression.
+
+    Parameters:
+    - index : index of the expression in the list given by 'display'
+    """
     global simulator, displayed_expressions    
 
     if simulator is None:
@@ -1111,6 +1160,17 @@ def undisplay(index):
     
 
 def assume(cond):
+    """
+    Conjunct the current path condition with an additional constraint.
+
+    The effect of this function depends on the domain in use. For symbolic
+    simulation 'cond' is added to the current path condition. When using 
+    concrete domain, the condition is just checked against the current state
+    of the simulation.
+    
+    Parameters:
+    - cond : a string containing the constraint
+    """
     global simulator
     if simulator is None:
         print "program is not running"
@@ -1123,7 +1183,7 @@ def assume(cond):
         print "inconsistent constraint ", cond
     except:
         simulation_error()
-    
+
 
 def __record(addr, fun, arg, reset = False):
     global recorder;
