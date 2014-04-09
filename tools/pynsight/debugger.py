@@ -927,7 +927,7 @@ def simulation_error():
     elif sys.exc_type is NotImplementedError:
         print "feature not supported."
     else:
-        raise
+        raise 
 
 
 def view_mc(start=None, end=None, ep=None):
@@ -1108,6 +1108,22 @@ def undisplay(index):
     if index in range (len(displayed_expressions)):
         displayed_expressions[index:index+1] = []
     
+
+def assume(cond):
+    global simulator
+    if simulator is None:
+        print "program is not running"
+        return
+    if not isinstance(cond, str):
+        raise TypeError, "expect an expression given as a string"
+    try:
+        simulator.assume(cond)
+    except ValueError:
+        print "inconsistent constraint ", cond
+    except:
+        simulation_error()
+    
+
 def __record(addr, fun, arg, reset = False):
     global recorder;
     if reset:

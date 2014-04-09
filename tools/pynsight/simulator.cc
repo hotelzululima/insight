@@ -212,6 +212,9 @@ public:
   virtual bool load_microcode (const string &filename);
   virtual bool save_microcode (const string &filename);
 
+  virtual void *assume (void *p, const Expr *e) const = 0;
+  virtual bool assume (const Expr *e);
+
 protected:
   Program *prg;  
   Microcode *mc;
@@ -271,6 +274,8 @@ public:
   virtual Option<ConcreteValue> eval (const Expr *e) const;
   virtual Option<bool> eval_condition (const Expr *e) const;
   virtual Stepper *get_stepper ();
+
+  virtual void *assume (void *p, const Expr *e) const;
 
 protected:  
   Stepper *stepper;
@@ -392,6 +397,9 @@ s_Simulator_save_mc (PyObject *self, PyObject *args);
 static PyObject *
 s_Simulator_load_stub (PyObject *self, PyObject *args);
 
+static PyObject *
+s_Simulator_assume (PyObject *self, PyObject *args);
+
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -472,6 +480,7 @@ static PyMethodDef SimulatorMethods[] = {
  { "save_mc", s_Simulator_save_mc, METH_VARARGS,
    "\n" }, 
  { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" }, 
+ { "assume", s_Simulator_assume, METH_VARARGS, "\n" }, 
  { NULL, NULL, 0, NULL }
 };
 
@@ -1104,8 +1113,17 @@ s_Simulator_set_cond (PyObject *self, PyObject *args)
   else
     {
       Expr *e = expr_parser (condition, S->get_march ()); 
-      bp->set_cond (e);
-      e->deref ();
+      if (e == NULL)
+	{
+	  PyErr_SetString(PyExc_SyntaxError, "syntax error");
+	  
+	  return NULL;
+	}
+      else
+	{
+	  bp->set_cond (e);
+	  e->deref ();
+	}
     }
 
   result = Py_BuildValue ("(k,s)", bp->get_id (), bp->to_string ().c_str ());
@@ -1270,6 +1288,31 @@ s_Simulator_load_stub (PyObject *self, PyObject *args)
   if (S->load_stub (filename, addr))
     return pynsight::None ();
   return NULL;
+}
+
+static PyObject *
+s_Simulator_assume (PyObject *self, PyObject *args)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  const char *constraint;
+
+  if (! PyArg_ParseTuple (args, "s", &constraint))
+    return NULL;
+  
+  Expr *expr = expr_parser (constraint, S->get_march ());
+  if (expr == NULL)
+    {
+      PyErr_SetString(PyExc_SyntaxError, "syntax error");
+
+      return NULL;
+    }
+
+  PyObject *result = NULL;
+  if (S->assume (expr))    
+    result = pynsight::None ();
+  expr->deref ();
+
+  return result;
 }
 
 /*****************************************************************************
@@ -1642,6 +1685,22 @@ GenericInsightSimulator::save_microcode (const string &filename)
   output.close ();
 
   return true;
+}
+
+bool 
+GenericInsightSimulator::assume (const Expr *e)
+{
+  void *s = get_state ();
+  void *ns = assume (s, e);
+  if (ns == NULL)
+    PyErr_SetNone (PyExc_ValueError);
+  else
+    {
+      s_try_set_state (this, ns);
+      delete_state (ns);  
+    }
+  delete_state (s);  
+  return (ns != NULL) && !PyErr_Occurred ();
 }
 
 /*****************************************************************************
@@ -2217,6 +2276,12 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
     }
     
   return result;
+}
+
+template <typename Stepper> void *
+InsightSimulator<Stepper>::assume (void *p, const Expr *e) const 
+{
+  return stepper->restrict_state_to_condition ((State *) p, e);
 }
 
 /******************************************************************************
