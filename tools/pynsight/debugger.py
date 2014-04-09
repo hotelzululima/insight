@@ -1030,7 +1030,7 @@ def display_steps(s, asrecord = False):
 def display_stack(start, end, absconv, bp = None, sp = None):
     """
     Display the content of the stack.
-    ########################################################################
+
     The function dumps the content of a memory area identified as the stack
     of the program. Dump is done from greatest addresses to lowest. The user
     has to furnish a function able to convert abstract values (according to
@@ -1045,7 +1045,7 @@ def display_stack(start, end, absconv, bp = None, sp = None):
     
     Parameters:
     - start   : start address of the stack
-    - start   : end address of the stack
+    - end   : end address of the stack
     - absconv : a function that convert an abstract byte into a concrete byte
     - bp      : current value of the frame pointer
     - sp      : current value of the stack pointer
@@ -1055,19 +1055,19 @@ def display_stack(start, end, absconv, bp = None, sp = None):
         print "program is not started"
         return
 
-    if top < bottom:
-        bottom, top = top, bottom
+    if start < end:
+        end, start = start, end
 
     addrsize = prog().info()["address_size"] / 8
     elsize = prog().info()["word_size"] / 8
     
-    top -= top % elsize
-    while top >= bottom :
+    start -= start % elsize
+    while start >= end :
         bytestr = ""
         strstr = ""
         for i in range(elsize):
             try:
-                byte = absconv(simulator.get_memory(top + i, 1)[0])
+                byte = absconv(simulator.get_memory(start + i, 1)[0])
             except IndexError:
                 byte = None
 
@@ -1083,15 +1083,15 @@ def display_stack(start, end, absconv, bp = None, sp = None):
                 strstr += c
         fmt = "0x{:" + str(addrsize) + "x} : {} {} ; {} {}"
         if bp is not None:
-            bps = "<bp{:+x}>".format(top - bp)
+            bps = "<bp{:+x}>".format(start - bp)
         else:
             bps = ""
         if sp is not None:
-            sps = "<sp{:+x}>".format(top - sp)
+            sps = "<sp{:+x}>".format(start - sp)
         else:
             sps = ""
-        print fmt.format(top, bytestr, strstr, bps, sps)
-        top -= elsize
+        print fmt.format(start, bytestr, strstr, bps, sps)
+        start -= elsize
 
 
 def eval(expr):
