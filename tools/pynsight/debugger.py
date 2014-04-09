@@ -550,19 +550,20 @@ def show(what):
         elif "mppc".find(what) == 0:
             print "0x{:x}".format(mppc())
         elif "hooks".find(what) == 0:
-            if len(hooks) == 0:
-                print "there is no hook"
-            else:
-                for hf in sorted(hooks.keys()):
-                    print "hooks for function", hf.__name__
-                    index = 0
-                    for h in hooks[hf]:
-                        if h.__name__ is not None:
-                            desc = h.__name__
-                        else:
-                            desc = str(h)
-                        print "{:2d} : {}".format(index, desc)
-                        index += 1
+            for hf in sorted(hooks.keys()):
+                print "hooks for function", hf.__name__
+                index = 0
+                for h in hooks[hf]:
+                    if h.__name__ is not None:
+                        if h.__name__.find("__") == 0: # internal hook
+                            continue
+                        desc = h.__name__
+                    else:
+                        desc = str(h)
+                    print "{:2d} : {}".format(index, desc)
+                    index += 1
+                if index == 0:
+                    print "there is no hook"
     except:
         simulation_error()
 
