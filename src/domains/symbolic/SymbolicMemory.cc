@@ -271,3 +271,15 @@ SymbolicMemory::get_address_range (address_t &min, address_t &max) const
   min = minaddr;
   max = maxaddr;
 }
+
+SymbolicMemory::const_memcell_iterator 
+SymbolicMemory::begin () const
+{
+  return memory.begin ();
+}
+
+SymbolicMemory::const_memcell_iterator 
+SymbolicMemory::end () const
+{
+  return memory.end ();
+}

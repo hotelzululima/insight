@@ -43,11 +43,12 @@ class SymbolicMemory
   : public Memory<ConcreteAddress, SymbolicValue>,
     public RegisterMap<SymbolicValue>
 {
-  typedef std::unordered_map<address_t, SymbolicValue> MemoryMap;
   address_t minaddr;
   address_t maxaddr;
 
 public:
+  typedef std::unordered_map<address_t, SymbolicValue> MemoryMap;
+  typedef MemoryMap::const_iterator const_memcell_iterator;
   typedef ConcreteAddress Address;
   typedef SymbolicValue Value;
 
@@ -80,6 +81,8 @@ public:
 
 
   void get_address_range (address_t &min, address_t &max) const; 
+  virtual const_memcell_iterator begin () const;
+  virtual const_memcell_iterator end () const;
 
 private:
   const ConcreteMemory *base;

@@ -51,17 +51,12 @@
 class ConcreteMemory : public Memory<ConcreteAddress, ConcreteValue>,
 		       public RegisterMap<ConcreteValue>
 {
+public:
   /** \brief Data structure used to encode the concrete memory. */
   typedef std::unordered_map<address_t,
 				  uint8_t,
 				  std::hash<address_t> > MemoryMap;
-
-  /** \brief The actual storage into memory. */
-  const ConcreteMemory *base;
-  MemoryMap memory;
-  address_t minaddr;
-  address_t maxaddr;
-public:
+  typedef MemoryMap::const_iterator const_memcell_iterator;
   typedef ConcreteValue Value;
   typedef ConcreteAddress Address;
 
@@ -126,7 +121,16 @@ public:
   void output_text(std::ostream &) const;
   void get_address_range (address_t &min, address_t &max) const; 
 
+  virtual const_memcell_iterator begin () const;
+  virtual const_memcell_iterator end () const;
   virtual ConcreteMemory *clone () const;
+
+private:
+  /** \brief The actual storage into memory. */
+  const ConcreteMemory *base;
+  MemoryMap memory;
+  address_t minaddr;
+  address_t maxaddr;
 };
 
 #endif /* DOMAINS_CONCRETE_CONCRETEMEMORY_HH */

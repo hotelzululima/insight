@@ -253,3 +253,15 @@ ConcreteMemory::clone () const
   ConcreteMemory *result = new ConcreteMemory (*this);
   return result;
 }
+
+ConcreteMemory::const_memcell_iterator 
+ConcreteMemory::begin () const
+{
+  return memory.begin ();
+}
+
+ConcreteMemory::const_memcell_iterator 
+ConcreteMemory::end () const
+{
+  return memory.end ();
+}
