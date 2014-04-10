@@ -6,9 +6,9 @@ AC_CONFIG_AUX_DIR([autotools-files])
 AC_CONFIG_MACRO_DIR([autotools-files/m4])
 AC_CONFIG_HEADERS([src/config.h])
 
-# Otherwise the default may include -O2
-#CFLAGS=
-#CXXFLAGS=
+# Otherwise the default may include -O2 and -g
+CFLAGS=`echo $CFLAGS | sed 's/ -g//g' | sed 's/ -O2//g`
+CXXFLAGS=`echo $CXXFLAGS | sed 's/ -g//g' | sed 's/ -O2//g`
 
 dnl Customize the src/config.h
 AH_TOP([/* Defining a robust NORETURN attribute */
