@@ -52,6 +52,7 @@ using std::vector;
 using std::list;
 using std::string;
 using pynsight::Program;
+using pynsight::GenericGenerator;
 
 class GenericInsightSimulator;
 
@@ -215,6 +216,10 @@ public:
   virtual void *assume (void *p, const Expr *e) const = 0;
   virtual bool assume (const Expr *e);
 
+  virtual void set_compare_state (bool set) = 0;
+  virtual GenericGenerator *compare_states () const = 0;
+  virtual GenericGenerator *compare_states (void *s1, void *s2) const = 0;
+
 protected:
   Program *prg;  
   Microcode *mc;
@@ -277,9 +282,13 @@ public:
 
   virtual void *assume (void *p, const Expr *e) const;
 
+  virtual void set_compare_state (bool set);
+  virtual GenericGenerator *compare_states () const;
+  virtual GenericGenerator *compare_states (void *s1, void *s2) const;
 protected:  
   Stepper *stepper;
   State *current_state;
+  State *ref_state;
   BinutilsDecoder *decoder;
 
 private:
@@ -400,6 +409,15 @@ s_Simulator_load_stub (PyObject *self, PyObject *args);
 static PyObject *
 s_Simulator_assume (PyObject *self, PyObject *args);
 
+static PyObject *
+s_Simulator_set_compare_state (PyObject *self, PyObject *arg);
+
+static PyObject *
+s_Simulator_unset_compare_state (PyObject *self, PyObject *);
+
+static PyObject *
+s_Simulator_compare_states (PyObject *self, PyObject *);
+
 static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
@@ -481,6 +499,9 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" }, 
  { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" }, 
  { "assume", s_Simulator_assume, METH_VARARGS, "\n" }, 
+ { "set_compare_state", s_Simulator_set_compare_state, METH_NOARGS, "\n" }, 
+ { "unset_compare_state", s_Simulator_unset_compare_state, METH_NOARGS, "\n" }, 
+ { "compare_states", s_Simulator_compare_states, METH_NOARGS, "\n" }, 
  { NULL, NULL, 0, NULL }
 };
 
@@ -564,6 +585,8 @@ s_Simulator_run (PyObject *p, PyObject *args)
     PyErr_SetString (PyExc_LookupError, "start address is out of memory");
     return NULL;
   }
+
+  S->set_compare_state (false);
 
   PyObject *result = NULL;
   void *is = S->get_initial_state (start);
@@ -1313,6 +1336,39 @@ s_Simulator_assume (PyObject *self, PyObject *args)
   return result;
 }
 
+static PyObject *
+s_Simulator_set_compare_state (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  S->set_compare_state (true);
+
+  return pynsight::None ();
+}
+
+static PyObject *
+s_Simulator_unset_compare_state (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  S->set_compare_state (false);
+
+  return pynsight::None ();
+}
+
+static PyObject *
+s_Simulator_compare_states (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  GenericGenerator *gg = S->compare_states ();
+  PyObject *result;
+  if (gg != NULL)
+    result = generic_generator_new (gg);
+  else
+    result = pynsight::None ();
+  return result;
+}
+
 /*****************************************************************************
  *
  * GenericInsightSimulator
@@ -1344,7 +1400,7 @@ GenericInsightSimulator::~GenericInsightSimulator ()
     delete (*i);
   }
 
-  delete stop_conditions;
+  delete stop_conditions;  
 }
 
 MicrocodeArchitecture *
@@ -1725,6 +1781,8 @@ InsightSimulator<Stepper>::~InsightSimulator ()
   delete stepper;
   if (current_state)
     current_state->deref ();
+  if (ref_state)
+    ref_state->deref ();
   delete decoder;
 }
 
@@ -1787,7 +1845,8 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 	  MicrocodeAddress tgt = 
 	    result->get_ProgramPoint ()->to_MicrocodeAddress ();
 	  
-	  if (mc->has_node_at (tgt) || check_memory_range (from, tgt.getGlobal (), 1))
+	  if (mc->has_node_at (tgt) || 
+	      check_memory_range (from, tgt.getGlobal (), 1))
 	    {
 	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (a);
 	      if (da != NULL)
@@ -2281,6 +2340,181 @@ InsightSimulator<Stepper>::assume (void *p, const Expr *e) const
 {
   return stepper->restrict_state_to_condition ((State *) p, e);
 }
+
+template <typename Stepper>
+class StateComparator : public GenericGenerator
+{
+public: 
+  typedef typename Stepper::State State;
+  typedef typename Stepper::Value Value;
+  typedef typename Stepper::Memory Memory;
+  typedef typename Memory::const_memcell_iterator cell_iterator;
+
+
+  StateComparator (State *ref, State *other, const Architecture *arch) 
+    : GenericGenerator (), arch (arch)
+  {
+    st1 = ref;
+    st1->ref ();
+    st2 = other;
+    st2->ref ();
+    m1 = ref->get_Context ()->get_memory ();
+    m2 = other->get_Context ()->get_memory ();
+    startmem = m2->begin ();
+    endmem = m2->end ();
+    startreg = arch->get_registers()->begin ();
+    endreg = arch->get_registers()->end ();
+  }
+
+  virtual ~StateComparator () {
+    st1->deref ();
+    st2->deref ();
+  }
+
+  virtual bool are_different (Option<Value> &v1, Option<Value> &v2,
+			      string &s1, string &s2) 
+  {
+    if (!(v1.hasValue () || v2.hasValue ()))
+      return false;
+    
+    bool result = true;
+    if (v1.hasValue ())
+      s1 = v1.getValue ().to_string ();
+    else
+      s1 = "undefined";
+    if (v2.hasValue ())
+      s2 = v2.getValue ().to_string ();
+    else
+      s2 = "undefined";
+
+    if (v1.hasValue () && v2.hasValue () && 
+	values_are_equals (v1.getValue (), v2.getValue ()))
+      result = false;
+
+    return result;
+  }
+			      
+  virtual PyObject *next () {
+    PyObject *result = NULL;
+    Option<Value> v1;
+    Option<Value> v2;
+    bool diff = false;
+    const RegisterDesc *reg = NULL;
+    address_t addr;
+    string s1, s2;
+
+    while (! diff && startmem != endmem) 
+      {
+	if (m1->is_defined (startmem->first))
+	  v1 = m1->get (startmem->first, 1, arch->get_endian ());
+	if (m2->is_defined (startmem->first))
+	  v2 = m2->get (startmem->first, 1, arch->get_endian ());
+	diff = are_different (v1, v2, s1, s2);
+	if (diff)
+	  addr = startmem->first;
+	startmem++;
+      }
+
+    while (! diff && startreg != endreg) 
+      {
+	if (startreg->second->is_alias ())
+	  {
+	    startreg++;
+	    continue;
+	  }
+
+	Option<Value> v1;
+	Option<Value> v2;
+	if (m1->is_defined (startreg->second))
+	  v1 = m1->get (startreg->second);
+	if (m2->is_defined (startreg->second))
+	  v2 = m2->get (startreg->second);
+	diff = are_different (v1, v2, s1, s2);
+	if (diff)
+	  reg = startreg->second;
+	startreg++;
+      }
+
+    if (diff)
+      {
+	if (reg != NULL)
+	  {
+	    result = Py_BuildValue ("(s,s,s)", 
+				    reg->get_label ().c_str (),
+				    s1.c_str (),
+				    s2.c_str ());
+	  }
+	else
+	  {
+	    result = Py_BuildValue ("(k,s,s)", addr, s1.c_str (), s2.c_str ());
+	  }
+      }
+
+    return result;
+  }
+
+  virtual bool values_are_equals (const Value &v1, const Value &v2) const;
+
+private:
+  const Architecture *arch;
+  Memory *m1;
+  Memory *m2;
+  State *st1;
+  State *st2;
+  cell_iterator startmem;
+  cell_iterator endmem;
+  RegisterSpecs::const_iterator startreg;
+  RegisterSpecs::const_iterator endreg;
+};
+
+template <> bool 
+StateComparator<ConcreteStepper>::values_are_equals (const ConcreteValue &v1, 
+						     const ConcreteValue &v2) 
+  const
+{
+  return v1.get () == v2.get ();
+}
+
+template <> bool 
+StateComparator<SymbolicStepper>::values_are_equals (const SymbolicValue &v1, 
+						     const SymbolicValue &v2) 
+  const
+{
+  return v1.get_Expr () == v2.get_Expr ();
+}
+
+
+template <typename Stepper> GenericGenerator *
+InsightSimulator<Stepper>::compare_states (void *s1, void *s2) const
+{
+  return new StateComparator<Stepper>((State *) s1, (State *) s2,
+				      march->get_reference_arch ());
+}
+
+template <typename Stepper> void 
+InsightSimulator<Stepper>::set_compare_state (bool set)
+{
+  if (ref_state != NULL)
+    delete_state (ref_state);
+
+  if (set)
+    {
+      ref_state = current_state;
+      ref_state->ref ();
+    }
+  else
+    ref_state = NULL;    
+}
+
+template <typename Stepper> GenericGenerator *
+InsightSimulator<Stepper>::compare_states () const
+{
+  if (ref_state == NULL)
+    return NULL;
+
+  return compare_states (ref_state, current_state);
+}
+
 
 /******************************************************************************
  *

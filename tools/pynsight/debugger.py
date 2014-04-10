@@ -942,9 +942,14 @@ def view_mc(start=None, end=None, ep=None):
     - end   : set the address of an end node (no end node if None)
     - ep    : set the entry point address
     """
-    def reset_viewer (arg):
+    def reset_viewer(arg):
         global dotviewer
         dotviewer = None
+
+    def basic_block_clicked(widget, nodeid, url, event):
+        if nodeid is None:
+            return False
+        return True
 
     global simulator, startpoint, dotviewer
     if simulator is None:
@@ -961,6 +966,7 @@ def view_mc(start=None, end=None, ep=None):
     if dotviewer is None:
         dotviewer = xdot.DotWindow()
         dotviewer.connect('destroy', reset_viewer)
+        dotviewer.widget.connect('clicked', basic_block_clicked)
         dotviewer.show()
     dotviewer.set_dotcode(dotstring)
 
@@ -1182,7 +1188,32 @@ def assume(cond):
     except:
         simulation_error()
 
+def set_compare_state():
+    global simulator
+    if simulator is None:
+        print "program is not running"
+        return
+    simulator.set_compare_state()
 
+def unset_compare_state():
+    global simulator
+    if simulator is None:
+        print "program is not running"
+        return
+    simulator.unset_compare_state()
+
+def compare_states():
+    global simulator
+    if simulator is None:
+        print "program is not running"
+        return
+    print "state comparison:"
+    for (loc, v1, v2) in simulator.compare_states():
+        if isinstance(loc,str):
+            print loc, v1, v2
+        else:
+            print "0x{:x}".format (loc), v1, v2
+    
 def __record(addr, fun, arg, reset = False):
     global recorder;
     if reset:
@@ -1191,7 +1222,7 @@ def __record(addr, fun, arg, reset = False):
 
 
 def __display_expressions():
-    global simulator, displayed_expressions    
+    global displayed_expressions    
     i = 0
     for alias,expr in displayed_expressions:        
         if alias is None:
