@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
- *                          Universite Bordeaux 1.
+ *                          Universite de Bordeaux.
  * 
  * All rights reserved.
  * 

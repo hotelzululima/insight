@@ -1,9 +1,9 @@
 %{
 /* -*- C++ -*- */
 /*-
- * Copyright (C) 2010-2012, Centre National de la Recherche Scientifique,
+ * Copyright (C) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
- *                          Universite Bordeaux 1.
+ *                          Universite de Bordeaux.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
