@@ -183,10 +183,11 @@ the build is in the 'build' directory):
 We use the ATF/Kyua test framework runner in order to test insight. At
 the moment, Kyua is not available as a package on most systems. So,
 the best way to go is to install it directly from their stable or
-development sources.
+development sources. First install ATF, then install the kyua-cli
+application.
 
-Kyua Project home: http://code.google.com/p/kyua/
-ATF/Kyua Documentation: http://code.google.com/p/kyua/wiki/ATF
-ATF/Kyua Blog: http://blog.julipedia.org/
+ATF Project:   git clone https://github.com/jmmv/atf.git
+Lutok Project: git clone https://github.com/jmmv/lutok.git
+Kyua Project:  git clone https://github.com/jmmv/kyua.git
 
-Stable release: http://code.google.com/p/kyua/downloads/list
+Blog: http://julipedia.meroh.net/
