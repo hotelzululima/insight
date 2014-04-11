@@ -13,6 +13,8 @@ cfgrecovery_CXXFLAGS = -Wno-deprecated
 cfgrecovery_LDFLAGS = @BINUTILS_LDFLAGS@
 cfgrecovery_LDADD = $(top_builddir)/src/libinsight.la
 
+man_MANS = doc/cfgrecovery.1
+
 all:
 
 MAINTAINERCLEANFILES = \
