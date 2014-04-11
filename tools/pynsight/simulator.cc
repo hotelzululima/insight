@@ -1771,6 +1771,7 @@ InsightSimulator<Stepper>::InsightSimulator (Program *prg)
   stepper->set_map_dynamic_jumps_to_memory (true);
 
   current_state = NULL;
+  ref_state = NULL;
   decoder = new BinutilsDecoder (march, 
 				 new RawBytesReader<Stepper>(this));
 }
@@ -2294,20 +2295,16 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
   try
     {
       result = mc->get_node (ma);
-      if (!is_global)
+      if (!is_global || result->has_annotation (StubAnnotation::ID))
 	return result;
 
       if (result->has_annotation (AsmAnnotation::ID))
 	{
-	  if (! result->has_annotation (StubAnnotation::ID) &&
-	      result->has_annotation (AsmAnnotation::ID))
-	    {
-	      AsmAnnotation *aa = (AsmAnnotation *)
-		result->get_annotation (AsmAnnotation::ID);
-	      string instr = decoder->get_instruction (ma.getGlobal ());
-	      if (!(instr == aa->get_value ()))
-		throw CodeChangedException (ma.getGlobal ());
-	    }
+	  AsmAnnotation *aa = (AsmAnnotation *)
+	    result->get_annotation (AsmAnnotation::ID);
+	  string instr = decoder->get_instruction (ma.getGlobal ());
+	  if (!(instr == aa->get_value ()))
+	    throw CodeChangedException (ma.getGlobal ());
 	}
       else
 	{
