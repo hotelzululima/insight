@@ -99,7 +99,7 @@ static ConfigTable CONFIG;
 const ConfigTable *CFGRECOVERY_CONFIG = &CONFIG;
 static int asm_with_bytes = 0;
 static int asm_with_holes = 0;
-static int asm_with_labels = 0;
+static int asm_with_symbols = 0;
 static int sink_nodes = 0;
 
 struct disassembler {
@@ -172,7 +172,7 @@ usage (int status)
 	   << "assembler output options:" << endl
 	   << " --asm-with-bytes\t\tdisplay the opcode bytes" << endl
 	   << " --asm-with-holes\t\tdo not skip the empty gaps in memory"  << endl
-	   << " --asm-with-labels\t\tdisplay symbols whenever possible" << endl
+	   << " --asm-with-symbols\t\tdisplay symbols whenever possible" << endl
 	   << "miscellaneous options:" << endl
 	   << "  --sink-nodes\t\t\tlist sink nodes" << endl;
     }
@@ -208,7 +208,7 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
       {
       case OF_ASM :
 	asm_writer (output, mc, memory, symboltable, asm_with_bytes,
-		    asm_with_holes, asm_with_labels);
+		    asm_with_holes, asm_with_symbols);
 	break;
       case OF_MC :
 	mc->output_text (output);
@@ -380,7 +380,7 @@ main (int argc, char *argv[])
     {"version", no_argument, NULL, 'V'},
     {"asm-with-bytes", no_argument, &asm_with_bytes, 1 },
     {"asm-with-holes", no_argument, &asm_with_holes, 1 },
-    {"asm-with-labels", no_argument, &asm_with_labels, 1 },
+    {"asm-with-symbols", no_argument, &asm_with_symbols, 1 },
     {"sink-nodes", no_argument, &sink_nodes, 1 },
     {NULL, 0, NULL, 0}
   };
