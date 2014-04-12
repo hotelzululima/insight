@@ -443,6 +443,7 @@ AC_CONFIG_FILES([
 	test/utils/Makefile
 	tools/Makefile
 	tools/cfgrecovery/Makefile
+	tools/cfgrecovery/doc/cfgrecovery.1
 	tools/pynsight/Makefile
 ], [ ], [ ])
 
