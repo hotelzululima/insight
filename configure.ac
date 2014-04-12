@@ -66,6 +66,8 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 AC_SUBST(PYTHON_CFLAGS, ${python_cflags})
 AC_SUBST(PYTHON_LDFLAGS, ${python_ldflags})
 
+AC_CHECK_HEADERS([Python.h], [], AC_MSG_ERROR(['Python.h' cannot be found.]))
+
 dnl ********************************************************************
 dnl Checking for test framework (ATF with Kyua)
 dnl ********************************************************************
