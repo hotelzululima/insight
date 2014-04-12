@@ -12,7 +12,7 @@ pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc \
                    gengen.cc gengen.hh simulator.cc config.cc \
                    microcode.cc
 
-pynsight_CPPFLAGS = @PYTHON_CFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
+pynsight_CPPFLAGS = @PYTHON_CPPFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
                     -DPYNSIGHT_HOME="\"${PYNSIGHT_HOME}\"" \
                     -DPYNSIGHT_PACKAGE="\"${PYNSIGHT_PKGNAME}\"" 
 

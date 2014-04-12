@@ -57,16 +57,23 @@ dnl ********************************************************************
 
 AM_PATH_PYTHON([2.6], , [:])
 if test "$PYTHON" != :; then
-   python_cflags=`${PYTHON}-config --includes 2>/dev/null` || PYTHON=:
+   python_cppflags=`${PYTHON}-config --includes 2>/dev/null` || PYTHON=:
    python_ldflags=`${PYTHON}-config --ldflags 2>/dev/null` || PYTHON=:
 fi
 
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 
-AC_SUBST(PYTHON_CFLAGS, ${python_cflags})
+AC_SUBST(PYTHON_CPPFLAGS, ${python_cppflags})
 AC_SUBST(PYTHON_LDFLAGS, ${python_ldflags})
 
-AC_CHECK_HEADERS([Python.h], [], AC_MSG_ERROR(['Python.h' cannot be found.]))
+CPPFLAGS_TMP="${CPPFLAGS}"
+CPPFLAGS="${PYTHON_CPPFLAGS}"
+
+AC_CHECK_HEADER([Python.h], [],
+                [AC_MSG_ERROR(['Python.h' cannot be found. Install development files for Python.])])
+
+CPPFLAGS="${CPPFLAGS_TMP}"
+
 
 dnl ********************************************************************
 dnl Checking for test framework (ATF with Kyua)
@@ -469,6 +476,10 @@ Here is the configuration of the package:
     CPPFLAGS			: ${CPPFLAGS}
     LDFLAGS			: ${LDFLAGS}
     LIBS                        : ${LIBS}
+
+    PYTHON_VERSION		: ${PYTHON_VERSION}
+    PYTHON_CPPFLAGS             : ${PYTHON_CPPFLAGS}
+    PYTHON_LDFLAGS              : ${PYTHON_LDFLAGS}
 
     BINUTILS_CFLAGS		: ${BINUTILS_CFLAGS}
     BINUTILS_LDFLAGS		: ${BINUTILS_LDFLAGS}
