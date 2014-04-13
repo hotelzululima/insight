@@ -101,6 +101,7 @@ static int asm_with_bytes = 0;
 static int asm_with_holes = 0;
 static int asm_with_symbols = 0;
 static int sink_nodes = 0;
+static bool no_stub = false;
 
 struct disassembler {
   const char *name;
@@ -161,20 +162,21 @@ usage (int status)
       cout << " (default: " << DEFAULT_FORMAT->name << ")" << endl
 	   << "  -S, --symbols\t\t\tdisplay known symbols" << endl
 	   << "  -e, --entrypoint ADDR\t\tforce entrypoint to be ADDR" << endl
+	   << "  -E, --endian B|L\t\tforce endianness to big='B' or little='L'" << endl
 	   << "  -b, --target TARGET\t\tforce BFD target to TARGET" << endl
 	   << "  -m, --architecture ARCH\tforce BFD architecture to ARCH" << endl
-	   << "  -E, --endian B|L\t\tforce endianness to big='B' or little='L'" << endl
+	   << "  -n, --no-stub\t\t\tdisable external procedures default stubbing" << endl
 	   << "  -o, --output FILE\t\twrite outputs to FILE" << endl
 	   << "  -v, --verbose\t\t\tincrease verbosity level ('-vv'=level 2)" << endl
 	   << "  -D, --debug\t\t\tenable debug traces" << endl
 	   << "  -h, --help\t\t\tdisplay this help" << endl
 	   << "  -V, --version\t\t\tdisplay version and exit" << endl
 	   << "assembler output options:" << endl
-	   << " --asm-with-bytes\t\tdisplay the opcode bytes" << endl
-	   << " --asm-with-holes\t\tdo not skip the empty gaps in memory"  << endl
-	   << " --asm-with-symbols\t\tdisplay symbols whenever possible" << endl
+	   << "  --asm-with-bytes\t\tdisplay the opcode bytes" << endl
+	   << "  --asm-with-holes\t\tdo not skip the empty gaps in memory"  << endl
+	   << "  --asm-with-symbols\t\tdisplay symbols whenever possible" << endl
 	   << "miscellaneous options:" << endl
-	   << "  --sink-nodes\t\t\tlist sink nodes" << endl;
+	   << "   --sink-nodes\t\t\tlist sink nodes" << endl;
     }
 
   exit (status);
@@ -347,12 +349,7 @@ main (int argc, char *argv[])
   const char *endianness = NULL;
 
   string config_filename =
-#if defined(_WIN64) || defined(_WIN32)
-    string(getenv("HOMEDRIVE")) + string(getenv("HOMEPATH")) +
-#else
-    string(getenv("HOME")) +
-#endif
-    "/" + CFGRECOVERY_CONFIG_FILENAME;
+    string(getenv("HOME")) + "/" + CFGRECOVERY_CONFIG_FILENAME;
 
   bool display_symbols = false;
 
@@ -372,6 +369,7 @@ main (int argc, char *argv[])
     {"input", required_argument, NULL, 'i'},
     {"output", required_argument, NULL, 'o'},
     {"architecture", required_argument, NULL, 'm'},
+    {"no-stub", no_argument, NULL, 'n'},
     {"help", no_argument, NULL, 'h'},
     {"debug", no_argument, NULL, 'D'},
     {"symbols", no_argument, NULL, 'S' },
@@ -396,7 +394,7 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "b:ld:e:E:f:C::i:o:hDm:vVc:S",
+	  getopt_long (argc, argv, "b:ld:e:E:f:C::i:o:hDm:nvVc:S",
 		       long_opts, NULL)) != -1)
     switch (optc)
       {
@@ -428,6 +426,12 @@ main (int argc, char *argv[])
 	  CONFIG.set (logs::STDIO_ENABLE_WARNINGS_PROP, true);
 	  CONFIG.set (logs::DEBUG_ENABLED_PROP, enable_debug);
 
+	  CONFIG.set (string("disas.symsim.map-dynamic-jump-to-memory"), false);
+	  CONFIG.set (string("disas.symsim.dynamic-jump-threshold"), 1000);
+
+	  CONFIG.set (string("disas.simulator.init-sp"), string("0xffffff00"));
+	  CONFIG.set (string("disas.simulator.nb-visits-per-address"), 5);
+
 	  CONFIG.set (ExprSolver::DEBUG_TRACES_PROP, false);
 	  if (enable_debug)
 	    {
@@ -440,28 +444,23 @@ main (int argc, char *argv[])
 	  if (optarg)
 	    {
 	      filename = string (optarg);
+	    }
 
-	      /* Check correctness of filename */
-	      fstream f (filename.c_str (), fstream::out);
-	      if (f.is_open ())
-		{
-		  config_filename = filename;
-		  CONFIG.save (f);
-		  f.close();
+	  /* Check correctness of filename */
+	  fstream f (filename.c_str (), fstream::out);
+	  if (f.is_open ())
+	    {
+	      config_filename = filename;
+	      CONFIG.save (f);
+	      f.close();
 
-		  cout << prog_name << ": default configuration file dumped in '"
-		       << filename << "'" << endl;
-		}
-	      else
-		{
-		  cerr << "warning: can't write configuration file '"
-		       << filename << "'." << endl;
-		}
+	      cout << prog_name << ": configuration file dumped in '"
+		   << filename << "'" << endl;
 	    }
 	  else
 	    {
-	      CONFIG.save (std::cout);
-	      std::cout.flush();
+	      cerr << "warning: can't write configuration file '" << filename << "'."
+		   << endl;
 	    }
 	}
 	exit(EXIT_SUCCESS);
@@ -482,6 +481,10 @@ main (int argc, char *argv[])
 
       case 'm':
 	architecture = optarg;
+	break;
+
+      case 'n':
+	no_stub = true;
 	break;
 
       case 'e':		/* Force entrypoint */
@@ -609,7 +612,8 @@ main (int argc, char *argv[])
       logs::warning << "Binary format: " << loader->get_format () << endl;
 
     arch = new MicrocodeArchitecture (loader->get_architecture ());
-    stubfactory = loader->get_StubFactory ();
+    if (!no_stub)
+      stubfactory = loader->get_StubFactory ();
 
     if (! loader->load_memory (memory) && verbosity > 0)
       logs::warning << "nothing to load in file " << execfile_name << endl;
