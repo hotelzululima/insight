@@ -360,7 +360,7 @@ xml_of_register (const RegisterExpr *reg)
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "var");
 
   assert (reg->get_name().length () > 0);
-  s_add_prop (result, "var", reg->get_descriptor()->get_label ());
+  s_add_prop (result, "name", reg->get_descriptor()->get_label ());
 
   return result;
 }
@@ -433,20 +433,10 @@ xml_of_expr (const Expr *e)
   return result;
 }
 
-static xmlNodePtr 
-xml_guard_of_static_arrow (const StaticArrow *arr)
-{
-  xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "guard");
-  xmlNodePtr g = xml_of_expr (arr->get_condition ());
-  xmlAddChild (result, g);
-  s_add_prop (result, "next", arr->get_target ());
-
-  return result;
-}
-
 static void
 xml_of_stmtarrow (xmlNodePtr root, const StmtArrow *arr)
 {
+  xmlNodePtr xarrow = NULL;
   string new_stmtarrow("");
 
   if (!(arr->is_dynamic()))
@@ -455,81 +445,41 @@ xml_of_stmtarrow (xmlNodePtr root, const StmtArrow *arr)
 
       if (sarr->get_stmt()->is_Assignment())
         {
-          if (!(sarr->get_condition()->eval_level0()))
-            logs::fatal_error("Assignment arrow with condition not supported");
-
           xmlNodePtr lv = 
 	    xml_of_lvalue (((Assignment *) sarr->get_stmt())->get_lval(), true);
 	  
 	  xmlNodePtr v = 
 	    xml_of_expr (((Assignment *) sarr->get_stmt ())->get_rval ());
-	  xmlNodePtr xarrow = xmlNewChild (root, NULL, BAD_CAST "assign", NULL);
+	  xarrow = xmlNewChild (root, NULL, BAD_CAST "assign", NULL);
 	  xmlAddChild (xarrow, lv);
 	  xmlAddChild (xarrow, v);
-	  s_add_prop (xarrow, "id", sarr->get_origin());
-	  s_add_prop (xarrow, "next", sarr->get_target());
-	  return;
         }
-
-      if (sarr->get_stmt()->is_Skip())
+      else if (sarr->get_stmt()->is_Skip())
         {
-	  xmlNodePtr xarrow = xmlNewChild (root, NULL, BAD_CAST "skip", NULL);
-	  xmlNodePtr guard = xml_guard_of_static_arrow (sarr);
-	  xmlAddChild (xarrow, guard);
-	  s_add_prop (xarrow, "id", sarr->get_origin ());
-	  return;
+	  xarrow = xmlNewChild (root, NULL, BAD_CAST "skip", NULL);
         }
-
-      if (sarr->get_stmt ()->is_Jump ())
+      else if (sarr->get_stmt ()->is_Jump ())
         logs::fatal_error ("xml_of_stmtarrow:: static jump statement "
 			   "not supported");
+      s_add_prop (xarrow, "next", sarr->get_target());
     }
   else   // Arrow is dynamic
     {
       DynamicArrow *darr = (DynamicArrow *) arr;
       xmlNodePtr target = xml_of_expr (darr->get_target ());
-      xmlNodePtr xarrow = xmlNewChild (root, NULL, BAD_CAST "jump", NULL);
+      xarrow = xmlNewChild (root, NULL, BAD_CAST "jump", NULL);
       xmlAddChild (xarrow, target);
-      s_add_prop (xarrow, "id", darr->get_origin ());
-      s_add_annotations (xarrow, darr);
-
-      return;
-    }
-}
-
-
-static void
-xml_of_microcode_element (xmlNodePtr root, const MicrocodeNode *elt)
-{
-  vector<StmtArrow *> * succs = elt->get_successors();
-
-  //--- particular case of the switch
-  bool is_switch = true;
-
-  for (int i = 0; i < (int) succs->size() && is_switch; i++)
-    is_switch = (!((*succs)[i]->is_dynamic()) &&
-		 (*succs)[i]->get_stmt()->is_Skip());
-
-  if (is_switch)
-    {
-      string addr = xml_of_mcaddress (elt->get_loc ());
-      xmlNodePtr sw = xmlNewChild (root, NULL, BAD_CAST "switch", NULL);
-      for (int i = 0; i < (int) succs->size(); i++)
-	{
-	  assert (!((*succs)[i]->is_dynamic()) &&
-		  (*succs)[i]->get_stmt()->is_Skip());
-	  xmlNodePtr guard = 
-	    xml_guard_of_static_arrow ((StaticArrow *)(*succs)[i]);
-	  xmlAddChild (sw, guard);
-        }
-      s_add_prop (sw, "id", addr);
-    }
-  else   //--- general case
-    {
-      for (int i = 0; i < (int) succs->size(); i++)
-        xml_of_stmtarrow (root, (*succs)[i]);
     }
 
+  Expr *guard_expr = arr->get_condition();
+  if (!guard_expr->eval_level0()) {
+    xmlNodePtr guard = xmlNewChild(xarrow, NULL, BAD_CAST "guard", NULL);
+    xmlAddChild(guard, xml_of_expr(guard_expr));
+  }
+
+  s_add_prop (xarrow, "id", arr->get_origin());
+
+  s_add_annotations (xarrow, arr);
 }
 
 static void
@@ -540,7 +490,11 @@ s_generate_code (xmlNodePtr root, const Microcode *prg)
 
   for (Microcode::const_node_iterator n = prg->begin_nodes (); 
        n != prg->end_nodes (); n++)
-    xml_of_microcode_element (code, *n);
+    {
+      vector<StmtArrow *> *succs = (*n)->get_successors();
+      for (int i = 0; i < (int) succs->size(); i++)
+	xml_of_stmtarrow (code, (*succs)[i]);
+  }
 }
 
 struct CmpRegisterDesc
