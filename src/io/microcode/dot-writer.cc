@@ -33,6 +33,7 @@
 #include <list>
 #include <kernel/microcode/MicrocodeNode.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/StubAnnotation.hh>
 #include <kernel/annotations/SolvedJmpAnnotation.hh>
 #include <cstdlib>
 #include "asm-writer.hh"
@@ -94,7 +95,12 @@ s_compute_asm_nodes (const Microcode *mc,
       if (end && n->get_loc ().getGlobal () > end->get_address ())
 	continue;
 
-      if (! n->has_annotation (AsmAnnotation::ID))
+      if (n->has_annotation (StubAnnotation::ID) && 
+	  n->get_loc ().getLocal() != 0)
+	continue;
+
+      if (! n->has_annotation (AsmAnnotation::ID) && 
+	  ! n->has_annotation (StubAnnotation::ID))
 	continue;
 
       if (anodes.find (n) == anodes.end ())
@@ -273,9 +279,15 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
       for (size_t inst = 0; inst < bb.nodes->size (); inst++)
 	{
 	  MicrocodeNode *instn = bb.nodes->at (inst);
-	  if (instn->has_annotation (AsmAnnotation::ID))
-	    out << setw(8) << hex << instn->get_loc ().getGlobal () << " : " 
-		<< *(instn->get_annotation (AsmAnnotation::ID)) << "\\l";
+	  if (instn->has_annotation (AsmAnnotation::ID) ||
+	      instn->has_annotation (StubAnnotation::ID))
+	    {	      
+	      out << setw(8) << hex << instn->get_loc ().getGlobal () << " : ";
+	      if(instn->has_annotation (AsmAnnotation::ID))
+		out << *(instn->get_annotation (AsmAnnotation::ID)) << "\\l";
+	      else 
+		out << *(instn->get_annotation (StubAnnotation::ID)) << "\\l";
+	    }
 	  else
 	    out << instn->pp();
 	}
