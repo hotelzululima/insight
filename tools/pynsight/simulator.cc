@@ -500,7 +500,7 @@ static PyMethodDef SimulatorMethods[] = {
  { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" }, 
  { "assume", s_Simulator_assume, METH_VARARGS, "\n" }, 
  { "set_compare_state", s_Simulator_set_compare_state, METH_NOARGS, "\n" }, 
- { "unset_compare_state", s_Simulator_unset_compare_state, METH_NOARGS, "\n" }, 
+ { "unset_compare_state", s_Simulator_unset_compare_state, METH_NOARGS, "\n" },
  { "compare_states", s_Simulator_compare_states, METH_NOARGS, "\n" }, 
  { NULL, NULL, 0, NULL }
 };
