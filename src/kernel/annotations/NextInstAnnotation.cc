@@ -30,6 +30,14 @@
  */
 #include "NextInstAnnotation.hh"
 
-
 const Annotable::AnnotationId NextInstAnnotation::ID = "next-inst";
 
+NextInstAnnotation::NextInstAnnotation(const NextInstAnnotation &other) :
+  GenericAnnotation<MicrocodeAddress>(other)
+{
+}
+
+void *
+NextInstAnnotation::clone() const {
+  return new NextInstAnnotation(*this);
+}

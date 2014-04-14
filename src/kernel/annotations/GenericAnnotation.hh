@@ -46,10 +46,6 @@ public:
   virtual void output_text (std::ostream &out) const {
     out << this->value;
   }
-
-  virtual void *clone () const {
-    return new GenericAnnotation (this->value);
-  }
 };
 
 

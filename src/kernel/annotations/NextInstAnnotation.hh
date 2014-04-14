@@ -43,7 +43,12 @@ public:
 
   NextInstAnnotation (const MicrocodeAddress &ma)
     : GenericAnnotation<MicrocodeAddress> (ma) { }
+
+  NextInstAnnotation(const NextInstAnnotation &);
+
   virtual ~NextInstAnnotation() { }
+
+  void *clone() const;
 };
 
 

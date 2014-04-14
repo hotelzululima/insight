@@ -31,3 +31,13 @@
 #include <kernel/annotations/AsmAnnotation.hh>
 
 const Annotable::AnnotationId AsmAnnotation::ID ("asm");
+
+AsmAnnotation::AsmAnnotation(const AsmAnnotation &other) :
+  StringAnnotation(other)
+{
+}
+
+void *
+AsmAnnotation::clone() const {
+  return new AsmAnnotation(*this);
+}

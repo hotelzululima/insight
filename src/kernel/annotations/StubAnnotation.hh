@@ -38,7 +38,11 @@ class StubAnnotation : public StringAnnotation {
 public :
   static const Annotable::AnnotationId ID;
 
-  StubAnnotation (const std::string &instr) : StringAnnotation (instr) { }
+  StubAnnotation(const std::string &instr) : StringAnnotation (instr) { }
+  StubAnnotation(const StubAnnotation &);
+  virtual ~StubAnnotation() {}
+
+  void *clone() const;
 };
 
 

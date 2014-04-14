@@ -38,7 +38,11 @@ class AsmAnnotation : public StringAnnotation {
 public :
   static const Annotable::AnnotationId ID;
 
-  AsmAnnotation (const std::string &instr) : StringAnnotation (instr) { }
+  AsmAnnotation(const std::string &instr) : StringAnnotation (instr) { }
+  AsmAnnotation(const AsmAnnotation &);
+  virtual ~AsmAnnotation() {}
+
+  virtual void *clone() const;
 };
 
 

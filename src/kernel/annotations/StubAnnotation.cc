@@ -31,3 +31,13 @@
 #include <kernel/annotations/StubAnnotation.hh>
 
 const Annotable::AnnotationId StubAnnotation::ID ("stub");
+
+StubAnnotation::StubAnnotation(const StubAnnotation &other) :
+  StringAnnotation(other)
+{
+}
+
+void *
+StubAnnotation::clone() const {
+  return new StubAnnotation(*this);
+}
