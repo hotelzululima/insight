@@ -151,6 +151,16 @@ s_annotation_to_xml (const NextInstAnnotation *a)
   return result;
 }
 
+static xmlNodePtr 
+s_annotation_to_xml (const StubAnnotation *a)
+{
+  xmlNodePtr result = s_new_annotation_node (a->ID);
+
+  s_add_prop (result, "value", a->get_value ());
+
+  return result;
+}
+
 static void
 s_add_annotations (xmlNodePtr parent, const Annotable *annotable, 
 		   const MicrocodeAddress *location = NULL)
@@ -184,6 +194,9 @@ s_add_annotations (xmlNodePtr parent, const Annotable *annotable,
       else if (id == NextInstAnnotation::ID)
 	annotation =
 	  s_annotation_to_xml (dynamic_cast<const NextInstAnnotation *> (a));
+      else if (id == StubAnnotation::ID)
+	annotation =
+	  s_annotation_to_xml (dynamic_cast<const StubAnnotation *> (a));
       else
 	{
 	  logs::warning << "translation of annotation type " << id << " is not "

@@ -35,5 +35,6 @@
 #include <kernel/annotations/CallRetAnnotation.hh>
 #include <kernel/annotations/NextInstAnnotation.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/StubAnnotation.hh>
 
 #endif /* ! XML_ANNOTATIONS_HH */
