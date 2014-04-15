@@ -950,6 +950,19 @@ def view_mc(start=None, end=None, ep=None):
         if nodeid is None:
             return False
         return True
+    import gtk.keysyms
+    def key_pressed_event(widget, event):
+        global simulator, startpoint, dotviewer
+        if event.keyval == gtk.keysyms.s:
+            step ()
+            return True
+        if event.keyval == gtk.keysyms.r:
+            run ()
+            return True
+        if event.keyval == gtk.keysyms.c:
+            cont ()
+            return True
+        return False
 
     global simulator, startpoint, dotviewer
     if simulator is None:
@@ -967,6 +980,7 @@ def view_mc(start=None, end=None, ep=None):
         dotviewer = xdot.DotWindow()
         dotviewer.connect('destroy', reset_viewer)
         dotviewer.widget.connect('clicked', basic_block_clicked)
+        dotviewer.widget.connect('key-press-event', key_pressed_event)
         dotviewer.show()
     dotviewer.set_dotcode(dotstring)
 
