@@ -201,11 +201,13 @@ Expr::extract_bit_vector (int new_bv_offset, int new_bv_size) const
   if (new_bv_offset == 0 && get_bv_size () == new_bv_size)
     return ref ();
 
-  assert (0 <= new_bv_size && new_bv_size <= get_bv_size ());
-
-  assert (0 <= new_bv_offset && new_bv_offset < get_bv_size ());
-  assert (0 <= new_bv_offset + new_bv_size - 1 &&
-	  new_bv_offset + new_bv_size - 1 < get_bv_size ());
+  if (! is_Constant ()) {
+    assert (0 <= new_bv_size && new_bv_size <= get_bv_size ());
+    
+    assert (0 <= new_bv_offset && new_bv_offset < get_bv_size ());
+    assert (0 <= new_bv_offset + new_bv_size - 1 &&
+	    new_bv_offset + new_bv_size - 1 < get_bv_size ());
+  }
 
   Expr *result = change_bit_vector (get_bv_offset () + new_bv_offset,
 				    new_bv_size);
