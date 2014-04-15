@@ -126,7 +126,7 @@ ELF_x86_32_StubFactory::ELF_x86_32_StubFactory (bfd *abfd)
       int type = relpp[i]->howto->type;
       if (type != R_386_JUMP_SLOT)
 	{
-	  logs::warning << "warning: ignoring EL32 relocation type R_386_" 
+	  logs::warning << "warning: ignoring ELF32 relocation type R_386_"
 			<< relpp[i]->howto->name 
 			<< " (" << type << ")" << endl;
 	  continue;
