@@ -581,6 +581,17 @@ s_AsmAnnotation (xmlNodePtr annotation, ParserData &data)
 }
 
 static Annotation *
+s_StubAnnotation (xmlNodePtr annotation, ParserData &data)
+  throw (XmlParserException)
+{
+  return_null_if_not_named (annotation, "stub");
+
+  string instruction (s_xml_get_attribute (annotation, BAD_CAST "value", data));
+
+  return new StubAnnotation (instruction);
+}
+
+static Annotation *
 s_NextInstAnnotation (xmlNodePtr annotation, ParserData &data)
   throw (XmlParserException)
 {
@@ -627,7 +638,7 @@ s_annotation_from_xml (xmlNodePtr annotation, ParserData &data)
 {
   Annotation * (*parser[])(xmlNodePtr, ParserData &) = {
     s_SolvedJmpAnnotation, s_AsmAnnotation, s_NextInstAnnotation, 
-    s_CallRetAnnotation };
+    s_CallRetAnnotation, s_StubAnnotation };
   Annotation *result = NULL;
 
   for (size_t i = 0; i < sizeof (parser)/sizeof(parser[0]) && result == NULL; 
