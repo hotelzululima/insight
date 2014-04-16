@@ -527,8 +527,8 @@ def show(what):
     Display informations related to simulation.
 
     According to the 'what' parameter the following data are printed :
-    - "breakpoints" : display the current breakpoints, watchpoints and Python
-                      watchpoints
+    - "breakpoints" : display the current breakpoints, watchpoints and 
+                      Python watchpoints
     - "pc" : display the value of the program counter.
     - "mcpc" : display the microcode address of the current microcode-node.
     - "hooks" : display hooks attached to simulation functions.
@@ -752,8 +752,8 @@ def unset(loc, len=1, keep=True):
     is displayed.
 
     Parameters:
-    - loc : the location to abstract. It is either an address (i.e. an integer
-            value or a string to specify a register name.
+    - loc : the location to abstract. It is either an address (i.e. an 
+            integer value or a string to specify a register name.
     - len : the number of bytes of abstract (only for memory areas)
     - keep : to memorize the abstraction into the context.
     """
@@ -881,10 +881,10 @@ def load_stub(filename, addr):
     """
     Load a microcode program at a given address.
 
-    This function loads an existing program from file 'filename' and relocates
-    it at the given address 'addr'. The loaded program is merged within the
-    existing microcode; each node is relocated by shifting its location with
-    'addr' bytes. 
+    This function loads an existing program from file 'filename' and reloca-
+    tes it at the given address 'addr'. The loaded program is merged within 
+    the existing microcode; each node is relocated by shifting its location 
+    with 'addr' bytes. 
 
     Take care that loaded stubs don't overlap existing nodes. In this case
     both microcodes exist.
@@ -1063,8 +1063,9 @@ def display_stack(start, end, absconv, bp = None, sp = None):
     
     Parameters:
     - start   : start address of the stack
-    - end   : end address of the stack
-    - absconv : a function that convert an abstract byte into a concrete byte
+    - end     : end address of the stack
+    - absconv : a function that convert an abstract byte into a concrete 
+                byte
     - bp      : current value of the frame pointer
     - sp      : current value of the stack pointer
     """
@@ -1203,6 +1204,15 @@ def assume(cond):
         simulation_error()
 
 def set_compare_state():
+    """
+    Mark current state as comparison reference. 
+
+    The function memorizes the current state of registers and memory to be
+    compared later with a future state. This feature is mainly used to 
+    understand the effect of a sequence of instructions on the state.
+    
+    If a state is already memorized then it is forgotten.
+    """ 
     global simulator
     if simulator is None:
         print "program is not running"
@@ -1210,6 +1220,12 @@ def set_compare_state():
     simulator.set_compare_state()
 
 def unset_compare_state():
+    """
+    Unmark current state used for comparisons.
+
+    The function is just an explicit release of resources allocated to the
+    state used for comparisons.
+    """ 
     global simulator
     if simulator is None:
         print "program is not running"
@@ -1217,6 +1233,13 @@ def unset_compare_state():
     simulator.unset_compare_state()
 
 def compare_states():
+    """
+    Compare current state with the one marked for comparison.
+
+    The function display the registers and memory cells that differ between
+    the compared states i.e. the current one and the one marked for using
+    'set_compare_state' function.
+    """
     global simulator
     if simulator is None:
         print "program is not running"
