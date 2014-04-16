@@ -629,6 +629,7 @@ def print_registers(l=None):
     - l : the list of registers or a single identifier.
     """
     global simulator
+    valuewidth = 60
     if simulator is None:
         print "Program is not started."
         return
@@ -641,9 +642,11 @@ def print_registers(l=None):
         for r in sorted(l):
             if r not in regs:
                 continue
-            fmt = "{: <5s} : {}"
+            fmt = "{: <5s} : {:."+ str(valuewidth) + "s}"            
             val = simulator.get_register(r)
             if val is not None:
+                if len(val) >= valuewidth:
+                    fmt += "..."
                 print fmt.format(r, simulator.get_register(r))
     except:
         simulation_error()
