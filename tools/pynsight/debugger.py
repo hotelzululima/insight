@@ -1221,8 +1221,11 @@ def compare_states():
     if simulator is None:
         print "program is not running"
         return
+    diffs = simulator.compare_states()
+    if diffs is None:
+        return
     print "state comparison:"
-    for (loc, v1, v2) in simulator.compare_states():
+    for (loc, v1, v2) in diffs:
         if isinstance(loc,str):
             print loc, v1, v2
         else:
