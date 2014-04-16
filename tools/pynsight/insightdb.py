@@ -2,6 +2,7 @@ import insight.debugger
 from insight.debugger import *
 import argparse
 import code
+import importlib
 
 # change Python path to load modules from working directory
 sys.path += ['.']
@@ -27,6 +28,11 @@ parser.add_argument('-m', '--architecture', help='enforce BFD architecture',
                     dest="architecture", default="",
                     required=False,
                     metavar="bfd-architecture-name")
+
+parser.add_argument('-c', '--init-module', help='initializaiton module',
+                    dest="initmodule", default="mydb", 
+                    required=False,
+                    metavar="init-module")
 
 parser.add_argument('inputfile', help='binary file',
                     default=None, nargs='?')
@@ -72,8 +78,12 @@ if __name__ == "__main__":
         binfile(args.inputfile, "symbolic", args.target, args.architecture)
         if args.xmlmc is not None and P() is not None:
             load_mc(args.xmlmc)
+
     try:
-        from mydb import *
-    except ImportError:
-        pass
+        m = importlib.import_module(args.initmodule)
+        globals().update(m.__dict__)
+    except ImportError, e:
+        print e
+    except IOError, e:
+        print e
     code.interact("", local=globals())
