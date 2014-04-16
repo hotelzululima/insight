@@ -229,7 +229,7 @@ protected:
 };
 
 template <typename Stepper>
-class InsightSimulator : public GenericInsightSimulator {
+class InsightSimulator : public GenericInsightSimulator, public UnknownValueGenerator<typename Stepper::Value> {
 public:
   typedef typename Stepper::State State;
   typedef typename Stepper::Memory Memory;
@@ -285,11 +285,15 @@ public:
   virtual void set_compare_state (bool set);
   virtual GenericGenerator *compare_states () const;
   virtual GenericGenerator *compare_states (void *s1, void *s2) const;
+
+  virtual Value unknown_value (int size);
+
 protected:  
   Stepper *stepper;
   State *current_state;
   State *ref_state;
   BinutilsDecoder *decoder;
+  int in_abstraction;
 
 private:
   void compute_enabled_arrows (State *s, ArrowVector *result)
@@ -1766,14 +1770,15 @@ GenericInsightSimulator::assume (const Expr *e)
 template <typename Stepper> 
 InsightSimulator<Stepper>::InsightSimulator (Program *prg)
   : GenericInsightSimulator (prg)
-{
+{  
   stepper = new Stepper (prg->concrete_memory, march);
   stepper->set_map_dynamic_jumps_to_memory (true);
-
+  stepper->set_unknown_value_generator (this);
   current_state = NULL;
   ref_state = NULL;
   decoder = new BinutilsDecoder (march, 
 				 new RawBytesReader<Stepper>(this));
+  in_abstraction = 0;
 }
 
 template <typename Stepper> 
@@ -1933,7 +1938,9 @@ InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
   Value *newvals = new Value[len];
   Expr *cond = keep ? Constant::True () : NULL;
 
+  in_abstraction++;
   Value newval (stepper->unknown_value (8 * len));
+  in_abstraction--;
 
   for (size_t i = 0; i < len; i++) 
     {
@@ -2067,8 +2074,11 @@ InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg,
       if (mem->is_defined (areg))
 	regval = mem->get (areg);
       else 
-	regval = stepper->unknown_value (areg->get_register_size ());
-      
+	{
+	  in_abstraction++;
+	  regval = stepper->unknown_value (areg->get_register_size ());
+      	  in_abstraction--;
+	}
       val = stepper->embed_eval (regval, val, reg->get_window_offset ());
     }     
   mem->put (areg, val);
@@ -2126,8 +2136,10 @@ InsightSimulator<SymbolicStepper>::abstract_register (void *p,
 						      bool keep_in_ctx)
 {
   SymbolicStepper::State *s = (SymbolicStepper::State *) p;
+  in_abstraction++;
   SymbolicStepper::Value newval = 
     stepper->unknown_value (reg->get_window_size ());
+  in_abstraction--;
   if (check_register (p, reg) && keep_in_ctx)
     {
       SymbolicStepper::Value val = get_register_value (p, reg);
@@ -2512,6 +2524,34 @@ InsightSimulator<Stepper>::compare_states () const
   return compare_states (ref_state, current_state);
 }
 
+template <> SymbolicValue 
+InsightSimulator<SymbolicStepper>::unknown_value (int size) 
+{
+  static unsigned int unique = 0;
+  assert (current_state != NULL);
+  std::ostringstream oss;
+  MicrocodeAddress ma =
+    current_state->get_ProgramPoint ()->to_MicrocodeAddress ();
+
+  oss << (in_abstraction ? "abs" : "uv") << "_" << unique++ << "_0x" << std::hex
+      << ma.getGlobal ();
+  if (ma.getLocal () != 0)
+    oss << "_" << std::dec << ma.getLocal ();
+  oss << "_" << std::dec << size << "b";
+
+  Expr *ev = Variable::create (oss.str (), size);
+  SymbolicValue val (ev);
+  ev->deref ();
+
+  return val;
+}
+
+template <typename Stepper> typename Stepper::Value 
+InsightSimulator<Stepper>::unknown_value (int size) 
+{
+  return 
+    Stepper::Value::unknown_value_generator ()->unknown_value (size);
+}
 
 /******************************************************************************
  *
