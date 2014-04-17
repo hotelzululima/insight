@@ -209,7 +209,8 @@ public:
   virtual Option<bool> eval_condition (const Expr *e) const = 0;
   virtual Option<string> get_instruction (address_t addr);
 
-  virtual bool load_stub (const string &filename, address_t shift);
+  virtual bool load_stub (const string &filename, address_t shift,
+			  bool fold = false);
   virtual bool load_microcode (const string &filename);
   virtual bool save_microcode (const string &filename);
 
@@ -1306,11 +1307,12 @@ s_Simulator_load_stub (PyObject *self, PyObject *args)
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   const char *filename;
   unsigned long addr;
+  int fold = 0;
 
-  if (! PyArg_ParseTuple (args, "sk", &filename, &addr))
+  if (! PyArg_ParseTuple (args, "sk|i", &filename, &addr, &fold))
     return NULL;
   
-  if (S->load_stub (filename, addr))
+  if (S->load_stub (filename, addr, fold))
     return pynsight::None ();
   return NULL;
 }
@@ -1702,7 +1704,8 @@ GenericInsightSimulator::load_microcode (const string &filename)
 }
 
 bool 
-GenericInsightSimulator::load_stub (const string &filename, address_t shift)
+GenericInsightSimulator::load_stub (const string &filename, address_t shift,
+				    bool fold)
 {
   try
     {
@@ -1717,7 +1720,7 @@ GenericInsightSimulator::load_stub (const string &filename, address_t shift)
 						      filename));
 	}
 
-      mc->merge (newmc, shift);
+      mc->merge (newmc, shift, fold);
       delete newmc;
     }
   catch (XmlParserException &e)

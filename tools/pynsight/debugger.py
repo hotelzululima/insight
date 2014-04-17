@@ -880,7 +880,7 @@ def load_mc(filename):
     else:
         simulator.load_mc(filename)
 
-def load_stub(filename, addr):
+def load_stub(filename, addr, fold = False):
     """
     Load a microcode program at a given address.
 
@@ -895,12 +895,13 @@ def load_stub(filename, addr):
     Parameters:
     - filename : input filename
     - addr     : offset where the microcode is relocated
+    - fold     : whether the stub should be folded into one global address
     """
     global simulator
     if simulator is None:
         print "program is not started"
     else:
-        simulator.load_stub(filename, addr)
+        simulator.load_stub(filename, addr, fold)
 
 
 def simulation_error():

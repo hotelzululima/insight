@@ -121,7 +121,7 @@ public:
 
   void add_external(MicrocodeAddress beg, Expr *relation, MicrocodeAddress end);
 
-  void merge (const Microcode *other, address_t shift);
+  void merge (const Microcode *other, address_t shift, bool fold = false);
 
 /*****************************************************************************/
 
