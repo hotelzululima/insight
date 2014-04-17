@@ -296,18 +296,30 @@ MSP430_TRANSLATE_1_OP(SWPB) {
 }
 
 MSP430_TRANSLATE_1_OP(SXT) {
-#if 1
-  data.mc->add_skip(data.start_ma, data.next_ma);
-  op1->deref();
-#else
-  /* XXX not implemented */
-  s_translate_arithmetic_op(data, BV_OP_AND, op1, op2, (1 << MSP430_FLAG_C),
-			    true);
+  /* XXX incorrect for SXTX */
+  Expr *val = BinaryApp::create(BV_OP_EXTEND_S,
+				op1->extract_bit_vector(0, 8),
+				Constant::create(16, 0,
+						 Expr::get_bv_default_size()),
+				0, 16);
+  data.mc->add_assignment(data.start_ma,
+			  dynamic_cast<LValue *>(op1),
+			  msp430_stretch_expr_to_dest_size(op1, val->ref()));
+
+  s_update_flag(data, op1->extract_bit_vector(val->get_bv_size() - 1, 1),
+		s_flag_lvalue(data, MSP430_FLAG_N), true);
+  s_update_flag(data, BinaryApp::create(BV_OP_EQ, val->ref(),
+					Constant::zero(val->get_bv_size()),
+					0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_Z), true);
+  s_update_flag(data, Constant::zero(1), s_flag_lvalue(data, MSP430_FLAG_V),
+		true);
   s_update_flag(data, UnaryApp::create(BV_OP_NOT,
 				       s_flag_lvalue(data, MSP430_FLAG_Z),
 				       0, 1),
 		s_flag_lvalue(data, MSP430_FLAG_C), false);
-#endif
+
+  val->deref();
 }
 
 MSP430_TRANSLATE_1_OP(CLR) {
