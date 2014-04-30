@@ -128,7 +128,7 @@ public:
    * \param n node to add
    */
   /* ***************************************************/
-  virtual void add_node(Node *n) = 0;
+  //  virtual void add_node(Node *n) = 0;
 
 
   /* ***************************************************/
