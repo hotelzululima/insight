@@ -72,7 +72,7 @@ Microcode::~Microcode()
 }
 
 MicrocodeAddress 
-Microcode::entry_point ()
+Microcode::entry_point () const
 {
   return start;
 }
@@ -104,12 +104,15 @@ Microcode::get_or_create_node (MicrocodeAddress addr)
 {
   MicrocodeNode *node;
 
-  try {
-    node = get_node(addr);
-  } catch (GetNodeNotFoundExc e) {
-    node = new MicrocodeNode(addr);
-    add_node(node);
-  }
+  if (has_node_at (addr))
+    {
+      node = get_node(addr);
+    } 
+  else
+    {
+      node = new MicrocodeNode(addr);
+      add_node(node);
+    }
 
   return node;
 }

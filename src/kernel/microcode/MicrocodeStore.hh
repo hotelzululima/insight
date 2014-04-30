@@ -50,7 +50,7 @@ public:
   virtual MicrocodeNode *get_node(MicrocodeAddress addr) const = 0;
 
   /*! \brief the entry point of the program */
-  virtual MicrocodeAddress entry_point() = 0 ;
+  virtual MicrocodeAddress entry_point() const = 0 ;
 };
 
 #endif /* KERNEL_MICROCODE_MICROCODE_STORE_HH */

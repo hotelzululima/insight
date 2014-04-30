@@ -84,7 +84,7 @@ public:
   Microcode(const Microcode &prg);
   virtual ~Microcode();
 
-  MicrocodeAddress entry_point();
+  MicrocodeAddress entry_point() const;
   void set_entry_point(MicrocodeAddress addr);
 
   /*! \brief try to retrieve the node at address addr, throw
