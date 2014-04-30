@@ -155,7 +155,7 @@ s_jump_to_first_argument (MicrocodeAddress &start, Microcode *prog,
 {
   RegisterExpr *rdi = RegisterExpr::create (arch->get_register ("rdi"), 0, 64);
 
-  prog->add_jump (start, rdi->ref());
+  prog->add_jump (start, rdi);
 }
 
 static void 
