@@ -989,6 +989,29 @@ def view_mc(start=None, end=None, ep=None):
     dotviewer.set_dotcode(dotstring)
 
 
+def view_cfg(ep=None):
+    """
+    Parameters:
+    - ep    : set the entry point address
+    """
+    def reset_viewer(arg):
+        global dotviewer
+        dotviewer = None
+
+    global simulator, startpoint, dotviewer
+    if simulator is None:
+        print "Program is not started"
+        return
+    if ep is None:
+        ep = startpoint
+    dotstring = simulator.get_microcode().cfg(start = ep)
+    if dotviewer is None:
+        dotviewer = xdot.DotWindow()
+        dotviewer.connect('destroy', reset_viewer)
+        dotviewer.show()
+    dotviewer.set_dotcode(dotstring)
+
+
 def steps():
     """
     Return current simulation steps.

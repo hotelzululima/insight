@@ -44,6 +44,9 @@ analyses_sources = \
         analyses/cfgrecovery/SingleContextStateSpace.hh \
         analyses/cfgrecovery/SingleContextStateSpace.ii \
         \
+	analyses/CFG.hh \
+	analyses/CFG.cc \
+	\
 	analyses/microcode_exec.hh	\
 	analyses/microcode_exec.ii	\
 	analyses/Wp.cc			\

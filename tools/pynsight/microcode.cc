@@ -31,6 +31,7 @@
 #include "pynsight.hh"
 #include <io/microcode/asm-writer.hh>
 #include <io/microcode/dot-writer.hh>
+#include <analyses/CFG.hh>
 
 struct PyMicrocode
 {
@@ -53,6 +54,9 @@ s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyObject *
 s_PyMicrocode_get_range (PyObject *self, PyObject *);
+
+static PyObject *
+s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyTypeObject PyMicrocodeType = {
   PyObject_HEAD_INIT(NULL)
@@ -88,6 +92,8 @@ static PyMethodDef PyMicrocodeMethods[] = {
   { "dot", (PyCFunction) s_PyMicrocode_dot, METH_VARARGS|METH_KEYWORDS, 
     "\n" },
   { "get_range", (PyCFunction) s_PyMicrocode_get_range, METH_NOARGS, 
+    "\n" },
+  { "cfg", (PyCFunction) s_PyMicrocode_cfg, METH_VARARGS|METH_KEYWORDS, 
     "\n" },
   { NULL, NULL, 0, NULL }
 };
@@ -230,4 +236,36 @@ s_PyMicrocode_get_range (PyObject *self, PyObject *)
   s_microcode_addrspace (M->mc->get_microcode (), minaddr, maxaddr);
 
   return Py_BuildValue ("(k,k)", minaddr, maxaddr);
+}
+
+static PyObject *
+s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  static const char *kwlists[] =  { "start", "filename", NULL };
+  PyMicrocode *M = (PyMicrocode *) self;
+  const char *filename = NULL;
+  unsigned long addr;
+
+  if (! PyArg_ParseTupleAndKeywords (args, kwds, "k|s", (char **) kwlists,
+				     &addr, &filename))
+    return NULL;    
+
+  MicrocodeAddress ma (addr);
+  CFG *cfg = CFG::createFromMicrocode (M->mc->get_microcode (), ma);
+  PyObject *result;
+  if (filename != NULL)
+    {
+      cfg->toDot (filename);
+      result = pynsight::None ();
+    }
+  else
+    {
+      std::ostringstream oss;
+  
+      cfg->toDot (oss);
+      result = Py_BuildValue ("s", oss.str ().c_str ());
+    }
+  delete cfg;
+
+  return result;
 }
