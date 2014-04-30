@@ -374,6 +374,10 @@ BinutilsBinaryLoader::get_StubFactory () const
       if (arch->get_endian () == Architecture::LittleEndian &&
 	  arch->get_proc () == Architecture::X86_32)
 	result = BinutilsStubFactory::create_ELF_x86_32_StubFactory (abfd);
+
+      if (arch->get_endian () == Architecture::LittleEndian &&
+	  arch->get_proc () == Architecture::X86_64)
+	result = BinutilsStubFactory::create_ELF_x86_64_StubFactory (abfd);
     }
 
   return result;

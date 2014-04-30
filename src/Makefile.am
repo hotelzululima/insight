@@ -237,6 +237,7 @@ io_sources = \
 	io/binary/BinutilsStubFactory.hh 	\
 	io/binary/BinutilsStubFactory.cc 	\
 	io/binary/ELF_x86_32_StubFactory.cc 	\
+	io/binary/ELF_x86_64_StubFactory.cc 	\
         \
         io/expressions/expr-writer.hh		\
         io/expressions/expr-writer.cc		\

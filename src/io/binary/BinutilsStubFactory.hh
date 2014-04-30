@@ -45,6 +45,7 @@ public:
 			  Microcode *dest, SymbolTable *symtab) = 0;
 
   static BinutilsStubFactory *create_ELF_x86_32_StubFactory (bfd *abfd);
+  static BinutilsStubFactory *create_ELF_x86_64_StubFactory (bfd *abfd);
 };
 
 #endif /* ! BINUTILSSTUBFACTORY_HH */
