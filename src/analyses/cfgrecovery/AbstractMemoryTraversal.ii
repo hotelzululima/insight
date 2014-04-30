@@ -1,6 +1,8 @@
 #ifndef ABSTRACTMEMORYTRAVERSAL_II
 # define ABSTRACTMEMORYTRAVERSAL_II
 
+# include <kernel/annotations/StubAnnotation.hh>
+
 template<typename AlgoSpec>
 AbstractMemoryTraversal<AlgoSpec>::
  AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder, 
@@ -202,11 +204,14 @@ AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp)
   bool is_global = (ma.getLocal () == 0);
   MicrocodeNode *result = NULL;
 
-  try
+  if (program->has_node_at (ma))
     {
       result = program->get_node (ma);
 
-      if (is_global && ! result->has_annotation (AsmAnnotation::ID))
+      if (!is_global || result->has_annotation (StubAnnotation::ID))
+	return result;
+
+      if (! result->has_annotation (AsmAnnotation::ID))
 	{
 	  // result is a node added by the decoder but asm instruction at
 	  // pp.to_address () has not yet been decoded.
@@ -219,10 +224,10 @@ AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp)
 				  new NextInstAnnotation (nextma));
 	}
     }
-  catch (GetNodeNotFoundExc &)
+  else 
     {
       if (! is_global)
-	throw;
+	throw GetNodeNotFoundExc ();
       ConcreteAddress next =
 	decoder->decode (program, ConcreteAddress (ma.getGlobal ()));
       MicrocodeAddress nextma (next.get_address ());
