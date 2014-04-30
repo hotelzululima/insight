@@ -977,6 +977,7 @@ using namespace x86;
 %token  TOK_EIP              "EIP"
 %token  TOK_RIP              "RIP"
 %token  TOK_EIZ              "EIZ"
+%token  TOK_RIZ              "RIZ"
 
 %type <expr> operand register section memory_reference base_index_scale
 
@@ -1051,6 +1052,7 @@ register :
     }
 }
 | TOK_EIZ { $$ = Constant::zero(data.arch->get_word_size ()); }
+| TOK_RIZ { $$ = Constant::zero(data.arch->get_word_size ()); }
 ;
 
 immediate:

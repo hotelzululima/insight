@@ -976,6 +976,7 @@ optype    [bswlqt]
 "%eip" { return token::TOK_EIP; }
 "%rip" { return token::TOK_RIP; }
 "%eiz" { return token::TOK_EIZ; }
+"%riz" { return token::TOK_RIZ; }
 
 "%"{varname} {
                 yylval->stringValue = new string (yytext + 1);
