@@ -2307,7 +2307,7 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
   bool is_global = (ma.getLocal () == 0);
   MicrocodeNode *result = NULL;
 
-  try
+  if (mc->has_node_at (ma))
     {
       result = mc->get_node (ma);
       if (!is_global || result->has_annotation (StubAnnotation::ID))
@@ -2333,10 +2333,10 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
 				  new NextInstAnnotation (nextma));
 	}
     }
-  catch (GetNodeNotFoundExc &)
+  else
     {
       if (! is_global)
-	throw;
+	throw GetNodeNotFoundExc();
       ConcreteAddress next = decoder->decode (mc, ma.getGlobal ());
       MicrocodeAddress nextma (next.get_address ());
       result = mc->get_node (ma);
