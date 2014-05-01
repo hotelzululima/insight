@@ -34,25 +34,26 @@ Architecture_ARM::Architecture_ARM (endianness_t endianness)
   : Architecture (ARM, endianness, 32, 32)
 {
   /* Setting regular registers */
-  add_register ("r0", 32);
-  add_register ("r1", 32);
-  add_register ("r2", 32);
-  add_register ("r3", 32);
-  add_register ("r4", 32);
-  add_register ("r5", 32);
-  add_register ("r6", 32);
-  add_register ("r7", 32);
-  add_register ("r8", 32);
-  add_register ("r9", 32);
-  add_register ("r10", 32);
-  add_register ("r11", 32);
-  add_register ("r12", 32);
-  add_register ("r13", 32);
-  add_register ("r14", 32);
-  add_register ("r15", 32);
+  add_register ("r0", 32);  /* Function call argument register 1 */
+  add_register ("r1", 32);  /* Function call argument register 2 */
+  add_register ("r2", 32);  /* Function call argument register 3 */
+  add_register ("r3", 32);  /* Function call argument register 4 */
+  add_register ("r4", 32);  /* Temporary register 1 */
+  add_register ("r5", 32);  /* Temporary register 2 */
+  add_register ("r6", 32);  /* Temporary register 3 */
+  add_register ("r7", 32);  /* Temporary register 4 */
+  add_register ("r8", 32);  /* Temporary register 5 */
+  add_register ("r9", 32);  /* Temporary register 6 */
+  add_register ("r10", 32); /* Temporary register 7 */
+  add_register ("r11", 32); /* Temporary register 8 */
+  add_register ("r12", 32); /* Intra-procedure-call scratch register */
+  add_register ("r13", 32); /* Stack pointer */
+  add_register ("r14", 32); /* Link register */
+  add_register ("r15", 32); /* Program counter */
 
-  add_register ("z", 1);
-  add_register ("n", 1);
-  add_register ("c", 1);
-  add_register ("v", 1);
+  /* Setting status flags */
+  add_register ("z", 1); /* Zero flag */
+  add_register ("n", 1); /* Negative flag */
+  add_register ("c", 1); /* Carry flag */
+  add_register ("v", 1); /* Overflow flag */
 }

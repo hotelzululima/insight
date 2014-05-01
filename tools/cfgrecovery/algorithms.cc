@@ -116,6 +116,11 @@ s_generic_call (const list<ConcreteAddress >&entrypoint,
 	  memory->put (decoder->get_arch ()->get_register ("rsp"),  c);
 	  break;
 
+	case Architecture::ARM:
+	  c = Constant::create (valsp, 0, 32);
+	  memory->put (decoder->get_arch ()->get_register ("r13"),  c);
+	  break;
+
 	default:
 	  /* Do nothing */
 	  logs::warning << "warning: 'disas.simulator.init-sp'"

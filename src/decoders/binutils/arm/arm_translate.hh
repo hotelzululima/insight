@@ -44,6 +44,8 @@
 
 typedef arm::parser::token_type TokenType;
 
+#define TMPREG(_i) ("tmpr" #_i)
+
 #define ARM_TOKEN(tok) arm::parser::token:: TOK_ ## tok
 
 typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
@@ -104,15 +106,19 @@ arm_translate(arm::parser_data &data, arm::MicrocodeNodeVector *)
 #if 1
 #define DEFAULT_DATA data
 #define DEFAULT_BEHAVIOR() \
-  do { throw new Decoder::UnknownMnemonic(data.instruction); } while(0)
+  do { throw Decoder::UnknownMnemonic (data.instruction); } while(0)
 #else
-#define DEFAULT_DATA
+#define DEFAULT_DATA data
 #define DEFAULT_BEHAVIOR() \
-  do { (void)0; } while(0)
-//do { cout << data.start_ma << '\t' << data.instruction << endl; } while(0)
-
+  do { std::cout << data.instruction << std::endl; \
+    data.mc->add_skip (data.start_ma, data.next_ma); } while(0)
 #endif
 
+template<TokenType> void
+arm_translate(arm::parser_data &DEFAULT_DATA)
+{
+  DEFAULT_BEHAVIOR();
+}
 
 /*---------------1_OP-------------------------------------------------------- */
 
