@@ -60,10 +60,22 @@ s_translate_mov(msp430::parser_data &data, Expr *source, Expr *dest,
 
 static Expr *
 s_operation_semantics(msp430::parser_data &data, BinaryOp op,
-		      Expr *op1, Expr *op2, int dest_size) {
+		      Expr *op1, Expr *op2, int dest_size, Expr *op3) {
+  Expr *e;
+
   op1 = msp430_trim_source_operand(data, op1);
   op2 = msp430_trim_source_operand(data, op2);
-  return BinaryApp::create(op, op2, op1, 0, dest_size);
+  e = BinaryApp::create(op, op2, op1, 0, dest_size);
+  if (op3 != NULL) {
+    if (op3->get_bv_size() < dest_size)
+      op3 = BinaryApp::create(BV_OP_EXTEND_U, op3, 
+			      Constant::create(dest_size, 0,
+					       Expr::get_bv_default_size()),
+			      0, dest_size);
+    e = BinaryApp::create(op, e, op3);
+  }
+
+  return e;
 }
 
 static void
@@ -83,7 +95,8 @@ s_update_flag(msp430::parser_data &data, Expr *val, LValue *flag,
 static void
 s_translate_arithmetic_op(msp430::parser_data &data, BinaryOp op,
 			  Expr *source, Expr *dest, int pflags,
-			  bool leave_open, bool discard_result = false) {
+			  bool leave_open, bool discard_result = false,
+			  Expr *op3 = NULL) {
   bool update_c = !(pflags & (1 << MSP430_FLAG_C));
   bool update_n = !(pflags & (1 << MSP430_FLAG_N));
   bool update_v = !(pflags & (1 << MSP430_FLAG_V));
@@ -102,7 +115,7 @@ s_translate_arithmetic_op(msp430::parser_data &data, BinaryOp op,
 
   s_translate_mov(data,
 		  s_operation_semantics(data, op, source->ref(), dest->ref(),
-					size),
+					size, op3),
 		  tmpr->ref(),
 		  leave_open || nupdates > 0);
 
@@ -150,9 +163,22 @@ s_translate_arithmetic_op(msp430::parser_data &data, BinaryOp op,
   dest->deref();
 }
 
+MSP430_TRANSLATE_1_OP(ADC) {
+  msp430_translate<MSP430_TOKEN(ADDC)>(data, op1,
+				       Constant::zero(data.operand_size));
+}
+
 MSP430_TRANSLATE_2_OP(ADD) {
   s_translate_arithmetic_op(data, BV_OP_ADD, op1, op2, (1 << MSP430_FLAG_V),
 			    true);
+  /* XXX Compute overflow flag */
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), false);
+}
+
+MSP430_TRANSLATE_2_OP(ADDC) {
+  s_translate_arithmetic_op(data, BV_OP_ADD, op1, op2, (1 << MSP430_FLAG_V),
+			    true, false, s_flag_lvalue(data, MSP430_FLAG_C));
   /* XXX Compute overflow flag */
   s_update_flag(data, Constant::zero(1),
 		s_flag_lvalue(data, MSP430_FLAG_V), false);
@@ -255,6 +281,11 @@ MSP430_TRANSLATE_1_OP(RRC) {
   op1->deref();
 }
 
+MSP430_TRANSLATE_1_OP(SBC) {
+  msp430_translate<MSP430_TOKEN(SUBC)>(data, op1,
+				       Constant::zero(data.operand_size));
+}
+
 MSP430_TRANSLATE_0_OP(SETC) {
   s_update_flag(data, Constant::one(1),
 		s_flag_lvalue(data, MSP430_FLAG_C), false);
@@ -273,6 +304,17 @@ MSP430_TRANSLATE_0_OP(SETZ) {
 MSP430_TRANSLATE_2_OP(SUB) {
   s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
 			    true);
+  /* XXX Compute overflow flag */
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), false);
+}
+
+MSP430_TRANSLATE_2_OP(SUBC) {
+  s_translate_arithmetic_op(data, BV_OP_SUB, op1, op2, (1 << MSP430_FLAG_V),
+			    true, false,
+			    UnaryApp::create(BV_OP_NOT,
+					     s_flag_lvalue(data, MSP430_FLAG_C),
+					     0, 1));
   /* XXX Compute overflow flag */
   s_update_flag(data, Constant::zero(1),
 		s_flag_lvalue(data, MSP430_FLAG_V), false);

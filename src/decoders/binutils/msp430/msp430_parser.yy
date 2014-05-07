@@ -328,8 +328,12 @@ suffix:
 
 instruction:
   TOK_BAD { msp430_translate<MSP430_TOKEN(BAD)> (data); }
+| adc suffix operand
+  { msp430_translate<MSP430_TOKEN(ADC)> (data, $3); }
 | add suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(ADD)> (data, $3, $5); }
+| addc suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(ADDC)> (data, $3, $5); }
 | and suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(AND)> (data, $3, $5); }
 | bic suffix operand TOK_COMMA operand
@@ -394,6 +398,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(RLA)> (data, $2); }
 | rrc operand
   { msp430_translate<MSP430_TOKEN(RRC)> (data, $2); }
+| sbc suffix operand
+  { msp430_translate<MSP430_TOKEN(SBC)> (data, $3); }
 | TOK_SETC
   { msp430_translate<MSP430_TOKEN(SETC)> (data); }
 | TOK_SETN
@@ -402,16 +408,28 @@ instruction:
   { msp430_translate<MSP430_TOKEN(SETZ)> (data); }
 | sub suffix operand TOK_COMMA operand
   { msp430_translate<MSP430_TOKEN(SUB)> (data, $3, $5); }
+| subc suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(SUBC)> (data, $3, $5); }
 | swpb operand
   { msp430_translate<MSP430_TOKEN(SWPB)> (data, $2); }
 | sxt operand
   { msp430_translate<MSP430_TOKEN(SXT)> (data, $2); }
 ;
 
+adc:
+  TOK_ADC
+| TOK_ADCX { data.is_extended = 1; }
+;
+
 add:
   TOK_ADD
 | TOK_ADDA { data.operand_size = MSP430_SIZE_A; data.is_extended = 1;}
 | TOK_ADDX { data.is_extended = 1; }
+;
+
+addc:
+  TOK_ADDC
+| TOK_ADDCX { data.is_extended = 1; }
 ;
 
 and:
@@ -507,6 +525,16 @@ rla:
 rrc:
   TOK_RRC
 | TOK_RRCX { data.is_extended = 1; }
+;
+
+sbc:
+  TOK_SBC
+| TOK_SBCX { data.is_extended = 1; }
+;
+
+subc:
+  TOK_SUBC
+| TOK_SUBCX { data.is_extended = 1; }
 ;
 
 sub:
