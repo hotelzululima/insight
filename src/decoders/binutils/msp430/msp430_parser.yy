@@ -394,10 +394,14 @@ instruction:
   { msp430_translate<MSP430_TOKEN(PUSH)> (data, $3); }
 | ret
   { msp430_translate<MSP430_TOKEN(RET)> (data); }
-| rla operand
-  { msp430_translate<MSP430_TOKEN(RLA)> (data, $2); }
-| rrc operand
-  { msp430_translate<MSP430_TOKEN(RRC)> (data, $2); }
+| rla suffix operand
+  { msp430_translate<MSP430_TOKEN(RLA)> (data, $3); }
+| rlc suffix operand
+  { msp430_translate<MSP430_TOKEN(RLC)> (data, $3); }
+| rra suffix operand
+  { msp430_translate<MSP430_TOKEN(RRA)> (data, $3); }
+| rrc suffix operand
+  { msp430_translate<MSP430_TOKEN(RRC)> (data, $3); }
 | sbc suffix operand
   { msp430_translate<MSP430_TOKEN(SBC)> (data, $3); }
 | TOK_SETC
@@ -520,6 +524,16 @@ ret:
 rla:
   TOK_RLA
 | TOK_RLAX { data.is_extended = 1; }
+;
+
+rlc:
+  TOK_RLC
+| TOK_RLCX { data.is_extended = 1; }
+;
+
+rra:
+  TOK_RRA
+| TOK_RRAX { data.is_extended = 1; }
 ;
 
 rrc:

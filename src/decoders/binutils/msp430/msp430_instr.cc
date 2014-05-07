@@ -276,8 +276,57 @@ MSP430_TRANSLATE_1_OP(RLA) {
 				      op1);
 }
 
+MSP430_TRANSLATE_1_OP(RLC) {
+  msp430_translate<MSP430_TOKEN(ADDC)>(data,
+				      op1->ref(),
+				      op1);
+}
+
+MSP430_TRANSLATE_1_OP(RRA) {
+  /* Invalid for the eXtended case */
+  int size = data.operand_size;
+  s_update_flag(data, op1->extract_bit_vector(0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_C), true);
+  data.mc->add_assignment(data.start_ma,
+			  dynamic_cast<LValue *>(op1->ref()),
+			  BinaryApp::create(BV_OP_CONCAT,
+					    op1->extract_bit_vector(size-1, 1),
+					    op1->extract_bit_vector(1, size-1),
+					    0, size));
+  s_update_flag(data, op1->extract_bit_vector(size - 1, 1),
+		s_flag_lvalue(data, MSP430_FLAG_N), true);
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), true);
+  s_update_flag(data, BinaryApp::create(BV_OP_EQ, op1->ref(),
+					Constant::zero(size),
+					0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_Z),
+		false);
+  op1->deref();
+}
+
 MSP430_TRANSLATE_1_OP(RRC) {
-  data.mc->add_skip(data.start_ma, data.next_ma);
+  /* Invalid for the eXtended case */
+  LValue *tmpc = data.get_tmp_register(1);
+  int size = data.operand_size;
+  data.mc->add_assignment(data.start_ma, tmpc,
+			  s_flag_lvalue(data, MSP430_FLAG_C));
+  s_update_flag(data, op1->extract_bit_vector(0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_C), true);
+  data.mc->add_assignment(data.start_ma,
+			  dynamic_cast<LValue *>(op1->ref()),
+			  BinaryApp::create(BV_OP_CONCAT, tmpc,
+					    op1->extract_bit_vector(1, size-1),
+					    0, size));
+  s_update_flag(data, op1->extract_bit_vector(size - 1, 1),
+		s_flag_lvalue(data, MSP430_FLAG_N), true);
+  s_update_flag(data, Constant::zero(1),
+		s_flag_lvalue(data, MSP430_FLAG_V), true);
+  s_update_flag(data, BinaryApp::create(BV_OP_EQ, op1->ref(),
+					Constant::zero(size),
+					0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_Z),
+		false);
   op1->deref();
 }
 
