@@ -280,7 +280,7 @@ def step(a=0):
     arrows()
 
 
-def cont(a=0):
+def cont(a=0, show_arrows=True):
     """
     Continue simulation of the program.
 
@@ -307,7 +307,8 @@ def cont(a=0):
     except:
         simulation_error()
     exec_hooks(cont)
-    arrows()
+    if show_arrows:
+        arrows()
 
 
 def dump(addr=None, l=256, filter=None):
