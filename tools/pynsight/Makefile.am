@@ -1,10 +1,10 @@
 PYNSIGHT_PKGNAME=insight
 PYNSIGHT_HOME=$(DESTDIR)${pkgdatadir}/pynsight/
 PYNSIGHT_DESTDIR=${PYNSIGHT_HOME}/${PYNSIGHT_PKGNAME}
-PYNSIGHT_SCRIPT_FILES=__init__.py utils.py debugger.py insightdb.py xdot.py
+PYNSIGHT_SCRIPT_FILES=__init__.py utils.py debugger.py iii.py xdot.py
 
 bin_PROGRAMS = pynsight 
-bin_SCRIPTS = insightdb
+bin_SCRIPTS = iii
 
 EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES} ${bin_SCRIPTS}
 

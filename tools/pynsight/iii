@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec pynsight -3 -m insight.iii $*
+
+

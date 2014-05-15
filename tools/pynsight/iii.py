@@ -7,7 +7,7 @@ import importlib
 # change Python path to load modules from working directory
 sys.path += ['.']
 # change the prompt
-sys.ps1 = "insightdb> "
+sys.ps1 = "iii> "
 
 banner = """Insight Debugger
 Try 'help(insight.debugger)' to get information on debugger commands.
@@ -30,7 +30,7 @@ parser.add_argument('-m', '--architecture', help='enforce BFD architecture',
                     metavar="bfd-architecture-name")
 
 parser.add_argument('-c', '--init-module', help='initializaiton module',
-                    dest="initmodule", default="mydb", 
+                    dest="initmodule", default="iiiconf", 
                     required=False,
                     metavar="init-module")
 
