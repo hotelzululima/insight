@@ -30,7 +30,7 @@ parser.add_argument('-m', '--architecture', help='enforce BFD architecture',
                     metavar="bfd-architecture-name")
 
 parser.add_argument('-c', '--init-module', help='initializaiton module',
-                    dest="initmodule", default="iiiconf", 
+                    dest="initmodule", default="iiirc", 
                     required=False,
                     metavar="init-module")
 
