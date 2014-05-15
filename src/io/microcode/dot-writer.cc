@@ -88,7 +88,8 @@ s_compute_asm_nodes (const Microcode *mc,
       MicrocodeNode *n = *i;
       
       assert (! n->has_annotation (AsmAnnotation::ID) || 
-	      n->get_loc ().getLocal() == 0);
+	      n->get_loc ().getLocal() == 0 || 
+	      n->has_annotation (StubAnnotation::ID));
 
       if (start && n->get_loc ().getGlobal () < start->get_address ())
 	continue;
@@ -283,10 +284,10 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	      instn->has_annotation (StubAnnotation::ID))
 	    {	      
 	      out << setw(8) << hex << instn->get_loc ().getGlobal () << " : ";
-	      if(instn->has_annotation (AsmAnnotation::ID))
-		out << *(instn->get_annotation (AsmAnnotation::ID)) << "\\l";
-	      else 
+	      if(instn->has_annotation (StubAnnotation::ID))
 		out << *(instn->get_annotation (StubAnnotation::ID)) << "\\l";
+	      else 
+		out << *(instn->get_annotation (AsmAnnotation::ID)) << "\\l";
 	    }
 	  else
 	    out << instn->pp();
