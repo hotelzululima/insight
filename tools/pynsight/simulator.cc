@@ -51,6 +51,7 @@
 using std::vector;
 using std::list;
 using std::string;
+using std::map;
 using pynsight::Program;
 using pynsight::GenericGenerator;
 
@@ -134,10 +135,19 @@ private:
 
 typedef std::set<StopCondition *> StopConditionSet;
 
+struct CmpMicrocodeAddress
+{
+  bool operator() (const MicrocodeAddress &a1, const MicrocodeAddress &a2) const
+  {
+    return a1.lessThan (a2);
+  }
+};
+
 class GenericInsightSimulator : public pynsight::MicrocodeReference {
 public:
   typedef vector<StmtArrow *> ArrowVector;
-  
+  typedef map<MicrocodeAddress,Expr *,CmpMicrocodeAddress> AssumptionMap;
+
   class NoStateException { };
 
   GenericInsightSimulator (Program *prg);
@@ -216,6 +226,10 @@ public:
 
   virtual void *assume (void *p, const Expr *e) const = 0;
   virtual bool assume (const Expr *e);
+  virtual void add_assumption (const MicrocodeAddress &ma, const Expr *e);
+  virtual bool apply_assumption ();
+  virtual bool detach_assumption (const MicrocodeAddress &addr);
+  virtual const AssumptionMap &get_assumptions () const;
 
   virtual void set_compare_state (bool set) = 0;
   virtual GenericGenerator *compare_states () const = 0;
@@ -227,6 +241,7 @@ protected:
   MicrocodeArchitecture *march;
   ArrowVector *arrows;
   StopConditionSet *stop_conditions;
+  AssumptionMap assumptions;
 };
 
 template <typename Stepper>
@@ -415,6 +430,12 @@ static PyObject *
 s_Simulator_assume (PyObject *self, PyObject *args);
 
 static PyObject *
+s_Simulator_remove_assumption (PyObject *self, PyObject *args);
+
+static PyObject *
+s_Simulator_get_assumptions (PyObject *self, PyObject *);
+
+static PyObject *
 s_Simulator_set_compare_state (PyObject *self, PyObject *arg);
 
 static PyObject *
@@ -504,6 +525,8 @@ static PyMethodDef SimulatorMethods[] = {
    "\n" }, 
  { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" }, 
  { "assume", s_Simulator_assume, METH_VARARGS, "\n" }, 
+ { "remove_assumption", s_Simulator_remove_assumption, METH_VARARGS, "\n" }, 
+ { "get_assumptions", s_Simulator_get_assumptions, METH_NOARGS, "\n" }, 
  { "set_compare_state", s_Simulator_set_compare_state, METH_NOARGS, "\n" }, 
  { "unset_compare_state", s_Simulator_unset_compare_state, METH_NOARGS, "\n" },
  { "compare_states", s_Simulator_compare_states, METH_NOARGS, "\n" }, 
@@ -652,9 +675,12 @@ s_trigger_arrow (GenericInsightSimulator *S, StmtArrow *a)
 	  }
 	else if (! PyErr_Occurred ()) 
 	  {
-	    const StopCondition *bp = S->check_stop_conditions ();
-	    if (bp != NULL)
-	      s_StopConditionReached (bp);
+	    if (S->apply_assumption ())
+	      {
+		const StopCondition *bp = S->check_stop_conditions ();
+		if (bp != NULL)
+		  s_StopConditionReached (bp);
+	      }
 	  }
       } catch (CodeChangedException &e) {
 	s_CodeChangedException (e);
@@ -1095,7 +1121,6 @@ s_Simulator_get_breakpoints (PyObject *self, PyObject *)
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
   return pynsight::generic_generator_new (new StopConditionsIterator (S));
-
 }
 
 static PyObject *
@@ -1322,8 +1347,9 @@ s_Simulator_assume (PyObject *self, PyObject *args)
 {
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   const char *constraint;
+  unsigned long g, l = 0;
 
-  if (! PyArg_ParseTuple (args, "s", &constraint))
+  if (! PyArg_ParseTuple (args, "ks|k", &g, &constraint, &l))
     return NULL;
   
   Expr *expr = expr_parser (constraint, S->get_march ());
@@ -1335,11 +1361,77 @@ s_Simulator_assume (PyObject *self, PyObject *args)
     }
 
   PyObject *result = NULL;
-  if (S->assume (expr))    
-    result = pynsight::None ();
+  MicrocodeAddress ma (g, l);
+  S->add_assumption (ma, expr);
   expr->deref ();
 
+  if (ma.equals (S->get_pc ()))
+    {
+      if (S->apply_assumption ())
+	result = pynsight::None ();
+    }
+  else
+    {
+      result = pynsight::None ();
+    }
+
   return result;
+}
+
+static PyObject *
+s_Simulator_remove_assumption (PyObject *self, PyObject *args)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+  PyObject *result = NULL;
+  unsigned long g, l = 0;
+
+  if (PyArg_ParseTuple (args, "k|k", &g, &l))
+    {
+      MicrocodeAddress ma (g,l);
+      if (S->detach_assumption (ma))
+	result = pynsight::None ();
+      else
+	PyErr_SetString(PyExc_ValueError, "no assumption here");
+    }
+
+  return result;
+}
+
+class AssumptionsIterator : public pynsight::GenericGenerator
+{
+private:
+  GenericInsightSimulator *gsim;
+  GenericInsightSimulator::AssumptionMap::const_iterator current;
+  
+public:
+  AssumptionsIterator (GenericInsightSimulator *gsim) 
+    : gsim (gsim), current (gsim->get_assumptions ().begin ()) { }
+
+  virtual ~AssumptionsIterator () { }
+
+  PyObject *next () {
+    PyObject *result = NULL;
+    if (current == gsim->get_assumptions ().end ())
+      PyErr_SetNone (PyExc_StopIteration);
+    else
+      {
+	result = Py_BuildValue ("(k, k, s)", 
+				current->first.getGlobal (),
+				current->first.getLocal (),
+				current->second->to_string ().c_str ());
+	current++;
+      }
+
+    return result;
+  } 
+};
+
+static PyObject *
+s_Simulator_get_assumptions (PyObject *self, PyObject *)
+{
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
+
+  return pynsight::generic_generator_new (new AssumptionsIterator (S));
 }
 
 static PyObject *
@@ -1405,8 +1497,12 @@ GenericInsightSimulator::~GenericInsightSimulator ()
        i != stop_conditions->end (); i++) {
     delete (*i);
   }
-
   delete stop_conditions;  
+
+  for (AssumptionMap::iterator i = assumptions.begin (); 
+       i != assumptions.end (); i++) {
+    i->second->deref ();
+  }
 }
 
 MicrocodeArchitecture *
@@ -1762,6 +1858,43 @@ GenericInsightSimulator::assume (const Expr *e)
     }
   delete_state (s);  
   return (ns != NULL) && !PyErr_Occurred ();
+}
+
+void 
+GenericInsightSimulator::add_assumption (const MicrocodeAddress &ma, 
+					 const Expr *e)
+{
+  detach_assumption (ma);
+  assumptions[ma] = e->ref ();
+}
+
+bool 
+GenericInsightSimulator::apply_assumption ()
+{
+  MicrocodeAddress pc = get_pc ();
+  AssumptionMap::const_iterator i = assumptions.find (pc);
+
+  if (i == assumptions.end ())
+    return true;
+  return assume (i->second);
+}
+
+bool 
+GenericInsightSimulator::detach_assumption (const MicrocodeAddress &addr)
+{
+  AssumptionMap::iterator i = assumptions.find (addr);
+  if (i == assumptions.end ())
+    return false;
+  i->second->deref ();
+  assumptions.erase (i);
+
+  return true;
+}
+
+const GenericInsightSimulator::AssumptionMap &
+GenericInsightSimulator::get_assumptions () const
+{
+  return assumptions;
 }
 
 /*****************************************************************************

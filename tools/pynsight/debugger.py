@@ -544,6 +544,12 @@ def show(what):
         if "breakpoints".find(what) == 0 and simulator is not None:
             for(id, s) in simulator.get_breakpoints():
                 print id, " : {}".format(s)
+        elif "assumptions".find(what) == 0 and simulator is not None:
+            for(g, l, expr) in simulator.get_assumptions():
+                if l == 0: 
+                    print "0x{:x} : {}".format(g, expr)
+                else:
+                    print "(0x{:x},{}) : {}".format(g, l, expr)
         elif "pc".find(what) == 0:
             print "0x{:x}".format(pc())
         elif "mppc".find(what) == 0:
@@ -1206,28 +1212,45 @@ def undisplay(index):
         displayed_expressions[index:index+1] = []
     
 
-def assume(cond):
+def assume(addr, cond, l = 0):
     """
-    Conjunct the current path condition with an additional constraint.
+    Attach a Boolean constraint to a microcode address.
 
-    The effect of this function depends on the domain in use. For symbolic
-    simulation 'cond' is added to the current path condition. When using 
-    concrete domain, the condition is just checked against the current state
-    of the simulation.
-    
+    The function associates to microcode address (addr, l) the constraint 
+    'cond'. Each time the simulator encounters the given address the path
+    condition is contrained with 'cond'. 
+
     Parameters:
+    - addr : global component of the microcode address
     - cond : a string containing the constraint
+    - l : the local component of the microcode address
     """
     global simulator
     if simulator is None:
         print "program is not running"
         return
     if not isinstance(cond, str):
-        raise TypeError, "expect an expression given as a string"
+        raise TypeError, "expect an expression given as a string"        
+
     try:
-        simulator.assume(cond)
-    except ValueError:
-        print "inconsistent constraint ", cond
+        simulator.assume(addr, cond, l)
+    except:
+        simulation_error()
+
+def remove_assumption(g, l = 0):
+    """
+    Remove assumption at microcode address (g,l).
+
+    Parameters:
+    - g : global component of the microcode address
+    - l : local component of the microcode address
+    """
+    global simulator
+    if simulator is None:
+        print "program is not running"
+        return
+    try:
+        simulator.remove_assumption(g,l)
     except:
         simulation_error()
 
