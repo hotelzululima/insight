@@ -397,16 +397,17 @@ def breakpoint(g=None, l=0):
 
     if simulator is None:
         print "Program is not started."
-        return
+
     try:
         if g is None:
             g = simulator.get_pc()[0]
             l = simulator.get_pc()[1]
         bp = simulator.add_breakpoint(g, l)
         print "breakpoint set at (0x{:x},{}) with id={}.".format(g, l, bp[0])
+        return bp[0]
     except:
         simulation_error()
-
+    return None
 
 def cond(id, e=None):
     """
@@ -542,8 +543,8 @@ def show(what):
     global program, simulator
     try:
         if "breakpoints".find(what) == 0 and simulator is not None:
-            for(id, s) in simulator.get_breakpoints():
-                print id, " : {}".format(s)
+            for(id, h, s) in simulator.get_breakpoints():
+                print id, " : hits={} {}".format(h, s)
         elif "assumptions".find(what) == 0 and simulator is not None:
             for(g, l, expr) in simulator.get_assumptions():
                 if l == 0: 

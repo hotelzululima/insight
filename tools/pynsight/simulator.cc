@@ -75,14 +75,17 @@ public:
   virtual ~StopCondition ();
 
   virtual int get_id () const;
+  virtual size_t get_number_of_hits () const;
   virtual bool stop (GenericInsightSimulator *S) = 0;
   virtual void output_text (std::ostream &out) const = 0;
   virtual bool equals (const StopCondition *other) const = 0;
   virtual void reset (GenericInsightSimulator *S);
+  virtual void hit ();
 
 private:
   static int last_id;
   int id;
+  size_t hits;
 };
 
 class Breakpoint : public StopCondition
@@ -1106,7 +1109,8 @@ public:
       PyErr_SetNone (PyExc_StopIteration);
     else
       {
-	result = Py_BuildValue ("(k, s)", (*current)->get_id (),
+	result = Py_BuildValue ("(k, k, s)", (*current)->get_id (),
+				(*current)->get_number_of_hits (),
 				(*current)->to_string ().c_str ());
 	current++;
       }
@@ -2697,7 +2701,7 @@ InsightSimulator<Stepper>::unknown_value (int size)
 
 int StopCondition::last_id = 1;
 
-StopCondition::StopCondition () : id (last_id++) 
+StopCondition::StopCondition () : id (last_id++), hits (0) 
 {
 }
 
@@ -2711,9 +2715,22 @@ StopCondition::get_id () const
   return id;
 }
 
+size_t
+StopCondition::get_number_of_hits () const 
+{
+  return hits;
+}
+
 void
 StopCondition::reset (GenericInsightSimulator *)
 {
+  hits = 0;
+}
+
+void 
+StopCondition::hit ()
+{
+  hits++;
 }
 
 Breakpoint::Breakpoint (MicrocodeAddress a) 
@@ -2735,6 +2752,7 @@ Breakpoint::stop (GenericInsightSimulator *S)
   if (! pc.equals (addr))
     return false;
 
+  hit ();
   if (cond == NULL)
     return true;
 
@@ -2790,6 +2808,8 @@ Watchpoint::~Watchpoint ()
 bool 
 Watchpoint::stop (GenericInsightSimulator *S)
 {
+  hit ();
+
   Option<bool> oval = S->eval_condition (cond);
   bool val = ! oval.hasValue () || oval.getValue ();
   bool result = (val != last_value);
@@ -2817,6 +2837,7 @@ Watchpoint::equals (const StopCondition *other) const
 void
 Watchpoint::reset (GenericInsightSimulator *S) 
 {
+  this->StopCondition::reset (S);
   Option<bool> oval = S->eval_condition (cond);
   last_value = ! oval.hasValue () || oval.getValue ();
 }
@@ -2838,6 +2859,7 @@ PyWatchpoint::stop (GenericInsightSimulator *)
   PyObject *res = PyObject_CallObject (cb, NULL);
   if (res == NULL)
     return false;
+  hit ();
   bool result = (res != Py_None);
   Py_DECREF (res);
   return result;
@@ -2857,8 +2879,9 @@ PyWatchpoint::equals (const StopCondition *other) const
 }
 
 void 
-PyWatchpoint::reset (GenericInsightSimulator *)
+PyWatchpoint::reset (GenericInsightSimulator *S)
 {
+  this->StopCondition::reset (S);
 }
 
 /******************************************************************************
