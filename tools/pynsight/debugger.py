@@ -941,7 +941,7 @@ def simulation_error():
         raise 
 
 
-def view_mc(start=None, end=None, ep=None):
+def view_asm(start=None, end=None, ep=None):
     """
     Display a CFG of the microcode discovered til then.
 
@@ -997,7 +997,7 @@ def view_mc(start=None, end=None, ep=None):
     dotviewer.set_dotcode(dotstring)
 
 
-def view_cfg(ep=None):
+def view_mc(ep=None):
     """
     Parameters:
     - ep    : set the entry point address
