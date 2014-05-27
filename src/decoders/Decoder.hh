@@ -132,7 +132,8 @@ public:
 
   /* Returns the address immediately after instruction at 'addr'
    * without translating it into Microcode */
-  virtual ConcreteAddress next(const ConcreteAddress &addr) = 0;
+  virtual ConcreteAddress next(const ConcreteAddress &addr) 
+    throw (Exception) = 0;
 
   /* Set a new memory to decode */
   void set_memory(const ConcreteMemory *memory);

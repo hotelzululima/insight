@@ -35,6 +35,7 @@
 
 #include <vector>
 #include <utility>
+#include <cerrno>
 #include <cassert>
 
 #include <kernel/annotations/AsmAnnotation.hh>
@@ -58,9 +59,9 @@ static int s_binutils_sprintf(stringstream *stream, const char *format, ...);
 
 /* Custom 'read()' function for our decoders */
 static int s_binutils_read_memory(bfd_vma memaddr,
-                       bfd_byte *myaddr,
-                       unsigned int length,
-                       struct disassemble_info *info);
+				  bfd_byte *myaddr,
+				  unsigned int length,
+				  struct disassemble_info *info);
 
 /* Custom 'print_address()' function for our decoders */
 static void s_binutils_print_address(bfd_vma, struct disassemble_info *);
@@ -161,6 +162,7 @@ BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
 
 ConcreteAddress
 BinutilsDecoder::next(const ConcreteAddress &address)
+  throw (Exception)
 {
   /* Clearing out the previous decoded instruction */
   this->instr_buffer->str(string());
@@ -172,8 +174,10 @@ BinutilsDecoder::next(const ConcreteAddress &address)
   this->info->section = NULL;
 
   /* Get next instruction address */
-  size_t instr_size = (*this->disassembler_fn)(this->info->buffer_vma, 
-					       this->info);
+  int instr_size = (*this->disassembler_fn)(this->info->buffer_vma, this->info);
+
+  if (instr_size <= 0)
+    throw Decoder::OutOfBounds (address.get_address ());
 
   return ConcreteAddress(address.get_address () + instr_size);
 }
@@ -407,8 +411,14 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
   Decoder::RawBytesReader *R = 
     (Decoder::RawBytesReader *) info->application_data;
 
-  R->read_buffer (memaddr, myaddr, length);
-
+  try
+    {
+      R->read_buffer (memaddr, myaddr, length);
+    }
+  catch (Decoder::Exception)
+    {
+      return EIO;
+    }
   /* The original code was this one */
   //  memcpy(myaddr, info->buffer + octets, length);
 

@@ -66,7 +66,8 @@ public:
     throw (Exception);
 
   /* Returns the address of the next instruction */
-  virtual ConcreteAddress next(const ConcreteAddress &addr);
+  virtual ConcreteAddress next(const ConcreteAddress &addr)
+    throw (Exception);
 
   /* Returns a string with instruction's mnemonic and its arguments */
   std::string get_instruction (const ConcreteAddress &addr);
