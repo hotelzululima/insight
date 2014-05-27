@@ -2464,10 +2464,17 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
 	  // pp.to_address () has not yet been decoded.
 	  MicrocodeAddress addr = result->get_loc ();
 	  assert (addr.getLocal () == 0);
-	  ConcreteAddress next = decoder->decode (mc, addr.getGlobal ());
-	  MicrocodeAddress nextma (next.get_address ());
-	  result->add_annotation (NextInstAnnotation::ID,
-				  new NextInstAnnotation (nextma));
+	  try
+	    {
+	      ConcreteAddress next = decoder->decode (mc, addr.getGlobal ());
+	      MicrocodeAddress nextma (next.get_address ());
+	      result->add_annotation (NextInstAnnotation::ID,
+				      new NextInstAnnotation (nextma));
+	    }
+	  catch (Decoder::OutOfBounds &)
+	    {
+	      // sink node
+	    }
 	}
     }
   else
@@ -2923,12 +2930,18 @@ RawBytesReader<Stepper>::read_buffer (address_t from, uint8_t *dest,
 	  ConcreteValue cval = 
 	    stepper->value_to_ConcreteValue (s->get_Context (), val, 
 					     &is_unique);
-	  if (! is_unique)
-	    throw AbstractCodeException (from + i);
+	  if (! is_unique) 
+	    {
+	      simulator->delete_state (s);
+	      throw AbstractCodeException (from + i);
+	    }
 	  dest[i] = cval.get ();
-	}
+	}      
       else
-	throw Decoder::OutOfBounds (from + i);
+	{
+	  simulator->delete_state (s);
+	  throw Decoder::OutOfBounds (from + i);
+	}  
     }
   simulator->delete_state (s);
 }
