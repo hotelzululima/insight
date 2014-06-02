@@ -453,7 +453,6 @@ AC_CONFIG_FILES([
 	tools/Makefile
 	tools/cfgrecovery/Makefile
 	tools/cfgrecovery/doc/cfgrecovery.1
-	tools/mine/Makefile
 	tools/pynsight/Makefile
 ], [ ], [ ])
 
