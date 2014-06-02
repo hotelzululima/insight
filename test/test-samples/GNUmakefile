@@ -32,6 +32,7 @@ X86_32_OBJECTS= \
   \
   x86_32-misc.bin \
   x86_32-misc-02.bin \
+  x86_32-misc-03.bin \
   x86_32-mov.bin \
   x86_32-movbe.bin \
   x86_32-movs.bin \

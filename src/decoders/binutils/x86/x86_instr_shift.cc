@@ -143,36 +143,41 @@ X86_TRANSLATE_2_OP(SHR)
 
 			/* --------------- */
 
-#define translate_shift_one_bit(op) \
+#define translate_shift_one_bit_default(op) \
 X86_TRANSLATE_1_OP(op) \
 { x86_translate<X86_TOKEN(op)> (data, Constant::one (data.arch->get_word_size ()), op1); }
+#define translate_shift_one_bit(op,szc,sz)	\
+X86_TRANSLATE_1_OP(op ## szc) \
+{ \
+  Expr::extract_bit_vector (op1, 0, sz);		\
+  x86_translate<X86_TOKEN(op)> (data, \
+				  Constant::one (data.arch->get_word_size ()), \
+				op1); \
+}
 
 
-translate_shift_one_bit (SAL)
-translate_shift_one_bit (SALB)
-translate_shift_one_bit (SALL)
-translate_shift_one_bit (SALW)
-translate_shift_one_bit (SAR)
-translate_shift_one_bit (SARB)
-translate_shift_one_bit (SARL)
-translate_shift_one_bit (SARW)
-translate_shift_one_bit (SHL)
-translate_shift_one_bit (SHLB)
-translate_shift_one_bit (SHLL)
-translate_shift_one_bit (SHLW)
-translate_shift_one_bit (SHR)
-translate_shift_one_bit (SHRB)
-translate_shift_one_bit (SHRL)
-translate_shift_one_bit (SHRW)
+translate_shift_one_bit_default (SAL)
+translate_shift_one_bit (SAL,B,8)
+translate_shift_one_bit (SAL,W,16)
+translate_shift_one_bit (SAL,L,32)
+translate_shift_one_bit_default (SAR)
+translate_shift_one_bit (SAR,B,8)
+translate_shift_one_bit (SAR,W,16)
+translate_shift_one_bit (SAR,L,32)
+translate_shift_one_bit_default (SHL)
+translate_shift_one_bit (SHL,B,8)
+translate_shift_one_bit (SHL,W,16)
+translate_shift_one_bit (SHL,L,32)
+translate_shift_one_bit_default (SHR)
+translate_shift_one_bit (SHR,B,8)
+translate_shift_one_bit (SHR,W,16)
+translate_shift_one_bit (SHR,L,32)
 
 #define translate_shift_two_args(op,szc,sz)				\
 X86_TRANSLATE_2_OP(op ## szc)					\
 {									\
-  Expr *aux = TernaryApp::create (BV_OP_EXTRACT, op1,			\
-				  Constant::zero (op2->get_bv_size ()), \
- 				  Constant::create (op2->get_bv_size (), 0, \
-				 		    data.arch->get_word_size ())); \
-  x86_translate<X86_TOKEN(op)> (data, aux, op2); \
+  Expr::extract_bit_vector (op2, 0, sz); \
+  x86_translate<X86_TOKEN(op)> (data, op1, op2); \
 }
 
 translate_shift_two_args(SAL,B,8)
