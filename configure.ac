@@ -232,12 +232,12 @@ fi
 have_libgmp=no
 AC_SEARCH_LIBS([__gmp_version], [gmp],
 	       [have_libgmp=yes],
-	       [AC_MSG_WARN(['mathsat' library (-lmathsat) cannot be found])])
+	       [AC_MSG_WARN([Cannot link with 'gmp' library (-lgmp)])])
 
 have_libmathsat=no
 AC_SEARCH_LIBS([msat_get_version], [mathsat],
 	       [have_libmathsat=yes],
-	       [AC_MSG_WARN(['mathsat' library (-lmathsat) cannot be found])])
+	       [AC_MSG_WARN([Cannot link with 'mathsat' library (-lmathsat)])])
 
 have_mathsat_h=no
 AC_CHECK_HEADERS([mathsat.h],
@@ -453,6 +453,7 @@ AC_CONFIG_FILES([
 	tools/Makefile
 	tools/cfgrecovery/Makefile
 	tools/cfgrecovery/doc/cfgrecovery.1
+	tools/mine/Makefile
 	tools/pynsight/Makefile
 ], [ ], [ ])
 
