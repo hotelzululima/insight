@@ -59,13 +59,13 @@
 using namespace std;
 
 #define OUTPUT_FORMATS \
-  FORMAT(OF_ASM, "asm", "assembler code", ".asm") \
-  FORMAT(OF_ASM_DOT, "asm-dot", "assembler code on a dot graph", ".asm.dot") \
-  FORMAT(OF_MC, "mc", "microcode", ".mc") \
-  FORMAT(OF_MC_DOT, "mc-dot", "microcode on a dot graph", ".mc.dot") \
-  FORMAT(OF_XML, "mc-xml", "microcode in XML format", ".mc.xml")
+  FORMAT(OF_ASM, "asm", "assembler code") \
+  FORMAT(OF_ASM_DOT, "asm-dot", "assembler code on a dot graph") \
+  FORMAT(OF_MC, "mc", "microcode") \
+  FORMAT(OF_MC_DOT, "mc-dot", "microcode on a dot graph") \
+  FORMAT(OF_XML, "mc-xml", "microcode in XML format")
 
-#define FORMAT(id,name,desc,ext) id,
+#define FORMAT(id,name,desc) id,
 enum OutputFormatID  { OUTPUT_FORMATS OF_UNKNOWN };
 #undef FORMAT
 
@@ -73,13 +73,12 @@ struct OutputFormat {
   OutputFormatID id;
   const char *name;
   const char *desc;
-  const char *extension;
 };
 
-#define FORMAT(id,name,desc,ext) { id, name, desc, ext },
+#define FORMAT(id,name,desc) { id, name, desc },
 static const OutputFormat FORMATS[] = {
   OUTPUT_FORMATS
-  FORMAT(OF_UNKNOWN, NULL, NULL, NULL)
+  FORMAT(OF_UNKNOWN, NULL, NULL)
 };
 #undef FORMAT
 
@@ -759,7 +758,7 @@ main (int argc, char *argv[])
 	   i != output_formats.end (); i++)
 	{
 	  ostringstream oss;
-	  oss << output_filename << (*i)->extension;
+	  oss << output_filename;
 	  string filename = oss.str ();
 	  ofstream output (filename.c_str ());
 	  if (! output.is_open ())
