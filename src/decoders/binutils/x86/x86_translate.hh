@@ -102,7 +102,7 @@ x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1)
 template<TokenType> void
 x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2)
 {
-  try { DEFAULT_BEHAVIOR(); } 
+  try { DEFAULT_BEHAVIOR(); }
   catch(...) {
     op1->deref ();
     op2->deref ();
@@ -118,7 +118,7 @@ x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2)
 /* --------------- */
 
 template<TokenType> void
-x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2, 
+x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
 		 Expr *op3)
 {
   try { DEFAULT_BEHAVIOR(); }
@@ -138,7 +138,7 @@ x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
 /* --------------- */
 
 template<TokenType> void
-x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2, 
+x86_translate(x86::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
 		 Expr *op3, Expr *op4)
 {
   try {  DEFAULT_BEHAVIOR(); }
@@ -162,108 +162,108 @@ LValue *x86_translate_esp(x86::parser_data &data);
 
 			/* --------------- */
 
-void 
+void
 x86_skip (x86::parser_data &data);
 
 
-void 
+void
 x86_set_operands_size (Expr *&dst, Expr *&src);
 
 
-typedef void 
-x86_compute_flag_proc (MicrocodeAddress &, x86::parser_data &, 
+typedef void
+x86_compute_flag_proc (MicrocodeAddress &, x86::parser_data &,
 			  const Expr *value, MicrocodeAddress *);
 
-void 
-x86_assign_flag (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_flag (MicrocodeAddress &from, x86::parser_data &data,
 		    const char *flag, bool value, MicrocodeAddress *to = NULL);
 
 			/* --------------- */
 
-void 
-x86_set_flag (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_set_flag (MicrocodeAddress &from, x86::parser_data &data,
 		 const char *flag, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_flag (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_flag (MicrocodeAddress &from, x86::parser_data &data,
 		   const char *flag, MicrocodeAddress *to = NULL);
 
 			/* --------------- */
 
-void 
-x86_reset_flags (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_flags (MicrocodeAddress &from, x86::parser_data &data,
 		    const char **flags, MicrocodeAddress *to = NULL);
 
-void 
-x86_assign_AF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_AF (MicrocodeAddress &from, x86::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-x86_compute_AF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_compute_AF (MicrocodeAddress &from, x86::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_AF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_AF (MicrocodeAddress &from, x86::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-x86_compute_CF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_compute_CF (MicrocodeAddress &from, x86::parser_data &data,
 		   Expr *dst, Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-x86_assign_CF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_CF (MicrocodeAddress &from, x86::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_CF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_CF (MicrocodeAddress &from, x86::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-x86_compute_OF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_compute_OF (MicrocodeAddress &from, x86::parser_data &data,
 		   Expr *dst, Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-x86_assign_OF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_OF (MicrocodeAddress &from, x86::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_OF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_OF (MicrocodeAddress &from, x86::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-x86_assign_PF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_PF (MicrocodeAddress &from, x86::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-x86_compute_PF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_compute_PF (MicrocodeAddress &from, x86::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_PF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_PF (MicrocodeAddress &from, x86::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-x86_assign_SF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_SF (MicrocodeAddress &from, x86::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-x86_compute_SF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_compute_SF (MicrocodeAddress &from, x86::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_SF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_SF (MicrocodeAddress &from, x86::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-x86_assign_ZF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_assign_ZF (MicrocodeAddress &from, x86::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-x86_compute_ZF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_compute_ZF (MicrocodeAddress &from, x86::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-x86_reset_ZF (MicrocodeAddress &from, x86::parser_data &data, 
+void
+x86_reset_ZF (MicrocodeAddress &from, x86::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
 void
@@ -285,13 +285,13 @@ x86_translate_with_size (x86::parser_data &data,
 			    Expr *op1, int size,
 			    void (*tr) (x86::parser_data &, Expr *));
 
-void 
+void
 x86_if_then_else (MicrocodeAddress start, x86::parser_data &data,
 		     Expr *cond,
 		     MicrocodeAddress ifaddr, MicrocodeAddress elseaddr);
 
 void
-x86_cmpgen (MicrocodeAddress &from, x86::parser_data &data, 
+x86_cmpgen (MicrocodeAddress &from, x86::parser_data &data,
 	       Expr *op1, Expr *op2, MicrocodeAddress *to);
 
 #include "x86_translation_functions.hh"

@@ -3,20 +3,20 @@
 
 template <typename CTX, typename PP>
 AbstractDomainStepper<CTX,PP>::AbstractDomainStepper (const Architecture *arch)
-  : arch (arch), unkgen (Value::unknown_value_generator ()), 
-    map_dynamic_jumps_to_memory (false), 
-    dynamic_jump_threshold (10) 
-{ 
+  : arch (arch), unkgen (Value::unknown_value_generator ()),
+    map_dynamic_jumps_to_memory (false),
+    dynamic_jump_threshold (10)
+{
 }
 
 template <typename CTX, typename PP>
-AbstractDomainStepper<CTX,PP>::~AbstractDomainStepper () 
-{ 
+AbstractDomainStepper<CTX,PP>::~AbstractDomainStepper ()
+{
 }
 
 template <typename CTX, typename PP>
 typename AbstractDomainStepper<CTX,PP>::State *
-AbstractDomainStepper<CTX,PP>::restrict_state_to_condition (const State *s, 
+AbstractDomainStepper<CTX,PP>::restrict_state_to_condition (const State *s,
 							    const Expr *cond)
 {
   Context *newctx = restrict_to_condition (s->get_Context (), cond);
@@ -30,26 +30,26 @@ AbstractDomainStepper<CTX,PP>::restrict_state_to_condition (const State *s,
 template <typename CTX, typename PP>
 void AbstractDomainStepper<CTX,PP>::destroy_state_set (StateSet *s)
 {
-  for (typename StateSet::iterator i = s->begin(); i != s->end (); i++) 
+  for (typename StateSet::iterator i = s->begin(); i != s->end (); i++)
     (*i)->deref ();
   delete s;
 }
 
 template <typename CTX, typename PP>
 typename AbstractDomainStepper<CTX,PP>::StateSet *
-AbstractDomainStepper<CTX,PP>::get_successors (const State *s, 
-					       const StmtArrow *arrow) 
+AbstractDomainStepper<CTX,PP>::get_successors (const State *s,
+					       const StmtArrow *arrow)
   throw (UndefinedValueException)
 {
-  StateSet *result = new StateSet ();      
-  Context *newctx = restrict_to_condition (s->get_Context (), 
+  StateSet *result = new StateSet ();
+  Context *newctx = restrict_to_condition (s->get_Context (),
 					   arrow->get_condition ());
-  
+
   if (newctx == NULL)
     return result;
-  
+
   ProgramPoint *from = s->get_ProgramPoint ();
-      
+
   try
     {
       if (arrow->is_static ())
@@ -64,13 +64,13 @@ AbstractDomainStepper<CTX,PP>::get_successors (const State *s,
 	{
 	  DynamicArrow *da = (DynamicArrow *) arrow;
 	  Expr *addr = da->get_target ();
-	  
+
 	  assert (! da->get_stmt()->is_Assignment ());
-	  
+
 	  Value vaddr = eval (newctx, addr);
-	  std::vector<address_t> *targets = 
+	  std::vector<address_t> *targets =
 	    value_to_concrete_addresses (newctx, vaddr);
-	  
+
 	  for (size_t i = 0; i < targets->size (); i++)
 	    {
 	      MicrocodeAddress tgt (targets->at(i));
@@ -79,43 +79,43 @@ AbstractDomainStepper<CTX,PP>::get_successors (const State *s,
 	      newctx->ref ();
 	    }
 	  newctx->deref ();
-	  delete targets;	    
+	  delete targets;
 	}
     }
   catch (UndefinedValueException &e)
     {
       delete newctx;
-      for (typename StateSet::iterator i = result->begin (); 
+      for (typename StateSet::iterator i = result->begin ();
 	   i != result->end (); i++)
 	(*i)->deref ();
       delete result;
       throw;
     }
-  
+
   return result;
 }
 
 template <typename CTX, typename PP>
-void 
+void
 AbstractDomainStepper<CTX,PP>::
-  set_map_dynamic_jumps_to_memory (bool value) 
+  set_map_dynamic_jumps_to_memory (bool value)
 {
   map_dynamic_jumps_to_memory = value;
 }
-    
+
 template <typename CTX, typename PP>
-void 
+void
 AbstractDomainStepper<CTX,PP>::set_dynamic_jump_threshold (int value)
 {
   dynamic_jump_threshold = value;
 }
 
 template <typename CTX, typename PP>
-void 
+void
 AbstractDomainStepper<CTX,PP>::exec (Context *newctx, const Statement *st)
 {
   assert (newctx != NULL);
-  
+
   const Assignment *assign = dynamic_cast<const Assignment *> (st);
   if (assign == NULL)
     return;
@@ -124,7 +124,7 @@ AbstractDomainStepper<CTX,PP>::exec (Context *newctx, const Statement *st)
 
   if (assign->get_lval()->is_MemCell())
     {
-      const MemCell *cell = 
+      const MemCell *cell =
 	dynamic_cast<const MemCell *> (assign->get_lval());
 
       assert (cell->get_bv_offset () == 0);
@@ -146,32 +146,32 @@ AbstractDomainStepper<CTX,PP>::exec (Context *newctx, const Statement *st)
 	{
 	  if (memory->is_defined (rdesc))
 	    regval = memory->get (rdesc);
-	  else 
+	  else
 	    regval = unkgen->unknown_value (rdesc->get_window_size ());
 
 	  v = embed_eval (regval, v, reg->get_bv_offset());
-	}     
+	}
       memory->put (rdesc, v);
     }
 }
 
-template <typename CTX, typename PP> 
-typename AbstractDomainStepper<CTX,PP>::Value 
+template <typename CTX, typename PP>
+typename AbstractDomainStepper<CTX,PP>::Value
 AbstractDomainStepper<CTX,PP>::unknown_value (int size)
 {
   return unkgen->unknown_value (size);
 }
 
-template <typename CTX, typename PP> 
+template <typename CTX, typename PP>
 typename AbstractDomainStepper<CTX,PP>::UnknownGenerator *
 AbstractDomainStepper<CTX,PP>::get_unknown_value_generator ()
 {
   return unkgen;
 }
 
-template <typename CTX, typename PP> 
-void 
-AbstractDomainStepper<CTX,PP>::set_unknown_value_generator 
+template <typename CTX, typename PP>
+void
+AbstractDomainStepper<CTX,PP>::set_unknown_value_generator
 (typename AbstractDomainStepper<CTX,PP>::UnknownGenerator *gen)
 {
   assert (gen != NULL);

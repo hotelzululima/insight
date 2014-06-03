@@ -29,7 +29,7 @@
  */
 
 #include "sparc_translation_functions.hh"
- 
+
 using namespace std;
 
 /* TODO */

@@ -49,7 +49,7 @@
   typename Semantics,     \
   typename Memory,        \
   typename ProgramPoint>  \
-   
+
 #define TEMPLATE_ARGS Address,Value,Semantics,Memory,ProgramPoint
 
 /*****************************************************************************/
@@ -237,13 +237,13 @@ public:
 
   /*! \brief Constructor */
   PendingArrow(ProgramPoint pp, StmtArrow *arr, PendingArrowStatus st) :
-    status(st), pp(pp), arr(arr) 
+    status(st), pp(pp), arr(arr)
   {
   }
 
   /*! \brief Copy constructor */
   PendingArrow(const PendingArrow &pa) :
-    status(pa.status), pp(pa.pp), arr(pa.arr) 
+    status(pa.status), pp(pa.pp), arr(pa.arr)
   {
   }
 
@@ -287,8 +287,8 @@ public:  /*! \todo : should be private */
 
   /*! \brief The map associating a context to program points. This map
       is filled step by step during the interpretation. */
-  typedef typename   
-  std::map<ProgramPoint, AbstractContext<TEMPLATE_ARGS> *, 
+  typedef typename
+  std::map<ProgramPoint, AbstractContext<TEMPLATE_ARGS> *,
 	   LessThanFunctor<ProgramPoint> > ExecMap;
   ExecMap exec_map;
 
@@ -297,7 +297,7 @@ public:  /*! \todo : should be private */
       added or merged (returning true) at a given program point, then
       one adds to this list the outgoing arrows. A pending arrow may
       have several status (see PendingArrow class for documentation) */
-  typedef typename   
+  typedef typename
   std::list< PendingArrow<TEMPLATE_ARGS> > PendingArrows;
 
   PendingArrows pending_arrows;

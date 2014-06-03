@@ -52,7 +52,7 @@ namespace pynsight {
     bool (*init_cb) ();
     bool (*terminate_cb) ();
   };
-  
+
   struct Program {
     PyObject_HEAD
     BinaryLoader *loader;
@@ -65,8 +65,8 @@ namespace pynsight {
     virtual const Microcode *get_microcode () const = 0;
   };
 
-  extern PyObject *load_program (const char *filename, const char *target, 
-				 const char *mach, 
+  extern PyObject *load_program (const char *filename, const char *target,
+				 const char *mach,
 				 Architecture::endianness_t endianness);
 
   enum SimulationDomain {
@@ -81,7 +81,7 @@ namespace pynsight {
 
   extern ConfigTable &configTable ();
 
-  extern PyObject *microcode_object (Program *prog, 
+  extern PyObject *microcode_object (Program *prog,
 				     const MicrocodeReference *mc);
 
   /* Exceptions & Errors */
@@ -94,7 +94,7 @@ namespace pynsight {
   PYNSIGHT_EXC(SinkNodeReached)			\
   PYNSIGHT_EXC(ConcretizationException)		\
   PYNSIGHT_EXC(SimulationNotStartedException)   \
-  PYNSIGHT_EXC(JumpToInvalidAddress) 
+  PYNSIGHT_EXC(JumpToInvalidAddress)
 
 # define PYNSIGHT_EXC(e) extern PyObject *e;
   PYNSIGHT_EXCEPTIONS

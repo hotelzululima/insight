@@ -50,11 +50,11 @@ public:
   /*! \todo : constructeur de copy ? */
 
 
-  virtual IntervalValue get(const IntervalAddress &a, int size, 
+  virtual IntervalValue get(const IntervalAddress &a, int size,
 			    Architecture::endianness_t e) const
     throw (UndefinedValueException);
 
-  virtual void put(const IntervalAddress &a, const IntervalValue &v, 
+  virtual void put(const IntervalAddress &a, const IntervalValue &v,
 		   Architecture::endianness_t e);
   virtual bool is_defined(const IntervalAddress &a) const;
 

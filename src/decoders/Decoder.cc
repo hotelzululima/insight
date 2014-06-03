@@ -30,7 +30,7 @@
 
 #include "Decoder.hh"
 
-class ConcreteMemoryReader : public Decoder::RawBytesReader 
+class ConcreteMemoryReader : public Decoder::RawBytesReader
 {
 public:
   ConcreteMemoryReader (const ConcreteMemory *M);
@@ -45,7 +45,7 @@ private:
 };
 
 Decoder::Decoder(MicrocodeArchitecture *arch, const ConcreteMemory *memory)
-  : reader (new ConcreteMemoryReader (memory)), arch (arch)                
+  : reader (new ConcreteMemoryReader (memory)), arch (arch)
 {
 }
 
@@ -59,7 +59,7 @@ Decoder::~Decoder()
   delete reader;
 }
 
-void 
+void
 Decoder::set_memory (const ConcreteMemory *memory)
 {
   if (reader != NULL)
@@ -82,7 +82,7 @@ ConcreteMemoryReader::~ConcreteMemoryReader ()
 {
 }
 
-void 
+void
 ConcreteMemoryReader::read_buffer (address_t from, uint8_t *dest, size_t length)
   throw (Decoder::Exception)
 {

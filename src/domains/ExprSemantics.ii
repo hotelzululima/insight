@@ -48,18 +48,18 @@ expr_semantics_embed_eval(Value v1, Value v2, int off) {
       Value vmask (v1_size, mask << off);
 
       // reset window into v1
-      Value tmp0 = 
+      Value tmp0 =
 	ExprSem::BV_OP_AND_eval(v1,
 				ExprSem::BV_OP_NOT_eval(vmask, 0, v1_size),
 				0, v1_size);
 
       // extend v2 to the size of v1
       Value v2aux =
-	ExprSem::BV_OP_EXTEND_U_eval (v2, 
-				      Value (BV_DEFAULT_SIZE, v1_size), 
+	ExprSem::BV_OP_EXTEND_U_eval (v2,
+				      Value (BV_DEFAULT_SIZE, v1_size),
 				      0, v1_size);
-				      
-      Value tmp1 = 
+
+      Value tmp1 =
 	ExprSem::BV_OP_LSH_eval (v2aux, Value (v1_size, off), 0, v1_size);
 
       res = ExprSem::BV_OP_OR_eval (tmp0, tmp1, 0, v1_size);
@@ -68,7 +68,7 @@ expr_semantics_embed_eval(Value v1, Value v2, int off) {
 }
 
 template<typename Value, typename ExprSem>
-Value 
+Value
 expr_semantics_extract_eval (Value v, int off, int size)
 {
   assert (v.get_size () >= size);

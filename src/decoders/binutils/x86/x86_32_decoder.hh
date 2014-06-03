@@ -39,7 +39,7 @@
 
 /* Decoding function for x86-32 architecture */
 bool
-x86_32_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
+x86_32_decoder_func(MicrocodeArchitecture *arch, Microcode *mc,
 		    const std::string &instruction,
                     const ConcreteAddress &start,
                     const ConcreteAddress &next);

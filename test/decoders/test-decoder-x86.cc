@@ -37,7 +37,7 @@
 
 using namespace std;
 
-int 
+int
 main (int argc, char **argv)
 {
   int result = EXIT_SUCCESS;
@@ -51,7 +51,7 @@ main (int argc, char **argv)
   if (argc != 3)
     {
       logs::error << "wrong # of arguments" << endl
-		  << "USAGE: " << argv[0] << " bfd-target binary-filename" 
+		  << "USAGE: " << argv[0] << " bfd-target binary-filename"
 		  << endl;
       result = EXIT_FAILURE;
     }
@@ -60,7 +60,7 @@ main (int argc, char **argv)
       const char *target = argv[1];
       const char *filename = argv[2];
       BinaryLoader *loader =
-	new BinutilsBinaryLoader (filename, target, "", 
+	new BinutilsBinaryLoader (filename, target, "",
 				  Architecture::UnknownEndian);
       ConcreteMemory *memory = new ConcreteMemory ();
       loader->load_memory (memory);
@@ -71,11 +71,11 @@ main (int argc, char **argv)
       while (memory->is_defined (start) && result == EXIT_SUCCESS)
 	{
 	  Microcode *mc = new Microcode ();
-	  
+
 	  try
 	    {
-	      logs::display << "**** Decode instruction: " 
-			   << decoder->get_instruction (start) 
+	      logs::display << "**** Decode instruction: "
+			   << decoder->get_instruction (start)
 			   << endl;
 	      start = decoder->decode (mc, start);
 
@@ -88,7 +88,7 @@ main (int argc, char **argv)
 	      logs::error << e.what() << endl;
 	      result = EXIT_FAILURE;
 	    }
-	  
+
 	  delete mc;
 	}
 

@@ -34,20 +34,20 @@
 # include <utils/ConfigTable.hh>
 # include <config.h>
 
-namespace logs 
+namespace logs
 {
   class Listener {
   public:
     virtual ~Listener () { }
     virtual void error (const std::string &) { }
     virtual void warning (const std::string &) { }
-    virtual void display (const std::string &) { } 
-    virtual void debug (const std::string &, int) { } 
+    virtual void display (const std::string &) { }
+    virtual void debug (const std::string &, int) { }
   };
 
 
   extern bool debug_is_on;
-  
+
   extern std::string DEBUG_ENABLED_PROP;
   extern std::string STDIO_ENABLED_PROP;
   extern std::string STDIO_ENABLE_WARNINGS_PROP;
@@ -60,7 +60,7 @@ namespace logs
    * logs.stdio.enabled:
    *   if true then a default listener based on standard streams is set using
    *   add_listener.
-   * 
+   *
    * logs.stdio.enable-warnings:
    *   if true then warning message are displayed.
    *
@@ -68,11 +68,11 @@ namespace logs
    *   debug_is_on variable is assign the value of this property
    *
    * logs.stdio.debug.is_cerr:
-   *   if true then std::cerr stream is used for the debug stream instead of 
+   *   if true then std::cerr stream is used for the debug stream instead of
    *   std::cout.
-   * 
+   *
    * logs.stdio.debug.maxlevel:
-   *   set the maximal output level for debug stream; if the maxlevel is not 
+   *   set the maximal output level for debug stream; if the maxlevel is not
    *   set or is negative then no limit is positioned.
    */
   extern void init (const ConfigTable &cfg);

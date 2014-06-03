@@ -29,16 +29,16 @@
  */
 
 #include "x86_translation_functions.hh"
- 
+
 using namespace std;
 
 static void
-s_jcc (MicrocodeAddress &from, x86::parser_data &data, 
+s_jcc (MicrocodeAddress &from, x86::parser_data &data,
        Expr *jmp, Expr *cond, MicrocodeAddress *to = NULL)
 {
-  MemCell *mc = dynamic_cast<MemCell *> (jmp);  
+  MemCell *mc = dynamic_cast<MemCell *> (jmp);
   assert (mc != NULL);
-  Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());  
+  Constant *cst = dynamic_cast<Constant *> (mc->get_addr ());
   MicrocodeAddress last_addr = to ? *to : (from + 2);
 
   assert (cst != NULL);
@@ -47,7 +47,7 @@ s_jcc (MicrocodeAddress &from, x86::parser_data &data,
   Expr *notcond = NULL;
   if (cond->is_UnaryApp ())
     {
-      UnaryApp *ua = dynamic_cast<UnaryApp *> (cond);  
+      UnaryApp *ua = dynamic_cast<UnaryApp *> (cond);
       if (ua->get_op () == BV_OP_NOT)
 	notcond = ua->get_arg1 ()->ref ();
     }
@@ -70,29 +70,29 @@ s_jcc (MicrocodeAddress &from, x86::parser_data &data,
 
 X86_TRANSLATE_1_OP(JC)
 {
-  s_jcc (data.start_ma, data, op1, data.get_flag ("cf"), &data.next_ma); 
+  s_jcc (data.start_ma, data, op1, data.get_flag ("cf"), &data.next_ma);
 }
 
 X86_TRANSLATE_1_OP(JCXZ)
 {
-  s_jcc (data.start_ma, data, op1, 
-	 BinaryApp::createEquality (data.get_register ("cx"), 
+  s_jcc (data.start_ma, data, op1,
+	 BinaryApp::createEquality (data.get_register ("cx"),
 				    Constant::zero (16)),
-	 &data.next_ma); 
+	 &data.next_ma);
 }
 
 X86_TRANSLATE_1_OP(JECXZ)
 {
-  s_jcc (data.start_ma, data, op1, 
-	 BinaryApp::createEquality (data.get_register ("ecx"), 
+  s_jcc (data.start_ma, data, op1,
+	 BinaryApp::createEquality (data.get_register ("ecx"),
 				    Constant::zero (32)),
-	 &data.next_ma); 
+	 &data.next_ma);
 }
 
 X86_TRANSLATE_1_OP (JMP)
 {
-  MemCell *mc = dynamic_cast<MemCell *> (op1);  
-  
+  MemCell *mc = dynamic_cast<MemCell *> (op1);
+
   Expr *addr = (mc == NULL)  ? op1->ref () : mc->get_addr ()->ref ();
 
   if (addr->is_Constant ())
@@ -100,7 +100,7 @@ X86_TRANSLATE_1_OP (JMP)
       Constant *cst = dynamic_cast<Constant *> (addr);
       data.mc->add_skip (data.start_ma, MicrocodeAddress (cst->get_val ()));
     }
-  else 
+  else
     {
       data.mc->add_jump (data.start_ma, addr->ref ());
     }

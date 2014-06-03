@@ -57,8 +57,8 @@ template<> void arm_translate<ARM_TOKEN(B_OR_BYTE_SUFFIX)> (arm::parser_data &da
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
-  data.mc->add_assignment(data.start_ma, (RegisterExpr*) r15, 
-			  Constant::create(label, 0, r15->get_bv_size ()), 
+  data.mc->add_assignment(data.start_ma, (RegisterExpr*) r15,
+			  Constant::create(label, 0, r15->get_bv_size ()),
 			  data.next_ma, guard);
 }
 
@@ -69,10 +69,10 @@ template<> void arm_translate<ARM_TOKEN(BL)> (arm::parser_data &data,
 
   Expr* guard = data.arm_compute_cond_expr(*cond);
 
-  data.mc->add_assignment(data.start_ma, r14, BinaryApp::create (BV_OP_SUB, 
+  data.mc->add_assignment(data.start_ma, r14, BinaryApp::create (BV_OP_SUB,
 								 r15, 4));
   data.mc->add_assignment(data.start_ma, (RegisterExpr*) r15->ref(),
-			  Constant::create(label, 0, r15->get_bv_size ()), 
+			  Constant::create(label, 0, r15->get_bv_size ()),
 			  data.next_ma, guard);
 }
 

@@ -77,27 +77,27 @@ X86_TRANSLATE_2_OP(ENTER)
   int nl = nesting_level->get_val () % 32;
   if (nl > 1)
     {
-      Constant *dec = Constant::create (operand_size >> 3, 
+      Constant *dec = Constant::create (operand_size >> 3,
 					0, _bp->get_bv_size ());
       while (--nl)
 	{
-	  data.mc->add_assignment (from, (LValue *) _bp->ref (), 
-				   BinaryApp::create (BV_OP_SUB, 
+	  data.mc->add_assignment (from, (LValue *) _bp->ref (),
+				   BinaryApp::create (BV_OP_SUB,
 						      _bp->ref (),
 						      dec->ref (),
 						      0, _bp->get_bv_size ()));
-	  x86_push (from, data, 
+	  x86_push (from, data,
 		       MemCell::create (_bp->ref (), 0, operand_size));
 	}
       dec->deref ();
-      x86_push (from, data, frame_temp->ref ());     
+      x86_push (from, data, frame_temp->ref ());
     }
 
   data.mc->add_assignment (from, (LValue *) _bp->ref (), frame_temp->ref ());
   data.mc->add_assignment (from, (LValue *) _sp->ref (),
-			   BinaryApp::create (BV_OP_SUB, 
+			   BinaryApp::create (BV_OP_SUB,
 					      _sp->ref (),
-					      frame_size->ref (), 
+					      frame_size->ref (),
 					      0, _sp->get_bv_size ()),
 			   data.next_ma);
 
@@ -180,7 +180,7 @@ X86_TRANSLATE_0_OP(LEAVEQ)
 }
 
 static void
-s_pop_all(MicrocodeAddress start, MicrocodeAddress end, 
+s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
 	  x86::parser_data &data, const char *regs[]);
 
 X86_TRANSLATE_0_OP(POPA)
@@ -204,7 +204,7 @@ X86_TRANSLATE_0_OP(POPA)
 
     case x86::parser_data::MODE_64:
       /* POPA is not a valid instruction in 64-bits mode */
-      regs = NULL; 
+      regs = NULL;
       break;
     }
 
@@ -285,12 +285,12 @@ x86_pop (MicrocodeAddress &start,
     operand_size = op->get_bv_size ();
 
   Constant *inc = Constant::create (operand_size >> 3, 0, _sp->get_bv_size ());
-  data.mc->add_assignment (start, (LValue *) op->ref (), 
-			   MemCell::create (_sp->ref (), 0, 
+  data.mc->add_assignment (start, (LValue *) op->ref (),
+			   MemCell::create (_sp->ref (), 0,
 					    op->get_bv_size ()));
 
-  data.mc->add_assignment (start, (LValue *) _sp->ref(), 
-			   BinaryApp::create (BV_OP_ADD, _sp->ref (), 
+  data.mc->add_assignment (start, (LValue *) _sp->ref(),
+			   BinaryApp::create (BV_OP_ADD, _sp->ref (),
 					      inc->ref (), 0,
 					      _sp->get_bv_size ()),
 			   end);
@@ -300,12 +300,12 @@ x86_pop (MicrocodeAddress &start,
 }
 
 static void
-s_pop_all(MicrocodeAddress start, MicrocodeAddress end, 
+s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
 	  x86::parser_data &data, const char *regs[])
 {
   int i;
   LValue *reg;
-  
+
   for (i = 0; i < 3; i++)
     {
       reg = data.get_register (regs[i]);
@@ -313,7 +313,7 @@ s_pop_all(MicrocodeAddress start, MicrocodeAddress end,
     }
 
   reg = data.get_register (regs[i]); // should be (R/E)SP
-  Expr *nval = BinaryApp::create (BV_OP_ADD, reg->ref (), 
+  Expr *nval = BinaryApp::create (BV_OP_ADD, reg->ref (),
 				  reg->get_bv_size () >> 3);
   data.mc->add_assignment (start, reg, nval);
 
@@ -368,29 +368,29 @@ x86_push (MicrocodeAddress &start, x86::parser_data &data, Expr *op,
 
   assert(_sp != NULL);
 
-  data.mc->add_assignment (start, (LValue *) _sp->ref(), 
-			   BinaryApp::create (BV_OP_SUB, _sp->ref (), 
+  data.mc->add_assignment (start, (LValue *) _sp->ref(),
+			   BinaryApp::create (BV_OP_SUB, _sp->ref (),
 					      temp->get_bv_size () >> 3, 0,
 					      _sp->get_bv_size ()));
-  data.mc->add_assignment (start, 
-			   MemCell::create (_sp->ref (), 0, 
-					    temp->get_bv_size ()), 
-			   temp->ref (), 
-			   end); 
+  data.mc->add_assignment (start,
+			   MemCell::create (_sp->ref (), 0,
+					    temp->get_bv_size ()),
+			   temp->ref (),
+			   end);
   temp->deref ();
   op->deref ();
   _sp->deref ();
 }
 
 X86_TRANSLATE_1_OP(PUSH)
-{  
+{
   x86_push (data.start_ma, data, (LValue *) op1, &data.next_ma);
 }
 
 X86_TRANSLATE_1_OP(PUSHW)
 {
   data.data_mode = x86::parser_data::MODE_16;
-  x86_translate_with_size (data, op1, 16, 
+  x86_translate_with_size (data, op1, 16,
 			      x86_translate<X86_TOKEN(PUSH)>);
 }
 
@@ -411,16 +411,16 @@ X86_TRANSLATE_0_OP(POPF)
   Expr *eflags = data.get_register ("eflags");
 #else
   Expr *eflags = data.get_tmp_register (TMPREG (0), 32);
-#endif  
+#endif
   if (data.data_mode == 16)
     Expr::extract_bit_vector (eflags, 0, 16);
-  
+
 #ifdef X86_USE_EFLAGS
   x86_pop (from, data, (LValue *) eflags->ref (), &data.next_ma);
 #else
   x86_pop (from, data, (LValue *) eflags->ref ());
 
-  const char *flags[] = { "cf", "pf", "af", "zf", "sf", "tf", "if", 
+  const char *flags[] = { "cf", "pf", "af", "zf", "sf", "tf", "if",
 			  "df", "of", "iopl", "nt", "rf", "vm", "ac", "vif",
 			  "vip", "id" };
   int nb_flags = sizeof (flags)/ sizeof (flags[0]);
@@ -430,20 +430,20 @@ X86_TRANSLATE_0_OP(POPF)
   int i;
   if (data.data_mode == x86::parser_data::MODE_16)
     nb_flags = 11;
-  
+
   for (i = 0; i < nb_flags - 1; i++)
     {
       int size = size_offset[2 * i];
       int offset = size_offset[2 * i + 1];
-      
-      data.mc->add_assignment (from, 
+
+      data.mc->add_assignment (from,
 			       data.get_register (flags[i]),
 			       Expr::createExtract (eflags->ref (), offset,
 						    size));
     }
   int size = size_offset[2 * i];
   int offset = size_offset[2 * i + 1];
-  data.mc->add_assignment (from, 
+  data.mc->add_assignment (from,
 			   data.get_register (flags[i]),
 			   Expr::createExtract (eflags->ref (), offset,
 						size),
@@ -460,11 +460,11 @@ X86_TRANSLATE_0_OP(POPFW)
 
 X86_TRANSLATE_0_OP(PUSHF)
 {
-  MicrocodeAddress from (data.start_ma);  
+  MicrocodeAddress from (data.start_ma);
 #ifdef X86_USE_EFLAGS
   Expr *eflags = data.get_register ("eflags");
 #else
-  const char *flags[] = { "cf", 0, "pf", 0, "af", 0, "zf", "sf", "tf", "if", 
+  const char *flags[] = { "cf", 0, "pf", 0, "af", 0, "zf", "sf", "tf", "if",
 			  "df", "of", "iopl", "nt", 0, "rf", "vm", "ac", "vif",
 			  "vip", "id" };
 
@@ -472,11 +472,11 @@ X86_TRANSLATE_0_OP(PUSHF)
 
   for (size_t i = 1; i < sizeof (flags) / sizeof (flags[0]); i++)
     {
-      Expr *aux = flags[i] 
+      Expr *aux = flags[i]
 	? (Expr *) data.get_register (flags[i]) : (Expr *) Constant::zero (1);
       eflags = BinaryApp::createConcat (aux, eflags);
     }
-  eflags = Expr::createExtend (BV_OP_EXTEND_U, eflags, 32); 
+  eflags = Expr::createExtend (BV_OP_EXTEND_U, eflags, 32);
 #endif
 
   if (data.data_mode == x86::parser_data::MODE_16)
@@ -528,7 +528,7 @@ X86_TRANSLATE_0_OP(PUSHA)
 
   assert(regs != NULL);
 
-  data.mc->add_assignment (from, (LValue *) temp->ref (), 
+  data.mc->add_assignment (from, (LValue *) temp->ref (),
 			   data.get_register (regs[0]));
 
   x86_push (from, data, data.get_register (regs[1]));
@@ -538,7 +538,7 @@ X86_TRANSLATE_0_OP(PUSHA)
   x86_push (from, data, temp->ref ());
   x86_push (from, data, data.get_register (regs[5]));
   x86_push (from, data, data.get_register (regs[6]));
-  x86_push (from, data, data.get_register (regs[7]), &data.next_ma); 
+  x86_push (from, data, data.get_register (regs[7]), &data.next_ma);
   temp->deref ();
 }
 

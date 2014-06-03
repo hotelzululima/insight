@@ -119,7 +119,7 @@ public:
   virtual bool equals (const ConcreteMemory &mem) const;
   virtual std::size_t hashcode () const;
   void output_text(std::ostream &) const;
-  void get_address_range (address_t &min, address_t &max) const; 
+  void get_address_range (address_t &min, address_t &max) const;
 
   virtual const_memcell_iterator begin () const;
   virtual const_memcell_iterator end () const;

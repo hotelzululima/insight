@@ -38,7 +38,7 @@ TESTS = \
  \
  check-diff
 
-EXTRA_DIST=${TESTS:%=%.result} ${BASE_TESTS:%.res=%.spec.sh} 
+EXTRA_DIST=${TESTS:%=%.result} ${BASE_TESTS:%.res=%.spec.sh}
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
 

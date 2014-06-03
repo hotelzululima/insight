@@ -39,5 +39,5 @@ BinutilsStubFactory::BinutilsStubFactory (bfd *)
 BinutilsStubFactory::~BinutilsStubFactory ()
 {
 }
-  
+
 

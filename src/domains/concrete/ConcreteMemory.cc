@@ -67,7 +67,7 @@ ConcreteMemory::ConcreteMemory(const ConcreteMemory *base) :
 {
   if (base)
     base->get_address_range (minaddr, maxaddr);
-  else 
+  else
     {
       minaddr = MAX_ADDRESS;
       maxaddr = NULL_ADDRESS;
@@ -103,7 +103,7 @@ ConcreteMemory::get(const ConcreteAddress &addr,
       MemoryMap::const_iterator ci = memory.find (cur);
       if (ci != memory.end ())
 	byte = ci->second;
-      else 
+      else
 	{
 	  assert (base->is_defined (addr));
 	  byte = base->get (addr, 1, e).get ();
@@ -148,14 +148,14 @@ bool
 ConcreteMemory::is_defined(const ConcreteAddress &a) const
 {
   return (memory.find(a.get_address()) != memory.end() ||
-	  (base && base->is_defined (a)));  
+	  (base && base->is_defined (a)));
 }
 
 bool
 ConcreteMemory::is_defined(const RegisterDesc *r) const
 {
   return (RegisterMap<ConcreteValue>::is_defined (r) ||
-	  (base && base->is_defined (r)));  
+	  (base && base->is_defined (r)));
 }
 
 ConcreteValue
@@ -182,7 +182,7 @@ ConcreteMemory::get(const RegisterDesc * r) const
 /* Utils                                                                     */
 /*****************************************************************************/
 
-bool 
+bool
 ConcreteMemory::equals (const ConcreteMemory &mem) const
 {
   if (memory.size () != mem.memory.size ())
@@ -191,10 +191,10 @@ ConcreteMemory::equals (const ConcreteMemory &mem) const
   if (base != mem.base)
     return false;
 
-  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++) 
+  for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++)
     {
-      if (! mem.is_defined (i->first) || 
-	  ! (mem.get (i->first, 1, 
+      if (! mem.is_defined (i->first) ||
+	  ! (mem.get (i->first, 1,
 		      Architecture::LittleEndian).get () == i->second))
 	    return false;
     }
@@ -208,11 +208,11 @@ ConcreteMemory::equals (const ConcreteMemory &mem) const
   return true;
 }
 
-std::size_t 
+std::size_t
 ConcreteMemory::hashcode () const
 {
   std::size_t result = 0;
-  
+
   for (MemoryMap::const_iterator i = memory.begin (); i != memory.end (); i++)
     result = ((result << 3) + 19 * i->second);
 
@@ -228,7 +228,7 @@ void
 ConcreteMemory::output_text(ostream &os) const
 {
   os << "Memory: " << endl;
-  for (MemoryMap::const_iterator mem = memory.begin(); mem != memory.end(); 
+  for (MemoryMap::const_iterator mem = memory.begin(); mem != memory.end();
        mem++)
     os << "[ 0x" << hex << setfill('0')
        << nouppercase << setw(4) << (int) mem->first
@@ -237,10 +237,10 @@ ConcreteMemory::output_text(ostream &os) const
   os << endl;
 
   os << "Registers: " << endl;
-  RegisterMap<ConcreteValue>::output_text (os);  
+  RegisterMap<ConcreteValue>::output_text (os);
 }
 
-void 
+void
 ConcreteMemory::get_address_range (address_t &min, address_t &max) const
 {
   min = minaddr;
@@ -254,13 +254,13 @@ ConcreteMemory::clone () const
   return result;
 }
 
-ConcreteMemory::const_memcell_iterator 
+ConcreteMemory::const_memcell_iterator
 ConcreteMemory::begin () const
 {
   return memory.begin ();
 }
 
-ConcreteMemory::const_memcell_iterator 
+ConcreteMemory::const_memcell_iterator
 ConcreteMemory::end () const
 {
   return memory.end ();

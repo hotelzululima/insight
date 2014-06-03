@@ -192,7 +192,7 @@ void update_flags(arm::parser_data &data, Expr* guard, Expr* run_time_result,
     dst = n_flag = (RegisterExpr*) data.get_flag("n");
 
     //result_less_than_zero
-    src = BinaryApp::create (BV_OP_LT_S, run_time_result->ref(), 
+    src = BinaryApp::create (BV_OP_LT_S, run_time_result->ref(),
 			     Constant::zero(run_time_result->get_bv_size ()));
 
     if ( ((uword_t) ins) >> N_FLAG_BIT_POSITION )
@@ -212,7 +212,7 @@ void update_flags(arm::parser_data &data, Expr* guard, Expr* run_time_result,
     dst = z_flag = (RegisterExpr*) data.get_flag("z");
 
     //result_equal_zero
-    src = BinaryApp::create (BV_OP_EQ, run_time_result->ref(), 
+    src = BinaryApp::create (BV_OP_EQ, run_time_result->ref(),
 			     Constant::zero(run_time_result->get_bv_size ()));
 
     if ( ((uword_t) ins) >> Z_FLAG_BIT_POSITION )

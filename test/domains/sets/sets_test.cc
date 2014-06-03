@@ -42,7 +42,7 @@ ATF_TEST_CASE_BODY(sets_test)
 {
   /* Checking addition operation */
   SetsValue my_set;
-  
+
   ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 2)), true);
   ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 4)), true);
   ATF_REQUIRE_EQ(my_set.add_value(ConcreteValue(32, 6)), true);

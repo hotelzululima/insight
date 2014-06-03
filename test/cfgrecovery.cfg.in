@@ -8,7 +8,7 @@ disas.simulator.init-sp = 0xFFFF0000
 #disas.simulator.zero-registers = false
 
 # Set the maximal number a program point can be visited by symbolic simulator.
-# By default (-1) no bound is set and thus simulation can enter an infinite 
+# By default (-1) no bound is set and thus simulation can enter an infinite
 # loop.
 disas.simulator.nb-visits-per-address = 20
 
@@ -17,7 +17,7 @@ disas.simulator.nb-visits-per-address = 20
 disas.symsim.map-dynamic-jump-to-memory = false
 
 # Set the threshold on number of targets for a dynamic jump. Above this
-# value dynamic jump is considered unsolved. 
+# value dynamic jump is considered unsolved.
 # If set to -1 no threshold is applied.
 # If set to 0 no dynamic is solved.
 disas.symsim.dynamic-jump-threshold = 1000

@@ -46,7 +46,7 @@
     SymbolicValue result (tmp);						\
     tmp->deref ();							\
     return result;							\
-  } 
+  }
 
 #define BIN_OP_DEF(op)							\
   template<> SymbolicValue						\
@@ -60,7 +60,7 @@
     SymbolicValue result (tmp);						\
     tmp->deref ();							\
     return result;							\
-  } 
+  }
 
 #define UN_OP_DEF(op)							\
   template<> SymbolicValue						\
@@ -72,7 +72,7 @@
     SymbolicValue result (tmp);						\
     tmp->deref ();							\
     return result;							\
-  } 
+  }
 
 /*****************************************************************************/
 
@@ -110,10 +110,10 @@ UN_OP_DEF(BV_OP_NEG)
 UN_OP_DEF(BV_OP_NOT)
 
 template<> SymbolicValue						
-SymbolicExprSemantics::BV_OP_EXTRACT_eval (SymbolicValue v1, SymbolicValue v2, 
-					   SymbolicValue v3, 
-					   int offset, int size) 
-{ 
+SymbolicExprSemantics::BV_OP_EXTRACT_eval (SymbolicValue v1, SymbolicValue v2,
+					   SymbolicValue v3,
+					   int offset, int size)
+{
   const Constant *off = dynamic_cast<const Constant *> (v2.get_Expr ());
   const Constant *sz = dynamic_cast<const Constant *> (v3.get_Expr ());
 
@@ -125,16 +125,16 @@ SymbolicExprSemantics::BV_OP_EXTRACT_eval (SymbolicValue v1, SymbolicValue v2,
     tmp = Expr::createExtract (tmp, offset, size);
 
   exprutils::simplify (&tmp); 				
-  SymbolicValue result (tmp); 
-  tmp->deref (); 
+  SymbolicValue result (tmp);
+  tmp->deref ();
 
-  return result; 
-} 
+  return result;
+}
 
 template<> SymbolicValue
-SymbolicExprSemantics::extract_eval(SymbolicValue v,  int off, int size) 
+SymbolicExprSemantics::extract_eval(SymbolicValue v,  int off, int size)
 {
-  return expr_semantics_extract_eval<SymbolicValue, 
+  return expr_semantics_extract_eval<SymbolicValue,
 				     SymbolicExprSemantics>(v,off, size);
 }
 template<> SymbolicValue

@@ -4,7 +4,7 @@
 # include <utils/Object.hh>
 
 template <typename S>
-class AbstractStateSpace : public Object 
+class AbstractStateSpace : public Object
 {
 protected:
   virtual ~AbstractStateSpace () { }

@@ -42,7 +42,7 @@
 #define YY_DECL				      \
   arm::parser::token_type		      \
     yylex(arm::parser::semantic_type* yylval, \
-          arm::parser::location_type* yylloc)
+	  arm::parser::location_type* yylloc)
 
 /* Work around an incompatibility in flex (at least versions 2.5.31
  * through 2.5.33): it generates code that does not conform to C89. */
@@ -76,7 +76,7 @@ static long xtoi(char* xstr);
 %option prefix="arm_"
 
  /* Custom macros */
-decvalue  [0-9]+	
+decvalue  [0-9]+
 hexvalue  [0-9a-f]+
 varname   [a-z][a-z0-9]+
 optype    [bswlqt]
@@ -163,7 +163,7 @@ optype    [bswlqt]
 			yylval->stringValue = new string (yytext);
 			return token:: TOK_LDR;
 		}
-		
+
 "str"	{
 			yylval->stringValue = new string (yytext);
 			return token:: TOK_STR;
@@ -235,35 +235,35 @@ optype    [bswlqt]
 			yylval->stringValue = new string (yytext);
 			return token:: TOK_AL;
 		}
-    
-    
-    
-    
+
+
+
+
 "sl"	{//r10
 			yylval->stringValue = new string ("r10");
 			return token:: TOK_REGISTER;
 		}
-    
+
 "fp"	{//r11
 			yylval->stringValue = new string ("r11");
 			return token:: TOK_REGISTER;
 		}
- 
+
 "ip"	{//r12
 			yylval->stringValue = new string ("r12");
 			return token:: TOK_REGISTER;
 		}
-    
+
 "sp"	{//r13
 			yylval->stringValue = new string ("r13");
 			return token:: TOK_REGISTER;
 		}
-    
+
 "lr"	{//r14
 			yylval->stringValue = new string ("r14");
 			return token:: TOK_REGISTER;
 		}
-   
+
 "pc"	{//r15
 			yylval->stringValue = new string ("r15");
 			return token:: TOK_REGISTER;
@@ -274,39 +274,39 @@ optype    [bswlqt]
 "bx"	{return token::TOK_BX;}
 
 [\ ]*";"[^\n]*  { return token::TOK_COMMENT; }
- 
-   
+
+
  /*	{return token::* Spaces and end of lines */
 [ \t]+ { yylloc->lines(yyleng); yylloc->step(); }
 [\n]+  { yylloc->lines(yyleng); yylloc->step(); return token::TOK_EOL; }
 
  /* Integer values */
-{decvalue} {              
+{decvalue} {
 		    yylval->intValue = atoi(yytext);
 			return token::TOK_INTEGER;
-            }
+}
 
-"0x"{hexvalue}  {              
+"0x"{hexvalue}  {
 		    yylval->intValue = xtoi(yytext);
 			return token::TOK_INTEGER;
-            }            
-         
+}
+
 
  /* Registers */
- 
+
 
 
 "r"[0-9]+ {
 			yylval->stringValue = new string (yytext) ;
 			return token::TOK_REGISTER;
 	 }
- 	 
-	 
-	 
+
+
+
 "%"{varname} {
-                yylval->stringValue = new string (yytext + 1);
-	        return token::TOK_REGISTER;
-             }
+  yylval->stringValue = new string (yytext + 1);
+  return token::TOK_REGISTER;
+}
 
  /* Anything else is probable an error */
 .  {

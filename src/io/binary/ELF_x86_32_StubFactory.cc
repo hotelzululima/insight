@@ -45,7 +45,7 @@ using namespace std;
 
 #define R_386_JUMP_SLOT 7
 
-class ELF_x86_32_StubFactory : public BinutilsStubFactory 
+class ELF_x86_32_StubFactory : public BinutilsStubFactory
 {
 public:
   ELF_x86_32_StubFactory (bfd *abfd);
@@ -78,10 +78,10 @@ s_build_dynamic_symbols_table (bfd *abfd)
   if (sysize > 0)
     {
       asymbol **tmp = (asymbol **) malloc (sysize);
-     
+
       if (bfd_canonicalize_dynamic_symtab (abfd, tmp) < 0)
 	{
-	  logs::error << "error: after bfd_canonicalize_dynamic_symtab" 
+	  logs::error << "error: after bfd_canonicalize_dynamic_symtab"
 		      << endl;
 	  free (tmp);
 	}
@@ -94,7 +94,7 @@ s_build_dynamic_symbols_table (bfd *abfd)
 }
 
 
-ELF_x86_32_StubFactory::ELF_x86_32_StubFactory (bfd *abfd) 
+ELF_x86_32_StubFactory::ELF_x86_32_StubFactory (bfd *abfd)
   : BinutilsStubFactory (abfd)
 {
   asymbol **dynsymbols;
@@ -102,7 +102,7 @@ ELF_x86_32_StubFactory::ELF_x86_32_StubFactory (bfd *abfd)
   long relcount;
   int undefsymbolidx;
   long relsize = bfd_get_dynamic_reloc_upper_bound (abfd);
-   
+
   if (relsize <= 0)
     return;
 
@@ -127,7 +127,7 @@ ELF_x86_32_StubFactory::ELF_x86_32_StubFactory (bfd *abfd)
       if (type != R_386_JUMP_SLOT)
 	{
 	  logs::warning << "warning: ignoring ELF32 relocation type R_386_"
-			<< relpp[i]->howto->name 
+			<< relpp[i]->howto->name
 			<< " (" << type << ")" << endl;
 	  continue;
 	}
@@ -144,9 +144,9 @@ ELF_x86_32_StubFactory::ELF_x86_32_StubFactory (bfd *abfd)
     free (dynsymbols);
 }
 
-ELF_x86_32_StubFactory::~ELF_x86_32_StubFactory () 
+ELF_x86_32_StubFactory::~ELF_x86_32_StubFactory ()
 {
-  
+
 }
 
 static void
@@ -154,20 +154,20 @@ s_jump_to_top_of_stack (MicrocodeAddress &start, Microcode *prog,
 			const Architecture *arch)
 {
   RegisterExpr *esp = RegisterExpr::create (arch->get_register ("esp"), 0, 32);
-  Expr *retaddr = 
-    MemCell::create (BinaryApp::create (BV_OP_ADD, esp, 
+  Expr *retaddr =
+    MemCell::create (BinaryApp::create (BV_OP_ADD, esp,
 					Constant::create (4, 0, 32)),
 		     0, esp->get_bv_size ());
-  prog->add_jump (start, retaddr); 
+  prog->add_jump (start, retaddr);
 }
 
-static void 
+static void
 s_randomize_register (MicrocodeAddress &start, Microcode *prog,
 		      const Architecture *arch, const char *regname)
 {
   const RegisterDesc *reg = arch->get_register (regname);
   int regsize = reg->get_register_size ();
-  prog->add_assignment (start, 
+  prog->add_assignment (start,
 			RegisterExpr::create (reg, 0, regsize),
 			RandomValue::create (regsize));
 }
@@ -179,7 +179,7 @@ s_sink_node (MicrocodeAddress &start, Microcode *prog)
 }
 
 static void
-s_add_return (MicrocodeAddress &start, Microcode *prog, 
+s_add_return (MicrocodeAddress &start, Microcode *prog,
 	      const Architecture *arch)
 {
   RegisterExpr *esp = RegisterExpr::create (arch->get_register ("esp"), 0, 32);
@@ -192,8 +192,8 @@ s_add_return (MicrocodeAddress &start, Microcode *prog,
   start_node->add_annotation (CallRetAnnotation::ID,
 			      CallRetAnnotation::create_ret ());
   /* jmp -4(%esp) */
-  prog->add_jump (start, 
-		  MemCell::create (BinaryApp::create (BV_OP_SUB, 
+  prog->add_jump (start,
+		  MemCell::create (BinaryApp::create (BV_OP_SUB,
 						      esp->ref (), 4),
 				   0, 32)
 		  );
@@ -201,7 +201,7 @@ s_add_return (MicrocodeAddress &start, Microcode *prog,
 }
 
 void
-ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory, 
+ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
 				   MicrocodeArchitecture *arch,
 				   Microcode *dest,
 				   SymbolTable *)
@@ -213,15 +213,15 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
   memory->get_address_range (dummy, dest_slot);
 
   for (SlotMap::const_iterator s = slots.begin (); s != slots.end (); s++)
-    {     
+    {
       const string &name = s->first;
       address_t slot = slots[s->first];
 
       assert (memory->is_defined (slot));
 
-      memory->put (ConcreteAddress (slot), ConcreteValue (32, dest_slot), 
+      memory->put (ConcreteAddress (slot), ConcreteValue (32, dest_slot),
 		   rarch->get_endian ());
-      memory->put (ConcreteAddress (dest_slot), ConcreteValue (32, dest_slot), 
+      memory->put (ConcreteAddress (dest_slot), ConcreteValue (32, dest_slot),
 		   rarch->get_endian ());
 
       MicrocodeAddress start (dest_slot);
@@ -237,13 +237,13 @@ ELF_x86_32_StubFactory::add_stubs (ConcreteMemory *memory,
 	  s_randomize_register (start, dest, rarch, "edx");
 	  s_add_return (start, dest, rarch);
 	}
-      
+
       MicrocodeNode *start_node = dest->get_node (dest_slot);
       if (start_node != NULL)
 	{
 	  string a("insight-stub/");
 	  a += name;
-	  start_node->add_annotation (StubAnnotation::ID, 
+	  start_node->add_annotation (StubAnnotation::ID,
 				      new StubAnnotation (a));
 	}
       dest_slot += 4;
@@ -256,12 +256,12 @@ ELF_x86_32_StubFactory::dynamic_symbol_name (arelent *e, int &symcounter)
   string result;
   if (e->sym_ptr_ptr == NULL || *e->sym_ptr_ptr == NULL)
     {
-      do 
+      do
 	{
 	  ostringstream oss;
 	  oss << "insight_stub_" << symcounter++;
 	  result = oss.str ();
-	} 
+	}
       while (slots.find (result) != slots.end ());
     }
   else

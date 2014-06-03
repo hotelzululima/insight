@@ -32,7 +32,7 @@
 
 using namespace std;
 
-static void 
+static void
 s_binary_op (x86::parser_data &data, BinaryOp op, Expr *op1, Expr *op2)
 {
   MicrocodeAddress from (data.start_ma);
@@ -63,25 +63,25 @@ X86_TRANSLATE_2_OP(AND)
 
 X86_TRANSLATE_2_OP(ANDB)
 {
-  x86_translate_with_size (data, op1, op2, 8, 
+  x86_translate_with_size (data, op1, op2, 8,
 			      x86_translate<X86_TOKEN(AND)>);
 }
 
 X86_TRANSLATE_2_OP(ANDW)
 {
-  x86_translate_with_size (data, op1, op2, 16, 
+  x86_translate_with_size (data, op1, op2, 16,
 			      x86_translate<X86_TOKEN(AND)>);
 }
 
 X86_TRANSLATE_2_OP(ANDL)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(AND)>);
 }
 
 X86_TRANSLATE_2_OP(ANDQ)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(AND)>);
 }
 
@@ -92,25 +92,25 @@ X86_TRANSLATE_2_OP(OR)
 
 X86_TRANSLATE_2_OP(ORB)
 {
-  x86_translate_with_size (data, op1, op2, 8, 
+  x86_translate_with_size (data, op1, op2, 8,
 			      x86_translate<X86_TOKEN(OR)>);
 }
 
 X86_TRANSLATE_2_OP(ORW)
 {
-  x86_translate_with_size (data, op1, op2, 16, 
+  x86_translate_with_size (data, op1, op2, 16,
 			      x86_translate<X86_TOKEN(OR)>);
 }
 
 X86_TRANSLATE_2_OP(ORL)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(OR)>);
 }
 
 X86_TRANSLATE_2_OP(ORQ)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(OR)>);
 }
 
@@ -121,31 +121,31 @@ X86_TRANSLATE_1_OP(NOT)
   MicrocodeAddress start = data.start_ma;
 
   data.mc->add_assignment (start, dst, UnaryApp::create (BV_OP_NOT, src, 0,
-							 src->get_bv_size ()), 
+							 src->get_bv_size ()),
 			   data.next_ma);
 }
 
 X86_TRANSLATE_1_OP(NOTB)
 {
-  x86_translate_with_size (data, op1, 8, 
+  x86_translate_with_size (data, op1, 8,
 			      x86_translate<X86_TOKEN(NOT)>);
 }
 
 X86_TRANSLATE_1_OP(NOTW)
 {
-  x86_translate_with_size (data, op1, 16, 
+  x86_translate_with_size (data, op1, 16,
 			      x86_translate<X86_TOKEN(NOT)>);
 }
 
 X86_TRANSLATE_1_OP(NOTL)
 {
-  x86_translate_with_size (data, op1, 32, 
+  x86_translate_with_size (data, op1, 32,
 			      x86_translate<X86_TOKEN(NOT)>);
 }
 
 X86_TRANSLATE_1_OP(NOTQ)
 {
-  x86_translate_with_size (data, op1, 32, 
+  x86_translate_with_size (data, op1, 32,
 			      x86_translate<X86_TOKEN(NOT)>);
 }
 
@@ -156,8 +156,8 @@ X86_TRANSLATE_2_OP(TEST)
   LValue *r0 = data.get_tmp_register (TMPREG(0), op1->get_bv_size ());
 
 
-    
-  data.mc->add_assignment (start, r0, 
+
+  data.mc->add_assignment (start, r0,
 			   BinaryApp::create (BV_OP_AND, op1, op2, 0,
 					      op1->get_bv_size ()));
 
@@ -170,25 +170,25 @@ X86_TRANSLATE_2_OP(TEST)
 
 X86_TRANSLATE_2_OP(TESTB)
 {
-  x86_translate_with_size (data, op1, op2, 8, 
+  x86_translate_with_size (data, op1, op2, 8,
 			      x86_translate<X86_TOKEN(TEST)>);
 }
 
 X86_TRANSLATE_2_OP(TESTW)
 {
-  x86_translate_with_size (data, op1, op2, 16, 
+  x86_translate_with_size (data, op1, op2, 16,
 			      x86_translate<X86_TOKEN(TEST)>);
 }
 
 X86_TRANSLATE_2_OP(TESTL)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(TEST)>);
 }
 
 X86_TRANSLATE_2_OP(TESTQ)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(TEST)>);
 }
 
@@ -199,25 +199,25 @@ X86_TRANSLATE_2_OP(XOR)
 
 X86_TRANSLATE_2_OP(XORB)
 {
-  x86_translate_with_size (data, op1, op2, 8, 
+  x86_translate_with_size (data, op1, op2, 8,
 			      x86_translate<X86_TOKEN(XOR)>);
 }
 
 X86_TRANSLATE_2_OP(XORW)
 {
-  x86_translate_with_size (data, op1, op2, 16, 
+  x86_translate_with_size (data, op1, op2, 16,
 			      x86_translate<X86_TOKEN(XOR)>);
 }
 
 X86_TRANSLATE_2_OP(XORL)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(XOR)>);
 }
 
 X86_TRANSLATE_2_OP(XORQ)
 {
-  x86_translate_with_size (data, op1, op2, 32, 
+  x86_translate_with_size (data, op1, op2, 32,
 			      x86_translate<X86_TOKEN(XOR)>);
 }
 

@@ -10,7 +10,7 @@
 # include <utils/unordered11.hh>
 
 template<typename AlgoSpec>
-class AbstractMemoryTraversal 
+class AbstractMemoryTraversal
 {
 # define ABSTRACT_MEMORY_TRAVERSAL_PROPERTIES				\
   ABSTRACT_MEMORY_TRAVERSAL_PROPERTY (bool, show_states, false)		\
@@ -36,16 +36,16 @@ public:
     StmtArrow *arrow;
   };
 
-  AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder, 
+  AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder,
 			   Stepper *stepper, StateSpace *states);
 
   virtual ~AbstractMemoryTraversal ();
 
   void abort_computation ();
 
-  void compute (const std::list<ConcreteAddress> &entrypoints, 
+  void compute (const std::list<ConcreteAddress> &entrypoints,
 		Microcode *result);
-    
+
 protected:
   virtual MicrocodeNode *get_node (const ProgramPoint *pp)
     throw (Decoder::Exception);
@@ -68,7 +68,7 @@ private:
 
 # define ABSTRACT_MEMORY_TRAVERSAL_PROPERTY(type_, name_, defval_)	\
   private: type_ name_; \
-  public: void set_ ## name_ (type_ value) { name_ = value; } 
+  public: void set_ ## name_ (type_ value) { name_ = value; }
 
   ABSTRACT_MEMORY_TRAVERSAL_PROPERTIES
 # undef ABSTRACT_MEMORY_TRAVERSAL_PROPERTY

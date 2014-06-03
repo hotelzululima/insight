@@ -9,7 +9,7 @@
 # include <domains/symbolic/SymbolicExprSemantics.hh>
 
 
-class SymbolicStepper : 
+class SymbolicStepper :
   public AbstractDomainStepper<MicrocodeAddressProgramPoint, SymbolicContext>
 {
 private:
@@ -26,27 +26,27 @@ public:
   SymbolicStepper (ConcreteMemory *memory, const MicrocodeArchitecture *arch);
   virtual ~SymbolicStepper ();
 
-  virtual ConcreteValue 
+  virtual ConcreteValue
   value_to_ConcreteValue (const Context *ctx, const Value &v, bool *is_unique)
     throw (UndefinedValueException);
 
-  virtual Address 
-  value_to_address (const Context *ctx, const Value &v) 
+  virtual Address
+  value_to_address (const Context *ctx, const Value &v)
     throw (UndefinedValueException);
 
-  virtual std::vector<address_t> * 
-  value_to_concrete_addresses (const Context *ctx, const Value &v) 
+  virtual std::vector<address_t> *
+  value_to_concrete_addresses (const Context *ctx, const Value &v)
     throw (UndefinedValueException);
-  
+
   virtual Value eval (const Context *ctx, const Expr *e)
-    throw (UndefinedValueException);  
+    throw (UndefinedValueException);
 
   virtual Value embed_eval (const Value &v1, const Value &v2, int off) const;
 
   virtual State *get_initial_state (const ConcreteAddress &entrypoint);
 
 protected:
-  virtual Context * 
+  virtual Context *
   restrict_to_condition (const Context *ctx, const Expr *cond);
 
   ConcreteMemory *memory;

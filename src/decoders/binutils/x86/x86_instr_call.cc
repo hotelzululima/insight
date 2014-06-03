@@ -29,7 +29,7 @@
  */
 #include <kernel/annotations/CallRetAnnotation.hh>
 #include "x86_translation_functions.hh"
- 
+
 using namespace std;
 
 X86_TRANSLATE_1_OP (CALL)
@@ -119,8 +119,8 @@ X86_TRANSLATE_1_OP (RET)
   assert (op1->is_Constant ());
   Expr *inc = op1->extract_bit_vector (0, _sp->get_bv_size ());
 
-  data.mc->add_assignment (start, (LValue *) _sp->ref(), 
-			   BinaryApp::create (BV_OP_ADD, _sp->ref (), 
+  data.mc->add_assignment (start, (LValue *) _sp->ref(),
+			   BinaryApp::create (BV_OP_ADD, _sp->ref (),
 					      inc->ref (), 0,
 					      _sp->get_bv_size ()));
 

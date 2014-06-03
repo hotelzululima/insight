@@ -38,12 +38,12 @@
 
 using namespace std;
 
-ConcreteValue::ConcreteValue() : Value(0), value(0) 
-{ 
+ConcreteValue::ConcreteValue() : Value(0), value(0)
+{
 }
 
-ConcreteValue::ConcreteValue(int size, word_t w) : Value(size), value(w) 
-{ 
+ConcreteValue::ConcreteValue(int size, word_t w) : Value(size), value(w)
+{
 }
 
 ConcreteValue::ConcreteValue(const ConcreteValue &cv) : Value(cv.get_size())
@@ -73,7 +73,7 @@ ConcreteValue::unknown_value_generator ()
 {
   static UnknownConcreteValue gen;
 
-  return &gen;  
+  return &gen;
 }
 
 word_t ConcreteValue::get() const
@@ -92,7 +92,7 @@ ConcreteValue::equals (const ConcreteValue &v) const
 void
 ConcreteValue::output_text(std::ostream &os) const
 {
-  os << "0x" << hex << (uint64_t) this->value 
+  os << "0x" << hex << (uint64_t) this->value
      << dec << "{" << this->size << "}";
 }
 

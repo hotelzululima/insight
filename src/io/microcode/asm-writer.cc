@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite de Bordeaux.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -43,14 +43,14 @@
 
 using namespace std;
 
-static string 
+static string
 s_instruction_bytes (const ConcreteMemory *memory, const ConcreteAddress &start,
 		     const ConcreteAddress &next)
 {
   ostringstream result;
 
   for (ConcreteAddress a = start; ! a.equals (next); a++)
-    result << hex << setfill('0') << setw (2) 
+    result << hex << setfill('0') << setw (2)
 	   << memory->get (a, 1, Architecture::LittleEndian).get () << ' ';
   return result.str ();
 }
@@ -64,7 +64,7 @@ next_instruction_addr (const MicrocodeNode *node)
       NextInstAnnotation *nia = (NextInstAnnotation *)
 	node->get_annotation (NextInstAnnotation::ID);
       next = nia->get_value ().getGlobal ();
-    }  
+    }
 
   return next;
 }
@@ -78,8 +78,8 @@ s_is_next_instruction_addr (const MicrocodeNode *node, address_t a)
 }
 
 static SymbolTable *
-s_build_symbol_table (const Microcode *mc, 
-		      const vector<MicrocodeNode *> &nodes, 
+s_build_symbol_table (const Microcode *mc,
+		      const vector<MicrocodeNode *> &nodes,
 		      const SymbolTable *symboltable,
 		      bool with_labels)
 {
@@ -87,20 +87,20 @@ s_build_symbol_table (const Microcode *mc,
   int label_index = 0;
   list<address_t> addrtable;
   SymbolTable *result = symboltable->clone ();
-  
+
   if (! with_labels)
     return result;
 
-  for (vector<MicrocodeNode *>::const_iterator pN = nodes.begin (); 
+  for (vector<MicrocodeNode *>::const_iterator pN = nodes.begin ();
        pN != nodes.end (); pN++)
     {
       MicrocodeNode *N = *pN;
       MicrocodeAddress Nma = N->get_loc ();
-      
+
       if (Nma.getLocal () != 0)
 	continue;
 
-      vector<MicrocodeNode *> *succinsts = 
+      vector<MicrocodeNode *> *succinsts =
 	asm_get_successor_instructions (mc, N);
       int nb_succ = succinsts->size ();
 
@@ -111,7 +111,7 @@ s_build_symbol_table (const Microcode *mc,
 
 	  address_t a = succ->get_loc ().getGlobal ();
 	  if (! result->has (a) && ! s_is_next_instruction_addr (N, a))
-	    addrtable.push_back (a);	      
+	    addrtable.push_back (a);
 	}
       delete succinsts;
     }
@@ -137,10 +137,10 @@ s_build_symbol_table (const Microcode *mc,
 }
 
 static void
-s_dump_memory_between (ostream &out, const ConcreteMemory *M, 
-		       const ConcreteAddress &start, 
+s_dump_memory_between (ostream &out, const ConcreteMemory *M,
+		       const ConcreteAddress &start,
 		       const ConcreteAddress &end)
-{  
+{
   if (start.get_address () >= end.get_address ())
     return;
 
@@ -150,7 +150,7 @@ s_dump_memory_between (ostream &out, const ConcreteMemory *M,
     {
       address_t p = a.get_address () % 16;
 
-      out << right << hex << setw (8) << setfill (' ') 
+      out << right << hex << setw (8) << setfill (' ')
 	  << a.get_address () << ":\t";
       out << right << setw (3 * p) << setfill (' ') << "";
       while (p < 16 && a.get_address () <= end.get_address ())
@@ -171,26 +171,26 @@ s_dump_memory_between (ostream &out, const ConcreteMemory *M,
     }
 }
 
-static bool 
+static bool
 s_sort_microcode (MicrocodeNode *e1, MicrocodeNode *e2)
 {
   return (*e1) < (*e2);
 }
 
-static void 
-s_write_asm (ostream &out, const Microcode *mc, 
+static void
+s_write_asm (ostream &out, const Microcode *mc,
 	     const vector<MicrocodeNode *> &nodes,
 	     const ConcreteMemory *memory, const SymbolTable *symboltable,
-	     bool with_bytes, bool with_holes, bool with_labels, 
+	     bool with_bytes, bool with_holes, bool with_labels,
 	     address_t addr, size_t nb)
-{  
+{
   int nb_nodes = nodes.size ();
-  SymbolTable *symbtable = 
+  SymbolTable *symbtable =
     s_build_symbol_table (mc, nodes, symboltable, with_labels);
   int i = 0;
   MicrocodeNode *lastnode = NULL;
 
-  while (i < nb_nodes && (! nodes.at (i)->has_annotation (AsmAnnotation::ID) 
+  while (i < nb_nodes && (! nodes.at (i)->has_annotation (AsmAnnotation::ID)
 			  || nodes.at (i)->get_loc ().getGlobal() < addr))
     i++;
   MicrocodeAddress prev;
@@ -200,7 +200,7 @@ s_write_asm (ostream &out, const Microcode *mc,
     {
       MicrocodeNode *node = nodes.at (i);
 
-      if (! node->has_annotation (AsmAnnotation::ID))	  
+      if (! node->has_annotation (AsmAnnotation::ID))
 	continue;
 
       nb--;
@@ -210,22 +210,22 @@ s_write_asm (ostream &out, const Microcode *mc,
       assert (ma.getLocal () == 0);
 
       if (with_holes)
-	s_dump_memory_between (out, memory, prev.getGlobal (), 
+	s_dump_memory_between (out, memory, prev.getGlobal (),
 			       ma.getGlobal () - 1);
 
       if (symbtable->has (ma.getGlobal ()))
 	{
-	  const std::list<std::string> &symbols = 
+	  const std::list<std::string> &symbols =
 	    symbtable->get (ma.getGlobal ());
 	  for (std::list<std::string>::const_iterator s = symbols.begin ();
 	       s != symbols.end (); s++)
-	    out << right << hex << setfill ('0') 
-		<< setw (8) 
-		<< ma.getGlobal () 
+	    out << right << hex << setfill ('0')
+		<< setw (8)
+		<< ma.getGlobal ()
 		<< setw (0)
 		<< " <" << *s << ">: " << endl;
 	}
-      AsmAnnotation *a = (AsmAnnotation *) 
+      AsmAnnotation *a = (AsmAnnotation *)
 	node->get_annotation (AsmAnnotation::ID);
       Option<address_t> next = next_instruction_addr (node);
       if (next.hasValue ())
@@ -237,14 +237,14 @@ s_write_asm (ostream &out, const Microcode *mc,
 	  string bytes;
 
 	  if (next.hasValue ())
-	    bytes = 
+	    bytes =
 	      s_instruction_bytes (memory, ma.getGlobal (), next.getValue ());
 	  else
 	    bytes = "(unknown)";
 	  out << left << setw (24) << setfill (' ') << bytes << "\t";
 	}
-      out << a->get_value ();      
-      vector<MicrocodeNode *> *succ = 
+      out << a->get_value ();
+      vector<MicrocodeNode *> *succ =
 	asm_get_successor_instructions (mc, node);
       int nb_succ = succ->size ();
       bool first = true;
@@ -258,8 +258,8 @@ s_write_asm (ostream &out, const Microcode *mc,
 	  if (symbtable->has (saddr))
 	    {
 	      const std::list<std::string> &symbols = symbtable->get (saddr);
-		
-	      for (std::list<std::string>::const_iterator s = symbols.begin (); 
+
+	      for (std::list<std::string>::const_iterator s = symbols.begin ();
 		   s != symbols.end (); s++)
 		{
 		  if (first) { out << " # jump to : " ; first = false; }
@@ -282,41 +282,41 @@ s_write_asm (ostream &out, const Microcode *mc,
   delete symbtable;
 }
 
-void 
-asm_writer (ostream &out, const Microcode *mc, 
+void
+asm_writer (ostream &out, const Microcode *mc,
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels)
-{  
+{
   vector<MicrocodeNode *> nodes (mc->get_number_of_nodes ());
   std::copy (mc->begin_nodes(), mc->end_nodes (), nodes.begin ());
   if (nodes.empty ())
     return;
   std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
-  
-  s_write_asm (out, mc, nodes, memory, symboltable, with_bytes, 
+
+  s_write_asm (out, mc, nodes, memory, symboltable, with_bytes,
 	       with_holes, with_labels, nodes[0]->get_loc ().getGlobal (),
 	       nodes.size ());
 }
 
-void 
-asm_writer (ostream &out, const Microcode *mc, 
+void
+asm_writer (ostream &out, const Microcode *mc,
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
-	    bool with_bytes, bool with_holes, bool with_labels, 
+	    bool with_bytes, bool with_holes, bool with_labels,
 	    address_t addr, size_t nb)
-{  
+{
   vector<MicrocodeNode *> nodes (mc->get_number_of_nodes ());
   std::copy (mc->begin_nodes (), mc->end_nodes (), nodes.begin ());
 
   if (nodes.empty ())
     return;
   std::sort (nodes.begin (), nodes.end (), s_sort_microcode);
-  
-  s_write_asm (out, mc, nodes, memory, symboltable, with_bytes, 
+
+  s_write_asm (out, mc, nodes, memory, symboltable, with_bytes,
 	       with_holes, with_labels, addr, nb);
 }
 
 static void
-s_successor_instructions_rec (const Microcode *mc, const MicrocodeNode *node, 
+s_successor_instructions_rec (const Microcode *mc, const MicrocodeNode *node,
 			      set<MicrocodeNode *> &done,
 			      vector<MicrocodeNode *> *res)
 {
@@ -338,7 +338,7 @@ s_successor_instructions_rec (const Microcode *mc, const MicrocodeNode *node,
 	{
 	  MicrocodeAddress tgt = *i;
 	  MicrocodeNode *n = mc->get_node (tgt);
-            
+
 	  if (tgt.getLocal () == 0)
 	    res->push_back (n);
 	  else if (done.find (n) == done.end ())
@@ -355,7 +355,7 @@ asm_get_successor_instructions (const Microcode *mc, const MicrocodeNode *node)
 {
   set<MicrocodeNode *> done;
   vector<MicrocodeNode *> *result = new vector<MicrocodeNode *> ();
-  
+
   s_successor_instructions_rec (mc, node, done, result);
 
   return result;

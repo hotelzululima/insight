@@ -96,7 +96,7 @@ s_program_has_node (Microcode *prg, address_t addr)
   return result;
 }
 
-static void 
+static void
 s_simulate (const char *filename, const char *target)
 {
   ConfigTable ct;
@@ -108,7 +108,7 @@ s_simulate (const char *filename, const char *target)
   insight::init (ct);
   ConcreteMemory *memory = new ConcreteMemory ();
   BinaryLoader *loader =
-    new BinutilsBinaryLoader (filename, target, "", 
+    new BinutilsBinaryLoader (filename, target, "",
 			      Architecture::UnknownEndian);
   loader->load_memory (memory);
   MicrocodeArchitecture arch (loader->get_architecture ());
@@ -117,7 +117,7 @@ s_simulate (const char *filename, const char *target)
 
   logs::display << "Entry-point := " << start << endl;
   Microcode *prg = s_build_cfg (&start, memory, decoder);
-  
+
   prg->sort ();
 
   logs::display << "Microcode program : " << endl
@@ -125,8 +125,8 @@ s_simulate (const char *filename, const char *target)
 
   ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
   ATF_REQUIRE (memory->is_defined (exception_handling_addr));
-  
-  ConcreteValue check_exception = memory->get (exception_handling_addr, 1, 
+
+  ConcreteValue check_exception = memory->get (exception_handling_addr, 1,
 					       arch.get_endian ());
 
   if (! check_exception.get ())

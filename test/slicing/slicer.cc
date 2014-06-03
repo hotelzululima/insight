@@ -53,7 +53,7 @@ s_build_cfg (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
 {
   Microcode *result = new Microcode ();
   AlgorithmFactory F;
-  
+
   F.set_memory (memory);
   F.set_decoder (decoder);
   F.set_show_states (false);
@@ -69,8 +69,8 @@ s_build_cfg (const ConcreteAddress &entrypoint, ConcreteMemory *memory,
   return result;
 }
 
-static void 
-test_slicing (const char *filename, const char *bfdtarget, int max_step_nb, 
+static void
+test_slicing (const char *filename, const char *bfdtarget, int max_step_nb,
 	      int target_addr, const string &target_lv)
 {
   logs::display << "*** Test of slicing algorithm ***" << endl
@@ -79,22 +79,22 @@ test_slicing (const char *filename, const char *bfdtarget, int max_step_nb,
        << "targeted address: " << target_addr << endl
        << "lvalue: " << target_lv << endl
        << endl;
-  
+
   BinaryLoader *loader =
-    new BinutilsBinaryLoader (filename, bfdtarget, "", 
+    new BinutilsBinaryLoader (filename, bfdtarget, "",
 			      Architecture::UnknownEndian);
-  MicrocodeArchitecture *mcarch = 
+  MicrocodeArchitecture *mcarch =
     new MicrocodeArchitecture (loader->get_architecture ());
 
   ConcreteMemory *mem = new ConcreteMemory ();
   loader->load_memory (mem);
   Decoder *decoder = DecoderFactory::get_Decoder (mcarch, mem);
   Microcode *prg = s_build_cfg (ConcreteAddress (0), mem, decoder);
-  
+
   Expr *lvalue = expr_parser (target_lv, mcarch);
   vector<StmtArrow*> stmt_deps =
     DataDependency::slice_it (prg, MicrocodeAddress (target_addr), lvalue);
-  
+
   for (int i = 0; i < (int) stmt_deps.size (); i++)
     logs::display  << stmt_deps[i]->pp() << endl;
   logs::display << endl;
@@ -103,7 +103,7 @@ test_slicing (const char *filename, const char *bfdtarget, int max_step_nb,
 
   logs::display << "* Useless statements:" << endl;
 
-  std::vector<StmtArrow*> useless_arrows = 
+  std::vector<StmtArrow*> useless_arrows =
     DataDependency::useless_statements (prg);
   for (int i = 0; i < (int) useless_arrows.size (); i++)
     logs::display << useless_arrows[i]->pp() << endl;
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
   {
     DataDependency::ConsiderJumpCondMode(true);
     DataDependency::OnlySimpleSetsMode(true);
-    
+
     test_slicing(argv[1], argv[2], atoi(argv[3]), strtol(argv[4],0,0), argv[5]);
     logs::display << endl;
   }

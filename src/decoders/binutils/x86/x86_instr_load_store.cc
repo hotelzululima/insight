@@ -34,7 +34,7 @@ using namespace std;
 static Expr *
 s_flag_at_position (x86::parser_data &data, const char *flagname, int pos)
 {
-  Expr *flag = BinaryApp::create (BV_OP_LSH, 
+  Expr *flag = BinaryApp::create (BV_OP_LSH,
 				  Expr::createExtend (BV_OP_EXTEND_U,
 						      data.get_flag (flagname),
 						      8),
@@ -45,10 +45,10 @@ s_flag_at_position (x86::parser_data &data, const char *flagname, int pos)
 
 X86_TRANSLATE_0_OP(LAHF)
 {
-  Expr *alvalue = 
-    BinaryApp::create (BV_OP_OR, 
-		       Expr::createExtend (BV_OP_EXTEND_U, 
-					   data.get_flag ("cf"), 8), 
+  Expr *alvalue =
+    BinaryApp::create (BV_OP_OR,
+		       Expr::createExtend (BV_OP_EXTEND_U,
+					   data.get_flag ("cf"), 8),
 		       Constant::create (2, 0, 8));
 
   alvalue = BinaryApp::create (BV_OP_OR, alvalue,
@@ -85,7 +85,7 @@ X86_TRANSLATE_2_OP(LEA)
   if ((dst->get_bv_size () == 16) &&
       (data.addr_mode != x86::parser_data::MODE_16))
     src = op1->extract_bit_vector (0, 16);
-  else 
+  else
     src = op1->ref ();
 	
   if (src->is_MemCell ())

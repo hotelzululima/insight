@@ -67,9 +67,9 @@ template<> void arm_translate<ARM_TOKEN(AND)> (arm::parser_data &data,
     data.mc->add_assignment(data.start_ma, dst, src, data.next_ma, guard);
 }
 
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(ADD8)> (arm::parser_data &data,
-				std::string* /*prefix*/, std::string* cond, 
+				std::string* /*prefix*/, std::string* cond,
 				Expr *op1, Expr *op2, Expr *op3)
 {
   LValue *dst = (LValue *) op1;
@@ -121,9 +121,9 @@ arm_translate<ARM_TOKEN(ADD8)> (arm::parser_data &data,
     data.mc->add_assignment(data.start_ma, dst, src, data.next_ma);
 }
 
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(ADD16)> (arm::parser_data &data,
-				 std::string* /*prefix*/, std::string* cond, 
+				 std::string* /*prefix*/, std::string* cond,
 				 Expr *op1, Expr *op2, Expr *op3)
 {
 

@@ -3,7 +3,7 @@
 
 # include <analyses/cfgrecovery/AbstractContext.hh>
 
-class NullContext : public AbstractContext 
+class NullContext : public AbstractContext
 {
 public:
   NullContext ();

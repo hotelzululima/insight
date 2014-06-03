@@ -3,7 +3,7 @@
 start:
 	mov $1, %ah
 	push %ax		# push 2 bytes
-	pop %bx			# pop 2 bytes 
+	pop %bx			# pop 2 bytes
 	cmp %bx, %ax
 	jne error
 

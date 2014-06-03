@@ -106,14 +106,14 @@ void delete_bfd(bfd* abfd)
 
 /* --------------- */
 
-BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch, 
+BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
 				 ConcreteMemory *mem)
   : Decoder (arch, mem)
 {
   init ();
 }
 
-BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch, 
+BinutilsDecoder::BinutilsDecoder(MicrocodeArchitecture *arch,
 				 Decoder::RawBytesReader *reader)
   : Decoder (arch, reader)
 {
@@ -144,14 +144,14 @@ BinutilsDecoder::decode(Microcode *mc, const ConcreteAddress &address)
 
   if (this->decoder(arch, mc, instr_buffer->str(), address, result))
     {
-      MicrocodeNode *node = 
+      MicrocodeNode *node =
 	mc->get_node (MicrocodeAddress (address.get_address ()));
-      node->add_annotation (AsmAnnotation::ID,  
+      node->add_annotation (AsmAnnotation::ID,
 			    new AsmAnnotation (instr_buffer->str ()));
     }
   else
     {
-      throw Decoder::DecoderUnexpectedError ("syntax error @" + 
+      throw Decoder::DecoderUnexpectedError ("syntax error @" +
 					     address.to_string ());
     }
 
@@ -183,8 +183,8 @@ BinutilsDecoder::next(const ConcreteAddress &address)
 }
 
 
-std::string 
-BinutilsDecoder::get_instruction (const ConcreteAddress &addr) 
+std::string
+BinutilsDecoder::get_instruction (const ConcreteAddress &addr)
 {
   this->next(addr);
 
@@ -203,7 +203,7 @@ BinutilsDecoder::set_disassembler_info(struct disassemble_info *info)
   this->info = info;
 }
 
-void 
+void
 BinutilsDecoder::init ()
 {
   /* Initializing BFD framework */
@@ -408,7 +408,7 @@ s_binutils_read_memory(bfd_vma memaddr, bfd_byte *myaddr,
    * strengthen the code here I would be extremely glad to hear it...
    * Anyway, it seems to work as it is now... dodgy, but working...
    * I'm crossing my fingers ! */
-  Decoder::RawBytesReader *R = 
+  Decoder::RawBytesReader *R =
     (Decoder::RawBytesReader *) info->application_data;
 
   try

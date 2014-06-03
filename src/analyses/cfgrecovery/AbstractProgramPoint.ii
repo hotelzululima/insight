@@ -3,27 +3,27 @@
 
 template<typename PP>
 AbstractProgramPoint<PP>::AbstractProgramPoint () : Object (), refcount (1)
-{ 
+{
 }
 
 template<typename PP>
 AbstractProgramPoint<PP>::~AbstractProgramPoint ()
-{ 
+{
 }
 
 template<typename PP>
-void 
+void
 AbstractProgramPoint<PP>::ref () const
-{ 
-  refcount++; 
+{
+  refcount++;
 }
 
 template<typename PP>
-void 
-AbstractProgramPoint<PP>::deref () 
-{ 
-  if (--refcount == 0) 
-    delete this; 
+void
+AbstractProgramPoint<PP>::deref ()
+{
+  if (--refcount == 0)
+    delete this;
 }
 
 #endif /* ! ABSTRACTPROGRAMPOINT_II */

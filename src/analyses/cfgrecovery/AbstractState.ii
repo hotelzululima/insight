@@ -34,75 +34,75 @@
 # include <cassert>
 
 template<typename PP, typename CTX>
-AbstractState<PP,CTX>::AbstractState (ProgramPoint *pp, Context *ctx) 
+AbstractState<PP,CTX>::AbstractState (ProgramPoint *pp, Context *ctx)
   : Object (), program_point (pp), context (ctx), refcount (1)
-{ 
+{
 }
 
 template<typename PP, typename CTX>
-AbstractState<PP,CTX>::~AbstractState () 
-{ 
+AbstractState<PP,CTX>::~AbstractState ()
+{
   program_point->deref ();
   context->deref ();
 }
 
 template<typename PP, typename CTX>
 typename AbstractState<PP,CTX>::ProgramPoint *
-AbstractState<PP,CTX>::get_ProgramPoint () const 
+AbstractState<PP,CTX>::get_ProgramPoint () const
 {
   return program_point;
 }
 
 template<typename PP, typename CTX>
 typename AbstractState<PP,CTX>::Context *
-AbstractState<PP,CTX>::get_Context () const 
+AbstractState<PP,CTX>::get_Context () const
 {
   return context;
 }
 
 template<typename PP, typename CTX>
-bool 
-AbstractState<PP,CTX>::equals (const AbstractState<ProgramPoint, Context> *s) 
-  const 
+bool
+AbstractState<PP,CTX>::equals (const AbstractState<ProgramPoint, Context> *s)
+  const
 {
   return (program_point->equals (s->program_point) &&
 	  context->equals (s->context));
 }
 
 template<typename PP, typename CTX>
-std::size_t 
-AbstractState<PP,CTX>::hashcode () const 
+std::size_t
+AbstractState<PP,CTX>::hashcode () const
 {
   return 13 * program_point->hashcode () + 141 * context->hashcode ();
 }
 
 template<typename PP, typename CTX>
 void
-AbstractState<PP,CTX>::output_text (std::ostream &out) const 
+AbstractState<PP,CTX>::output_text (std::ostream &out) const
 {
   out << "<" << *program_point << ", " << *context << ">";
 }
 
 template<typename PP, typename CTX>
 AbstractState<PP,CTX> *
-AbstractState<PP,CTX>::clone () const 
+AbstractState<PP,CTX>::clone () const
 {
   program_point->ref ();
   context->ref ();
-  
+
   return new AbstractState<PP,CTX> (program_point, context);
 }
 
 template<typename PP, typename CTX>
 void
-AbstractState<PP,CTX>::ref () const 
+AbstractState<PP,CTX>::ref () const
 {
   refcount++;
 }
 
 template<typename PP, typename CTX>
 void
-AbstractState<PP,CTX>::deref () 
+AbstractState<PP,CTX>::deref ()
 {
   assert (refcount > 0);
   refcount--;

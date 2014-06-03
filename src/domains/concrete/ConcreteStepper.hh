@@ -9,11 +9,11 @@
 # include <domains/concrete/ConcreteExprSemantics.hh>
 
 
-class ConcreteStepper : 
+class ConcreteStepper :
   public AbstractDomainStepper<MicrocodeAddressProgramPoint, ConcreteContext>
 {
 public:
-  typedef AbstractDomainStepper<MicrocodeAddressProgramPoint, 
+  typedef AbstractDomainStepper<MicrocodeAddressProgramPoint,
 				ConcreteContext> Super;
 
   typedef Super::Address Address;
@@ -23,18 +23,18 @@ public:
   ConcreteStepper (ConcreteMemory *memory, const MicrocodeArchitecture *arch);
   virtual ~ConcreteStepper ();
 
-  virtual ConcreteValue 
+  virtual ConcreteValue
   value_to_ConcreteValue (const Context *ctx, const Value &v, bool *is_unique)
     throw (UndefinedValueException);
 
-  virtual Address 
-  value_to_address (const Context *ctx, const Value &v) 
+  virtual Address
+  value_to_address (const Context *ctx, const Value &v)
     throw (UndefinedValueException);
 
-  virtual std::vector<address_t> * 
-  value_to_concrete_addresses (const Context *ctx, const Value &v) 
+  virtual std::vector<address_t> *
+  value_to_concrete_addresses (const Context *ctx, const Value &v)
     throw (UndefinedValueException);
-  
+
   virtual Value eval (const Context *ctx, const Expr *e)
     throw (UndefinedValueException);
 
@@ -43,7 +43,7 @@ public:
   virtual State *get_initial_state (const ConcreteAddress &entrypoint);
 
 protected:
-  virtual Context * 
+  virtual Context *
   restrict_to_condition (const Context *ctx, const Expr *cond);
 
   ConcreteMemory *memory;

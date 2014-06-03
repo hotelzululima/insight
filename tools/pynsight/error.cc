@@ -34,7 +34,7 @@
 struct Exception {
   const char *name;
   PyObject **p_exception;
-}; 
+};
 
 static PyMethodDef Error_Methods[] = {
   { NULL, NULL, 0, NULL }
@@ -55,8 +55,8 @@ s_declare_exception (PyObject *module, const char *name, PyObject *&exc)
   PyModule_AddObject (module, name, exc);
 }
 
-static bool 
-s_init () 
+static bool
+s_init ()
 {
   PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
   PyObject *error_module = Py_InitModule ("error", Error_Methods);
@@ -72,8 +72,8 @@ s_init ()
   return true;
 }
 
-static bool 
-s_terminate () 
+static bool
+s_terminate ()
 {
   return true;
 }

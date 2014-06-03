@@ -85,30 +85,30 @@ static PyTypeObject PyMicrocodeType = {
 };
 
 static PyMethodDef PyMicrocodeMethods[] = {
-  { "asm", (PyCFunction) s_PyMicrocode_asm, METH_VARARGS|METH_KEYWORDS, 
+  { "asm", (PyCFunction) s_PyMicrocode_asm, METH_VARARGS|METH_KEYWORDS,
     "\n" },
-  { "asmall", (PyCFunction) s_PyMicrocode_asmall, METH_VARARGS|METH_KEYWORDS, 
+  { "asmall", (PyCFunction) s_PyMicrocode_asmall, METH_VARARGS|METH_KEYWORDS,
     "\n" },
-  { "dot", (PyCFunction) s_PyMicrocode_dot, METH_VARARGS|METH_KEYWORDS, 
+  { "dot", (PyCFunction) s_PyMicrocode_dot, METH_VARARGS|METH_KEYWORDS,
     "\n" },
-  { "get_range", (PyCFunction) s_PyMicrocode_get_range, METH_NOARGS, 
+  { "get_range", (PyCFunction) s_PyMicrocode_get_range, METH_NOARGS,
     "\n" },
-  { "cfg", (PyCFunction) s_PyMicrocode_cfg, METH_VARARGS|METH_KEYWORDS, 
+  { "cfg", (PyCFunction) s_PyMicrocode_cfg, METH_VARARGS|METH_KEYWORDS,
     "\n" },
   { NULL, NULL, 0, NULL }
 };
 
-static bool 
-s_init () 
-{ 
+static bool
+s_init ()
+{
   PyMicrocodeType.tp_methods = PyMicrocodeMethods;
   if (PyType_Ready (&PyMicrocodeType) < 0)
     return false;
   return true;
 }
 
-static bool 
-s_terminate () 
+static bool
+s_terminate ()
 {
   return true;
 }
@@ -116,7 +116,7 @@ s_terminate ()
 static pynsight::Module MICROCODE (NULL, s_init, s_terminate);
 
 PyObject *
-pynsight::microcode_object (Program *prog, 
+pynsight::microcode_object (Program *prog,
 			    const pynsight::MicrocodeReference *mc)
 {
   PyMicrocode *M = PyObject_New (PyMicrocode, &PyMicrocodeType);
@@ -134,7 +134,7 @@ pynsight::microcode_object (Program *prog,
 }
 
 static void
-s_PyMicrocode_dealloc (PyObject *obj) 
+s_PyMicrocode_dealloc (PyObject *obj)
 {
   PyMicrocode *M = (PyMicrocode *) obj;
 
@@ -145,25 +145,25 @@ s_PyMicrocode_dealloc (PyObject *obj)
 static PyObject *
 s_PyMicrocode_asm (PyObject *self, PyObject *args, PyObject *kwds)
 {
-  static const char *kwlists[] =  
+  static const char *kwlists[] =
     { "addr", "len", "bytes", "holes", "labels", NULL };
   unsigned long addr;
   unsigned long len;
   unsigned char with_bytes = 0;
   unsigned char with_labels = 0;
-  unsigned char with_holes = 0;  
+  unsigned char with_holes = 0;
   PyMicrocode *M = (PyMicrocode *) self;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kk|bbb", (char **) kwlists, 
-				    &addr, &len, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kk|bbb", (char **) kwlists,
+				    &addr, &len,
 				    &with_bytes, &with_holes, &with_labels))
     return NULL;
 
-  asm_writer (std::cout, M->mc->get_microcode (), M->prog->concrete_memory, 
+  asm_writer (std::cout, M->mc->get_microcode (), M->prog->concrete_memory,
 	      M->prog->symbol_table, with_bytes, with_holes, with_labels,
 	      addr, len);
 
-  return pynsight::None ();  
+  return pynsight::None ();
 }
 
 static PyObject *
@@ -172,17 +172,17 @@ s_PyMicrocode_asmall (PyObject *self, PyObject *args, PyObject *kwds)
   static const char *kwlists[] =  { "bytes", "holes", "labels", NULL };
   unsigned char with_bytes = 0;
   unsigned char with_labels = 0;
-  unsigned char with_holes = 0;  
+  unsigned char with_holes = 0;
   PyMicrocode *M = (PyMicrocode *) self;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|bbb", (char **) kwlists, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|bbb", (char **) kwlists,
 				    &with_bytes, &with_holes, &with_labels))
     return NULL;
 
-  asm_writer (std::cout, M->mc->get_microcode (), M->prog->concrete_memory, 
+  asm_writer (std::cout, M->mc->get_microcode (), M->prog->concrete_memory,
 	      M->prog->symbol_table, with_bytes, with_holes, with_labels);
 
-  return pynsight::None ();  
+  return pynsight::None ();
 }
 
 static PyObject *
@@ -194,7 +194,7 @@ s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds)
   unsigned long end;
   PyMicrocode *M = (PyMicrocode *) self;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kkk", (char **) kwlists, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "kkk", (char **) kwlists,
 				    &ep, &start, &end))
     return NULL;
 
@@ -203,16 +203,16 @@ s_PyMicrocode_dot (PyObject *self, PyObject *args, PyObject *kwds)
   ConcreteAddress ca_start (start);
   ConcreteAddress ca_end (end);
 
-  dot_asm_writer (oss, M->mc->get_microcode (), &ca_start, &ca_end, &ca_ep, 
+  dot_asm_writer (oss, M->mc->get_microcode (), &ca_start, &ca_end, &ca_ep,
 		  M->prog->symbol_table, true, "");
 
   return Py_BuildValue ("s", oss.str ().c_str ());
 }
 
 static void
-s_microcode_addrspace (const Microcode *mc, address_t &minaddr, 
+s_microcode_addrspace (const Microcode *mc, address_t &minaddr,
 		       address_t &maxaddr)
-{ 
+{
   minaddr = MAX_ADDRESS;
   maxaddr = 0;
 
@@ -248,7 +248,7 @@ s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds)
 
   if (! PyArg_ParseTupleAndKeywords (args, kwds, "k|s", (char **) kwlists,
 				     &addr, &filename))
-    return NULL;    
+    return NULL;
 
   MicrocodeAddress ma (addr);
   CFG *cfg = CFG::createFromMicrocode (M->mc->get_microcode (), ma);
@@ -261,7 +261,7 @@ s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds)
   else
     {
       std::ostringstream oss;
-  
+
       cfg->toDot (oss);
       result = Py_BuildValue ("s", oss.str ().c_str ());
     }

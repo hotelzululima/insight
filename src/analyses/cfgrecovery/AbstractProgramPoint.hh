@@ -28,7 +28,7 @@ public:
   virtual void output_text (std::ostream &) const = 0;
 
 private:
-  mutable int refcount;  
+  mutable int refcount;
 };
 
 # include <analyses/cfgrecovery/AbstractProgramPoint.ii>

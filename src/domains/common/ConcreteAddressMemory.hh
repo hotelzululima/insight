@@ -81,12 +81,12 @@ public:
   virtual ~ConcreteAddressMemory() {};
 
   /*! \brief get a value of size bytes at address a with endianness e */
-  virtual Value get(const ConcreteAddress &a, int size, 
-		    Architecture::endianness_t e) const 
+  virtual Value get(const ConcreteAddress &a, int size,
+		    Architecture::endianness_t e) const
     throw (UndefinedValueException);
 
   /*! \brief put a value v at address a with endianness e */
-  virtual void put(const ConcreteAddress &a, const Value &v, 
+  virtual void put(const ConcreteAddress &a, const Value &v,
 		   Architecture::endianness_t e);
 
   virtual bool is_defined(const ConcreteAddress &a) const;

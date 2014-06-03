@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 if test "x$1" = "x"; then
     echo "Usage: $0 test-name" 1>&2

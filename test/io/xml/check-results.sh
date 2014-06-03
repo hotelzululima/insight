@@ -6,7 +6,7 @@ if test "x$1" = "x"; then
 fi
 
 TESTNAME="$1"
-if test "$(basename ${TESTNAME})" = "check-diff"; 
+if test "$(basename ${TESTNAME})" = "check-diff";
 then
     REFNAME=/dev/null
 else

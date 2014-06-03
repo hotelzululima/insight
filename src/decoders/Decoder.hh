@@ -59,7 +59,7 @@ public:
 
   class Exception : public std::runtime_error {
   public:
-    Exception (const std::string &msg) : std::runtime_error(msg) {} 
+    Exception (const std::string &msg) : std::runtime_error(msg) {}
   };
 
   /*********************** Decoder Exceptions **************************/
@@ -68,7 +68,7 @@ public:
   class UnknownMnemonic : public Exception
   {
   public:
-    UnknownMnemonic(const std::string &instr) : 
+    UnknownMnemonic(const std::string &instr) :
       Exception("'" + instr + "' : Unknown mnemonic") {}
   };
 
@@ -111,7 +111,7 @@ public:
   };
 
 
-  class RawBytesReader {    
+  class RawBytesReader {
   public:
     virtual ~RawBytesReader() {}
     virtual void read_buffer (address_t from, uint8_t *dest, size_t length)
@@ -127,12 +127,12 @@ public:
    *   decoded instruction.
    */
   virtual ConcreteAddress decode(Microcode *mc,
-				 const ConcreteAddress &addr) 
+				 const ConcreteAddress &addr)
     throw (Exception) = 0;
 
   /* Returns the address immediately after instruction at 'addr'
    * without translating it into Microcode */
-  virtual ConcreteAddress next(const ConcreteAddress &addr) 
+  virtual ConcreteAddress next(const ConcreteAddress &addr)
     throw (Exception) = 0;
 
   /* Set a new memory to decode */

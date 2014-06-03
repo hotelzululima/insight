@@ -43,7 +43,7 @@ bool x86_scanner_open(const string &instr);
 void x86_scanner_close();
 
 bool
-x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
+x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc,
 		    const string &instruction,
                     const ConcreteAddress &start,
                     const ConcreteAddress &next)
@@ -51,10 +51,10 @@ x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc,
   if (!x86_scanner_open (instruction))
     return false;
 
-  x86::parser_data data (arch, mc, instruction, start.get_address (), 
+  x86::parser_data data (arch, mc, instruction, start.get_address (),
 			    next.get_address ());
 
-  x86::parser parser(data);  
+  x86::parser parser(data);
   bool result = (parser.parse() == 0);
   x86_scanner_close();
 

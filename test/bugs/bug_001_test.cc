@@ -62,7 +62,7 @@ ATF_TEST_CASE_BODY (BUG_001)
   insight::init (ct);
 
   BinaryLoader *loader =
-    new BinutilsBinaryLoader (TEST_SAMPLES_DIR "x86_32-bug-001.bin", 
+    new BinutilsBinaryLoader (TEST_SAMPLES_DIR "x86_32-bug-001.bin",
 			      "elf32-i386", "",
 			      Architecture::UnknownEndian);
   ConcreteMemory *memory = new ConcreteMemory ();

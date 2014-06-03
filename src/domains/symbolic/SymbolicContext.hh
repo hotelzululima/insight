@@ -10,7 +10,7 @@ class SymbolicContext : public AbstractDomainContext<SymbolicMemory>
   typedef AbstractDomainContext<SymbolicMemory> SType;
 
 public:
-  SymbolicContext (SymbolicMemory *mem, Expr *cond); 
+  SymbolicContext (SymbolicMemory *mem, Expr *cond);
 
   virtual ~SymbolicContext ();
 
@@ -19,7 +19,7 @@ public:
   virtual std::size_t hashcode () const;
   virtual void output_text (std::ostream &out) const;
   virtual const Expr *get_path_condition () const;
-  virtual void set_path_condition (Expr *cond);    
+  virtual void set_path_condition (Expr *cond);
   virtual SymbolicContext *clone () const;
 
 protected:

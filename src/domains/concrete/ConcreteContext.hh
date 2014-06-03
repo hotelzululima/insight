@@ -4,7 +4,7 @@
 # include <analyses/cfgrecovery/AbstractDomainContext.hh>
 # include <domains/concrete/ConcreteMemory.hh>
 
-class ConcreteContext : public AbstractDomainContext<ConcreteMemory> 
+class ConcreteContext : public AbstractDomainContext<ConcreteMemory>
 {
 public:
   ConcreteContext (ConcreteMemory *mem);

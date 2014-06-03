@@ -46,7 +46,7 @@ class Expr;
 /*! \brief This class defines the concept of Microcode Program.
  *  This is a list of nodes, each node containing its successors.
  *****************************************************************************/
-struct NodeStore 
+struct NodeStore
 {
   typedef std::vector<MicrocodeNode *> store_type;
   typedef store_type::iterator node_iterator;
@@ -54,7 +54,7 @@ struct NodeStore
 };
 
 class Microcode
-  : public MicrocodeStore, 
+  : public MicrocodeStore,
     public GraphInterface<MicrocodeNode, StmtArrow, NodeStore> {
 
 public:
@@ -63,7 +63,7 @@ public:
   };
 
 private:
-  
+
   /*! \brief A microcode program is simply defined as a collection of
    * nodes. */
   store_type nodes;
@@ -209,7 +209,7 @@ public:
 /*! \brief A path in a MC Program. This is a list of Microcode
   Nodes. The choice of lists makes it easier to do operation on
   path (concatenation, insersion, etc. */
-class MCPath : 
+class MCPath :
   public ConcreteEdgePath<MicrocodeNode, StmtArrow, NodeStore> {
 public:
   MCPath(Microcode *prog) : ConcreteEdgePath<MicrocodeNode, StmtArrow, NodeStore>(prog) {};

@@ -35,7 +35,7 @@
 #include <kernel/Microcode.hh>
 #include <kernel/microcode/MicrocodeArchitecture.hh>
 
-extern void 
+extern void
 xml_of_microcode (std::ostream &out, const Microcode *prg,
 		  const MicrocodeArchitecture *mcarch);
 

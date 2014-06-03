@@ -37,28 +37,28 @@
 # include <decoders/Decoder.hh>
 
 extern void
-linear_sweep (const std::list<ConcreteAddress> &entrypoints, 
+linear_sweep (const std::list<ConcreteAddress> &entrypoints,
 	      ConcreteMemory *memory, Decoder * decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
-flood_traversal (const std::list<ConcreteAddress> &entrypoints, 
+flood_traversal (const std::list<ConcreteAddress> &entrypoints,
 		 ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
-recursive_traversal (const std::list<ConcreteAddress> &entrypoints, 
-		     ConcreteMemory *memory, Decoder *decoder, 
+recursive_traversal (const std::list<ConcreteAddress> &entrypoints,
+		     ConcreteMemory *memory, Decoder *decoder,
 		     Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
-symbolic_simulator (const std::list<ConcreteAddress> &entrypoints, 
+symbolic_simulator (const std::list<ConcreteAddress> &entrypoints,
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 
 extern void
-concrete_simulator (const std::list<ConcreteAddress> &entrypoints, 
+concrete_simulator (const std::list<ConcreteAddress> &entrypoints,
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &);
 

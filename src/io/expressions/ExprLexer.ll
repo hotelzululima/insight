@@ -67,7 +67,7 @@ typedef Parser::token token;
 %}
 
  /* Flex efficiency tuning */
-%option 7bit noyywrap nounput batch full align 
+%option 7bit noyywrap nounput batch full align
 %option prefix="ExprParser_"
 
 
@@ -162,7 +162,7 @@ optype    [bswlqt]
 		 for (; *s; s++)
 		   {
 		     yylval->intValue <<= 1;
-		     if (*s == '1') 
+		     if (*s == '1')
 		       yylval->intValue |= 1;
 		   }
 		 return token::TOK_INTEGER;
@@ -190,7 +190,7 @@ optype    [bswlqt]
                 }
 
  /* Anything else is probable an error */
-.  { 
+.  {
      char tmp[2] = { yytext[0], 0 };
      yylval->stringValue = new string (tmp);
      return token::TOK_INVALID;
@@ -199,13 +199,13 @@ optype    [bswlqt]
 %% /***** Lexer subroutines *****/
 
 
-bool 
+bool
 ExprParser::init_lexer (const string &input)
 {
   return yy_scan_string (input.c_str ());
 }
 
-void 
+void
 ExprParser::terminate_lexer ()
 {
   yy_delete_buffer (YY_CURRENT_BUFFER);

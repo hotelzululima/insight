@@ -44,24 +44,24 @@ typedef std::list<const MemCell *> MemCellContainer;
 
 /*! construct subsets and their complements */
 template <typename T>
-std::vector< std::pair<T, T> > 
-construct_all_subsets(const T &s) 
+std::vector< std::pair<T, T> >
+construct_all_subsets(const T &s)
 {
   std::vector< std::pair<T, T > > subsets;
   std::vector<bool> belongs;
-  for (unsigned int i = 0; i < s.size() + 1; i++) 
+  for (unsigned int i = 0; i < s.size() + 1; i++)
     belongs.push_back (false);
 
   while (!belongs[s.size()])
-    {      
+    {
       int i = 0;
       T subset;
       T complement;
       for (typename T::const_iterator e = s.begin (); e != s.end (); e++, i++)
 	{
-	  if (belongs[i]) 
+	  if (belongs[i])
 	    subset.push_back(*e);
-	  else 
+	  else
 	    complement.push_back(*e);
 	}
       subsets.push_back(std::pair<T, T >(subset, complement));
@@ -93,9 +93,9 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
   if (assmt->get_lval()->is_RegisterExpr())
     {
       Expr *original_cpy = post->ref ();
-      Expr *result = 
+      Expr *result =
 	replace_subterm (original_cpy, assmt->get_lval(), assmt->get_rval());
-      if (result != original_cpy) 
+      if (result != original_cpy)
 	original_cpy->deref ();
       return result;
     }
@@ -106,15 +106,15 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
 
 
   // 1. construct the list of all memory references appearing in this
-  MemCellContainer all_memrefs = 
+  MemCellContainer all_memrefs =
     collect_subterms_of_type<MemCellContainer, MemCell> (post, true);
 
-  if (all_memrefs.size() == 0) 
+  if (all_memrefs.size() == 0)
     return post;
 
-  // 2. construct the list of all the subsets of memory references (to be 
+  // 2. construct the list of all the subsets of memory references (to be
   // replaced by an enumerator)
-  vector< pair<MemCellContainer, MemCellContainer > > all_subsets = 
+  vector< pair<MemCellContainer, MemCellContainer > > all_subsets =
     construct_all_subsets(all_memrefs);
 
   // 3. construct the expr
@@ -127,31 +127,31 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
        subset++)
     {
 
-      // Hypothesis : all addresses of all memcell in *subset are equal to 
+      // Hypothesis : all addresses of all memcell in *subset are equal to
       // those of mc
       // and all the other ones are different from those of mc
       Expr * hyp = Constant::True ();  // true by default
-      for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
-	   mcel != (*subset).first.end(); mcel++) 
+      for (MemCellContainer::iterator mcel = (*subset).first.begin();
+	   mcel != (*subset).first.end(); mcel++)
 	{
 	  Expr *c = BinaryApp::createEquality (mc->get_addr()->ref (),
 					       (*mcel)->get_addr()->ref ());
 	  hyp = BinaryApp::createLAnd (c, hyp);
 	}
 
-      for (MemCellContainer::iterator mcel = (*subset).second.begin(); 
-	   mcel != (*subset).second.end(); mcel++) 
+      for (MemCellContainer::iterator mcel = (*subset).second.begin();
+	   mcel != (*subset).second.end(); mcel++)
 	{
-	  Expr *c = 
+	  Expr *c =
 	    Expr::createDisequality (mc->get_addr()->ref (),
 				     (*mcel)->get_addr()->ref ());
 	  hyp = Expr::createLAnd (c, hyp);
 	}
 
-      // Replace all the terms pointed by elements of subset by the right 
+      // Replace all the terms pointed by elements of subset by the right
       // member of assmt
       Expr * psi = post->ref ();
-      for (MemCellContainer::iterator mcel = (*subset).first.begin(); 
+      for (MemCellContainer::iterator mcel = (*subset).first.begin();
 	   mcel != (*subset).first.end(); mcel++)
 	replace_subterm (psi, *mcel, (Expr *) assmt->get_rval());
 
@@ -167,7 +167,7 @@ Expr * weakest_precondition(Expr * post, Statement *stmt)
 
 Expr * weakest_precondition(Expr * post, StmtArrow *arrow)
 {
-  Expr *phi = 
+  Expr *phi =
     Expr::createImplies (arrow->get_condition(),
 			 weakest_precondition(post, arrow->get_stmt()));
   simplify_level0 (&phi);
@@ -194,7 +194,7 @@ Expr * weakest_precondition(Expr * post, MCPath &p)
 }
 
 
-class SequentialisationVisitor : 
+class SequentialisationVisitor :
   public GraphVisitor<MicrocodeNode, StmtArrow> {
 
 public:
@@ -219,7 +219,7 @@ public:
             MicrocodeAddress start = current_path_get_last_annotation().getValue();
             MicrocodeAddress final = current_path_get_target();
             MCPath path = current_path_extract(start, final);
-            cout << "SEGMENT" << start << "-" << final << ":\n" 
+            cout << "SEGMENT" << start << "-" << final << ":\n"
 		 << path.pp() << endl;
             segments.push_back(path);
             cout << segments.size() << endl;

@@ -98,62 +98,62 @@ static PyMethodDef programMethods[] = {
     METH_NOARGS,
     "Return a dictionary containing data related to the program "
     "(e.g entrypoint).\n"
-  }, { 
-    "sym", 
-    s_insight_Program_sym, 
+  }, {
+    "sym",
+    s_insight_Program_sym,
     METH_VARARGS,
     "Symbol table access method.\n"
     "Accepts an address or a string and returns the corresponding other kind."
-  }, { 
-    "add_symbol", 
-    (PyCFunction) s_insight_Program_add_symbol, 
+  }, {
+    "add_symbol",
+    (PyCFunction) s_insight_Program_add_symbol,
     METH_VARARGS|METH_KEYWORDS,
-    "Add new entry in symbol table.\n"   
+    "Add new entry in symbol table.\n"
     "Keyword parameters:\n"
     " - name : identifier of the symbol\n"
     " - addr : address of the symbol\n"
-  }, { 
-    "symbols", 
-    s_insight_Program_symbols, 
+  }, {
+    "symbols",
+    s_insight_Program_symbols,
     METH_NOARGS,
     "Return the list of known symbols.\n"
-  }, { 
-    "dump_memory", 
-    (PyCFunction) s_insight_Program_dump_memory, 
+  }, {
+    "dump_memory",
+    (PyCFunction) s_insight_Program_dump_memory,
     METH_VARARGS|METH_KEYWORDS,
     "Return a list of tuples containing memory bytes.\n"
-  }, { 
-    "disas", 
-    (PyCFunction) s_insight_Program_disas, 
+  }, {
+    "disas",
+    (PyCFunction) s_insight_Program_disas,
     METH_VARARGS|METH_KEYWORDS,
     "Return an iterator on disassembled instructions."
-  }, { 
-    "simulator", 
-    (PyCFunction) s_insight_Program_simulate, 
+  }, {
+    "simulator",
+    (PyCFunction) s_insight_Program_simulate,
     METH_VARARGS|METH_KEYWORDS,
     "Start a step-by-step simulator."
-  }, { 
-    NULL, NULL, 0, NULL 
+  }, {
+    NULL, NULL, 0, NULL
   }
 };
 
-static bool 
-s_init () { 
+static bool
+s_init () {
   insight_ProgramType.tp_methods = programMethods;
   if (PyType_Ready (&insight_ProgramType) < 0)
     return false;
   return true;
 }
 
-static bool 
+static bool
 s_terminate () {
   return true;
 }
 
 static pynsight::Module PROGRAM (NULL, s_init, s_terminate);
 
-PyObject * 
-pynsight::load_program (const char *filename, const char *target, 
+PyObject *
+pynsight::load_program (const char *filename, const char *target,
 			const char *mach, Architecture::endianness_t endian) {
   struct Program *p = PyObject_New (struct Program, &insight_ProgramType);
   if (p == NULL)
@@ -178,7 +178,7 @@ pynsight::load_program (const char *filename, const char *target,
   } catch (std::bad_alloc &e) {
     PyErr_NoMemory();
   }
-  
+
   if (PyErr_Occurred ()) {
     Py_DECREF (p);
     p = NULL;
@@ -224,13 +224,13 @@ s_insight_Program_sym (PyObject *p, PyObject *args) {
     if (self->symbol_table->has(symbol)) {
       address = (long) self->symbol_table->get(symbol);
       return Py_BuildValue("i", address);
-    } 
+    }
   } else if (PyArg_ParseTuple(args, "i", &address)) {
     PyErr_Clear();
     if (self->symbol_table->has((address_t) address)) {
       symbol = self->symbol_table->get((address_t) address).front().c_str();
       return Py_BuildValue("s", symbol);
-    } 
+    }
   } else {
     return NULL;
   }
@@ -241,12 +241,12 @@ s_insight_Program_sym (PyObject *p, PyObject *args) {
 static PyObject *
 s_insight_Program_add_symbol (PyObject *p, PyObject *args, PyObject *kwds)
 {
-  static const char *kwlists[] =  { "name", "addr", NULL };  
+  static const char *kwlists[] =  { "name", "addr", NULL };
   struct Program *self = (struct Program *) p;
   const char *name;
   unsigned long addr;
 
-  if (! PyArg_ParseTupleAndKeywords(args, kwds, "sk", (char **) kwlists, 
+  if (! PyArg_ParseTupleAndKeywords(args, kwds, "sk", (char **) kwlists,
 				    &name, &addr))
     return NULL;
   self->symbol_table->add_symbol (name, addr);
@@ -274,24 +274,24 @@ s_insight_Program_symbols (PyObject *obj, PyObject *) {
   if (PyErr_Occurred ()) {
     Py_DECREF (result);
     result = NULL;
-  } 
+  }
 
   return result;
 }
 
-class DumpIterator : public pynsight::GenericGenerator 
+class DumpIterator : public pynsight::GenericGenerator
 {
 private:
   Program *p;
   Py_ssize_t current;
   Py_ssize_t len;
   Py_ssize_t step;
-  
+
 public:
   DumpIterator (Program *prg, Py_ssize_t addr, Py_ssize_t len, Py_ssize_t step)
-    : pynsight::GenericGenerator(), 
-      p (prg), current (addr), len (len), step (step) { 
-    Py_INCREF ((PyObject *)prg);    
+    : pynsight::GenericGenerator(),
+      p (prg), current (addr), len (len), step (step) {
+    Py_INCREF ((PyObject *)prg);
   }
 
   ~DumpIterator () {
@@ -301,44 +301,44 @@ public:
   PyObject *next () {
     PyObject *result = NULL;
 
-    if (len == 0) 
+    if (len == 0)
       PyErr_SetNone (PyExc_StopIteration);
-    else 
+    else
       {
 	PyObject *line_addr = Py_BuildValue ("n", current);
 	int max = std::min (step, len);
 
-	if (line_addr != NULL) 
+	if (line_addr != NULL)
 	  {
 	    PyObject *tuple = PyTuple_New (step);
-	    if (tuple != NULL) 
+	    if (tuple != NULL)
 	      {
-		for (Py_ssize_t i = 0; i < step && !PyErr_Occurred (); i++) 
+		for (Py_ssize_t i = 0; i < step && !PyErr_Occurred (); i++)
 		{
 		  PyObject *b = NULL;
 		  ConcreteAddress addr ((address_t) current + i);
-		  
-		  if (i < max && p->concrete_memory->is_defined (addr)) 
+
+		  if (i < max && p->concrete_memory->is_defined (addr))
 		    {
-		      ConcreteValue val = 
-			p->concrete_memory->get (addr, 1, 
+		      ConcreteValue val =
+			p->concrete_memory->get (addr, 1,
 						 Architecture::LittleEndian);
 		      b = Py_BuildValue ("b", (unsigned char) val.get ());
 		    } else {
 		    b = pynsight::None ();
 		  }
-		  if (b != NULL)		
+		  if (b != NULL)
 		    PyTuple_SET_ITEM (tuple, i, b);
 		}
-		
-		if (!PyErr_Occurred ()) 
+
+		if (!PyErr_Occurred ())
 		  result = PyTuple_Pack (2, line_addr, tuple);
 		Py_DECREF (tuple);
 	      }
 	    Py_DECREF (line_addr);
 	  }
-	
-	if (! PyErr_Occurred ()) 
+
+	if (! PyErr_Occurred ())
 	  {
 	    len -= max;
 	    current += max;
@@ -349,8 +349,8 @@ public:
   }
 };
 
-static PyObject * 
-s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds) 
+static PyObject *
+s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds)
 {
   static const char *kwlists[] =  { "start", "len", "step", NULL };
   Program *p = (Program *) obj;
@@ -364,12 +364,12 @@ s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds)
   Py_ssize_t step = 16;
 
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|III", (char **) kwlists, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|III", (char **) kwlists,
 				    &start, &len, &step))
     return NULL;
 
-  if (! (s <= start && start <= e)) 
-    {    
+  if (! (s <= start && start <= e))
+    {
       PyErr_SetString (PyExc_LookupError, "start address is out of memory");
       return NULL;
     }
@@ -377,10 +377,10 @@ s_insight_Program_dump_memory (PyObject *obj, PyObject *args, PyObject *kwds)
   if (step == 0 || len == 0)
     return pynsight::None ();
 
-  if (start + len >= e) 
+  if (start + len >= e)
     len = e - start + 1;
 
-  PyObject *result = 
+  PyObject *result =
     pynsight::generic_generator_new (new DumpIterator (p, start, len, step));
 
   return result;
@@ -394,11 +394,11 @@ s_registers (const Architecture *arch) {
   if (result == NULL)
     return NULL;
 
-  for (RegisterSpecs::const_iterator i = regspecs->begin (); 
+  for (RegisterSpecs::const_iterator i = regspecs->begin ();
        i != regspecs->end () && !PyErr_Occurred (); i++) {
     const char *regname = i->second->get_label ().c_str ();
     PyObject *regsize = Py_BuildValue ("I", i->second->get_window_size ());
-    if (regsize == NULL) 
+    if (regsize == NULL)
       break;
 
     PyDict_SetItemString (result, regname, regsize);
@@ -424,27 +424,27 @@ s_insight_Program_info (PyObject *obj, PyObject *)
 
   p->concrete_memory->get_address_range (start_addr, end_addr);
 
-  PyObject *result = Py_BuildValue 
-    ("{s:s, s:s, s:I, s:s, s:s, s:I, s:I, s:I, s:I, s:O}", 
-     "inputname", 
+  PyObject *result = Py_BuildValue
+    ("{s:s, s:s, s:I, s:s, s:s, s:I, s:I, s:I, s:I, s:O}",
+     "inputname",
      p->loader->get_filename ().c_str (),
-     "format", 
+     "format",
      p->loader->get_format ().c_str (),
-     "entrypoint", 
+     "entrypoint",
      p->loader->get_entrypoint ().get_address (),
-     "cpu", 
+     "cpu",
      p->loader->get_architecture()->get_proc_name(),
-     "endianness", 
+     "endianness",
      p->loader->get_architecture()->get_endian_name(),
-     "word_size", 
+     "word_size",
      p->loader->get_architecture ()->get_word_size (),
-     "address_size", 
+     "address_size",
      p->loader->get_architecture ()->get_address_size (),
-     "memory_min_address", 
-     start_addr, 
-     "memory_max_address", 
+     "memory_min_address",
+     start_addr,
+     "memory_max_address",
      end_addr,
-     "registers", 
+     "registers",
      regs
      );
   Py_XDECREF (regs);
@@ -452,7 +452,7 @@ s_insight_Program_info (PyObject *obj, PyObject *)
   return result;
 }
 
-class DisasIterator : public pynsight::GenericGenerator 
+class DisasIterator : public pynsight::GenericGenerator
 {
 private:
   address_t current_addr;
@@ -461,7 +461,7 @@ private:
   MicrocodeArchitecture *march;
   BinutilsDecoder *decoder;
 public:
-  DisasIterator (Program *p, address_t start, int nb, address_t max) 
+  DisasIterator (Program *p, address_t start, int nb, address_t max)
     : pynsight::GenericGenerator (), current_addr (start), remain (nb),
       max_addr (max) {
     march = new MicrocodeArchitecture (p->loader->get_architecture ());
@@ -478,22 +478,22 @@ public:
 
     if (current_addr >= max_addr || remain == 0)
       PyErr_SetNone (PyExc_StopIteration);
-    else 
+    else
       {
 	remain--;
-	try 
+	try
 	  {
 	    std::string inst = decoder->get_instruction (current_addr);
 	    address_t next = decoder->next (current_addr).get_address ();
 	    result = Py_BuildValue ("(i,s)", current_addr, inst.c_str ());
 	    current_addr = next;
-	  } 
+	  }
 	catch (Decoder::OutOfBounds &e)
 	  {
 	    PyErr_SetNone (PyExc_StopIteration);
 	  }
       }
-    
+
     return (result);
   }
 };
@@ -511,11 +511,11 @@ s_insight_Program_disas (PyObject *obj, PyObject *args, PyObject *kwds)
   Py_ssize_t start = s;
   Py_ssize_t nb = 1;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|II", (char **) kwlists, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|II", (char **) kwlists,
 				    &start, &nb))
     return NULL;
 
-  if (! (s <= start && start <= e)) {    
+  if (! (s <= start && start <= e)) {
     PyErr_SetString (PyExc_LookupError, "start address is out of memory");
     return NULL;
   }
@@ -536,14 +536,14 @@ s_insight_Program_simulate (PyObject *obj, PyObject *args, PyObject *kwds)
   Program *p = (Program *) obj;
   const char *domain = NULL;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s", (char **) kwlists, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s", (char **) kwlists,
 				    &domain))
     return NULL;
 
   pynsight::SimulationDomain sem;
   if (strcmp (domain, "symbolic") == 0) sem = pynsight::SIM_SYMBOLIC;
   else if (strcmp (domain, "concrete") == 0) sem = pynsight::SIM_CONCRETE;
-  else 
+  else
     {
       PyErr_SetString (PyExc_LookupError, "unknown domain");
       return NULL;

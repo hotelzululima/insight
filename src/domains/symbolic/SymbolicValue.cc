@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite de Bordeaux.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -41,11 +41,11 @@ SymbolicValue::SymbolicValue () : Value (0)
 
 SymbolicValue::SymbolicValue (const SymbolicValue &sv)
   : Value (sv.get_size ())
-{  
+{
   if (sv.value != NULL)
     value = sv.value->ref ();
   else
-    value = NULL;  
+    value = NULL;
 
   assert (value == NULL || get_size () == value->get_bv_size ());
 }
@@ -55,7 +55,7 @@ SymbolicValue::SymbolicValue (int size, word_t val) : Value (size)
   value = Constant::create (val, 0, size);
 }
 
-SymbolicValue::SymbolicValue (const Expr *e) 
+SymbolicValue::SymbolicValue (const Expr *e)
   : Value (e->get_bv_size ()), value (e->ref ())
 {
   exprutils::simplify (&value);
@@ -67,7 +67,7 @@ SymbolicValue::~SymbolicValue ()
     value->deref ();
 }
 
-SymbolicValue & 
+SymbolicValue &
 SymbolicValue::operator= (const SymbolicValue &sv)
 {
   if (value != NULL)
@@ -83,7 +83,7 @@ SymbolicValue::get_Expr () const
   return value;
 }
 
-Option<bool> 
+Option<bool>
 SymbolicValue::to_bool () const
 {
   if (value != NULL)
@@ -91,7 +91,7 @@ SymbolicValue::to_bool () const
   return Option<bool> ();
 }
 
-Option<MicrocodeAddress> 
+Option<MicrocodeAddress>
 SymbolicValue::to_MicrocodeAddress () const
 {
   Option<MicrocodeAddress> result;
@@ -108,7 +108,7 @@ SymbolicValue::to_MicrocodeAddress () const
   return result;
 }
 
-void 
+void
 SymbolicValue::output_text (std::ostream &out) const
 {
   if (value != NULL)
@@ -128,15 +128,15 @@ SymbolicValue::operator ConcreteAddress () const
   throw (UndefinedValueException)
 {
   ConcreteAddress result;
-  
+
   if (value == NULL)
-    throw UndefinedValueException ("NULL symbolic location");    
+    throw UndefinedValueException ("NULL symbolic location");
 
   Expr *tmp = value->ref ();
   exprutils::simplify (&tmp);
   Constant *c  = dynamic_cast<Constant *> (tmp);
-  if (c != NULL)    
-    result = ConcreteAddress ((address_t) c->get_val ());    
+  if (c != NULL)
+    result = ConcreteAddress ((address_t) c->get_val ());
   else
     {
       tmp->deref ();
@@ -147,7 +147,7 @@ SymbolicValue::operator ConcreteAddress () const
   return result;
 }
 
-bool 
+bool
 SymbolicValue::equals (const SymbolicValue &sv) const
 {
   return value == sv.value;
@@ -160,7 +160,7 @@ struct UnknownSymbolicValue : public UnknownValueGenerator<SymbolicValue>
     std::ostringstream oss;
     oss <<  "unkval_" << vid++;
     Expr *var = Variable::create (oss.str (), size);
-    
+
     SymbolicValue result (var);
     var->deref ();
 

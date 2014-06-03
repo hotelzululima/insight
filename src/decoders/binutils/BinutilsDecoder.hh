@@ -42,9 +42,9 @@
 #include <kernel/Microcode.hh>
 
 /* Decoder function type */
-typedef bool 
+typedef bool
 (*decoder_ftype)(MicrocodeArchitecture *arch,
-		 Microcode *mc, 
+		 Microcode *mc,
 		 const std::string &instruction,
                  const ConcreteAddress &start,
                  const ConcreteAddress &next);

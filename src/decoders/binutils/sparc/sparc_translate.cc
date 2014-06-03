@@ -51,7 +51,7 @@ sparc::parser_data::get_tmp_register (const char *id, int size) const
   if (! arch->has_tmp_register (regname))
     arch->add_tmp_register (regname, size);
 
-  return get_register (regname.c_str ()); 
+  return get_register (regname.c_str ());
 }
 
 LValue *
@@ -77,8 +77,8 @@ sparc::parser_data::get_flag (const char *flagname) const
 }
 
 
-sparc::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out, 
-				  const std::string &inst, 
+sparc::parser_data::parser_data (MicrocodeArchitecture *a, Microcode *out,
+				  const std::string &inst,
 				  address_t start, address_t next) {
   arch = a;
   has_prefix = false;
@@ -96,20 +96,20 @@ sparc::parser_data::~parser_data() {
     condition_codes[i]->deref ();
 }
 
-bool 
-sparc::parser_data::is_segment_register (const Expr *expr) 
+bool
+sparc::parser_data::is_segment_register (const Expr *expr)
 {
   const RegisterExpr *reg = dynamic_cast<const RegisterExpr *> (expr);
   assert (reg != NULL);
 
-  return 
+  return
     segment_registers.find (reg->get_descriptor ()) != segment_registers.end ();
 }
 
 Expr *
-sparc::parser_data::get_memory_reference (Expr *section, int disp, 
+sparc::parser_data::get_memory_reference (Expr *section, int disp,
 					   Expr *bis) const
-{  
+{
   if (section != NULL)
     {
       //cerr << "section registers are not yet supported" << endl;
@@ -118,13 +118,13 @@ sparc::parser_data::get_memory_reference (Expr *section, int disp,
       //abort ();
     }
 
-    
+
   if (bis)
-    bis = BinaryApp::create (BV_OP_ADD, bis, 
+    bis = BinaryApp::create (BV_OP_ADD, bis,
 			     Constant::create (disp, 0, bis->get_bv_size ()));
   else
     bis = Constant::create (disp, 0, BV_DEFAULT_SIZE);
-  
+
   //  return MemCell::create (BinaryApp::create (BV_OP_ADD, MemCell::create(section,
   // std::string ("segment")), bis));
   return MemCell::create (bis, 0, arch->get_word_size ());
@@ -132,13 +132,13 @@ sparc::parser_data::get_memory_reference (Expr *section, int disp,
 
 /* -------------------------------------------------------------------------- */
 
-void 
+void
 sparc_skip (sparc::parser_data &data)
 {
-  data.mc->add_skip (data.start_ma, data.next_ma); 
+  data.mc->add_skip (data.start_ma, data.next_ma);
 }
 
-void 
+void
 sparc_set_operands_size (Expr *&dst, Expr *&src)
 {
   if (dst->get_bv_size() < src->get_bv_size())
@@ -151,15 +151,15 @@ sparc_set_operands_size (Expr *&dst, Expr *&src)
 			/* --------------- */
 
 static void
-s_assign_flag (const char *flag, MicrocodeAddress &from, 
-	       sparc::parser_data &data, Expr *value, 
+s_assign_flag (const char *flag, MicrocodeAddress &from,
+	       sparc::parser_data &data, Expr *value,
 	       MicrocodeAddress *to = NULL)
 {
   data.mc->add_assignment (from, data.get_flag (flag), value, to);
 }
 
-void 
-sparc_assign_flag (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_flag (MicrocodeAddress &from, sparc::parser_data &data,
 		 const char *flag, bool value, MicrocodeAddress *to)
 {
   Constant *cst = value ? Constant::one (1) : Constant::zero (1);
@@ -167,15 +167,15 @@ sparc_assign_flag (MicrocodeAddress &from, sparc::parser_data &data,
   s_assign_flag (flag, from, data, cst, to);
 }
 
-void 
-sparc_set_flag (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_set_flag (MicrocodeAddress &from, sparc::parser_data &data,
 		 const char *flag, MicrocodeAddress *to)
 {
   sparc_assign_flag (from, data, flag, true, to);
 }
 
-void 
-sparc_reset_flag (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_flag (MicrocodeAddress &from, sparc::parser_data &data,
 		   const char *flag, MicrocodeAddress *to)
 {
   sparc_assign_flag (from, data, flag, false, to);
@@ -183,8 +183,8 @@ sparc_reset_flag (MicrocodeAddress &from, sparc::parser_data &data,
 
 			/* --------------- */
 
-void 
-sparc_reset_flags (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_flags (MicrocodeAddress &from, sparc::parser_data &data,
 		    const char **flags, MicrocodeAddress *to)
 {
   for (; flags[1] != NULL; flags++)
@@ -195,7 +195,7 @@ sparc_reset_flags (MicrocodeAddress &from, sparc::parser_data &data,
 			/* --------------- */
 
 void
-sparc_translate_with_size (sparc::parser_data &DEFAULT_DATA, 
+sparc_translate_with_size (sparc::parser_data &DEFAULT_DATA,
 			    Expr *op1, Expr *op2, int size,
 			    void (*tr) (sparc::parser_data &,Expr *, Expr *))
 {
@@ -205,7 +205,7 @@ sparc_translate_with_size (sparc::parser_data &DEFAULT_DATA,
 }
 
 void
-sparc_translate_with_size (sparc::parser_data &DEFAULT_DATA, 
+sparc_translate_with_size (sparc::parser_data &DEFAULT_DATA,
 			    Expr *op1, int size,
 			    void (*tr) (sparc::parser_data &, Expr *))
 {
@@ -215,12 +215,12 @@ sparc_translate_with_size (sparc::parser_data &DEFAULT_DATA,
 
 			/* --------------- */
 
-void 
+void
 sparc_if_then_else (MicrocodeAddress start, sparc::parser_data &data,
 		     Expr *cond,
 		     MicrocodeAddress ifaddr, MicrocodeAddress elseaddr)
 {
   data.mc->add_skip (start, ifaddr, cond);
-  data.mc->add_skip (start, elseaddr, 
+  data.mc->add_skip (start, elseaddr,
 		     UnaryApp::create (BV_OP_NOT, cond->ref (), 0, 1));
 }

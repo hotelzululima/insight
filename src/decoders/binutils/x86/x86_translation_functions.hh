@@ -140,24 +140,24 @@ X86_TRANSLATE_0_OP(CMC); // x86_instr_misc.cc
 X86_TRANSLATE_2_OP(CMOVC);  // x86_instr_mov.cc
 X86_TRANSLATE_2_OP(CMOVNC); // x86_instr_mov.cc
 
-X86_TRANSLATE_2_OP(CMP);  // x86_instr_misc.cc 
-X86_TRANSLATE_2_OP(CMPB); // x86_instr_misc.cc 
-X86_TRANSLATE_2_OP(CMPL); // x86_instr_misc.cc 
-X86_TRANSLATE_2_OP(CMPW); // x86_instr_misc.cc 
-X86_TRANSLATE_2_OP(CMPQ); // x86_instr_misc.cc 
+X86_TRANSLATE_2_OP(CMP);  // x86_instr_misc.cc
+X86_TRANSLATE_2_OP(CMPB); // x86_instr_misc.cc
+X86_TRANSLATE_2_OP(CMPL); // x86_instr_misc.cc
+X86_TRANSLATE_2_OP(CMPW); // x86_instr_misc.cc
+X86_TRANSLATE_2_OP(CMPQ); // x86_instr_misc.cc
 
-X86_TRANSLATE_0_OP(CMPSB); // x86_instr_strings.cc 
-X86_TRANSLATE_2_OP(CMPSB); // x86_instr_strings.cc 
-X86_TRANSLATE_0_OP(CMPSW); // x86_instr_strings.cc 
-X86_TRANSLATE_2_OP(CMPSW); // x86_instr_strings.cc 
-X86_TRANSLATE_0_OP(CMPSD); // x86_instr_strings.cc 
-X86_TRANSLATE_2_OP(CMPSD); // x86_instr_strings.cc 
+X86_TRANSLATE_0_OP(CMPSB); // x86_instr_strings.cc
+X86_TRANSLATE_2_OP(CMPSB); // x86_instr_strings.cc
+X86_TRANSLATE_0_OP(CMPSW); // x86_instr_strings.cc
+X86_TRANSLATE_2_OP(CMPSW); // x86_instr_strings.cc
+X86_TRANSLATE_0_OP(CMPSD); // x86_instr_strings.cc
+X86_TRANSLATE_2_OP(CMPSD); // x86_instr_strings.cc
 
-X86_TRANSLATE_2_OP(CMPXCHG); // x86_instr_misc.cc 
+X86_TRANSLATE_2_OP(CMPXCHG); // x86_instr_misc.cc
 
 X86_TRANSLATE_0_OP(CPUID); // NOP / x86_instr_misc.cc
 
-// X86_TRANSLATE_2_OP(CRC32); 
+// X86_TRANSLATE_2_OP(CRC32);
 
 X86_TRANSLATE_0_OP(CWD); // x86_instr_misc.cc
 X86_TRANSLATE_0_OP(CDQ); // x86_instr_misc.cc
@@ -248,8 +248,8 @@ X86_TRANSLATE_1_OP(JMPW);  // x86_instr_jump.cc
 
 X86_TRANSLATE_0_OP(LAHF);  // x86_instr_load_store.cc
 
-// X86_TRANSLATE_2_OP(LAR);  
-// X86_TRANSLATE_2_OP(LDS);  
+// X86_TRANSLATE_2_OP(LAR);
+// X86_TRANSLATE_2_OP(LDS);
 // X86_TRANSLATE_2_OP(LES);
 // X86_TRANSLATE_2_OP(LFS);
 // X86_TRANSLATE_2_OP(LGS);
@@ -435,7 +435,7 @@ X86_TRANSLATE_2_OP(RORL); // x86_instr_shift.cc
 
 // X86_TRANSLATE_1_OP(RDRAND);
 
-// X86_TRANSLATE_0_OP(RDTSC); 
+// X86_TRANSLATE_0_OP(RDTSC);
 
 // X86_TRANSLATE_0_OP(RDTSCP);
 
@@ -502,7 +502,7 @@ X86_TRANSLATE_2_OP(SCAS); // x86_instr_strings.cc
 
 #define X86_CC(id, form) \
   X86_TRANSLATE_1_OP(SET ## id); // x86_instr_misc.cc
-#include "x86_cc.def" 
+#include "x86_cc.def"
 #undef  X86_CC
 
 X86_TRANSLATE_1_OP(SETC);  // x86_instr_misc.cc

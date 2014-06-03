@@ -43,7 +43,7 @@
 using namespace std;
 
 typedef std::multiset<logs::Listener *> listener_set;
-typedef listener_set::iterator listener_iterator; 
+typedef listener_set::iterator listener_iterator;
 typedef void (*listener_callback)(const std::string &msg);
 
 static listener_set LISTENERS;
@@ -58,21 +58,21 @@ private:
   int tabsize;
   ostream *out;
   bool enable_warnings;
-public: 
+public:
   StdStreamListener () : max_debug_level(-1), tabsize (0), out (&std::cout),
 			 enable_warnings (true) { }
 
   ~StdStreamListener () { }
 
-  void set_max_level (int level) { 
-    max_debug_level = level; 
+  void set_max_level (int level) {
+    max_debug_level = level;
   }
 
-  void set_tabsize (int tab) { 
-    tabsize = tab; 
+  void set_tabsize (int tab) {
+    tabsize = tab;
   }
 
-  void set_out (ostream &o) { 
+  void set_out (ostream &o) {
     out = &o;
   }
 
@@ -80,11 +80,11 @@ public:
     enable_warnings = value;
   }
 
-  void error (const std::string &msg) { 
+  void error (const std::string &msg) {
     cerr << msg << endl;
   }
 
-  void warning (const std::string &msg) { 
+  void warning (const std::string &msg) {
     if (enable_warnings)
       {
 	cout << msg << endl;
@@ -92,18 +92,18 @@ public:
       }
   }
 
-  void display (const std::string &msg) { 
+  void display (const std::string &msg) {
     cout << msg << endl;
-    cout.flush ();    
-  } 
+    cout.flush ();
+  }
 
-  void debug (const std::string &msg, int level) { 
+  void debug (const std::string &msg, int level) {
     if (max_debug_level < 0 || level <= max_debug_level)
       {
 	*out << string (level * tabsize, ' ') << msg << endl;
 	out->flush ();
       }
-  } 
+  }
 };
 
 static StdStreamListener *STDLISTENER = NULL;
@@ -112,11 +112,11 @@ static StdStreamListener *STDLISTENER = NULL;
 std::string logs::DEBUG_ENABLED_PROP = "logs.debug.enabled";
 std::string logs::STDIO_ENABLED_PROP = "logs.stdio.enabled";
 std::string logs::STDIO_ENABLE_WARNINGS_PROP = "logs.stdio.enable-warnings";
-std::string logs::STDIO_DEBUG_IS_CERR_PROP = "logs.stdio.debug.is_cerr"; 
+std::string logs::STDIO_DEBUG_IS_CERR_PROP = "logs.stdio.debug.is_cerr";
 std::string logs::STDIO_DEBUG_MAXLEVEL_PROP = "logs.stdio.debug.maxlevel";
 std::string logs::STDIO_DEBUG_TABSIZE_PROP = "logs.stdio.debug.tabsize";
 
-void 
+void
 logs::init (const ConfigTable &cfg)
 {
   debug_is_on = cfg.get_boolean (DEBUG_ENABLED_PROP);
@@ -125,21 +125,21 @@ logs::init (const ConfigTable &cfg)
     {
       STDLISTENER = new StdStreamListener ();
       if (cfg.get_boolean (STDIO_DEBUG_IS_CERR_PROP))
-      	STDLISTENER->set_out (cerr);
+	STDLISTENER->set_out (cerr);
 
       STDLISTENER->set_enable_warnings (cfg.get_boolean (STDIO_ENABLE_WARNINGS_PROP));
-      
+
       int maxlevel = cfg.get_integer (STDIO_DEBUG_MAXLEVEL_PROP, -1);
       STDLISTENER->set_max_level (maxlevel);
 
       int tabsize = cfg.get_integer (STDIO_DEBUG_TABSIZE_PROP, 2);
       STDLISTENER->set_tabsize (tabsize);
-      
+
       logs::add_listener (STDLISTENER);
     }
 }
 
-void 
+void
 logs::terminate ()
 {
   if (STDLISTENER != NULL)
@@ -156,7 +156,7 @@ logs::add_listener (Listener *listener, bool once)
   LISTENERS.insert (listener);
 }
 
-void 
+void
 logs::remove_listener (Listener *listener)
 {
   assert (listener != NULL);
@@ -164,20 +164,20 @@ logs::remove_listener (Listener *listener)
 }
 
 
-void 
+void
 logs::inc_debug_level ()
 {
   debug_level++;
 }
 
-void 
+void
 logs::dec_debug_level ()
 {
   assert (debug_level > 0);
   debug_level--;
 }
 
-void 
+void
 logs::start_debug_block (const string &msg)
 {
   debug_blocks.push_front (msg);
@@ -185,7 +185,7 @@ logs::start_debug_block (const string &msg)
   inc_debug_level ();
 }
 
-void 
+void
 logs::end_debug_block ()
 {
   dec_debug_level ();
@@ -235,16 +235,15 @@ class filter : public std::streambuf
 public:
   static const size_t BUFF_SIZE = 1024;
 
-  filter (listener_callback cb) 
+  filter (listener_callback cb)
     : streambuf (), out_buf (new char[BUFF_SIZE + 1]), line (), callback (cb)
-				  
   {
-    
+
     this->setg (0, 0, 0);
     this->setp (out_buf, out_buf + BUFF_SIZE - 1);
   }
 
-  ~filter() 
+  ~filter()
   {
     delete [] out_buf;
   }
@@ -298,14 +297,14 @@ std::ostream logs::warning (new filter (&s_logs_warning));
 std::ostream logs::display (new filter (&s_logs_display));
 std::ostream logs::debug (new filter (&s_logs_debug));
 
-void 
+void
 logs::fatal_error (const std::string &msg)
 {
   logs::error << msg << endl;
   abort ();
 }
 
-void 
+void
 logs::check (const std::string &msg, bool cond)
 {
   if (! cond)

@@ -102,7 +102,7 @@ sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1)
 template<TokenType> void
 sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2)
 {
-  try { DEFAULT_BEHAVIOR(); } 
+  try { DEFAULT_BEHAVIOR(); }
   catch(...) {
     op1->deref ();
     op2->deref ();
@@ -118,7 +118,7 @@ sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2)
 /* --------------- */
 
 template<TokenType> void
-sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2, 
+sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
 		 Expr *op3)
 {
   try { DEFAULT_BEHAVIOR(); }
@@ -138,7 +138,7 @@ sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
 /* --------------- */
 
 template<TokenType> void
-sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2, 
+sparc_translate(sparc::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2,
 		 Expr *op3, Expr *op4)
 {
   try {  DEFAULT_BEHAVIOR(); }
@@ -162,108 +162,108 @@ LValue *sparc_translate_esp(sparc::parser_data &data);
 
 			/* --------------- */
 
-void 
+void
 sparc_skip (sparc::parser_data &data);
 
 
-void 
+void
 sparc_set_operands_size (Expr *&dst, Expr *&src);
 
 
-typedef void 
-sparc_compute_flag_proc (MicrocodeAddress &, sparc::parser_data &, 
+typedef void
+sparc_compute_flag_proc (MicrocodeAddress &, sparc::parser_data &,
 			  const Expr *value, MicrocodeAddress *);
 
-void 
-sparc_assign_flag (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_flag (MicrocodeAddress &from, sparc::parser_data &data,
 		    const char *flag, bool value, MicrocodeAddress *to = NULL);
 
 			/* --------------- */
 
-void 
-sparc_set_flag (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_set_flag (MicrocodeAddress &from, sparc::parser_data &data,
 		 const char *flag, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_flag (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_flag (MicrocodeAddress &from, sparc::parser_data &data,
 		   const char *flag, MicrocodeAddress *to = NULL);
 
 			/* --------------- */
 
-void 
-sparc_reset_flags (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_flags (MicrocodeAddress &from, sparc::parser_data &data,
 		    const char **flags, MicrocodeAddress *to = NULL);
 
-void 
-sparc_assign_AF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_AF (MicrocodeAddress &from, sparc::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-sparc_compute_AF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_compute_AF (MicrocodeAddress &from, sparc::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_AF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_AF (MicrocodeAddress &from, sparc::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-sparc_compute_CF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_compute_CF (MicrocodeAddress &from, sparc::parser_data &data,
 		   Expr *dst, Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-sparc_assign_CF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_CF (MicrocodeAddress &from, sparc::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_CF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_CF (MicrocodeAddress &from, sparc::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-sparc_compute_OF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_compute_OF (MicrocodeAddress &from, sparc::parser_data &data,
 		   Expr *dst, Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-sparc_assign_OF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_OF (MicrocodeAddress &from, sparc::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_OF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_OF (MicrocodeAddress &from, sparc::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-sparc_assign_PF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_PF (MicrocodeAddress &from, sparc::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-sparc_compute_PF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_compute_PF (MicrocodeAddress &from, sparc::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_PF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_PF (MicrocodeAddress &from, sparc::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-sparc_assign_SF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_SF (MicrocodeAddress &from, sparc::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-sparc_compute_SF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_compute_SF (MicrocodeAddress &from, sparc::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_SF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_SF (MicrocodeAddress &from, sparc::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
-void 
-sparc_assign_ZF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_assign_ZF (MicrocodeAddress &from, sparc::parser_data &data,
 		  Expr *expr, MicrocodeAddress *to = NULL);
 
-void 
-sparc_compute_ZF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_compute_ZF (MicrocodeAddress &from, sparc::parser_data &data,
 		   const Expr *value, MicrocodeAddress *to = NULL);
 
-void 
-sparc_reset_ZF (MicrocodeAddress &from, sparc::parser_data &data, 
+void
+sparc_reset_ZF (MicrocodeAddress &from, sparc::parser_data &data,
 		 const Expr * = NULL, MicrocodeAddress *to = NULL);
 
 void
@@ -285,13 +285,13 @@ sparc_translate_with_size (sparc::parser_data &data,
 			    Expr *op1, int size,
 			    void (*tr) (sparc::parser_data &, Expr *));
 
-void 
+void
 sparc_if_then_else (MicrocodeAddress start, sparc::parser_data &data,
 		     Expr *cond,
 		     MicrocodeAddress ifaddr, MicrocodeAddress elseaddr);
 
 void
-sparc_cmpgen (MicrocodeAddress &from, sparc::parser_data &data, 
+sparc_cmpgen (MicrocodeAddress &from, sparc::parser_data &data,
 	       Expr *op1, Expr *op2, MicrocodeAddress *to);
 
 #include "sparc_translation_functions.hh"

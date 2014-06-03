@@ -39,7 +39,7 @@
 
 /* Decoding function for x86-64 architecture */
 bool
-x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
+x86_64_decoder_func(MicrocodeArchitecture *arch, Microcode *mc,
 		    const std::string &instruction,
                     const ConcreteAddress &start,
                     const ConcreteAddress &next);

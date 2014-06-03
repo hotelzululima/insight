@@ -35,14 +35,14 @@
 
 using namespace std;
 
-IntervalMemory::IntervalMemory() : 
+IntervalMemory::IntervalMemory() :
   Memory<IntervalAddress, IntervalValue>(),
   RegisterMap<IntervalValue>(), mem()
 {
 }
 
 IntervalValue
-IntervalMemory::get(const IntervalAddress &ia, int size, 
+IntervalMemory::get(const IntervalAddress &ia, int size,
 		    Architecture::endianness_t e) const
                    throw (UndefinedValueException)
 {
@@ -52,7 +52,7 @@ IntervalMemory::get(const IntervalAddress &ia, int size,
 }
 
 void
-IntervalMemory::put(const IntervalAddress &ia, const IntervalValue &v, 
+IntervalMemory::put(const IntervalAddress &ia, const IntervalValue &v,
 		    Architecture::endianness_t e)
 {
 

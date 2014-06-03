@@ -36,23 +36,23 @@
 /*! \brief Compute the weakest precondition for the current formula
  *  by reversing the statement.
  *  Caution: does not work with quantifications at the moment */
-Expr * 
+Expr *
 weakest_precondition(Expr * post, Statement *stmt);
 
 /*! \brief Compute the weakest precondition for the current formula
  *  by following the arrow backward.
  *  Caution: does not work with quantifications at the moment */
-Expr * 
+Expr *
 weakest_precondition(Expr * post, StmtArrow *arrow);
 
 /*! \brief Compute the weakest precondition for the current formula
  *  by following a path backward.
  *  Caution: does not work with quantifications at the moment */
-Expr * 
+Expr *
 weakest_precondition(Expr * post, MCPath &p);
 
 /*! Sequencialisation of the program */
-std::list< MCPath > 
+std::list< MCPath >
 sequencialize (Microcode * prg);
 
 #endif /* WP_HH */

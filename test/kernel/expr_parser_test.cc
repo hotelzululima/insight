@@ -190,7 +190,7 @@ s_check_expr_parser (const string &, const string &expr, \
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
-  const Architecture *x86_32 = 
+  const Architecture *x86_32 =
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 

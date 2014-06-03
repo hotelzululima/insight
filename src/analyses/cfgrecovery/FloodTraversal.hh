@@ -18,8 +18,8 @@ public:
     virtual StateSet *get_successors (const State *s, const StmtArrow *arrow);
 
     static void
-    compute_successors (ConcreteMemory *memory, const Architecture *arch, 
-			const StmtArrow *arrow, 
+    compute_successors (ConcreteMemory *memory, const Architecture *arch,
+			const StmtArrow *arrow,
 			bool with_next, std::list<MicrocodeAddress> &result);
 
   protected:

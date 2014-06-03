@@ -502,7 +502,7 @@ StaticArrow (0x33,5) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x35,0)
 ==9635==    by 0x4109D8F: DataDependency::slice_it(Microcode*, MicrocodeAddress, Expr*) (Slicing.cc:664)
 ==9635==    by 0x8049889: test_slicing(char const*, int, int, std::string const&) (slicer.cc:49)
 ==9635==    by 0x8049C4E: main (slicer.cc:107)
-==9635== 
+==9635==
 ==9635== 84 (28 direct, 56 indirect) bytes in 1 blocks are definitely lost in loss record 8 of 12
 ==9635==    at 0x4007885: operator new(unsigned int) (vg_replace_malloc.c:255)
 ==9635==    by 0x41912DF: BinaryApp::create(BinaryOp, Expr*, Expr*, int, int) (Expressions.cc:253)
@@ -514,10 +514,10 @@ StaticArrow (0x33,5) %eflags{0:1} := (SUB %ebx %eax){32:1}  --> (0x35,0)
 ==9635==    by 0x4109D8F: DataDependency::slice_it(Microcode*, MicrocodeAddress, Expr*) (Slicing.cc:664)
 ==9635==    by 0x8049889: test_slicing(char const*, int, int, std::string const&) (slicer.cc:49)
 ==9635==    by 0x8049C4E: main (slicer.cc:107)
-==9635== 
+==9635==
 ==9635== 32,820 (52 direct, 32,768 indirect) bytes in 1 blocks are definitely lost in loss record 12 of 12
 ==9635==    at 0x4007885: operator new(unsigned int) (vg_replace_malloc.c:255)
 ==9635==    by 0x41D9412: BinutilsBinaryLoader::get_memory() const (BinutilsBinaryLoader.cc:164)
 ==9635==    by 0x8049822: test_slicing(char const*, int, int, std::string const&) (slicer.cc:44)
 ==9635==    by 0x8049C4E: main (slicer.cc:107)
-==9635== 
+==9635==

@@ -47,7 +47,7 @@ start:
 	cmp 	$0x4F19, %ax
 	jne	error
 
-	# ROL 32 bits test 
+	# ROL 32 bits test
 	rol	%eax
 	jc	error
 	jo	error

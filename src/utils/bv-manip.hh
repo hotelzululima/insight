@@ -33,10 +33,10 @@
 #include <kernel/Architecture.hh>
 
 namespace BitVectorManip {
-  
-inline word_t 
-mask_first_bits (int nb_bits) 
-{  
+
+inline word_t
+mask_first_bits (int nb_bits)
+{
   word_t val = ~((word_t)0);
   if (nb_bits < (int) (8 * sizeof (word_t)))
     {
@@ -46,15 +46,15 @@ mask_first_bits (int nb_bits)
   return val;
 }
 
-inline word_t 
-extract_from_word (word_t w, int offset, int size) 
-{ 
-  return (w >> offset) & mask_first_bits (size); 
+inline word_t
+extract_from_word (word_t w, int offset, int size)
+{
+  return (w >> offset) & mask_first_bits (size);
 }
 
-inline word_t 
-unset_window (word_t w, int offset, int size) 
-{ 
+inline word_t
+unset_window (word_t w, int offset, int size)
+{
   if (offset >= (int) (8 * sizeof (word_t)))
     return w;
 
@@ -63,9 +63,9 @@ unset_window (word_t w, int offset, int size)
   return w & mask;
 }
 
-inline word_t 
-set_window (word_t w, int offset, int size) 
-{ 
+inline word_t
+set_window (word_t w, int offset, int size)
+{
   if (offset >= (int) (8 * sizeof (word_t)))
     return w;
 
@@ -101,8 +101,8 @@ extend_signed (word_t val, int current_size)
     {
       word_t mask = max << current_size;
       new_val = val | mask;
-    } 
-  else 
+    }
+  else
     {
       word_t mask = max >> (BITS_PER_WORD - current_size);
       new_val = val & mask;

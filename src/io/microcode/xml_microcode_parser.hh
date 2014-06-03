@@ -33,10 +33,10 @@
 
 #include <kernel/Microcode.hh>
 
-class XmlParserException : public std::runtime_error 
+class XmlParserException : public std::runtime_error
 {
 public :
-  XmlParserException (const std::string &reason) 
+  XmlParserException (const std::string &reason)
     : std::runtime_error (reason) { }
 };
 

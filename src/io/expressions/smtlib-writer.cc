@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite de Bordeaux.
- * 
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -45,7 +45,7 @@ using namespace std;
 
 class SMTLibVisitor;
 
-class CountSharedSubFormulas : public ConstExprVisitor 
+class CountSharedSubFormulas : public ConstExprVisitor
 {
   struct DFScounters {
     int enter;
@@ -64,11 +64,11 @@ class CountSharedSubFormulas : public ConstExprVisitor
 
 public :
 
-  CountSharedSubFormulas () 
-    : ConstExprVisitor (), max (0), date (0), counters (), shared (), done () { 
+  CountSharedSubFormulas ()
+    : ConstExprVisitor (), max (0), date (0), counters (), shared (), done () {
   }
 
-  virtual ~CountSharedSubFormulas () { 
+  virtual ~CountSharedSubFormulas () {
   }
 
 
@@ -117,7 +117,7 @@ public :
     for (int i = 2; i <= max; i++)
       if (distrib[i] > 0)
 	{
-	  out << "shared " << i << " times : " << distrib[i] << endl;    
+	  out << "shared " << i << " times : " << distrib[i] << endl;
 	  result++;
 	}
     delete[] distrib;
@@ -145,52 +145,52 @@ public :
 
   virtual void visit (const Constant *) { }
 
-  virtual void visit (const RandomValue *) { 
+  virtual void visit (const RandomValue *) {
     logs::error << "RandomValue should not be sent to SMT solver." << endl;
     abort ();
-  } 
+  }
 
   virtual void visit (const Variable *) { }
 
-  virtual void visit (const UnaryApp *e) { 
+  virtual void visit (const UnaryApp *e) {
     if (update_counter (e) > 1)
       return;
     e->get_arg1 ()->acceptVisitor (this);
     counters[e].leave = date + 1;
   }
 
-  virtual void visit (const BinaryApp *e) { 
+  virtual void visit (const BinaryApp *e) {
     if (update_counter (e) > 1)
       return;
     e->get_arg1 ()->acceptVisitor (this);
     e->get_arg2 ()->acceptVisitor (this);
     counters[e].leave = date + 1;
   }
-  virtual void visit (const TernaryApp *e) { 
+  virtual void visit (const TernaryApp *e) {
     if (update_counter (e) > 1)
       return;
     e->get_arg1 ()->acceptVisitor (this);
     e->get_arg2 ()->acceptVisitor (this);
     e->get_arg3 ()->acceptVisitor (this);
     counters[e].leave = date + 1;
-  } 
+  }
 
-  virtual void visit (const MemCell *e) { 
+  virtual void visit (const MemCell *e) {
     if (update_counter (e) > 1)
       return;
     e->get_addr ()->acceptVisitor (this);
     counters[e].leave = date + 1;
   }
 
-  virtual void visit (const RegisterExpr *) { 
+  virtual void visit (const RegisterExpr *) {
   }
 
-  virtual void visit (const QuantifiedExpr *e) { 
+  virtual void visit (const QuantifiedExpr *e) {
     throw SMTLibUnsupportedExpression (e->to_string ());
   }
-};  
+};
 
-class SMTLibVisitor : public ConstExprVisitor 
+class SMTLibVisitor : public ConstExprVisitor
 {
   ostream &out;
   const string &memvar;
@@ -201,7 +201,7 @@ class SMTLibVisitor : public ConstExprVisitor
 public:
 
 
-  SMTLibVisitor (ostream &o, const string &mv, int bpa, 
+  SMTLibVisitor (ostream &o, const string &mv, int bpa,
 		 Architecture::endianness_t e)
     : ConstExprVisitor (), out (o), memvar (mv), addrsize (bpa), endian (e),
       cssf (NULL) {}
@@ -236,7 +236,7 @@ public:
   }
 
   void extract_bv_window (const Expr *e) {
-    out << "(_ extract " 
+    out << "(_ extract "
 	<< dec << (e->get_bv_offset () + e->get_bv_size () - 1)
 	<< " "
 	<< dec << e->get_bv_offset () << " "
@@ -255,23 +255,23 @@ public:
       {
 	UnaryApp *ua = (UnaryApp *) e;
 	result = (ua->get_op () == BV_OP_NOT &&
-		  has_boolean_bv (ua) && 
+		  has_boolean_bv (ua) &&
 		  has_boolean_bv (ua->get_arg1 ()));
-		  
-      } 
+
+      }
     else if (e->is_BinaryApp ())
       {
 	BinaryApp *ba = (BinaryApp *) e;
 	BinaryOp op = ba->get_op ();
-	switch (op) 
+	switch (op)
 	  {
 	  case BV_OP_AND: case BV_OP_OR:
-	    result = (has_boolean_bv (ba) && 
-		      has_boolean_bv (ba->get_arg1 ()) && 
+	    result = (has_boolean_bv (ba) &&
+		      has_boolean_bv (ba->get_arg1 ()) &&
 		      has_boolean_bv (ba->get_arg2 ()));
 	    break;
 	  case BV_OP_EQ: case BV_OP_NEQ: case BV_OP_LT_S: case BV_OP_LT_U:
-	  case BV_OP_LEQ_S: case BV_OP_LEQ_U: case BV_OP_GT_S: 
+	  case BV_OP_LEQ_S: case BV_OP_LEQ_U: case BV_OP_GT_S:
 	  case BV_OP_GT_U: case BV_OP_GEQ_S: case BV_OP_GEQ_U:
 	    result = true;
 	    break;
@@ -294,7 +294,7 @@ public:
       out << "#b1";
     else if (e->get_bv_size () % 8 == 0)
       out << "#x" << string (e->get_bv_size () / 4, '0') << ')';
-    else 
+    else
       out << "#b" << string (e->get_bv_size (), '0') << ')';
     out << ")";
   }
@@ -326,7 +326,7 @@ public:
 	int ext = (e->get_bv_size () - e->get_arg1 ()->get_bv_size ());
 	out << "((_ sign_extend " << dec << ext << ") ";
       }
-    out << "(" << op << " ";      
+    out << "(" << op << " ";
     e->get_arg1 ()->acceptVisitor (this);
     out << ")";
     if (extend && e->get_bv_size () > e->get_arg1 ()->get_bv_size ())
@@ -341,7 +341,7 @@ public:
     if (e->get_op () == BV_OP_CONCAT)
       {
 	result = (e->get_bv_offset () != 0 ||
-		  (e->get_bv_size () < e->get_arg1 ()->get_bv_size () + 
+		  (e->get_bv_size () < e->get_arg1 ()->get_bv_size () +
 		   e->get_arg2 ()->get_bv_size ()));
       }
     else if (e->get_op () != BV_OP_EXTEND_U && e->get_op () != BV_OP_EXTEND_S)
@@ -356,7 +356,7 @@ public:
 
     BinaryOp op = e->get_op ();
     const char *op_str = NULL;
-    bool extract = need_extract (e); 	  	
+    bool extract = need_extract (e);
     bool extend = false;
     bool with_sign = false;
     bool ite = false;
@@ -370,7 +370,7 @@ public:
 	    extract_bv_window (e);
 	    out << "(";
 	  }
-	      
+
 	out << (op == BV_OP_AND ? "bvand " : "bvor ");
 	e->get_arg1 ()->acceptVisitor (this);
 	out << " ";
@@ -398,25 +398,25 @@ public:
       case BV_OP_XOR: op_str = "bvxor"; goto output_binary_1;
 
 
-      case BV_OP_NEQ: op_str = "distinct"; 
+      case BV_OP_NEQ: op_str = "distinct";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_EQ: op_str = "="; 
+      case BV_OP_EQ: op_str = "=";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_GEQ_U: op_str = "bvuge"; 
+      case BV_OP_GEQ_U: op_str = "bvuge";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_GEQ_S: op_str = "bvsge"; 
+      case BV_OP_GEQ_S: op_str = "bvsge";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_LT_U: op_str = "bvult"; 
+      case BV_OP_LT_U: op_str = "bvult";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_LT_S: op_str = "bvslt"; 
+      case BV_OP_LT_S: op_str = "bvslt";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_GT_U: op_str = "bvugt"; 
+      case BV_OP_GT_U: op_str = "bvugt";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_GT_S: op_str = "bvsgt"; 
+      case BV_OP_GT_S: op_str = "bvsgt";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_LEQ_U: op_str = "bvule"; 
+      case BV_OP_LEQ_U: op_str = "bvule";
 	extract = false; ite = true; goto output_binary_1;
-      case BV_OP_LEQ_S: op_str = "bvsle"; 
+      case BV_OP_LEQ_S: op_str = "bvsle";
 	extract = false; ite = true; goto output_binary_1;
 
       output_binary_1:
@@ -509,18 +509,16 @@ public:
     constant_t size = expr_size->get_val ();
     if (offset != e->get_bv_offset () || size != e->get_bv_size ())
       {
-	
-	out << "((_ extract " 
+	out << "((_ extract "
 	    << dec << (e->get_bv_offset () + e->get_bv_size () - 1) << " "
 	    << e->get_bv_offset () << ") ";
-	  
       }
-    out << "((_ extract " 
+    out << "((_ extract "
 	<< dec << (offset + size - 1) << " " << offset << ") ";
     e->get_arg1 ()->acceptVisitor (this);
-    out << ")";    	
+    out << ")";
     if (offset != e->get_bv_offset () || size != e->get_bv_size ())
-      out << ")";    	
+      out << ")";
   }
 
   virtual void visit (const MemCell *e) {
@@ -543,7 +541,7 @@ public:
       {
 	int nb_bytes = (e->get_bv_offset () + e->get_bv_size ()) / 8;
 	if (e->get_bv_size () % 8 != 0)
-	  nb_bytes++;	
+	  nb_bytes++;
 	Expr *addr = e->get_addr ()->ref ();
 	Expr *bv = MemCell::create (addr->ref (), 0, 8);
 
@@ -563,7 +561,7 @@ public:
 		aux[0] = bv;
 		aux[1] = byte;
 	      }
-	    tmp = BinaryApp::create (BV_OP_CONCAT, aux[0], aux[1], 
+	    tmp = BinaryApp::create (BV_OP_CONCAT, aux[0], aux[1],
 				     0, 8 * (i + 1));
 	    bv = tmp;
 	  }
@@ -576,7 +574,7 @@ public:
 
   virtual void visit (const RegisterExpr *e) {
     const RegisterDesc *rd = e->get_descriptor ();
-    bool extract =  (! (e->get_bv_offset () == 0 && 
+    bool extract =  (! (e->get_bv_offset () == 0 &&
 			e->get_bv_size () == rd->get_register_size ()));
     if (extract)
       {
@@ -596,8 +594,8 @@ public:
 };
 
 
-void 
-smtlib_writer (std::ostream &out, const Expr *ep, const std::string &memvar, 
+void
+smtlib_writer (std::ostream &out, const Expr *ep, const std::string &memvar,
 	       int addrsize, Architecture::endianness_t endian, bool as_boolean)
   throw (SMTLibUnsupportedExpression)
 {
@@ -611,34 +609,34 @@ smtlib_writer (std::ostream &out, const Expr *ep, const std::string &memvar,
 
   e->acceptVisitor (cssf);
   //  if (cssf.display_counters (logs::debug) > 0) {
-    //    ((void) 0); 
+    //    ((void) 0);
     //exprutils::simplify (&e);
     //  logs::debug << *e << endl;
   //}
-  cssf.open_context (out, writer);  
+  cssf.open_context (out, writer);
 
   if (as_boolean)
-    writer.output_boolean (e); 
+    writer.output_boolean (e);
   else
     e->acceptVisitor (writer);
-  cssf.close_context (out);  
+  cssf.close_context (out);
 
   out.flush ();
   e->deref ();
 }
 
-void 
-CountSharedSubFormulas::open_context (std::ostream &out, 
-				      SMTLibVisitor &sw) 
-{    
+void
+CountSharedSubFormulas::open_context (std::ostream &out,
+				      SMTLibVisitor &sw)
+{
   for (Counters::const_iterator i = counters.begin (); i != counters.end ();
-       i++) 
+       i++)
     {
       if (i->second.counter > 1)
 	shared.push_back (i->first);
     }
   shared.sort (*this);
-  for (list<const Expr *>::iterator i = shared.begin (); i != shared.end (); 
+  for (list<const Expr *>::iterator i = shared.begin (); i != shared.end ();
        i++)
     {
       out << "(let ((";

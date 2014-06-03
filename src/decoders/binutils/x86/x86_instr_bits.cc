@@ -40,33 +40,33 @@ s_bs (x86::parser_data &data, Expr *op1, Expr *op2, bool forward)
   Expr *dst = op2;
   int dst_size = dst->get_bv_size ();
   LValue *temp = data.get_tmp_register (TMPREG(0), dst_size);
-    
+
   assert (dst_size == src->get_bv_size ());
 
   MicrocodeAddress if_part (data.start_ma + 1);
-  
+
   MicrocodeAddress from (if_part);
   x86_set_flag (from, data, "zf", &data.next_ma);
   from = if_part + 1;
 
-  MicrocodeAddress else_part (from);  
+  MicrocodeAddress else_part (from);
 
   x86_reset_flag (from, data, "zf");
   int init_index = forward ? 0 : dst_size - 1;
-  
-  data.mc->add_assignment (from, (LValue *) temp->ref (), 
+
+  data.mc->add_assignment (from, (LValue *) temp->ref (),
 			   Constant::create (init_index, 0, dst_size));
-			       
-  MicrocodeAddress start_while (from); 
+
+  MicrocodeAddress start_while (from);
   from++;
-  Expr *stopcond = TernaryApp::create (BV_OP_EXTRACT, src->ref (), 
-				       temp->ref (), 
+  Expr *stopcond = TernaryApp::create (BV_OP_EXTRACT, src->ref (),
+				       temp->ref (),
 				       Constant::one (1), 0, 1);
   stopcond = BinaryApp::createEquality (stopcond, Constant::zero (1));
 
   data.mc->add_skip (start_while, start_while + 1, stopcond->ref ());
   BinaryOp op = forward ? BV_OP_ADD : BV_OP_SUB;
-  data.mc->add_assignment (from, (LValue *) temp->ref (), 
+  data.mc->add_assignment (from, (LValue *) temp->ref (),
 			   BinaryApp::create (op,
 					      temp->ref (),
 					      Constant::one (dst_size), 0,
@@ -74,15 +74,15 @@ s_bs (x86::parser_data &data, Expr *op1, Expr *op2, bool forward)
   data.mc->add_skip (from, start_while);
   from++;
   data.mc->add_skip (start_while, from, Expr::createLNot (stopcond));
-  data.mc->add_assignment (from, (LValue *) dst->ref (), temp->ref (), 
+  data.mc->add_assignment (from, (LValue *) dst->ref (), temp->ref (),
 			   data.next_ma);
 
   /*
    * create branches
    */
-  Expr *cond = BinaryApp::createEquality(src->ref (), 
+  Expr *cond = BinaryApp::createEquality(src->ref (),
 					 Constant::zero (src->get_bv_size ()));
-  
+
   data.mc->add_skip (data.start_ma, else_part, Expr::createLNot (cond));
   data.mc->add_skip (data.start_ma, if_part, cond->ref ());
 
@@ -92,7 +92,7 @@ s_bs (x86::parser_data &data, Expr *op1, Expr *op2, bool forward)
 }
 
 X86_TRANSLATE_2_OP(BSF)
-{  
+{
   s_bs (data, op1, op2, true);
 }
 
@@ -116,14 +116,14 @@ s_bt (x86::parser_data &data, Expr *op1, Expr *op2, int chg)
   MicrocodeAddress *to = (chg == BT_NO_CHG) ? &data.next_ma : NULL;
   int mask  = bbsize == 32 ? 6 : 4;
 
-  bitoffset = 
+  bitoffset =
     Expr::createExtend (BV_OP_EXTEND_U, op1->extract_bit_vector (0, mask),
 			op2->get_bv_size ());
-				 
+
   op1->deref ();
 
-  x86_assign_CF (from, data, 
-		    BinaryApp::create (BV_OP_RSH_U, bitbase, bitoffset, 0, 1), 
+  x86_assign_CF (from, data,
+		    BinaryApp::create (BV_OP_RSH_U, bitbase, bitoffset, 0, 1),
 		    to);
   if (chg == BT_NO_CHG)
     return;
@@ -138,13 +138,13 @@ s_bt (x86::parser_data &data, Expr *op1, Expr *op2, int chg)
   if (chg == BT_SET || chg == BT_COMP)
     {
       /* set the selected bit to 1 */
-      Expr *newval = 
-	BinaryApp::create (BV_OP_OR, bitbase->ref (), 
-			   BinaryApp::create (BV_OP_LSH, 
-					      Constant::one (bbsize), 
+      Expr *newval =
+	BinaryApp::create (BV_OP_OR, bitbase->ref (),
+			   BinaryApp::create (BV_OP_LSH,
+					      Constant::one (bbsize),
 					      bitoffset->ref (), 0, bbsize));
-      
-      data.mc->add_assignment (from, (LValue *) bitbase->ref (), newval, 
+
+      data.mc->add_assignment (from, (LValue *) bitbase->ref (), newval,
 			       data.next_ma);
     }
 
@@ -154,23 +154,23 @@ s_bt (x86::parser_data &data, Expr *op1, Expr *op2, int chg)
   if (chg == BT_RESET || chg == BT_COMP)
     {
       /* set the selected bit to 0 */
-      Expr *newval = 
-	UnaryApp::create (BV_OP_NOT, 
-			  BinaryApp::create (BV_OP_LSH, 
-					     Constant::one (bbsize), 
+      Expr *newval =
+	UnaryApp::create (BV_OP_NOT,
+			  BinaryApp::create (BV_OP_LSH,
+					     Constant::one (bbsize),
 					     bitoffset->ref (), 0, bbsize),
 			  0, bbsize);
       newval = BinaryApp::create (BV_OP_AND, bitbase->ref (), newval);
-      
-      data.mc->add_assignment (from, (LValue *) bitbase->ref (), newval, 
+
+      data.mc->add_assignment (from, (LValue *) bitbase->ref (), newval,
 			       data.next_ma);
     }
 
   if (chg == BT_COMP)
     {
       LValue *cf = data.get_flag ("cf");
-      data.mc->add_skip (ifloc, ifloc + 2, cf);      
-      data.mc->add_skip (ifloc, ifloc + 1, 
+      data.mc->add_skip (ifloc, ifloc + 2, cf);
+      data.mc->add_skip (ifloc, ifloc + 1,
 			 UnaryApp::create (BV_OP_NOT, cf->ref (), 0, 1));
     }
 
@@ -228,7 +228,7 @@ X86_TRANSLATE_2_OP(BTSW)
 {
   x86_translate<X86_TOKEN (BTS)> (data, op1, op2);
 }
-X86_TRANSLATE_2_OP(BTSL) 
+X86_TRANSLATE_2_OP(BTSL)
 {
   x86_translate<X86_TOKEN (BTS)> (data, op1, op2);
 }

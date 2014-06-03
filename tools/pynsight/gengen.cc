@@ -81,17 +81,17 @@ static PyTypeObject GeneratorObjectType = {
   0
 };
 
-static bool 
-s_init () 
-{ 
+static bool
+s_init ()
+{
   GeneratorObjectType.tp_methods = NULL;
   if (PyType_Ready (&GeneratorObjectType) < 0)
     return false;
   return true;
 }
 
-static bool 
-s_terminate () 
+static bool
+s_terminate ()
 {
   return true;
 }
@@ -99,7 +99,7 @@ s_terminate ()
 static pynsight::Module GENERIC_GENERATOR (NULL, s_init, s_terminate);
 
 static void
-s_GeneratorObject_dealloc (PyObject *self) 
+s_GeneratorObject_dealloc (PyObject *self)
 {
   GeneratorObject *g = (GeneratorObject *) self;
 
@@ -108,14 +108,14 @@ s_GeneratorObject_dealloc (PyObject *self)
   self->ob_type->tp_free (self);
 }
 
-static PyObject * 
+static PyObject *
 s_GeneratorObject_iter (PyObject *self)
 {
   Py_INCREF (self);
   return self;
 }
 
-static PyObject * 
+static PyObject *
 s_GeneratorObject_iternext (PyObject *self)
 {
   GeneratorObject *g = (GeneratorObject *) self;
@@ -123,10 +123,10 @@ s_GeneratorObject_iternext (PyObject *self)
   return g->generator->next ();
 }
 
-PyObject * 
+PyObject *
 pynsight::generic_generator_new (GenericGenerator *G)
 {
-  GeneratorObject *result = (GeneratorObject *) 
+  GeneratorObject *result = (GeneratorObject *)
     PyObject_New (GeneratorObject, &GeneratorObjectType);
 
   if (result == NULL)

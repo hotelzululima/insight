@@ -35,7 +35,7 @@
 
 /*! \brief Compute all possible values */
 static SetsValue
-generic_unary_semantic(ConcreteValue(*op_sem)(ConcreteValue, int, int), 
+generic_unary_semantic(ConcreteValue(*op_sem)(ConcreteValue, int, int),
 		       SetsValue sv, int offset, int size)
 {
   if (sv.is_any())
@@ -83,7 +83,7 @@ generic_binary_semantic(ConcreteValue(*op_sem)(ConcreteValue, ConcreteValue,
 static SetsValue
 generic_ternary_semantic(ConcreteValue(*op_sem)(ConcreteValue, ConcreteValue,
 						ConcreteValue, int, int),
-			 SetsValue sv1, SetsValue sv2, SetsValue sv3, 
+			 SetsValue sv1, SetsValue sv2, SetsValue sv3,
 			 int offset, int size)
 {
 
@@ -107,7 +107,7 @@ generic_ternary_semantic(ConcreteValue(*op_sem)(ConcreteValue, ConcreteValue,
 	     v3  = possible_values3.begin();
 	   v3 != possible_values3.end();
 	   v3++)
-	result.add_value(Option<ConcreteValue>(op_sem(*v1, *v2, *v3, 
+	result.add_value(Option<ConcreteValue>(op_sem(*v1, *v2, *v3,
 						      offset, size)));
 
   return result;
@@ -121,64 +121,64 @@ generic_ternary_semantic(ConcreteValue(*op_sem)(ConcreteValue, ConcreteValue,
 							   (word_t) the_result))); \
   } catch (OptionNoValueExc &) {}
 
-template<> SetsValue 
-SetsExprSemantics::BV_OP_ADD_eval(SetsValue v1, SetsValue v2, 
+template<> SetsValue
+SetsExprSemantics::BV_OP_ADD_eval(SetsValue v1, SetsValue v2,
 				  int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_ADD_eval, v1, v2, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_ADD_eval, v1, v2,
 				 offset, size);
 }
 
-template<> SetsValue 
-SetsExprSemantics::BV_OP_SUB_eval(SetsValue v1, SetsValue v2, int offset, 
+template<> SetsValue
+SetsExprSemantics::BV_OP_SUB_eval(SetsValue v1, SetsValue v2, int offset,
 				  int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_SUB_eval, v1, v2, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_SUB_eval, v1, v2,
 				 offset, size);
 }
 
-template<> SetsValue 
-SetsExprSemantics::BV_OP_MUL_U_eval(SetsValue v1, SetsValue v2, int offset, 
+template<> SetsValue
+SetsExprSemantics::BV_OP_MUL_U_eval(SetsValue v1, SetsValue v2, int offset,
 				    int size)
 {
   particular_case_equal(v1, 0, 0);
   particular_case_equal(v2, 0, 0);
-  SetsValue result = 
-    generic_binary_semantic(ConcreteExprSemantics::BV_OP_MUL_U_eval, v1, v2, 
+  SetsValue result =
+    generic_binary_semantic(ConcreteExprSemantics::BV_OP_MUL_U_eval, v1, v2,
 			    offset, size);
 
   return result;
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_MUL_S_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_MUL_S_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
   particular_case_equal(v1, 0, 0);
   particular_case_equal(v2, 0, 0);
-  SetsValue result = 
-    generic_binary_semantic(ConcreteExprSemantics::BV_OP_MUL_S_eval, v1, v2, 
+  SetsValue result =
+    generic_binary_semantic(ConcreteExprSemantics::BV_OP_MUL_S_eval, v1, v2,
 			    offset, size);
 
   return result;
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_DIV_U_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_DIV_U_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
   return generic_binary_semantic(ConcreteExprSemantics::BV_OP_DIV_U_eval, v1, v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_DIV_S_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_DIV_S_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
   return generic_binary_semantic(ConcreteExprSemantics::BV_OP_DIV_S_eval, v1, v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_POW_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_POW_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
   particular_case_equal(v2, 0, 1);
@@ -186,7 +186,7 @@ SetsValue SetsExprSemantics::BV_OP_POW_eval(SetsValue v1, SetsValue v2,
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_AND_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_AND_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
   particular_case_equal(v1, 0, 0);
@@ -195,57 +195,57 @@ SetsValue SetsExprSemantics::BV_OP_AND_eval(SetsValue v1, SetsValue v2,
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_OR_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_OR_eval(SetsValue v1, SetsValue v2,
 					   int offset, int size)
 {
   if ((!(v1.contains(ConcreteValue(v1.get_size (), (word_t) 0)))) ||
       (!(v2.contains(ConcreteValue(v2.get_size (), (word_t) 0)))))
     return SetsValue(Option<ConcreteValue>(ConcreteValue(v1.get_size (), 1)));
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_OR_eval, v1, v2, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_OR_eval, v1, v2,
 				 offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_XOR_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_XOR_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
   return generic_binary_semantic(ConcreteExprSemantics::BV_OP_XOR_eval, v1, v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_LSH_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_LSH_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LSH_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LSH_eval, v1,
 				 v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_RSH_U_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_RSH_U_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_RSH_U_eval, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_RSH_U_eval,
 				 v1, v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_RSH_S_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_RSH_S_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_RSH_S_eval, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_RSH_S_eval,
 				 v1, v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_ROR_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_ROR_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_ROR_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_ROR_eval, v1,
 				 v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_ROL_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_ROL_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
   return generic_binary_semantic(ConcreteExprSemantics::BV_OP_ROL_eval, v1,
@@ -253,31 +253,31 @@ SetsValue SetsExprSemantics::BV_OP_ROL_eval(SetsValue v1, SetsValue v2,
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_EQ_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_EQ_eval(SetsValue v1, SetsValue v2,
 					   int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_EQ_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_EQ_eval, v1,
 				 v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_NEQ_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_NEQ_eval(SetsValue v1, SetsValue v2,
 					    int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_NEQ_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_NEQ_eval, v1,
 				 v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_LEQ_S_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_LEQ_S_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LEQ_S_eval, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LEQ_S_eval,
 				 v1, v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_LT_S_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_LT_S_eval(SetsValue v1, SetsValue v2,
 					     int offset, int size)
 {
   return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LT_S_eval, v1, v2,
@@ -285,18 +285,18 @@ SetsValue SetsExprSemantics::BV_OP_LT_S_eval(SetsValue v1, SetsValue v2,
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_LEQ_U_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_LEQ_U_eval(SetsValue v1, SetsValue v2,
 					      int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LEQ_U_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LEQ_U_eval, v1,
 				 v2, offset, size);
 }
 
 template<>
-SetsValue SetsExprSemantics::BV_OP_LT_U_eval(SetsValue v1, SetsValue v2, 
+SetsValue SetsExprSemantics::BV_OP_LT_U_eval(SetsValue v1, SetsValue v2,
 					     int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LT_U_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_LT_U_eval, v1,
 				 v2, offset, size);
 }
 
@@ -304,7 +304,7 @@ template<> SetsValue
 SetsExprSemantics::BV_OP_EXTEND_U_eval(SetsValue v1, SetsValue v2,
 				       int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_EXTEND_U_eval, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_EXTEND_U_eval,
 				 v1, v2, offset, size);
 }
 
@@ -312,7 +312,7 @@ template<> SetsValue
 SetsExprSemantics::BV_OP_EXTEND_S_eval(SetsValue v1, SetsValue v2,
 				       int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_EXTEND_S_eval, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_EXTEND_S_eval,
 				 v1, v2, offset, size);
 }
 
@@ -320,7 +320,7 @@ template<> SetsValue
 SetsExprSemantics::BV_OP_MODULO_eval(SetsValue v1, SetsValue v2,
 				     int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_MODULO_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_MODULO_eval, v1,
 				 v2, offset, size);
 }
 
@@ -328,7 +328,7 @@ template<> SetsValue
 SetsExprSemantics::BV_OP_CONCAT_eval(SetsValue v1, SetsValue v2,
 				     int offset, int size)
 {
-  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_CONCAT_eval, v1, 
+  return generic_binary_semantic(ConcreteExprSemantics::BV_OP_CONCAT_eval, v1,
 				 v2, offset, size);
 }
 
@@ -336,18 +336,18 @@ template<> SetsValue
 SetsExprSemantics::BV_OP_EXTRACT_eval(SetsValue v1, SetsValue v2, SetsValue v3,
 				      int offset, int size)
 {
-  return generic_ternary_semantic(ConcreteExprSemantics::BV_OP_EXTRACT_eval, 
+  return generic_ternary_semantic(ConcreteExprSemantics::BV_OP_EXTRACT_eval,
 				  v1, v2, v3, offset, size);
 }
 
-template<> SetsValue 
+template<> SetsValue
 SetsExprSemantics::BV_OP_NEG_eval(SetsValue v, int offset, int size)
 {
   return generic_unary_semantic(ConcreteExprSemantics::BV_OP_NEG_eval, v,
 				offset, size);
 }
 
-template<> SetsValue 
+template<> SetsValue
 SetsExprSemantics::BV_OP_NOT_eval(SetsValue v, int offset, int size)
 {
   return generic_unary_semantic(ConcreteExprSemantics::BV_OP_NOT_eval, v,
@@ -361,7 +361,7 @@ SetsExprSemantics::embed_eval(SetsValue v1, SetsValue v2, int off) {
 
 template<> SetsValue
 SetsExprSemantics::extract_eval(SetsValue v,  int off, int size) {
-  return expr_semantics_extract_eval<SetsValue, 
+  return expr_semantics_extract_eval<SetsValue,
 				     SetsExprSemantics>(v, off, size);
 }
 

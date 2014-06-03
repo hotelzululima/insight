@@ -147,7 +147,7 @@ optype    [bswlqt]
              }
 
  /* Anything else is probable an error */
-.  { 
+.  {
      char tmp[2] = { yytext[0], 0 };
      yylval->stringValue = new string (tmp);
      return token::TOK_INVALID;

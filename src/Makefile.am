@@ -5,7 +5,7 @@ AM_LDFLAGS = @BINUTILS_LDFLAGS@
 AUTOMAKE_OPTIONS=subdir-objects
 
 CLEANFILES=
-BUILT_SOURCES= 
+BUILT_SOURCES=
 
 all:
 
@@ -271,7 +271,7 @@ io_built_sources = \
 	io/expressions/position.hh	\
 	io/expressions/ExprLexer.cc 	\
 	io/expressions/ExprParser.hh  	\
-	io/expressions/ExprParser.cc 
+	io/expressions/ExprParser.cc
 
 io/expressions/stack.hh		\
 io/expressions/location.hh	\
@@ -336,7 +336,7 @@ msp430_decoder= \
 	decoders/binutils/msp430/msp430_translate.cc  \
 	decoders/binutils/msp430/msp430_translate.hh  \
         decoders/binutils/msp430/msp430_parser.yy  \
-        decoders/binutils/msp430/msp430_scanner.ll 
+        decoders/binutils/msp430/msp430_scanner.ll
 
 BUILT_SOURCES+= \
 	decoders/binutils/msp430/stack.hh 	      	\
@@ -345,7 +345,7 @@ BUILT_SOURCES+= \
 	decoders/binutils/msp430/msp430_scanner.hh \
 	decoders/binutils/msp430/msp430_scanner.cc \
 	decoders/binutils/msp430/msp430_parser.hh  \
-	decoders/binutils/msp430/msp430_parser.cc 
+	decoders/binutils/msp430/msp430_parser.cc
 
 sparc_decoder= \
 	decoders/binutils/sparc/sparc_cc.def \
@@ -371,7 +371,7 @@ sparc_decoder= \
 	decoders/binutils/sparc/sparc_translate.hh  \
 	decoders/binutils/sparc/sparc_translation_functions.hh \
         decoders/binutils/sparc/sparc_parser.yy  \
-        decoders/binutils/sparc/sparc_scanner.ll 
+        decoders/binutils/sparc/sparc_scanner.ll
 
 BUILT_SOURCES+= \
 	decoders/binutils/sparc/stack.hh 	      	\
@@ -380,7 +380,7 @@ BUILT_SOURCES+= \
 	decoders/binutils/sparc/sparc_scanner.hh 	\
 	decoders/binutils/sparc/sparc_scanner.cc 	\
 	decoders/binutils/sparc/sparc_parser.hh  	\
-	decoders/binutils/sparc/sparc_parser.cc 
+	decoders/binutils/sparc/sparc_parser.cc
 
 x86_decoder= \
 	decoders/binutils/x86/x86_32_decoder.hh \
@@ -408,7 +408,7 @@ x86_decoder= \
 	decoders/binutils/x86/x86_translate.hh  \
 	decoders/binutils/x86/x86_translation_functions.hh \
         decoders/binutils/x86/x86_parser.yy  \
-        decoders/binutils/x86/x86_scanner.ll 
+        decoders/binutils/x86/x86_scanner.ll
 
 BUILT_SOURCES+= \
 	decoders/binutils/x86/stack.hh 	      	\
@@ -417,7 +417,7 @@ BUILT_SOURCES+= \
 	decoders/binutils/x86/x86_scanner.hh \
 	decoders/binutils/x86/x86_scanner.cc \
 	decoders/binutils/x86/x86_parser.hh  \
-	decoders/binutils/x86/x86_parser.cc 
+	decoders/binutils/x86/x86_parser.cc
 
 decoders_sources = \
 	decoders/Decoder.hh        \

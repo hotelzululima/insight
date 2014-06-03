@@ -329,7 +329,7 @@ OBJECTS=${X86_32_OBJECTS} ${X86_64_OBJECTS}
 
 all : $(OBJECTS)
 
-x86_32-%.bin : x86_32-%.s x86_32-simulator-header.s x86_32-simulator-end.s 
+x86_32-%.bin : x86_32-%.s x86_32-simulator-header.s x86_32-simulator-end.s
 	@ echo $@
 	@ $(CC) -m32 -march=i686 -c $< -o $@
 
@@ -337,7 +337,7 @@ x86_32-%.bin : x86_32-%.c
 	@ echo $@
 	@ $(CC) -m32 -march=i686 -c $< -o $@
 
-x86_64-%.bin : x86_64-%.s x86_64-simulator-header.s x86_64-simulator-end.s 
+x86_64-%.bin : x86_64-%.s x86_64-simulator-header.s x86_64-simulator-end.s
 	@ echo $@
 	@ $(CC) -m64 -march=i686 -c $< -o $@
 

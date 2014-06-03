@@ -52,13 +52,13 @@ ConcreteAddress BinaryLoader::get_entrypoint() const
   return entrypoint;
 }
 
-bool 
+bool
 BinaryLoader::load_symbol_table (SymbolTable *) const
 {
   return false;
 }
 
-bool 
+bool
 BinaryLoader::load_memory (ConcreteMemory *) const
 {
   return false;

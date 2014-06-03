@@ -68,7 +68,7 @@ s_operation_semantics(msp430::parser_data &data, BinaryOp op,
   e = BinaryApp::create(op, op2, op1, 0, dest_size);
   if (op3 != NULL) {
     if (op3->get_bv_size() < dest_size)
-      op3 = BinaryApp::create(BV_OP_EXTEND_U, op3, 
+      op3 = BinaryApp::create(BV_OP_EXTEND_U, op3,
 			      Constant::create(dest_size, 0,
 					       Expr::get_bv_default_size()),
 			      0, dest_size);

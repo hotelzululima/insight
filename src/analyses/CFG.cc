@@ -27,7 +27,7 @@ struct CFG_BasicBlockImpl : public CFG_BasicBlock
   CFG_BasicBlockImpl () : nodes (), in (), out () { }
   virtual ~CFG_BasicBlockImpl () {
     for (list<CFG_EdgeImpl *>::iterator ei = in.begin(); ei != in.end (); ei++)
-      delete *ei;    
+      delete *ei;
   }
 
   bool operator == (const CFG_BasicBlock &bb) const;
@@ -54,7 +54,7 @@ s_build_successors (const Microcode *prog, const MicrocodeNode *node)
 	{
 	  StaticArrow *sa = (StaticArrow *) a;
 	  MicrocodeAddress tgt = sa->get_target ();
-  
+
 	  result->push_back (prog->get_node (tgt));
 	}
       else if (a->has_annotation (SolvedJmpAnnotation::ID))
@@ -62,7 +62,7 @@ s_build_successors (const Microcode *prog, const MicrocodeNode *node)
 	  SolvedJmpAnnotation *sja = (SolvedJmpAnnotation *)
 	    a->get_annotation (SolvedJmpAnnotation::ID);
 
-	  for (SolvedJmpAnnotation::const_iterator i = sja->begin (); 
+	  for (SolvedJmpAnnotation::const_iterator i = sja->begin ();
 	       i != sja->end (); i++)
 	    result->push_back (prog->get_node (*i));
 	}
@@ -91,15 +91,15 @@ s_split_basic_block (CFG *cfg, CFG_BasicBlockImpl *bb, MicrocodeNode *new_ep,
   bb->nodes.resize (eppos);
 
   // change src of out edges to point to new bb and add these edges to result's
-  // output list 
-  for (list<CFG_EdgeImpl *>::iterator e = bb->out.begin (); 
+  // output list
+  for (list<CFG_EdgeImpl *>::iterator e = bb->out.begin ();
        e !=  bb->out.end (); e++)
     {
       (*e)->src = result;
       result->out.push_back (*e);
     }
 
-  // create new edge between splitted parts of bb 
+  // create new edge between splitted parts of bb
   bb->out.clear ();
   cfg->add_edge (bb, result);
 
@@ -107,13 +107,13 @@ s_split_basic_block (CFG *cfg, CFG_BasicBlockImpl *bb, MicrocodeNode *new_ep,
 }
 
 static void
-s_add_successor (CFG *cfg, CFG_BasicBlockImpl *&bb, MicrocodeNode *s, 
+s_add_successor (CFG *cfg, CFG_BasicBlockImpl *&bb, MicrocodeNode *s,
 		 bool merge,
-		 list<CFG_BasicBlockImpl *> &todo, 
+		 list<CFG_BasicBlockImpl *> &todo,
 		 map<MicrocodeNode *, CFG_BasicBlock *> &done)
 {
   map<MicrocodeNode *, CFG_BasicBlock *>::iterator sp = done.find (s);
-  CFG_BasicBlockImpl *sbb = NULL;  
+  CFG_BasicBlockImpl *sbb = NULL;
 
   if (sp == done.end ())
     {
@@ -129,12 +129,12 @@ s_add_successor (CFG *cfg, CFG_BasicBlockImpl *&bb, MicrocodeNode *s,
 	  done[s] = bb;
 	  todo.push_back (bb);
 	}
-    }  
+    }
   else
     {
       sbb = (CFG_BasicBlockImpl *) sp->second;
 
-      if (sbb->nodes.at (0) != s) 
+      if (sbb->nodes.at (0) != s)
 	{
 	  // we point in the middle of a BB; split it.
 	  CFG_BasicBlockImpl *nbb = s_split_basic_block (cfg, sbb, s, done);
@@ -153,7 +153,7 @@ s_add_successor (CFG *cfg, CFG_BasicBlockImpl *&bb, MicrocodeNode *s,
 	    cfg->add_edge (bb, nbb);
 	}
       else
-	{ 
+	{
 	  cfg->add_edge (bb, sbb);
 	}
     }
@@ -164,7 +164,7 @@ CFG::CFG () : GraphInterface<CFG_BasicBlock, CFG_Edge, CFG_NodeStore> (),
 {
 }
 
-CFG::~CFG () 
+CFG::~CFG ()
 {
   for (node_iterator i = nodes.begin (); i != nodes.end (); i++)
     delete *i;
@@ -188,14 +188,14 @@ CFG::createFromMicrocode (const Microcode *prog, const MicrocodeAddress &start)
     {
       bb = *todo.begin ();
       todo.pop_front();
-      
+
       ep = bb->nodes.at (bb->nodes.size () - 1);
       vector<MicrocodeNode *> *succ = s_build_successors (prog, ep);
-      
+
       for (vector<MicrocodeNode *>::size_type i = 0; i < succ->size (); i++)
 	{
 	  MicrocodeNode *s = succ->at (i);
-	  s_add_successor (result, bb, s, succ->size () == 1, todo, 
+	  s_add_successor (result, bb, s, succ->size () == 1, todo,
 			   result->node2bb);
 	}
 
@@ -205,37 +205,37 @@ CFG::createFromMicrocode (const Microcode *prog, const MicrocodeAddress &start)
   return result;
 }
 
-CFG::const_node_iterator 
+CFG::const_node_iterator
 CFG::begin_nodes () const
 {
   return nodes.begin ();
 }
 
-CFG::const_node_iterator 
+CFG::const_node_iterator
 CFG::end_nodes () const
 {
   return nodes.end ();
 }
 
-CFG::node_iterator 
+CFG::node_iterator
 CFG::begin_nodes ()
 {
   return nodes.begin ();
 }
 
-CFG::node_iterator 
+CFG::node_iterator
 CFG::end_nodes ()
 {
   return nodes.end ();
 }
 
-CFG::node_type * 
+CFG::node_type *
 CFG::get_entry_point () const
 {
   return entrypoint;
 }
 
-std::string 
+std::string
 CFG::get_label_node (CFG::node_type *n) const
 {
   ostringstream oss;
@@ -244,7 +244,7 @@ CFG::get_label_node (CFG::node_type *n) const
   return oss.str ();
 }
 
-std::pair<CFG::edge_type *, CFG::node_type *> 
+std::pair<CFG::edge_type *, CFG::node_type *>
 CFG::get_first_successor (node_type *n) const
 {
   std::pair<CFG::edge_type *, CFG::node_type *> result(NULL,NULL);
@@ -259,7 +259,7 @@ CFG::get_first_successor (node_type *n) const
   return result;
 }
 
-std::pair<CFG::edge_type *, CFG::node_type *> 
+std::pair<CFG::edge_type *, CFG::node_type *>
 CFG::get_next_successor (CFG::node_type *n, CFG::edge_type *e) const
 {
   std::pair<CFG::edge_type *, CFG::node_type *> result (NULL, NULL);
@@ -292,7 +292,7 @@ CFG::get_target (CFG::edge_type *e) const
   return ((CFG_EdgeImpl *) e)->tgt;
 }
 
-void 
+void
 CFG::output_text(std::ostream & out) const
 {
   for (const_node_iterator i = nodes.begin (); i != nodes.end (); i++)
@@ -311,18 +311,18 @@ CFG::new_node (MicrocodeNode *entry)
   return result;
 }
 
-void 
+void
 CFG::add_edge (node_type *src, node_type *tgt)
 {
   CFG_EdgeImpl *e = new CFG_EdgeImpl ();
   e->src = dynamic_cast<CFG_BasicBlockImpl *> (src);
   e->tgt = dynamic_cast<CFG_BasicBlockImpl *> (tgt);
   e->src->out.push_back (e);
-  e->tgt->in.push_back (e);  
+  e->tgt->in.push_back (e);
 }
 
-bool 
-CFG_EdgeImpl::operator == (const CFG_Edge &e) const 
+bool
+CFG_EdgeImpl::operator == (const CFG_Edge &e) const
 {
   return this == &e;
 }
@@ -330,11 +330,11 @@ CFG_EdgeImpl::operator == (const CFG_Edge &e) const
 static void
 s_output_jmp_arrow (ostream &out, StmtArrow *a)
 {
-  if (!(a->get_stmt ()->is_Skip () || a->get_stmt ()->is_Jump ())) 
+  if (!(a->get_stmt ()->is_Skip () || a->get_stmt ()->is_Jump ()))
     return;
 
   out << "(";
-  if (a->get_condition () == NULL || 
+  if (a->get_condition () == NULL ||
       a->get_condition ()->is_TrueFormula ())
     out << "1";
   else
@@ -345,13 +345,13 @@ s_output_jmp_arrow (ostream &out, StmtArrow *a)
   out << ")";
 }
 
-string 
+string
 CFG_EdgeImpl::pp () const
 {
   ostringstream oss;
 
   MicrocodeNode *srcnode = src->get_exit ();
-  
+
   if (srcnode->get_successors ()->size () == 1)
     {
       StmtArrow *a = srcnode->get_successors ()->at (0);
@@ -362,7 +362,7 @@ CFG_EdgeImpl::pp () const
       MicrocodeNode_iterate_successors (*srcnode, succ)
 	{
 	  StaticArrow *sa = dynamic_cast<StaticArrow *> (*succ);
-	  if (sa == NULL || 
+	  if (sa == NULL ||
 	      sa->get_target ().equals(tgt->get_entry ()->get_loc ()))
 	    s_output_jmp_arrow (oss, *succ);
 	}
@@ -373,7 +373,7 @@ CFG_EdgeImpl::pp () const
 
 CFG_BasicBlock *
 CFG_EdgeImpl::get_src () const
-{  
+{
   return src;
 }
 
@@ -383,19 +383,19 @@ CFG_EdgeImpl::get_tgt () const
   return tgt;
 }
 
-bool 
-CFG_BasicBlockImpl::operator == (const CFG_BasicBlock &bb) const 
+bool
+CFG_BasicBlockImpl::operator == (const CFG_BasicBlock &bb) const
 {
   return this == &bb;
 }
 
-string 
-CFG_BasicBlockImpl::pp () const 
-{  
+string
+CFG_BasicBlockImpl::pp () const
+{
   ostringstream oss;
-  oss << "BB_" << std::hex << this << " : " 
-      << nodes.at(0)->get_loc () << " ... " 
-      << nodes.at(nodes.size () - 1)->get_loc () 
+  oss << "BB_" << std::hex << this << " : "
+      << nodes.at(0)->get_loc () << " ... "
+      << nodes.at(nodes.size () - 1)->get_loc ()
       << endl << endl;
   for (vector<MicrocodeNode *>::size_type i = 0; i < nodes.size (); i++)
     {
@@ -429,7 +429,7 @@ CFG_BasicBlockImpl::pp () const
 }
 
 MicrocodeNode *
-CFG_BasicBlockImpl::get_entry () const 
+CFG_BasicBlockImpl::get_entry () const
 {
   assert (! nodes.empty ());
   return nodes.at (0);

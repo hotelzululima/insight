@@ -6,7 +6,7 @@
 start:
 	cld
 	mov	$0x0, %ah
-	sahf	# to initialize DF 
+	sahf	# to initialize DF
 	movl	$0x12345678, string_addr1
 	movl	$0x31415926, string_addr1+4
 	movl	$0x27182818, string_addr1+8

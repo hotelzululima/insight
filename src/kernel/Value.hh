@@ -61,7 +61,7 @@ public:
 };
 
 template <typename V>
-class UnknownValueGenerator 
+class UnknownValueGenerator
 {
 public:
   virtual V unknown_value (int size) = 0;

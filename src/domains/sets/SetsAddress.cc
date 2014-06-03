@@ -37,14 +37,14 @@
 SetsAddress::SetsAddress(SetsValue v) : address(v) {}
 
 SetsAddress::SetsAddress(ConcreteAddress addr) :
-  address(Option<ConcreteValue>(ConcreteValue(sizeof(address_t) * 8, 
+  address(Option<ConcreteValue>(ConcreteValue(sizeof(address_t) * 8,
 					      (word_t) addr.get_address())))
 {
 }
 
 
-SetsAddress::~SetsAddress() 
-{ 
+SetsAddress::~SetsAddress()
+{
 }
 
 SetsValue SetsAddress::get() const

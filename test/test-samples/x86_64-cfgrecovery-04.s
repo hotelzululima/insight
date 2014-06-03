@@ -6,7 +6,7 @@ lelse:
 	jmpq *lcont
 lhalt:
 	retq
-    
+
 lthen:
 	mov  $l1 + 6, %rax
 l1:

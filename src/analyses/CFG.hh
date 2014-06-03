@@ -6,7 +6,7 @@
 # include <utils/graph.hh>
 # include <kernel/Microcode.hh>
 
-class CFG_BasicBlock 
+class CFG_BasicBlock
 {
 public:
   virtual ~CFG_BasicBlock () {}
@@ -54,9 +54,9 @@ public:
 
   virtual node_type *get_entry_point () const;
   virtual std::string get_label_node (node_type *n) const;
-  virtual std::pair<edge_type *, node_type *> 
+  virtual std::pair<edge_type *, node_type *>
   get_first_successor (node_type *n) const;
-  virtual std::pair<edge_type *, node_type *> 
+  virtual std::pair<edge_type *, node_type *>
   get_next_successor (node_type *n, edge_type *e) const;
   virtual node_type *get_source (edge_type *e) const;
   virtual node_type *get_target (edge_type *e) const;
@@ -70,6 +70,5 @@ private:
   std::map<MicrocodeNode *, CFG_BasicBlock *> node2bb;
   node_type *entrypoint;
 };
-			  
 
 #endif /* ! ANALYSES_CFG_HH */

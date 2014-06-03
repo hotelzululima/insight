@@ -51,16 +51,16 @@ namespace sparc {
 #undef SPARC_CC
       NB_CC
     } condition_code_t;
-    
-    parser_data (MicrocodeArchitecture *arch, Microcode *out, 
-		 const std::string &inst, address_t start, 
+
+    parser_data (MicrocodeArchitecture *arch, Microcode *out,
+		 const std::string &inst, address_t start,
 		 address_t next);
     ~parser_data();
 
     LValue *get_flag (const char *flagname) const;
     LValue *get_tmp_register (const char *id, int size) const;
     LValue *get_register (const char *regname) const;
-    bool is_segment_register (const Expr *expr); 
+    bool is_segment_register (const Expr *expr);
 
     Expr *get_memory_reference (Expr *section, int disp, Expr *bis) const;
 
@@ -79,7 +79,7 @@ namespace sparc {
     const char *stack_segment;
     MicrocodeArchitecture *arch;
     Expr *condition_codes[NB_CC];
-    std::unordered_set<const RegisterDesc *, 
+    std::unordered_set<const RegisterDesc *,
 			    RegisterDesc::Hash> segment_registers;
   };
 }
@@ -154,7 +154,7 @@ using namespace sparc;
 
 %type <expr> operand register section memory_reference base_index_scale
 
-%type <intValue> integer immediate 
+%type <intValue> integer immediate
 
 %printer    { debug_stream() << $$; } <intValue>
 
@@ -168,14 +168,14 @@ start: instruction;
 operand:
   immediate { $$ = Constant::create ($1, 0, 32); }
 | register { $$ = $1; }
-| register TOK_LPAR integer TOK_RPAR  
-  { throw std::runtime_error ("unsupported register"); } 
+| register TOK_LPAR integer TOK_RPAR
+  { throw std::runtime_error ("unsupported register"); }
 | memory_reference { $$ = $1; }
-| TOK_STAR memory_reference { 
-  $$ = MemCell::create ($2, 0, data.arch->get_word_size ()); 
+| TOK_STAR memory_reference {
+  $$ = MemCell::create ($2, 0, data.arch->get_word_size ());
 }
-| TOK_STAR register { 
-  $$ = MemCell::create ($2, 0, data.arch->get_word_size ()); 
+| TOK_STAR register {
+  $$ = MemCell::create ($2, 0, data.arch->get_word_size ());
   }
 ;
 
@@ -187,30 +187,30 @@ memory_reference:
 | section base_index_scale
 { $$ = data.get_memory_reference ($1, 0, $2); }
 
-section : 
+section :
   register TOK_COLON { $$ = $1; }
 | /* empty */        { $$ = NULL; }
 ;
 
 base_index_scale :
-  TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR 
-{ $$ = BinaryApp::create (BV_OP_ADD, $2, 
+  TOK_LPAR register TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR
+{ $$ = BinaryApp::create (BV_OP_ADD, $2,
 			  BinaryApp::create (BV_OP_MUL_U, $4, $6)); }
-| TOK_LPAR register TOK_COMMA register TOK_RPAR 
+| TOK_LPAR register TOK_COMMA register TOK_RPAR
 { $$ = BinaryApp::create (BV_OP_ADD, $2, $4); }
-| TOK_LPAR register TOK_RPAR 
+| TOK_LPAR register TOK_RPAR
 { $$ = $2; }
-| TOK_LPAR TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR 
+| TOK_LPAR TOK_COMMA register TOK_COMMA TOK_INTEGER TOK_RPAR
 { $$ = BinaryApp::create (BV_OP_MUL_U, $3, $5); }
 
-| TOK_LPAR TOK_COMMA TOK_INTEGER TOK_RPAR  
+| TOK_LPAR TOK_COMMA TOK_INTEGER TOK_RPAR
 { $$ = NULL; }
 ;
 
 register :
-TOK_REGISTER 
-{ 
-  $$ = data.get_register ($1->c_str ()); 
+TOK_REGISTER
+{
+  $$ = data.get_register ($1->c_str ());
   if ($$ == NULL)
     {
       error (yylloc, ": error: unknown register " + *$1);
@@ -234,7 +234,7 @@ integer :
 | TOK_INTEGER           { $$ = $1; }
 ;
 
-instruction: 
+instruction:
 TOK_BAD { }
 ;
 

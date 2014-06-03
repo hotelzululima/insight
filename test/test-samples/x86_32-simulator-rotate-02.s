@@ -51,7 +51,7 @@ start:
 	cmp 	$0xABC4, %ax
 	jne	error
 
-	# RCL 32 bits test 
+	# RCL 32 bits test
 	stc		
 	rcl	%eax
 	jc	error

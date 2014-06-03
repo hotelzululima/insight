@@ -67,7 +67,7 @@ SetsValue::unknown_value_generator ()
 {
   static UnknownSetsValue gen;
 
-  return &gen;  
+  return &gen;
 }
 
 SetsValue::SetsValue(int size, word_t val) :

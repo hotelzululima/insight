@@ -14,7 +14,7 @@ class RecursiveTraversal
 public:
   typedef MicrocodeAddressProgramPoint ProgramPoint;
 
-  class Context : public AbstractContext {   
+  class Context : public AbstractContext {
   public:
     typedef std::list<ConcreteAddress> CallStack;
 
@@ -22,7 +22,7 @@ public:
     Context (const CallStack &cs);
 
     virtual ~Context ();
-    
+
     virtual bool equals (const AbstractContext *other) const;
     virtual bool empty () const;
     virtual Context *push (const ConcreteAddress &retaddr)const;
@@ -54,9 +54,9 @@ public:
     virtual State *get_initial_state (const ConcreteAddress &entrypoint);
 
     virtual StateSet *get_successors (const State *s, const StmtArrow *arrow);
-    
-  private:        
-    ConcreteMemory *memory; 
+
+  private:
+    ConcreteMemory *memory;
     const Architecture *arch;
   };
 

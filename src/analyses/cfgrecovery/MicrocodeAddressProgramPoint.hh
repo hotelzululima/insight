@@ -3,7 +3,7 @@
 
 # include <analyses/cfgrecovery/AbstractProgramPoint.hh>
 
-class MicrocodeAddressProgramPoint 
+class MicrocodeAddressProgramPoint
   : public AbstractProgramPoint<MicrocodeAddressProgramPoint>
 {
 public:
@@ -13,7 +13,7 @@ public:
 
   virtual MicrocodeAddress to_MicrocodeAddress () const;
 
-  virtual MicrocodeAddressProgramPoint *next (const MicrocodeAddress &addr) 
+  virtual MicrocodeAddressProgramPoint *next (const MicrocodeAddress &addr)
     const;
 
   virtual bool equals (const MicrocodeAddressProgramPoint *pp) const;
@@ -23,7 +23,7 @@ public:
 
   virtual void output_text (std::ostream &out) const;
 
-private: 
+private:
   MicrocodeAddress address;
 };
 

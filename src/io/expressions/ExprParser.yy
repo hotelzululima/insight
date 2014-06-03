@@ -49,7 +49,7 @@ namespace ExprParser {
  }
 
 %define namespace "ExprParser"
-%define parser_class_name Parser 
+%define parser_class_name Parser
 %language "c++"
 %defines
 %start start
@@ -109,35 +109,35 @@ using namespace ExprParser;
 %token <intValue>     TOK_INTEGER    "integer value (INTEGER)"
 
 %type <expr> start constant expr atom lvalue
-%type <var> variable 
+%type <var> variable
 %type <bvSpec> bitvector_spec
 
 %% /***** Parser rules *****/
 
-start : 
-  expr 
+start :
+  expr
   { data.result = $1; }
 ;
 
 bitvector_spec :
- TOK_LBRACE TOK_INTEGER TOK_SEMICOLON TOK_INTEGER TOK_RBRACE 
+ TOK_LBRACE TOK_INTEGER TOK_SEMICOLON TOK_INTEGER TOK_RBRACE
  { $$.offset = $2; $$.size = $4; }
 ;
 
 expr :
-  TOK_LPAR TOK_UNARY_OP expr TOK_RPAR 
+  TOK_LPAR TOK_UNARY_OP expr TOK_RPAR
   { $$ = UnaryApp::create ($2, $3, 0, $3->get_bv_size ()); }
 | TOK_LPAR TOK_UNARY_OP expr TOK_RPAR bitvector_spec
   { $$ = UnaryApp::create ($2, $3, $5.offset, $5.size); }
 | TOK_LPAR TOK_BINARY_OP expr expr TOK_RPAR bitvector_spec
   { $$ = BinaryApp::create ($2, $3, $4, $6.offset, $6.size); }
-| TOK_LPAR TOK_COMPARE_OP expr expr TOK_RPAR 
-  { 
+| TOK_LPAR TOK_COMPARE_OP expr expr TOK_RPAR
+  {
     if ($3->get_bv_size () != $4->get_bv_size ()) {
       Parser::error (@$, "comparison of BV with different sizes.");
       YYERROR;
     }
-    $$ = BinaryApp::create ($2, $3, $4, 0, 1); 
+    $$ = BinaryApp::create ($2, $3, $4, 0, 1);
   }
 | TOK_LPAR TOK_COMPARE_OP expr expr TOK_RPAR bitvector_spec
   { $$ = BinaryApp::create ($2, $3, $4, $6.offset, $6.size); }
@@ -165,30 +165,30 @@ atom :
 ;
 
 constant :
-  TOK_INTEGER  
+  TOK_INTEGER
   { $$ = Constant::create ($1, 0, BV_DEFAULT_SIZE); }
 ;
 
-variable : 
-  TOK_STRING 
+variable :
+  TOK_STRING
   { $$ = Variable::create (*($1), BV_DEFAULT_SIZE); delete $1; }
 ;
 
 lvalue:
-  TOK_LBRACKET expr TOK_RBRACKET 
+  TOK_LBRACKET expr TOK_RBRACKET
   { $$ = MemCell::create ($2, 0, BV_DEFAULT_SIZE); }
-| TOK_PERCENT TOK_STRING 
-  { 
+| TOK_PERCENT TOK_STRING
+  {
     try {
-      const RegisterDesc *reg = data.arch->get_register (*$2); 
+      const RegisterDesc *reg = data.arch->get_register (*$2);
       int offset = reg->get_window_offset ();
       int size = reg->get_window_size ();
       if (reg->is_alias ())
 	reg = data.arch->get_register (reg->get_label ());
       $$ = RegisterExpr::create (reg, offset, size);
     } catch(Architecture::RegisterDescNotFound &) {
-      logs::error << "unknown register '" << *$2 << "'" << endl; 
-      YYERROR;      
+      logs::error << "unknown register '" << *$2 << "'" << endl;
+      YYERROR;
     }
     delete $2;
   }
@@ -198,7 +198,7 @@ lvalue:
 
 # include <cassert>
 
-void 
+void
 Parser::error(const Parser::location_type &loc, const string &msg)
 {
   cerr << loc << ":" << msg <<  endl;
@@ -212,7 +212,7 @@ expr_parser (const std::string &in, const MicrocodeArchitecture *arch)
   ExprParser::init_lexer (in);
   data.result = NULL;
   data.arch = arch;
-  data.input = in;  
+  data.input = in;
 
   ExprParser::Parser parser (data);
   if (parser.parse () == 0)
@@ -221,7 +221,7 @@ expr_parser (const std::string &in, const MicrocodeArchitecture *arch)
     {
       data.result->deref ();
       data.result = NULL;
-    }  
+    }
   ExprParser::terminate_lexer ();
 
   return data.result;

@@ -47,7 +47,7 @@ start:
 	cmp 	$0xC593, %ax
 	jne	error
 
-	# ROR 32 bits test 
+	# ROR 32 bits test
 	ror	%eax
 	jnc	error
 	jno	error

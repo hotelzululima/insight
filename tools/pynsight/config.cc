@@ -40,13 +40,13 @@ s_Config_set (PyObject *, PyObject *args)
     {
       ConfigTable &cfg = pynsight::configTable ();
 
-      if (PyBool_Check (optvalue)) 
+      if (PyBool_Check (optvalue))
 	cfg.set (optname, (optvalue == Py_True));
-      else if (PyInt_Check (optvalue)) 
+      else if (PyInt_Check (optvalue))
 	cfg.set (optname, PyInt_AsLong (optvalue));
-      else if (PyString_Check (optvalue)) 
+      else if (PyString_Check (optvalue))
 	cfg.set (optname,  PyString_AsString(optvalue));
-      else 
+      else
 	PyErr_SetString (PyExc_TypeError, "invalid value type");
     }
   if (! PyErr_Occurred ())
@@ -65,7 +65,7 @@ s_Config_get (PyObject *, PyObject *args)
     return NULL;
   ConfigTable &cfg = pynsight::configTable ();
 
-  if (cfg.has (optname)) 
+  if (cfg.has (optname))
     result = Py_BuildValue ("s", cfg.get (optname).c_str ());
   else
     result = pynsight::None ();
@@ -73,22 +73,22 @@ s_Config_get (PyObject *, PyObject *args)
 }
 
 static PyMethodDef Config_Methods[] = {
-  { 
+  {
     "set", (PyCFunction) s_Config_set, METH_VARARGS,
     "Set the value of configuation option"
   }, {
     "get", (PyCFunction) s_Config_get, METH_VARARGS,
     "Get value of a configuration option"
-  }, { 
-    NULL, NULL, 0, NULL 
+  }, {
+    NULL, NULL, 0, NULL
   }
 };
 
-static bool 
-s_init () 
+static bool
+s_init ()
 {
   PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
-  PyObject *cfg_module = Py_InitModule ("config", Config_Methods);  
+  PyObject *cfg_module = Py_InitModule ("config", Config_Methods);
   PyModule_AddObject (pkg, "config", cfg_module);
   Py_DECREF (pkg);
   Py_INCREF (cfg_module);
@@ -96,8 +96,8 @@ s_init ()
   return true;
 }
 
-static bool 
-s_terminate () 
+static bool
+s_terminate ()
 {
   return true;
 }
@@ -105,7 +105,7 @@ s_terminate ()
 static pynsight::Module CONFIG ("config", s_init, s_terminate);
 
 ConfigTable &
-pynsight::configTable () 
+pynsight::configTable ()
 {
   static ConfigTable CONFIG;
 

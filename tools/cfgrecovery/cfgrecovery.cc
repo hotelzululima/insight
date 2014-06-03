@@ -780,7 +780,7 @@ main (int argc, char *argv[])
   if (sink_nodes)
     {
       bool first = true;
-      for (Microcode::const_node_iterator i = mc->begin_nodes (); 
+      for (Microcode::const_node_iterator i = mc->begin_nodes ();
 	   i != mc->end_nodes (); i++)
 	{
 	  MicrocodeNode *n = *i;

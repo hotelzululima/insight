@@ -243,7 +243,7 @@ def microstep(a=0):
         print "Program is not started"
         return
     __record(pc(), microstep, a)
-    try:        
+    try:
         simulator.microstep(a)
     except:
         simulation_error()
@@ -324,7 +324,7 @@ def dump(addr=None, l=256, filter=None):
                specified then the value of the program-counter is used (see
                'help(pc)').
     - l      : the number of bytes to display.
-    - filter : a callback to translate domain-specific string into another 
+    - filter : a callback to translate domain-specific string into another
                value.
     """
     global simulator
@@ -529,7 +529,7 @@ def show(what):
     Display informations related to simulation.
 
     According to the 'what' parameter the following data are printed :
-    - "breakpoints" : display the current breakpoints, watchpoints and 
+    - "breakpoints" : display the current breakpoints, watchpoints and
                       Python watchpoints
     - "pc" : display the value of the program counter.
     - "mcpc" : display the microcode address of the current microcode-node.
@@ -547,7 +547,7 @@ def show(what):
                 print id, " : hits={} {}".format(h, s)
         elif "assumptions".find(what) == 0 and simulator is not None:
             for(g, l, expr) in simulator.get_assumptions():
-                if l == 0: 
+                if l == 0:
                     print "0x{:x} : {}".format(g, expr)
                 else:
                     print "(0x{:x},{}) : {}".format(g, l, expr)
@@ -650,7 +650,7 @@ def print_registers(l=None):
         for r in sorted(l):
             if r not in regs:
                 continue
-            fmt = "{: <5s} : {:."+ str(valuewidth) + "s}"            
+            fmt = "{: <5s} : {:."+ str(valuewidth) + "s}"
             val = simulator.get_register(r)
             if val is not None:
                 if len(val) >= valuewidth:
@@ -763,7 +763,7 @@ def unset(loc, len=1, keep=True):
     is displayed.
 
     Parameters:
-    - loc : the location to abstract. It is either an address (i.e. an 
+    - loc : the location to abstract. It is either an address (i.e. an
             integer value or a string to specify a register name.
     - len : the number of bytes of abstract (only for memory areas)
     - keep : to memorize the abstraction into the context.
@@ -893,13 +893,13 @@ def load_stub(filename, addr, fold = False):
     Load a microcode program at a given address.
 
     This function loads an existing program from file 'filename' and reloca-
-    tes it at the given address 'addr'. The loaded program is merged within 
-    the existing microcode; each node is relocated by shifting its location 
-    with 'addr' bytes. 
+    tes it at the given address 'addr'. The loaded program is merged within
+    the existing microcode; each node is relocated by shifting its location
+    with 'addr' bytes.
 
     Take care that loaded stubs don't overlap existing nodes. In this case
     both microcodes exist.
-    
+
     Parameters:
     - filename : input filename
     - addr     : offset where the microcode is relocated
@@ -938,7 +938,7 @@ def simulation_error():
     elif sys.exc_type is NotImplementedError:
         print "feature not supported."
     else:
-        raise 
+        raise
 
 
 def view_asm(start=None, end=None, ep=None):
@@ -1025,9 +1025,9 @@ def steps():
     Return current simulation steps.
 
     The simulator records calls to simulation functions: run, step, cont,
-    microstep. This function returns the list of calls which can be 
-    memorized for later use. The content of the record can be displayed 
-    using 'display_steps' and the sequence can re-executed using 
+    microstep. This function returns the list of calls which can be
+    memorized for later use. The content of the record can be displayed
+    using 'display_steps' and the sequence can re-executed using
     'replay_steps'.
     """
     global recorder
@@ -1052,7 +1052,7 @@ def replay_steps(s):
         return
     for (addr,action,arg) in s:
         action(arg)
-        
+
 
 def display_steps(s, asrecord = False):
     """
@@ -1064,7 +1064,7 @@ def display_steps(s, asrecord = False):
     """
     if s is None:
         print "nothing to display"
-        return    
+        return
     if asrecord:
         sys.stdout.write("[");
         l = len(s)
@@ -1078,7 +1078,7 @@ def display_steps(s, asrecord = False):
     else:
         for (addr, action, arg) in s:
             print "0x{:x} : {}({})".format(addr, action.__name__, arg)
-    
+
 
 def display_stack(start, end, absconv, bp = None, sp = None):
     """
@@ -1089,17 +1089,17 @@ def display_stack(start, end, absconv, bp = None, sp = None):
     has to furnish a function able to convert abstract values (according to
     current evaluation domain) in concrete ones.
 
-    Each line of the output contains: 
-    - the address aligned to the size of a word (see 'info("word_size")'), 
+    Each line of the output contains:
+    - the address aligned to the size of a word (see 'info("word_size")'),
     - the raw and hexadecimal value of bytes; a dot is displayed in place
       of a non-convertible or non-printable byte
     - if values of the frame and stack pointer are given ('bp' and 'sp' pa-
       rameters) the relative position to these pointers are given.
-    
+
     Parameters:
     - start   : start address of the stack
     - end     : end address of the stack
-    - absconv : a function that convert an abstract byte into a concrete 
+    - absconv : a function that convert an abstract byte into a concrete
                 byte
     - bp      : current value of the frame pointer
     - sp      : current value of the stack pointer
@@ -1114,7 +1114,7 @@ def display_stack(start, end, absconv, bp = None, sp = None):
 
     addrsize = prog().info()["address_size"] / 8
     elsize = prog().info()["word_size"] / 8
-    
+
     start -= start % elsize
     while start >= end :
         bytestr = ""
@@ -1170,19 +1170,19 @@ def display(expr, alias = None):
     """
     Display an expression after each simulation step.
 
-    The simulator maintains a list of expressions evaluated and displayed 
-    after each simulation function (step, microstep, run, cont). The 
-    function display couples of 'expr = val' where 'expr' is the string 
-    specified by the user and 'val' the evaluation of 'expr' according to 
-    the current state and simulation domain. In the displayed list' expr' 
-    can be replaced by an 'alias'. 
+    The simulator maintains a list of expressions evaluated and displayed
+    after each simulation function (step, microstep, run, cont). The
+    function display couples of 'expr = val' where 'expr' is the string
+    specified by the user and 'val' the evaluation of 'expr' according to
+    the current state and simulation domain. In the displayed list' expr'
+    can be replaced by an 'alias'.
 
     Parameters:
     - expr  : a string containing the expression to display
-    - alias : if not None the value is display in place of expr as a 
+    - alias : if not None the value is display in place of expr as a
               description of the expression
     """
-    global simulator, displayed_expressions    
+    global simulator, displayed_expressions
 
     if simulator is None:
         print "program is not running"
@@ -1204,22 +1204,22 @@ def undisplay(index):
     Parameters:
     - index : index of the expression in the list given by 'display'
     """
-    global simulator, displayed_expressions    
+    global simulator, displayed_expressions
 
     if simulator is None:
         print "program is not running"
         return
     if index in range (len(displayed_expressions)):
         displayed_expressions[index:index+1] = []
-    
+
 
 def assume(addr, cond, l = 0):
     """
     Attach a Boolean constraint to a microcode address.
 
-    The function associates to microcode address (addr, l) the constraint 
+    The function associates to microcode address (addr, l) the constraint
     'cond'. Each time the simulator encounters the given address the path
-    condition is contrained with 'cond'. 
+    condition is contrained with 'cond'.
 
     Parameters:
     - addr : global component of the microcode address
@@ -1231,7 +1231,7 @@ def assume(addr, cond, l = 0):
         print "program is not running"
         return
     if not isinstance(cond, str):
-        raise TypeError, "expect an expression given as a string"        
+        raise TypeError, "expect an expression given as a string"
 
     try:
         simulator.assume(addr, cond, l)
@@ -1257,14 +1257,14 @@ def remove_assumption(g, l = 0):
 
 def set_compare_state():
     """
-    Mark current state as comparison reference. 
+    Mark current state as comparison reference.
 
     The function memorizes the current state of registers and memory to be
-    compared later with a future state. This feature is mainly used to 
+    compared later with a future state. This feature is mainly used to
     understand the effect of a sequence of instructions on the state.
-    
+
     If a state is already memorized then it is forgotten.
-    """ 
+    """
     global simulator
     if simulator is None:
         print "program is not running"
@@ -1277,7 +1277,7 @@ def unset_compare_state():
 
     The function is just an explicit release of resources allocated to the
     state used for comparisons.
-    """ 
+    """
     global simulator
     if simulator is None:
         print "program is not running"
@@ -1305,7 +1305,7 @@ def compare_states():
             print loc, v1, v2
         else:
             print "0x{:x}".format (loc), v1, v2
-    
+
 def __record(addr, fun, arg, reset = False):
     global recorder;
     if reset:
@@ -1314,9 +1314,9 @@ def __record(addr, fun, arg, reset = False):
 
 
 def __display_expressions():
-    global displayed_expressions    
+    global displayed_expressions
     i = 0
-    for alias,expr in displayed_expressions:        
+    for alias,expr in displayed_expressions:
         if alias is None:
             alias = expr
         print "{:d}) {} = {}".format(i, alias, eval(expr))

@@ -14,11 +14,11 @@
 
 #define PRE_SCRIPT \
   "import sys\n" \
-  "sys.path.append('" PYNSIGHT_HOME "')\n" 
+  "sys.path.append('" PYNSIGHT_HOME "')\n"
 
 #define POST_SCRIPT \
   "import insight\n" \
-  "from insight import *\n" 
+  "from insight import *\n"
 
 
 using namespace pynsight;
@@ -27,11 +27,11 @@ static std::list<Module *> &
 s_get_modules ()
 {
   static std::list<Module *> modules;
-  
+
   return modules;
 }
 
-pynsight::Module::Module (const char *name, bool (*i) (), bool (*t) ()) 
+pynsight::Module::Module (const char *name, bool (*i) (), bool (*t) ())
   : name (name), init_cb (i), terminate_cb (t) {
   s_get_modules ().push_back (this);
 }
@@ -52,7 +52,7 @@ s_init_package ()
   /* Declare general purpose error of the module */
 
   for (std::list<Module *>::const_iterator i = s_get_modules ().begin ();
-       i != s_get_modules ().end () && result; i++) {    
+       i != s_get_modules ().end () && result; i++) {
     result = (*i)->init ();
     if ((*i)->get_name () != NULL) {
       std::string s ("import ");
@@ -89,7 +89,7 @@ main (int argc, char **argv) {
   Py_Initialize();
   if (s_init_package ())
     {
-      if (Py_Main (argc, argv) != 0) 
+      if (Py_Main (argc, argv) != 0)
 	result = EXIT_FAILURE;
     }
   else if (PyErr_Occurred ())

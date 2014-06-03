@@ -61,7 +61,7 @@ s_build_cfg (const ConcreteAddress *entrypoint, ConcreteMemory *memory,
 {
   Microcode *result = new Microcode ();
   AlgorithmFactory F;
-  
+
   F.set_memory (memory);
   F.set_decoder (decoder);
   F.set_show_states (DEBUG_MODE);
@@ -101,7 +101,7 @@ s_program_has_node (Microcode *prg, address_t addr)
   return result;
 }
 
-static void 
+static void
 s_simulate (const char *filename, const char *target)
 {
   ConfigTable ct;
@@ -118,7 +118,7 @@ s_simulate (const char *filename, const char *target)
   insight::init (ct);
   ConcreteMemory *memory = new ConcreteMemory ();
   BinaryLoader *loader =
-    new BinutilsBinaryLoader (filename, target, "", 
+    new BinutilsBinaryLoader (filename, target, "",
 			      Architecture::UnknownEndian);
   const Architecture *A = loader->get_architecture ();
   loader->load_memory (memory);
@@ -132,11 +132,11 @@ s_simulate (const char *filename, const char *target)
 	 i != A->get_registers ()->end (); i++)
     {
       if (! i->second->is_alias ())
-	memory->put (i->second, 		     
+	memory->put (i->second,
 		     ConcreteValue (i->second->get_register_size (), 0) );
     }
   Microcode *prg = s_build_cfg (&start, memory, decoder);
-  
+
   prg->sort ();
 
   logs::display << "Microcode program : " << endl
@@ -144,8 +144,8 @@ s_simulate (const char *filename, const char *target)
 
   ConcreteAddress exception_handling_addr (EXCEPTION_HANDLING_ADDR);
   ATF_REQUIRE (memory->is_defined (exception_handling_addr));
-  
-  ConcreteValue check_exception = memory->get (exception_handling_addr, 1, 
+
+  ConcreteValue check_exception = memory->get (exception_handling_addr, 1,
 					       arch.get_endian ());
 
   if (! check_exception.get ())

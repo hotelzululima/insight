@@ -1,4 +1,4 @@
-	# Check CF 
+	# Check CF
 	.include "x86_32-simulator-header.s"
 start:
 	mov $0x0, %ebx

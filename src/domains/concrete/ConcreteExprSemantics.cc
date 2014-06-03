@@ -35,21 +35,21 @@
 
 /*! \ brief \todo integrer les bitfields dans les calculs */
 
-#define BIN_OP_DEF(fun, op)                             \
-  template<> ConcreteValue                              \
-  ConcreteExprSemantics::                               \
+#define BIN_OP_DEF(fun, op)						\
+  template<> ConcreteValue						\
+  ConcreteExprSemantics::						\
   fun (ConcreteValue v1, ConcreteValue v2, int offset, int size) {	\
-    word_t val = v1.get() op v2.get();	\
+    word_t val = v1.get() op v2.get();					\
     val = BitVectorManip::extract_from_word (val, offset, size);	\
-    return ConcreteValue(size, val);				\
+    return ConcreteValue(size, val);					\
   }
 
-#define UN_OP_DEF(fun, op)                              \
-  template<> ConcreteValue                              \
-  ConcreteExprSemantics::                               \
-  fun (ConcreteValue v, int offset, int size) {		\
+#define UN_OP_DEF(fun, op)						\
+  template<> ConcreteValue						\
+  ConcreteExprSemantics::						\
+  fun (ConcreteValue v, int offset, int size) {				\
     word_t val = BitVectorManip::extract_from_word (op v.get(), offset, size); \
-    return ConcreteValue (size, val);				\
+    return ConcreteValue (size, val);					\
   }
 
 /*****************************************************************************/
@@ -74,8 +74,8 @@ s_extend_signed_to_word_size (ConcreteValue &v);
 static void
 s_extend_unsigned_to_word_size (ConcreteValue &v);
 
-template<> ConcreteValue 
-ConcreteExprSemantics::BV_OP_MUL_S_eval (ConcreteValue v1, ConcreteValue v2, 
+template<> ConcreteValue
+ConcreteExprSemantics::BV_OP_MUL_S_eval (ConcreteValue v1, ConcreteValue v2,
 					 int offset, int size)
 {
   s_extend_signed_to_word_size (v1);
@@ -88,8 +88,8 @@ ConcreteExprSemantics::BV_OP_MUL_S_eval (ConcreteValue v1, ConcreteValue v2,
   return result;
 }
 
-template<> ConcreteValue 
-ConcreteExprSemantics::BV_OP_MUL_U_eval (ConcreteValue v1, ConcreteValue v2, 
+template<> ConcreteValue
+ConcreteExprSemantics::BV_OP_MUL_U_eval (ConcreteValue v1, ConcreteValue v2,
 				   int offset, int size)
 {
   s_extend_unsigned_to_word_size (v1);
@@ -102,14 +102,14 @@ ConcreteExprSemantics::BV_OP_MUL_U_eval (ConcreteValue v1, ConcreteValue v2,
   return result;
 }
 
-template<> ConcreteValue 
-ConcreteExprSemantics::BV_OP_RSH_U_eval (ConcreteValue v1, ConcreteValue v2, 
+template<> ConcreteValue
+ConcreteExprSemantics::BV_OP_RSH_U_eval (ConcreteValue v1, ConcreteValue v2,
 				   int offset, int size)
 {
   s_extend_unsigned_to_word_size (v1);
 
   uword_t v = v1.get () >> (uword_t) v2.get ();
-  
+
   v = BitVectorManip::unset_window (v, v1.get_size () - v2.get (), v2.get ());
 
   ConcreteValue result (size, v);
@@ -119,8 +119,8 @@ ConcreteExprSemantics::BV_OP_RSH_U_eval (ConcreteValue v1, ConcreteValue v2,
   return result;
 }
 
-template<> ConcreteValue 
-ConcreteExprSemantics::BV_OP_RSH_S_eval (ConcreteValue v1, ConcreteValue v2, 
+template<> ConcreteValue
+ConcreteExprSemantics::BV_OP_RSH_S_eval (ConcreteValue v1, ConcreteValue v2,
 				   int offset, int size)
 {
   s_extend_signed_to_word_size (v1);
@@ -140,8 +140,8 @@ static word_t
 s_cmp_u (ConcreteValue v1, ConcreteValue v2);
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_LT_S_eval (ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_LT_S_eval (ConcreteValue v1, ConcreteValue v2,
 				  int offset, int size)
 {
   ConcreteValue result (size, s_cmp_s (v1, v2) < 0);
@@ -152,8 +152,8 @@ ConcreteExprSemantics::BV_OP_LT_S_eval (ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_LEQ_S_eval (ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_LEQ_S_eval (ConcreteValue v1, ConcreteValue v2,
 				   int offset, int size)
 {
   ConcreteValue result (size, s_cmp_s (v1, v2) <= 0);
@@ -164,8 +164,8 @@ ConcreteExprSemantics::BV_OP_LEQ_S_eval (ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_LT_U_eval (ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_LT_U_eval (ConcreteValue v1, ConcreteValue v2,
 				  int offset, int size)
 {
   ConcreteValue result (size, s_cmp_u (v1, v2) < 0);
@@ -176,8 +176,8 @@ ConcreteExprSemantics::BV_OP_LT_U_eval (ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_LEQ_U_eval (ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_LEQ_U_eval (ConcreteValue v1, ConcreteValue v2,
 				   int offset, int size)
 {
   ConcreteValue result (size, s_cmp_u (v1, v2) <= 0);
@@ -191,32 +191,32 @@ ConcreteExprSemantics::BV_OP_LEQ_U_eval (ConcreteValue v1, ConcreteValue v2,
 			/* --------------- */
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_GT_S_eval(ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_GT_S_eval(ConcreteValue v1, ConcreteValue v2,
 				 int offset, int size)
 {
   return BV_OP_LT_S_eval (v2, v1, offset, size);
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_GEQ_S_eval(ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_GEQ_S_eval(ConcreteValue v1, ConcreteValue v2,
 				  int offset, int size)
 {
   return BV_OP_LEQ_S_eval (v2, v1, offset, size);
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_GT_U_eval(ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_GT_U_eval(ConcreteValue v1, ConcreteValue v2,
 				 int offset, int size)
 {
   return BV_OP_LT_U_eval (v2, v1, offset, size);
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_GEQ_U_eval(ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_GEQ_U_eval(ConcreteValue v1, ConcreteValue v2,
 				  int offset, int size)
 {
   return BV_OP_LEQ_U_eval (v2, v1, offset, size);
@@ -225,8 +225,8 @@ ConcreteExprSemantics::BV_OP_GEQ_U_eval(ConcreteValue v1, ConcreteValue v2,
 			/* --------------- */
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_POW_eval(ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_POW_eval(ConcreteValue v1, ConcreteValue v2,
 				int, int)
 {
   int size = v1.get_size();
@@ -247,7 +247,7 @@ ConcreteExprSemantics::BV_OP_POW_eval(ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
+ConcreteValue
 ConcreteExprSemantics::BV_OP_DIV_U_eval(ConcreteValue v1, ConcreteValue v2,
 				  int offset, int size)
 {
@@ -268,7 +268,7 @@ ConcreteExprSemantics::BV_OP_DIV_U_eval(ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
+ConcreteValue
 ConcreteExprSemantics::BV_OP_DIV_S_eval(ConcreteValue v1, ConcreteValue v2,
 				 int offset, int size)
 {
@@ -292,8 +292,8 @@ ConcreteExprSemantics::BV_OP_DIV_S_eval(ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_ROL_eval(ConcreteValue v, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_ROL_eval(ConcreteValue v,
 				      ConcreteValue rotate_number,
 				      int offset, int size)
 {
@@ -309,8 +309,8 @@ ConcreteExprSemantics::BV_OP_ROL_eval(ConcreteValue v,
 }
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_ROR_eval(ConcreteValue v, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_ROR_eval(ConcreteValue v,
 				      ConcreteValue rotate_number,
 				      int offset, int size)
 {
@@ -326,7 +326,7 @@ ConcreteExprSemantics::BV_OP_ROR_eval(ConcreteValue v,
 }
 
 template<>
-ConcreteValue 
+ConcreteValue
 ConcreteExprSemantics::BV_OP_CONCAT_eval(ConcreteValue v1, ConcreteValue v2,
 				   int offset, int size)
 {
@@ -349,10 +349,10 @@ ConcreteExprSemantics::BV_OP_CONCAT_eval(ConcreteValue v1, ConcreteValue v2,
   uword_t mask2 = max >> (sizeof(word_t) * 8 - size2);
   word_t cleaned_val2 = val2 & mask2;
 
-  
-  return ConcreteValue(size, 
-		       BitVectorManip::extract_from_word (shifted_val1 | 
-							  cleaned_val2, 
+
+  return ConcreteValue(size,
+		       BitVectorManip::extract_from_word (shifted_val1 |
+							  cleaned_val2,
 							  offset, size));
 }
 
@@ -360,8 +360,8 @@ UN_OP_DEF(BV_OP_NEG_eval, -)
 UN_OP_DEF(BV_OP_NOT_eval, ~)
 
 template<>
-ConcreteValue 
-ConcreteExprSemantics::BV_OP_EXTRACT_eval(ConcreteValue v1, ConcreteValue v2, 
+ConcreteValue
+ConcreteExprSemantics::BV_OP_EXTRACT_eval(ConcreteValue v1, ConcreteValue v2,
 				    ConcreteValue v3, int offset, int size)
 {
   word_t value = v1.get();
@@ -373,27 +373,27 @@ ConcreteExprSemantics::BV_OP_EXTRACT_eval(ConcreteValue v1, ConcreteValue v2,
   uword_t max = -1;
   word_t mask = max >> (sizeof(word_t) * 8 - s);
 
-  return ConcreteValue(size, 
-		       BitVectorManip::extract_from_word (value & mask, 
+  return ConcreteValue(size,
+		       BitVectorManip::extract_from_word (value & mask,
 							  offset, size));
 }
 
 template<> ConcreteValue
-ConcreteExprSemantics::extract_eval(ConcreteValue v,  int off, int size) 
+ConcreteExprSemantics::extract_eval(ConcreteValue v,  int off, int size)
 {
-  return expr_semantics_extract_eval<ConcreteValue, 
+  return expr_semantics_extract_eval<ConcreteValue,
 				     ConcreteExprSemantics>(v,off, size);
 }
 
 template<>
-ConcreteValue 
+ConcreteValue
 ConcreteExprSemantics::BV_OP_EXTEND_S_eval(ConcreteValue v1, ConcreteValue v2,
 				     int offset, int size)
 {
   int new_size = v2.get();
 
-  ConcreteValue nv = 
-    ConcreteValue(new_size, 
+  ConcreteValue nv =
+    ConcreteValue(new_size,
 		  BitVectorManip::extend_signed (v1.get (),
 						 v1.get_size()));
   if (size < new_size)
@@ -403,14 +403,14 @@ ConcreteExprSemantics::BV_OP_EXTEND_S_eval(ConcreteValue v1, ConcreteValue v2,
 }
 
 template<>
-ConcreteValue 
+ConcreteValue
 ConcreteExprSemantics::BV_OP_EXTEND_U_eval(ConcreteValue v1, ConcreteValue v2,
 					   int offset, int size)
 {
   int new_size = v2.get();
 
-  ConcreteValue nv = 
-    ConcreteValue(new_size, 
+  ConcreteValue nv =
+    ConcreteValue(new_size,
 		  BitVectorManip::extend_unsigned (v1.get (),
 						   v1.get_size()));
 
@@ -454,14 +454,14 @@ s_cmp_u (ConcreteValue v1, ConcreteValue v2)
 static void
 s_extend_signed_to_word_size (ConcreteValue &v)
 {
-  v = ConcreteValue (BITS_PER_WORD, 
+  v = ConcreteValue (BITS_PER_WORD,
 		     BitVectorManip::extend_signed (v.get (), v.get_size ()));
-		    
 }
 
 static void
 s_extend_unsigned_to_word_size (ConcreteValue &v)
 {
-  v = ConcreteValue (BITS_PER_WORD, 
-		     BitVectorManip::extend_unsigned (v.get (), v.get_size ()));
+  v = ConcreteValue (BITS_PER_WORD,
+		     BitVectorManip::extend_unsigned (v.get (),
+						      v.get_size ()));
 }

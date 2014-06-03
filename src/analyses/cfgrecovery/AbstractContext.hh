@@ -3,7 +3,7 @@
 
 # include <utils/Object.hh>
 
-class AbstractContext : public Object 
+class AbstractContext : public Object
 {
 private:
   mutable int refcount;

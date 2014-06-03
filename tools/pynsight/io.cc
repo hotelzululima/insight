@@ -34,26 +34,26 @@
 
 static PyObject *
 io_load_bfd (PyObject *, PyObject *args, PyObject *kwds) {
-  static const char *kwlists[] = 
+  static const char *kwlists[] =
     { "filename", "target", "architecture", "endianness", NULL };
   const char *c_fname;
   const char *c_bfdtarget = "";
   const char *c_architecture = "";
   const char *c_endianness = NULL;
 
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|sss", (char **) kwlists, 
-				    &c_fname, &c_bfdtarget, &c_architecture, 
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|sss", (char **) kwlists,
+				    &c_fname, &c_bfdtarget, &c_architecture,
 				    &c_endianness))
     return NULL;
 
   Architecture::endianness_t endian = Architecture::UnknownEndian;
 
   if (c_endianness) {
-    if (strcmp (c_endianness, "little") == 0) { 
+    if (strcmp (c_endianness, "little") == 0) {
       endian = Architecture::LittleEndian;
-    } else if (strcmp (c_endianness, "big") == 0) { 
+    } else if (strcmp (c_endianness, "big") == 0) {
       endian = Architecture::BigEndian;
-    } else if (strcmp (c_endianness, "unknown") != 0) { 
+    } else if (strcmp (c_endianness, "unknown") != 0) {
       PyErr_SetString (PyExc_ValueError, "invalid endianness.");
       return NULL;
     }
@@ -68,10 +68,10 @@ static PyMethodDef IO_Methods[] = {
   { NULL, NULL, 0, NULL }
 };
 
-static bool 
+static bool
 s_init () {
   PyObject *pkg = PyImport_ImportModule (PYNSIGHT_PACKAGE);
-  PyObject *io_module = Py_InitModule ("io", IO_Methods);  
+  PyObject *io_module = Py_InitModule ("io", IO_Methods);
   PyModule_AddObject (pkg, "io", io_module);
   Py_DECREF (pkg);
   Py_INCREF (io_module);
@@ -79,7 +79,7 @@ s_init () {
   return true;
 }
 
-static bool 
+static bool
 s_terminate () {
   return true;
 }

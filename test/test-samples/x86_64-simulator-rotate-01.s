@@ -51,7 +51,7 @@ start:
 	cmp 	$0x354F, %ax
 	jne	error
 
-	# RCR 32 bits test 
+	# RCR 32 bits test
 	stc		
 	rcr	%eax
 	jnc	error

@@ -236,7 +236,7 @@ public:
  */
 /* ***************************************************/
 template<typename Node, typename Edge, typename NodeStore>
-class ConcreteEdgePath : public std::list<Edge *>, 
+class ConcreteEdgePath : public std::list<Edge *>,
 			 public GraphPath<Node, Edge, NodeStore>
 {
 

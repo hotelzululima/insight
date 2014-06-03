@@ -16,7 +16,7 @@ test_decoder_CXXFLAGS = -Wno-deprecated
 test_decoder_LDFLAGS = @BINUTILS_LDFLAGS@
 test_decoder_LDADD = $(top_builddir)/src/libinsight.la
 
-TEST_DECODER = ${builddir}/test-decoder 
+TEST_DECODER = ${builddir}/test-decoder
 TEST_DECODER_BFDTARGET = elf32-i386
 
 X86_32_TESTS = \

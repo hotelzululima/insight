@@ -59,14 +59,14 @@ s_loop (x86::parser_data &data, Expr *op1, Expr *cond)
   assert(_cx != NULL);
 
   int csize = _cx->get_bv_size ();
-  Expr *ccond = 
+  Expr *ccond =
     BinaryApp::create (BV_OP_NEQ, _cx->ref (), Constant::zero(csize), 0, 1);
 
   if (cond == NULL)
     cond = ccond->ref ();
-  else 
+  else
     cond = BinaryApp::create (BV_OP_AND, ccond->ref (), cond, 0, 1);
-  
+
   data.mc->add_assignment (from, (LValue *) _cx->ref (),
 			   BinaryApp::create (BV_OP_SUB, _cx->ref (),
 					      Constant::one (csize), 0, csize));
@@ -74,13 +74,13 @@ s_loop (x86::parser_data &data, Expr *op1, Expr *cond)
   MemCell *jmpaddr = dynamic_cast<MemCell *> (op1);
   assert (jmpaddr);
   assert (jmpaddr->get_addr ()->is_Constant ());
-  MicrocodeAddress ja = 
+  MicrocodeAddress ja =
     dynamic_cast<Constant *>(jmpaddr->get_addr ())->get_val ();
 
   x86_if_then_else (from, data, cond->ref (), ja, data.next_ma);
 
   op1->deref ();
-  cond->deref ();			   
+  cond->deref ();
   ccond->deref ();
   _cx->deref ();
 }

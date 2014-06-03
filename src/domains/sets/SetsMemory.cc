@@ -52,8 +52,8 @@ SetsMemory::SetsMemory(const SetsMemory &other) :
 SetsMemory::~SetsMemory() {}
 
 SetsValue
-SetsMemory::get(const SetsAddress &a, int size, 
-		Architecture::endianness_t e) const 
+SetsMemory::get(const SetsAddress &a, int size,
+		Architecture::endianness_t e) const
   throw (UndefinedValueException)
 {
 
@@ -61,7 +61,7 @@ SetsMemory::get(const SetsAddress &a, int size,
 
   if (a.get().is_any())
     {
-      logs::warning << "SetsMemory::get: found address with top value" 
+      logs::warning << "SetsMemory::get: found address with top value"
 		   << std::endl;
       the_value.any();
       return the_value;
@@ -77,13 +77,13 @@ SetsMemory::get(const SetsAddress &a, int size,
 }
 
 bool
-SetsMemory::add_to_cells(const SetsAddress &a, const SetsValue &v, 
+SetsMemory::add_to_cells(const SetsAddress &a, const SetsValue &v,
 			 Architecture::endianness_t e)
 {
 
   if (a.get().is_any())
     {
-      logs::warning << "SetsMemory::put: found address with top value" 
+      logs::warning << "SetsMemory::put: found address with top value"
 		   << std::endl;
       // TODO : ajouter v a toutes les cellules de la memoire ?  pas
       // vraiment: ce serait un peu faux: on ajouterait seulement aux
@@ -110,7 +110,7 @@ SetsMemory::add_to_cells(const SetsAddress &a, const SetsValue &v,
 }
 
 void
-SetsMemory::put(const SetsAddress &a, const SetsValue &v, 
+SetsMemory::put(const SetsAddress &a, const SetsValue &v,
 		Architecture::endianness_t e)
 {
   try

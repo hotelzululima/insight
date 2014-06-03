@@ -16,14 +16,14 @@ typedef DomainSimulator<ConcreteStepper> ConcreteSimulator;
 
 template<typename SIMULATOR>
 class GenAlgorithm : public AlgorithmFactory::Algorithm
-{  
+{
 public:
   typedef typename SIMULATOR::Stepper Stepper;
   typedef typename SIMULATOR::StateSpace StateSpace;
   typedef typename SIMULATOR::Traversal Traversal;
 
 public:
-  GenAlgorithm () 
+  GenAlgorithm ()
     : Algorithm (), stepper (NULL), states (NULL), traversal (NULL) {
   }
 
@@ -33,7 +33,7 @@ public:
     delete traversal;
   }
 
-  virtual void setup_stepper (AlgorithmFactory *F) 
+  virtual void setup_stepper (AlgorithmFactory *F)
     throw (AlgorithmFactory::InstanciationException &) {
   }
 
@@ -41,7 +41,7 @@ public:
     assert (stepper != NULL);
 
     states = new StateSpace ();
-    traversal = new Traversal (F->get_memory (), F->get_decoder (), stepper, 
+    traversal = new Traversal (F->get_memory (), F->get_decoder (), stepper,
 			       states);
 
     traversal->set_show_states (F->get_show_states ());
@@ -49,10 +49,10 @@ public:
     traversal->set_show_pending_arrows (F->get_show_pending_arrows ());
     traversal->set_warn_on_unsolved_dynamic_jumps (F->get_warn_on_unsolved_dynamic_jumps ());
     traversal->set_warn_skipped_dynamic_jumps (F->get_warn_skipped_dynamic_jumps ());
-    traversal->set_number_of_visits_per_address (F->get_max_number_of_visits_per_address ());   
+    traversal->set_number_of_visits_per_address (F->get_max_number_of_visits_per_address ());
   }
 
-  virtual void setup (AlgorithmFactory *factory) 
+  virtual void setup (AlgorithmFactory *factory)
       throw (AlgorithmFactory::InstanciationException &) {
     setup_stepper (factory);
     setup_traversal (factory);
@@ -63,7 +63,7 @@ public:
       traversal->abort_computation ();
   }
 
-  virtual void compute (const std::list<ConcreteAddress> &entrypoints, 
+  virtual void compute (const std::list<ConcreteAddress> &entrypoints,
 			Microcode *result) {
     traversal->compute (entrypoints, result);
   }
@@ -72,12 +72,12 @@ private:
   friend class AlgorithmFactory;
   Stepper *stepper;
   StateSpace *states;
-  Traversal *traversal;      
+  Traversal *traversal;
 };
 
-AlgorithmFactory::AlgorithmFactory () 
+AlgorithmFactory::AlgorithmFactory ()
 {
-#define ALGORITHM_FACTORY_PROPERTY(type_, name_, defval_) name_ = defval_;  
+#define ALGORITHM_FACTORY_PROPERTY(type_, name_, defval_) name_ = defval_;
   ALGORITHM_FACTORY_PROPERTIES
 #undef ALGORITHM_FACTORY_PROPERTY
 }
@@ -86,9 +86,9 @@ AlgorithmFactory::~AlgorithmFactory ()
 {
 }
 
-template<> void 
+template<> void
 GenAlgorithm<LinearSweep>::setup_stepper (AlgorithmFactory *)
-  throw (AlgorithmFactory::InstanciationException &) 
+  throw (AlgorithmFactory::InstanciationException &)
 {
   stepper = new LinearSweep::Stepper ();
 }
@@ -104,11 +104,11 @@ AlgorithmFactory::buildLinearSweep ()
   return result;
 }
 
-template<> void 
+template<> void
 GenAlgorithm<FloodTraversal>::setup_stepper (AlgorithmFactory *F)
-  throw (AlgorithmFactory::InstanciationException &) 
+  throw (AlgorithmFactory::InstanciationException &)
 {
-  const Architecture *arch = 
+  const Architecture *arch =
     F->get_decoder ()->get_arch ()->get_reference_arch();
   stepper = new FloodTraversal::Stepper (F->get_memory (), arch);
 }
@@ -124,11 +124,11 @@ AlgorithmFactory::buildFloodTraversal ()
   return result;
 }
 
-template<> void 
+template<> void
 GenAlgorithm<RecursiveTraversal>::setup_stepper (AlgorithmFactory *F)
-  throw (AlgorithmFactory::InstanciationException &) 
+  throw (AlgorithmFactory::InstanciationException &)
 {
-  const Architecture *arch = 
+  const Architecture *arch =
     F->get_decoder ()->get_arch ()->get_reference_arch();
   stepper = new RecursiveTraversal::Stepper (F->get_memory (), arch);
 }
@@ -144,14 +144,14 @@ AlgorithmFactory::buildRecursiveTraversal ()
   return result;
 }
 
-template<> void 
+template<> void
 GenAlgorithm<SymbolicSimulator>::setup_stepper (AlgorithmFactory *F)
-  throw (AlgorithmFactory::InstanciationException &) 
+  throw (AlgorithmFactory::InstanciationException &)
 {
   try
     {
-      stepper = 
-	new SymbolicSimulator::Stepper (F->get_memory (), 
+      stepper =
+	new SymbolicSimulator::Stepper (F->get_memory (),
 					F->get_decoder ()->get_arch ());
     }
   catch (ExprSolver::UnknownSolverException &e)
@@ -159,12 +159,12 @@ GenAlgorithm<SymbolicSimulator>::setup_stepper (AlgorithmFactory *F)
       throw AlgorithmFactory::InstanciationException (e.what ());
     }
   stepper->set_dynamic_jump_threshold (F->get_dynamic_jumps_threshold ());
-  stepper->set_map_dynamic_jumps_to_memory (F->get_map_dynamic_jumps_to_memory ());  
+  stepper->set_map_dynamic_jumps_to_memory (F->get_map_dynamic_jumps_to_memory ());
 }
 
 AlgorithmFactory::Algorithm *
 AlgorithmFactory::buildSymbolicSimulator ()
-  throw (AlgorithmFactory::InstanciationException &) 
+  throw (AlgorithmFactory::InstanciationException &)
 {
   Algorithm *result = new GenAlgorithm<SymbolicSimulator> ();
 
@@ -173,12 +173,12 @@ AlgorithmFactory::buildSymbolicSimulator ()
   return result;
 }
 
-template<> void 
+template<> void
 GenAlgorithm<ConcreteSimulator>::setup_stepper (AlgorithmFactory *F)
-  throw (AlgorithmFactory::InstanciationException &) 
+  throw (AlgorithmFactory::InstanciationException &)
 {
-  stepper = 
-    new ConcreteSimulator::Stepper (F->get_memory (), 
+  stepper =
+    new ConcreteSimulator::Stepper (F->get_memory (),
 				    F->get_decoder ()->get_arch ());
 }
 

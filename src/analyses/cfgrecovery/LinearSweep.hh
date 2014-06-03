@@ -21,7 +21,7 @@ public:
     virtual ~Stepper ();
 
     virtual State *get_initial_state (const ConcreteAddress &entrypoint);
-    
+
     virtual StateSet *get_successors (const State *s, const StmtArrow *arrow);
 
     static bool compute_successor (const StmtArrow *arrow,

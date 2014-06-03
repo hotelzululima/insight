@@ -39,7 +39,7 @@
 
 using namespace std;
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_expr (const Expr *expr);
 
 static string
@@ -52,7 +52,7 @@ string_of_int(int n)
 
 static string
 xml_of_mcaddress (const MicrocodeAddress &addr)
-{  
+{
   char glob[16], loc[16];
   sprintf(glob, "%X", addr.getGlobal());
   sprintf(loc, "%X", addr.getLocal());
@@ -93,7 +93,7 @@ s_add_prop (xmlNodePtr node, const char *propid, const MicrocodeAddress &addr)
 /*
  * ANNOTATIONS
  */
-static xmlNodePtr 
+static xmlNodePtr
 s_new_annotation_node (const string &id)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST id.c_str ());
@@ -101,13 +101,13 @@ s_new_annotation_node (const string &id)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 s_annotation_to_xml (const SolvedJmpAnnotation *a)
 {
   xmlNodePtr result = s_new_annotation_node (a->ID);
   for (SolvedJmpAnnotation::const_iterator i = a->begin (); i != a->end ();
        i++)
-    {      
+    {
       xmlNodePtr jmp = xmlNewChild (result, NULL, BAD_CAST "addr", NULL);
       assert (i->getLocal () == 0);
       s_add_prop (jmp, "value", *i);
@@ -116,7 +116,7 @@ s_annotation_to_xml (const SolvedJmpAnnotation *a)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 s_annotation_to_xml (const AsmAnnotation *a)
 {
   xmlNodePtr result = s_new_annotation_node (a->ID);
@@ -125,7 +125,7 @@ s_annotation_to_xml (const AsmAnnotation *a)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 s_annotation_to_xml (const CallRetAnnotation *a)
 {
   xmlNodePtr result = s_new_annotation_node (a->ID);
@@ -141,7 +141,7 @@ s_annotation_to_xml (const CallRetAnnotation *a)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 s_annotation_to_xml (const NextInstAnnotation *a)
 {
   xmlNodePtr result = s_new_annotation_node (a->ID);
@@ -151,7 +151,7 @@ s_annotation_to_xml (const NextInstAnnotation *a)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 s_annotation_to_xml (const StubAnnotation *a)
 {
   xmlNodePtr result = s_new_annotation_node (a->ID);
@@ -162,7 +162,7 @@ s_annotation_to_xml (const StubAnnotation *a)
 }
 
 static void
-s_add_annotations (xmlNodePtr parent, const Annotable *annotable, 
+s_add_annotations (xmlNodePtr parent, const Annotable *annotable,
 		   const MicrocodeAddress *location = NULL)
 {
   const Annotable::AnnotationMap *annotations = annotable->get_annotations ();
@@ -183,10 +183,10 @@ s_add_annotations (xmlNodePtr parent, const Annotable *annotable,
       xmlNodePtr annotation;
 
       if (id == SolvedJmpAnnotation::ID)
-	annotation = 
+	annotation =
 	  s_annotation_to_xml (dynamic_cast<const SolvedJmpAnnotation *> (a));
       else if (id == AsmAnnotation::ID)
-	annotation = 
+	annotation =
 	  s_annotation_to_xml (dynamic_cast<const AsmAnnotation *> (a));
       else if (id == CallRetAnnotation::ID)
 	annotation =
@@ -211,10 +211,10 @@ s_add_annotations (xmlNodePtr parent, const Annotable *annotable,
 static void
 s_generate_annotations_for_nodes (xmlNodePtr root, const Microcode *prg)
 {
-  xmlNodePtr annotations = 
+  xmlNodePtr annotations =
     xmlNewChild (root, NULL, BAD_CAST "nodes-annotations", NULL);
 
-  for (Microcode::const_node_iterator n = prg->begin_nodes (); 
+  for (Microcode::const_node_iterator n = prg->begin_nodes ();
        n != prg->end_nodes (); n++)
     s_add_annotations (annotations, *n, &((*n)->get_loc ()));
 }
@@ -222,7 +222,7 @@ s_generate_annotations_for_nodes (xmlNodePtr root, const Microcode *prg)
 /*
  * EXPRESSIONS
  */
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_constant (const Constant *c)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "const");
@@ -232,7 +232,7 @@ xml_of_constant (const Constant *c)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_random_value (const RandomValue *)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "random");
@@ -240,7 +240,7 @@ xml_of_random_value (const RandomValue *)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_variable (const Variable *v)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "formalvar");
@@ -249,7 +249,7 @@ xml_of_variable (const Variable *v)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_ternary_op (TernaryOp op)
 {
   const char *opname;
@@ -259,14 +259,14 @@ xml_of_ternary_op (TernaryOp op)
     case BV_OP_EXTRACT: opname = "extract"; break;
     default: opname = NULL;
     }
- 
+
   if (opname == NULL)
     logs::fatal_error("xml_of_ternary_op:: operator not supported");
 
   return xmlNewNode (NULL, BAD_CAST opname);
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_ternaryapp(const TernaryApp *b)
 {
   xmlNodePtr arg1 = xml_of_expr (b->get_arg1 ());
@@ -282,7 +282,7 @@ xml_of_ternaryapp(const TernaryApp *b)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_binary_op (BinaryOp op)
 {
   const char *opname;
@@ -317,7 +317,7 @@ xml_of_binary_op (BinaryOp op)
     case BV_OP_EXTEND_U: opname = "extu"; break;
     default: opname = NULL; break;
     }
- 
+
   if (opname == NULL)
     logs::fatal_error("xml_of_binary_op:: operator not supported");
 
@@ -325,7 +325,7 @@ xml_of_binary_op (BinaryOp op)
 }
 
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_binaryapp(const BinaryApp *b)
 {
   xmlNodePtr arg1 = xml_of_expr(b->get_arg1());
@@ -339,9 +339,9 @@ xml_of_binaryapp(const BinaryApp *b)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_unary_op (UnaryOp op)
-{  
+{
   const char *opname;
 
   switch (op)
@@ -355,9 +355,9 @@ xml_of_unary_op (UnaryOp op)
   return xmlNewNode (NULL, BAD_CAST opname);
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_unaryapp (const UnaryApp *u)
-{ 
+{
   xmlNodePtr arg1 = xml_of_expr (u->get_arg1 ());
   xmlNodePtr op = xml_of_unary_op (u->get_op ());
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "apply");
@@ -367,7 +367,7 @@ xml_of_unaryapp (const UnaryApp *u)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_register (const RegisterExpr *reg)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "var");
@@ -378,7 +378,7 @@ xml_of_register (const RegisterExpr *reg)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_memcell (const MemCell *m)
 {
   xmlNodePtr result = xmlNewNode (NULL, BAD_CAST "memref");
@@ -389,11 +389,11 @@ xml_of_memcell (const MemCell *m)
 
   if (mem.length() > 0)
     s_add_prop (result, "mem", mem);
-  
+
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_lvalue (const Expr *lv, bool with_bv = false)
 {
   xmlNodePtr result;
@@ -402,7 +402,7 @@ xml_of_lvalue (const Expr *lv, bool with_bv = false)
     result =  xml_of_memcell ((const MemCell *) lv);
   else if (lv->is_RegisterExpr ())
     result = xml_of_register ((const RegisterExpr *) lv);
-  else 
+  else
     result = NULL;
 
   if (with_bv)
@@ -416,7 +416,7 @@ xml_of_lvalue (const Expr *lv, bool with_bv = false)
   return result;
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 xml_of_expr (const Expr *e)
 {
   xmlNodePtr result;
@@ -435,14 +435,14 @@ xml_of_expr (const Expr *e)
     result = xml_of_lvalue ((const LValue *) e);
   else if (e->is_TernaryApp ())
     result = xml_of_ternaryapp ((const TernaryApp *) e);
-  else 
+  else
     result = NULL;
   s_add_prop (result, "size", e->get_bv_size ());
   s_add_prop (result, "offset", e->get_bv_offset ());
 
   if (result == NULL)
     logs::fatal_error ("xml_of_expr:: expr type unknown");
-  
+
   return result;
 }
 
@@ -457,22 +457,22 @@ xml_of_stmtarrow (xmlNodePtr root, const StmtArrow *arr)
       StaticArrow *sarr = (StaticArrow *) arr;
 
       if (sarr->get_stmt()->is_Assignment())
-        {
-          xmlNodePtr lv = 
+	{
+	  xmlNodePtr lv =
 	    xml_of_lvalue (((Assignment *) sarr->get_stmt())->get_lval(), true);
-	  
-	  xmlNodePtr v = 
+
+	  xmlNodePtr v =
 	    xml_of_expr (((Assignment *) sarr->get_stmt ())->get_rval ());
 	  xarrow = xmlNewChild (root, NULL, BAD_CAST "assign", NULL);
 	  xmlAddChild (xarrow, lv);
 	  xmlAddChild (xarrow, v);
-        }
+	}
       else if (sarr->get_stmt()->is_Skip())
-        {
+	{
 	  xarrow = xmlNewChild (root, NULL, BAD_CAST "skip", NULL);
-        }
+	}
       else if (sarr->get_stmt ()->is_Jump ())
-        logs::fatal_error ("xml_of_stmtarrow:: static jump statement "
+	logs::fatal_error ("xml_of_stmtarrow:: static jump statement "
 			   "not supported");
       s_add_prop (xarrow, "next", sarr->get_target());
     }
@@ -501,7 +501,7 @@ s_generate_code (xmlNodePtr root, const Microcode *prg)
   xmlNodePtr code = xmlNewNode (NULL, BAD_CAST "code");
   xmlAddChild (root, code);
 
-  for (Microcode::const_node_iterator n = prg->begin_nodes (); 
+  for (Microcode::const_node_iterator n = prg->begin_nodes ();
        n != prg->end_nodes (); n++)
     {
       vector<StmtArrow *> *succs = (*n)->get_successors();
@@ -517,7 +517,7 @@ struct CmpRegisterDesc
   }
 };
 
-static void 
+static void
 s_declare_registers (xmlNodePtr root, const MicrocodeArchitecture *mcarch)
 {
   const RegisterSpecs *regs[] = {
@@ -549,7 +549,7 @@ s_declare_registers (xmlNodePtr root, const MicrocodeArchitecture *mcarch)
     }
 }
 
-static int 
+static int
 s_xml_output_write_callback (void *context, const char *buffer, int len)
 {
   ostream *out = (ostream *) context;
@@ -567,13 +567,13 @@ s_xml_output_close_callback (void * context)
   return 0;
 }
 
-void 
-xml_of_microcode (ostream &out, 
-		  const Microcode *prg, 
+void
+xml_of_microcode (ostream &out,
+		  const Microcode *prg,
 		  const MicrocodeArchitecture *mcarch)
 {
   xmlOutputBufferPtr xout =
-    xmlOutputBufferCreateIO (&s_xml_output_write_callback, 
+    xmlOutputBufferCreateIO (&s_xml_output_write_callback,
 			     &s_xml_output_close_callback,
 			     &out,
 			     NULL);

@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-AUTOMAKE_OPTIONS=parallel-tests 
+AUTOMAKE_OPTIONS=parallel-tests
 TEST_SAMPLES_DIR=@TEST_SAMPLES_DIR@
 
 CFGRECOVERY=${top_builddir}/tools/cfgrecovery/cfgrecovery
@@ -11,7 +11,7 @@ EXTRA_DIST = check-results.sh
 
 check_PROGRAMS = xml-tester
 
-xml_tester_SOURCES = xml-tester.cc 
+xml_tester_SOURCES = xml-tester.cc
 xml_tester_CPPFLAGS = -I$(top_srcdir)/src
 xml_tester_CXXFLAGS = -Wno-deprecated
 xml_tester_LDFLAGS = @BINUTILS_LDFLAGS@
@@ -58,9 +58,9 @@ BASE_TESTS = \
  x86_32-simulator-setcc.res x86_32-simulator-shift-01.res \
  x86_32-simulator-shift-02.res x86_32-simulator-shift-03.res \
  x86_32-simulator-shift-04.res x86_32-simulator-sub.res \
- x86_32-simulator-xadd.res x86_32-simulator-xchg.res 
+ x86_32-simulator-xadd.res x86_32-simulator-xchg.res
 
-XMLFILES = ${BASE_TESTS:%.res=%.mc.xml} 
+XMLFILES = ${BASE_TESTS:%.res=%.mc.xml}
 
 if WITH_VALGRIND
 BASE_TESTS += \
@@ -102,7 +102,7 @@ BASE_TESTS += \
  x86_32-simulator-setcc.memres x86_32-simulator-shift-01.memres \
  x86_32-simulator-shift-02.memres x86_32-simulator-shift-03.memres \
  x86_32-simulator-shift-04.memres x86_32-simulator-sub.memres \
- x86_32-simulator-xadd.memres x86_32-simulator-xchg.memres 
+ x86_32-simulator-xadd.memres x86_32-simulator-xchg.memres
 
 MEMCHECK_FLAGS=-q --num-callers=20 --leak-check=yes
 MEMCHECK=${LIBTOOL} --mode=execute valgrind --tool=memcheck ${MEMCHECK_FLAGS}
@@ -119,7 +119,7 @@ maintainer-clean-local:
 
 #
 # GENERATION OF TEST RESULTS
-# 
+#
 
 x86_32-%.res : x86_32-%.mc.xml ${XML_TESTER}
 	@ ${XML_TESTER} x86_32 $< > $@
@@ -141,7 +141,7 @@ else
 endif
 
 #
-# GENERATION OF XML FILES ACCORDING TO SAMPLES BINARY FILES 
+# GENERATION OF XML FILES ACCORDING TO SAMPLES BINARY FILES
 #
 .SECONDARY: # keep generated files
 

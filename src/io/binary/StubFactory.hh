@@ -36,12 +36,12 @@
 # include <kernel/microcode/MicrocodeArchitecture.hh>
 # include <kernel/SymbolTable.hh>
 
-class StubFactory 
+class StubFactory
 {
 public:
   virtual ~StubFactory () { }
 
-  virtual void add_stubs (ConcreteMemory *memory, 
+  virtual void add_stubs (ConcreteMemory *memory,
 			  MicrocodeArchitecture *arch, Microcode *dest,
 			  SymbolTable *symtab) = 0;
 };

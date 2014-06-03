@@ -50,26 +50,26 @@ s_cmps (x86::parser_data &data, int size)
   x86_if_then_else (from, data, data.get_flag ("df"), from + 3, from + 1);
   from++;
   /* pc = from + 1 */
-  data.mc->add_assignment (from, (LValue *) si->ref (), 
-			   BinaryApp::create (BV_OP_ADD, si->ref (), 
+  data.mc->add_assignment (from, (LValue *) si->ref (),
+			   BinaryApp::create (BV_OP_ADD, si->ref (),
 					      inc->ref (),
 					      0, si->get_bv_size ()));
   /* pc = from + 2 */
-  data.mc->add_assignment (from, (LValue *) di->ref (), 
-			   BinaryApp::create (BV_OP_ADD, di->ref (), 
+  data.mc->add_assignment (from, (LValue *) di->ref (),
+			   BinaryApp::create (BV_OP_ADD, di->ref (),
 					      inc->ref (),
-					      0, di->get_bv_size ()), 
+					      0, di->get_bv_size ()),
 			   next);
   from++;
   /* pc = from + 3 */
-  data.mc->add_assignment (from, (LValue *) si->ref (), 
-			   BinaryApp::create (BV_OP_SUB, si->ref (), 
-					      inc->ref (), 
+  data.mc->add_assignment (from, (LValue *) si->ref (),
+			   BinaryApp::create (BV_OP_SUB, si->ref (),
+					      inc->ref (),
 					      0, si->get_bv_size ()));
   /* pc = from + 4 */
-  data.mc->add_assignment (from, (LValue *) di->ref (), 
-			   BinaryApp::create (BV_OP_SUB, di->ref (), 
-					      inc->ref (), 
+  data.mc->add_assignment (from, (LValue *) di->ref (),
+			   BinaryApp::create (BV_OP_SUB, di->ref (),
+					      inc->ref (),
 					      0, di->get_bv_size ()),
 			   next);
 
@@ -143,7 +143,7 @@ X86_TRANSLATE_2_OP(LODS)
 
   Expr *dst = op2->ref ();
   Expr *src = MemCell::create (_si->ref (), 0, dst->get_bv_size ());
-  Expr *inc = 
+  Expr *inc =
     Constant::create (dst->get_bv_size ()  / 8, 0, _si->get_bv_size ());
   MicrocodeAddress from (data.start_ma);
   MicrocodeAddress next = data.has_prefix ? from + 4 : data.next_ma;
@@ -155,29 +155,29 @@ X86_TRANSLATE_2_OP(LODS)
   from++;
   /* pc = start + 2*/
   data.mc->add_assignment (from, (LValue *) _si->ref (),
-			   BinaryApp::create (BV_OP_SUB, _si->ref (), 
-					      inc->ref (), 
+			   BinaryApp::create (BV_OP_SUB, _si->ref (),
+					      inc->ref (),
 					      0, _si->get_bv_size ()),
 			   data.next_ma);
   from++;
   /* pc = start + 3*/
   data.mc->add_assignment (from, (LValue *) _si->ref (),
-			   BinaryApp::create (BV_OP_ADD, _si->ref (), 
-					      inc->ref (), 
+			   BinaryApp::create (BV_OP_ADD, _si->ref (),
+					      inc->ref (),
 					      0, _si->get_bv_size ()),
 			   data.next_ma);
 
   if (data.has_prefix)
     data.start_ma = next;
 
-  _si->deref (); 
-  inc->deref (); 
-  op2->deref (); 
-  src->deref (); 
+  _si->deref ();
+  inc->deref ();
+  op2->deref ();
+  src->deref ();
   dst->deref ();
 }
 
-X86_TRANSLATE_2_OP(STOS) 
+X86_TRANSLATE_2_OP(STOS)
 {
   op2->deref ();
   Expr *rdi = NULL;
@@ -200,7 +200,7 @@ X86_TRANSLATE_2_OP(STOS)
 
   Expr *src = op1->ref ();
   Expr *dst = MemCell::create (rdi->ref (), 0, src->get_bv_size ());
-  Expr *inc = 
+  Expr *inc =
     Constant::create (src->get_bv_size ()  / 8, 0, rdi->get_bv_size ());
   MicrocodeAddress from (data.start_ma);
   MicrocodeAddress next = data.has_prefix ? from + 4 : data.next_ma;
@@ -213,23 +213,23 @@ X86_TRANSLATE_2_OP(STOS)
   from++;
   /* pc = start + 2 */
   data.mc->add_assignment (from, (LValue *) rdi->ref (),
-			   BinaryApp::create (BV_OP_SUB, rdi->ref (), 
-					      inc->ref (), 
+			   BinaryApp::create (BV_OP_SUB, rdi->ref (),
+					      inc->ref (),
 					      0, rdi->get_bv_size ()),
 			   next);
   from++;
   /* pc = start + 3 */
   data.mc->add_assignment (from, (LValue *) rdi->ref (),
-			   BinaryApp::create (BV_OP_ADD, rdi->ref (), 
-					      inc->ref (), 
+			   BinaryApp::create (BV_OP_ADD, rdi->ref (),
+					      inc->ref (),
 					      0, rdi->get_bv_size ()),
 			   next);
 
   if (data.has_prefix)
     data.start_ma = next;
 
-  rdi->deref (); 
-  inc->deref (); 
+  rdi->deref ();
+  inc->deref ();
   op1->deref ();
   src->deref ();
   dst->deref ();
@@ -269,37 +269,37 @@ s_mov (x86::parser_data &data, int nb_bytes)
   int csize = _si->get_bv_size ();
   Expr *inc = Constant::create (nb_bytes, 0, _si->get_bv_size ());
 
-  data.mc->add_assignment (start, 
-			   MemCell::create (_di, 0, 8 * nb_bytes), 
-			   MemCell::create (_si, 0, 8 * nb_bytes), 
+  data.mc->add_assignment (start,
+			   MemCell::create (_di, 0, 8 * nb_bytes),
+			   MemCell::create (_si, 0, 8 * nb_bytes),
 			   start + 1);
 
   x86_if_then_else (start + 1, data, data.get_flag ("df"),
 		       start + 4, start + 2);
 
-  data.mc->add_assignment (start + 2, (LValue *) _si->ref (), 
-			   BinaryApp::create (BV_OP_ADD, _si->ref (), 
+  data.mc->add_assignment (start + 2, (LValue *) _si->ref (),
+			   BinaryApp::create (BV_OP_ADD, _si->ref (),
 					      inc->ref (),
 					      0, csize),
 			   start + 3);
 
-  data.mc->add_assignment (start + 3, (LValue *) _di->ref (), 
-			   BinaryApp::create (BV_OP_ADD, _di->ref (), 
-					      inc->ref (), 
-					      0, csize), 
+  data.mc->add_assignment (start + 3, (LValue *) _di->ref (),
+			   BinaryApp::create (BV_OP_ADD, _di->ref (),
+					      inc->ref (),
+					      0, csize),
 			   next);
-  
-  data.mc->add_assignment (start + 4, (LValue *) _si->ref (), 
-			   BinaryApp::create (BV_OP_SUB, _si->ref (), 
+
+  data.mc->add_assignment (start + 4, (LValue *) _si->ref (),
+			   BinaryApp::create (BV_OP_SUB, _si->ref (),
 					      inc->ref (),
 					      0, csize),
 			   start + 5);
 
-  data.mc->add_assignment (start + 5, (LValue *) _di->ref (), 
-			   BinaryApp::create (BV_OP_SUB, _di->ref (), 
+  data.mc->add_assignment (start + 5, (LValue *) _di->ref (),
+			   BinaryApp::create (BV_OP_SUB, _di->ref (),
 					      inc->ref (),
-					      0, csize), 
-			   next);  
+					      0, csize),
+			   next);
   if (data.has_prefix)
     data.start_ma = next;
   inc->deref ();
@@ -344,7 +344,7 @@ X86_TRANSLATE_2_OP(MOVSL)
 X86_TRANSLATE_2_OP(SCAS)
 {
   MicrocodeAddress from (data.start_ma);
-  
+
   Expr::extract_bit_vector (op1, 0, op2->get_bv_size ());
 
   x86_cmpgen (from, data, op1, op2, NULL);
@@ -374,14 +374,14 @@ X86_TRANSLATE_2_OP(SCAS)
   Expr *inc = Constant::create (op1->get_bv_size () / 8, 0, _di->get_bv_size ());
   data.mc->add_assignment (from, (LValue *) _di->ref (),
 			   BinaryApp::create (BV_OP_SUB, _di->ref (),
-					      inc->ref (), 0, 
-					      _di->get_bv_size ()), 
+					      inc->ref (), 0,
+					      _di->get_bv_size ()),
 			   next);
   from++;
   data.mc->add_assignment (from, (LValue *) _di->ref (),
-			   BinaryApp::create (BV_OP_ADD, _di->ref (), 
-					      inc->ref (), 0, 
-					      _di->get_bv_size ()), 
+			   BinaryApp::create (BV_OP_ADD, _di->ref (),
+					      inc->ref (), 0,
+					      _di->get_bv_size ()),
 			   next);
   if (data.has_prefix)
     data.start_ma = next;

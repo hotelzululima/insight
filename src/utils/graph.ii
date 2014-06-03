@@ -63,7 +63,7 @@
 template<typename Node, typename Edge, typename NodeStore>
 std::pair<Edge *, Node *> GraphInterface<Node, Edge, NodeStore>::get_first_predecessor(Node *n) const
 {
-  for (const_node_iterator it = begin_nodes (); it != end_nodes (); 
+  for (const_node_iterator it = begin_nodes (); it != end_nodes ();
        ++it)
     {
       Node *c = *it;
@@ -86,7 +86,7 @@ template<typename Node, typename Edge, typename NodeStore>
 std::pair<Edge *, Node *> GraphInterface<Node, Edge, NodeStore>::get_next_predecessor(Node *n, Edge *e) const
 {
   bool trouve = false;
-  for (const_node_iterator it = begin_nodes (); it != end_nodes (); 
+  for (const_node_iterator it = begin_nodes (); it != end_nodes ();
        ++it)
     {
       Node *c = *it;
@@ -953,7 +953,7 @@ GraphInterface<Node, Edge, NodeStore>::toDot(std::ostream &out) const
     {
       Node *n = *it;
 
-      for (Edge *e = this->get_first_successor(n).first; e != NULL; 
+      for (Edge *e = this->get_first_successor(n).first; e != NULL;
 	   e = this->get_next_successor(n, e).first)
         {
           Node *src = this->get_source(e);

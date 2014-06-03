@@ -5,7 +5,7 @@
 # include <kernel/Microcode.hh>
 # include <decoders/Decoder.hh>
 
-class AlgorithmFactory 
+class AlgorithmFactory
 {
 # define ALGORITHM_FACTORY_PROPERTIES					\
   ALGORITHM_FACTORY_PROPERTY (ConcreteMemory *, memory, NULL)		\
@@ -21,32 +21,32 @@ class AlgorithmFactory
 
 public:
   class Exception : public std::runtime_error {
-  public: 
+  public:
     Exception (const std::string &why) : std::runtime_error (why) { }
   };
 
   class InstanciationException : public Exception {
-  public: 
+  public:
     InstanciationException (const std::string &why) : Exception (why) { }
   };
 
   class Algorithm {
   protected:
     friend class AlgorithmFactory;
-    virtual void setup (AlgorithmFactory *factory) 
+    virtual void setup (AlgorithmFactory *factory)
       throw (InstanciationException &) = 0;
 
   public:
     virtual ~Algorithm () { }
     virtual void stop () = 0;
-    virtual void compute (const std::list<ConcreteAddress> &ca, 
+    virtual void compute (const std::list<ConcreteAddress> &ca,
 			  Microcode *result) = 0;
   };
-  
+
   AlgorithmFactory ();
   ~AlgorithmFactory ();
 
-  Algorithm *buildLinearSweep () 
+  Algorithm *buildLinearSweep ()
     throw (InstanciationException &);
   Algorithm *buildFloodTraversal ()
     throw (InstanciationException &);
@@ -60,8 +60,8 @@ public:
 # define ALGORITHM_FACTORY_PROPERTY(type_, name_, defval_)	\
   private: type_ name_;						\
   public: void set_ ## name_ (type_ value) { name_ = value; }	\
-  public: type_ get_ ## name_ () { return name_;} 
-  
+  public: type_ get_ ## name_ () { return name_;}
+
   ALGORITHM_FACTORY_PROPERTIES
 # undef ALGORITHM_FACTORY_PROPERTY
 };

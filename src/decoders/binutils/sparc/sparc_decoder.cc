@@ -43,7 +43,7 @@ bool sparc_scanner_open(const string &instr);
 void sparc_scanner_close();
 
 bool
-sparc_decoder_func(MicrocodeArchitecture *arch, Microcode *mc, 
+sparc_decoder_func(MicrocodeArchitecture *arch, Microcode *mc,
 		    const string &instruction,
                     const ConcreteAddress &start,
                     const ConcreteAddress &next)
@@ -51,10 +51,10 @@ sparc_decoder_func(MicrocodeArchitecture *arch, Microcode *mc,
   if (!sparc_scanner_open (instruction))
     return false;
 
-  sparc::parser_data data (arch, mc, instruction, start.get_address (), 
+  sparc::parser_data data (arch, mc, instruction, start.get_address (),
 			    next.get_address ());
 
-  sparc::parser parser(data);  
+  sparc::parser parser(data);
   bool result = (parser.parse() == 0);
   sparc_scanner_close();
 

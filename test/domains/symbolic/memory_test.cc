@@ -92,8 +92,8 @@ ATF_TEST_CASE_HEAD(memcells)
 	     "Check the memory cells behavior within a SymbolicMemory object");
 }
 
-static word_t 
-s_get_simplified (const SymbolicMemory *mem, const ConcreteAddress &a, 
+static word_t
+s_get_simplified (const SymbolicMemory *mem, const ConcreteAddress &a,
 		  int size_in_bytes, Architecture::endianness_t e)
 {
   Expr *val = mem->get(a, size_in_bytes, e).get_Expr ()->ref ();
@@ -127,30 +127,30 @@ ATF_TEST_CASE_BODY(memcells)
     memory->put(addr, value, Architecture::LittleEndian);
 
     /* Check if the put() did work well */
-    ATF_REQUIRE_EQ(s_get_simplified (memory, 
-				     addr, 4, Architecture::LittleEndian), 
+    ATF_REQUIRE_EQ(s_get_simplified (memory,
+				     addr, 4, Architecture::LittleEndian),
 		   6235);
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				      addr, 2, Architecture::LittleEndian), 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
+				      addr, 2, Architecture::LittleEndian),
 		    6235);
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
 				      addr, 1, Architecture::LittleEndian), 91);
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				      ++(++addr), 2, 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
+				      ++(++addr), 2,
 				      Architecture::LittleEndian),
 		    0);
 
     memory->put(addr, value, Architecture::BigEndian);
 
     /* Check if the put() did work well */
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
 				      addr, 4, Architecture::BigEndian), 6235);
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
 				      addr, 2, Architecture::BigEndian), 0);
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
-				      ++(++addr), 2, Architecture::BigEndian), 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
+				      ++(++addr), 2, Architecture::BigEndian),
 		    6235);
-    ATF_REQUIRE_EQ (s_get_simplified (memory, 
+    ATF_REQUIRE_EQ (s_get_simplified (memory,
 				      ++addr, 1, Architecture::BigEndian), 91);
 
     delete memory;

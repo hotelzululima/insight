@@ -6,11 +6,11 @@
 
 namespace ConcStepper {
   class RewriteWithAssignedValues : public ExprRewritingRule {
-    const ConcreteContext *ctx;  
+    const ConcreteContext *ctx;
     const Architecture::endianness_t endianness;
   public:
-    RewriteWithAssignedValues (const ConcreteContext *ctx, 
-			       Architecture::endianness_t e) 
+    RewriteWithAssignedValues (const ConcreteContext *ctx,
+			       Architecture::endianness_t e)
       : ctx (ctx), endianness (e) {
     }
 
@@ -20,21 +20,21 @@ namespace ConcStepper {
       int size = F->get_bv_size ();
       Option<ConcreteValue> val;
 
-      if (F->is_RandomValue ()) 
+      if (F->is_RandomValue ())
 	{
 	  val = ConcreteValue (F->get_bv_size (), random ());
-	} 
-      else if (F->is_RegisterExpr ()) 
+	}
+      else if (F->is_RegisterExpr ())
 	{
 	  RegisterExpr *regexpr = (RegisterExpr *) F;
 	  const RegisterDesc *rdesc = regexpr->get_descriptor ();
 
 	  if (ctx->get_memory ()->is_defined (rdesc))
 	    val = ctx->get_memory ()->get (rdesc);
-	} 
-      else if (F->is_MemCell ()) 
+	}
+      else if (F->is_MemCell ())
 	{
-	  MemCell *mc = (MemCell *) F;      
+	  MemCell *mc = (MemCell *) F;
 	  Expr *addr = mc->get_addr()->ref ();
 	  exprutils::simplify (&addr);
 	  Constant *c = dynamic_cast<Constant *> (addr);
@@ -50,10 +50,10 @@ namespace ConcStepper {
 		val = ctx->get_memory ()->get (c->get_val (), size, endianness);
 	    }
 	  addr->deref ();
-	} 
-    
+	}
+
       if (val.hasValue ())
-	result = Constant::create (val.getValue ().get (), offset, size); 
+	result = Constant::create (val.getValue ().get (), offset, size);
 
       if (result == NULL)
 	result = F->ref ();
@@ -65,19 +65,19 @@ namespace ConcStepper {
 
 using namespace ConcStepper;
 
-ConcreteStepper::ConcreteStepper (ConcreteMemory *memory, 
+ConcreteStepper::ConcreteStepper (ConcreteMemory *memory,
 				  const MicrocodeArchitecture *arch)
   : Super (arch->get_reference_arch ()), memory (memory)
-    
+
 {
 }
 
-ConcreteStepper::~ConcreteStepper () 
+ConcreteStepper::~ConcreteStepper ()
 {
 }
 
-ConcreteValue 
-ConcreteStepper::value_to_ConcreteValue (const Context *, const Value &v, 
+ConcreteValue
+ConcreteStepper::value_to_ConcreteValue (const Context *, const Value &v,
 					 bool *is_unique)
   throw (UndefinedValueException)
 {
@@ -86,26 +86,26 @@ ConcreteStepper::value_to_ConcreteValue (const Context *, const Value &v,
   return v;
 }
 
-ConcreteStepper::Address 
-ConcreteStepper::value_to_address (const ConcreteStepper::Context *, 
-				   const ConcreteStepper::Value &v) 
+ConcreteStepper::Address
+ConcreteStepper::value_to_address (const ConcreteStepper::Context *,
+				   const ConcreteStepper::Value &v)
   throw (UndefinedValueException)
 {
   return ConcreteStepper::Address (v.get ());
 }
 
 std::vector<address_t> *
-ConcreteStepper::value_to_concrete_addresses (const Context *, const Value &v) 
-  throw (UndefinedValueException) 
+ConcreteStepper::value_to_concrete_addresses (const Context *, const Value &v)
+  throw (UndefinedValueException)
 {
   std::vector<address_t> *result = new std::vector<address_t> ();
   result->push_back (v.get ());
 
-  return result;  
+  return result;
 }
 
-ConcreteStepper::Value 
-ConcreteStepper::eval (const Context *ctx, const Expr *e) 
+ConcreteStepper::Value
+ConcreteStepper::eval (const Context *ctx, const Expr *e)
     throw (UndefinedValueException)
 {
   Option<ConcreteStepper::Value> result;
@@ -134,22 +134,22 @@ ConcreteStepper::eval (const Context *ctx, const Expr *e)
   return result.getValue ();
 }
 
-ConcreteStepper::Value 
-ConcreteStepper::embed_eval (const ConcreteStepper::Value &v1, 
-			     const ConcreteStepper::Value &v2, 
+ConcreteStepper::Value
+ConcreteStepper::embed_eval (const ConcreteStepper::Value &v1,
+			     const ConcreteStepper::Value &v2,
 			     int off) const
 {
   return ConcreteExprSemantics::embed_eval (v1, v2, off);
 }
-    
-ConcreteStepper::Context * 
+
+ConcreteStepper::Context *
 ConcreteStepper::restrict_to_condition (const Context *ctx, const Expr *cond)
 {
   ConcreteContext *result = NULL;
 
   if ((bool) eval (ctx, cond).get ())
     result = ctx->clone ();
-  
+
   return result;
 }
 
@@ -157,7 +157,7 @@ ConcreteStepper::State *
 ConcreteStepper::get_initial_state (const ConcreteAddress &entrypoint)
 {
   MicrocodeAddress ma (entrypoint.get_address ());
-  State *result = new State (new ProgramPoint (ma), 
+  State *result = new State (new ProgramPoint (ma),
 			     new Context (new ConcreteMemory (memory)));
 
   return result;

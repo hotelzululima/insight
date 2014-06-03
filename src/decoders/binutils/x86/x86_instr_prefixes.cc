@@ -164,15 +164,15 @@ s_end_rep (x86::parser_data &data, Expr *cond)
   assert(_cx != NULL);
 
   int csize = _cx->get_bv_size ();
-  Expr *stopcond = BinaryApp::createEquality (_cx->ref (), 
+  Expr *stopcond = BinaryApp::createEquality (_cx->ref (),
 					      Constant::zero (csize));
 
-  data.mc->add_assignment (start, _cx, 
+  data.mc->add_assignment (start, _cx,
 			   BinaryApp::create (BV_OP_SUB, _cx->ref (),
 					      Constant::one (csize), 0,
 					      csize));
 
-  if (cond)    
+  if (cond)
     {
       cond = BinaryApp::createEquality (data.get_register ("zf"), cond);
       stopcond = BinaryApp::create (BV_OP_OR, stopcond, cond);
@@ -180,7 +180,7 @@ s_end_rep (x86::parser_data &data, Expr *cond)
 
   x86_if_then_else (start, data, stopcond, data.next_ma,
 		       MicrocodeAddress (data.start_ma.getGlobal ()));
-  
+
   data.has_prefix = false;
 }
 
@@ -194,7 +194,7 @@ s_rep (x86::parser_data &data, bool start, Expr *zf_val)
 }
 
 X86_TRANSLATE_PREFIX(REP)
-{  
+{
   s_rep (data, start, NULL);
 }
 

@@ -83,7 +83,7 @@ IntervalValue::unknown_value_generator ()
 {
   static UnknownIntervalValue gen;
 
-  return &gen;  
+  return &gen;
 }
 
 

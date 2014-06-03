@@ -47,14 +47,14 @@ ATF_TEST_CASE_BODY(basics)
 
   ct.set ("firstname", "foo");
   ct.set ("lastname", "bar");
-  
+
   ATF_REQUIRE (ct.has ("firstname"));
   ATF_REQUIRE (ct.has ("lastname"));
   ATF_REQUIRE (! ct.has ("birthday"));
 
   ATF_REQUIRE (ct.get ("firstname") == "foo");
   ATF_REQUIRE (ct.get ("lastname") == "bar");
-  
+
   ATF_REQUIRE_EQ (ct.get_integer ("birthday"), 0);
   ATF_REQUIRE_EQ (ct.get_boolean ("birthday"), false);
 

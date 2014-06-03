@@ -43,8 +43,8 @@ bool arm_scanner_open(const string &instr);
 void arm_scanner_close();
 
 bool
-arm_decoder_func(MicrocodeArchitecture *arch, 
-		 Microcode *mc, 
+arm_decoder_func(MicrocodeArchitecture *arch,
+		 Microcode *mc,
 		 const string &instruction,
                  const ConcreteAddress &start,
                  const ConcreteAddress &next)

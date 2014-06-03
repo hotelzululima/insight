@@ -9,7 +9,7 @@ start:
 	cmp $1, %al	# AL == 1
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	mov %al, %ah
 	aad $2
@@ -19,7 +19,7 @@ start:
 	cmp $3, %al	# AL == 1
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	mov %al, %ah
 	aad $2
@@ -29,7 +29,7 @@ start:
 	cmp $9, %al	# AL == 9
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	mov %al, %ah
 	aad $2
@@ -39,7 +39,7 @@ start:
 	cmp $27, %al	# AL == 27
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	mov %al, %ah
 	aad $2
@@ -49,7 +49,7 @@ start:
 	cmp $81, %al	# AL == 81
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	mov %al, %ah
 	aad $2
@@ -59,7 +59,7 @@ start:
 	cmp $243, %al	# AL == 243
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	mov %al, %ah
 	aad $2
@@ -69,6 +69,6 @@ start:
 	cmp $217, %al	# AL == 217
 	jne error	
 	test %ah, %ah	# AH == 0
-	jne error 
+	jne error
 
 	.include "x86_32-simulator-end.s"

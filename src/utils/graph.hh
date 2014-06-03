@@ -258,7 +258,7 @@ public:
    * \param  visitor callback class
    */
   /* ***************************************************/
-  virtual void depth_first_run(Node *start, 
+  virtual void depth_first_run(Node *start,
 			       GraphVisitor<Node, Edge>& visitor) const;
 
 
@@ -298,7 +298,7 @@ public:
    * \param  visitor callback class
    */
   /* ***************************************************/
-  virtual void bread_first_traversal(Node *start, 
+  virtual void bread_first_traversal(Node *start,
 				     GraphVisitor<Node, Edge>& visitor) const;
 
 

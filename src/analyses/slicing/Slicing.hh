@@ -109,7 +109,7 @@ class DataDependency {
 
 private:
   Microcode * the_program;
-  std::map<MicrocodeAddressProgramPoint, DataDependencyLocalContext *, 
+  std::map<MicrocodeAddressProgramPoint, DataDependencyLocalContext *,
 	   LessThanFunctor<MicrocodeAddressProgramPoint> > the_fixpoint;
   std::list<StaticArrow *> pending_arrows;
   bool fixpoint_reached;

@@ -107,7 +107,7 @@ public:
 
   /*! \brief Retrieve all the contents of cells pointed by addresses
       in a and makes the union of all these sets. size is given in bytes */
-  virtual SetsValue get(const SetsAddress &a, int size, 
+  virtual SetsValue get(const SetsAddress &a, int size,
 			Architecture::endianness_t e) const
     throw (UndefinedValueException);
 
@@ -133,7 +133,7 @@ public:
    *     one adds it to a special value (global) whose meaning is to be added to
    *     any cell in the memory.
    */
-  virtual void put(const SetsAddress &a, const SetsValue &v, 
+  virtual void put(const SetsAddress &a, const SetsValue &v,
 		   Architecture::endianness_t e);
 
   /*! \brief Clear the set pointed by the addresses in a. size is given in bytes */

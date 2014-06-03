@@ -114,14 +114,14 @@ ND_eval_unary_expr(SpecializedContext *s_ctxt, UnaryApp *ua)
   switch (ua->get_op())
     {
     case BV_OP_NEG:
-      return ND_eval_unary_expr_generic(SetsExprSemantics::BV_OP_NEG_eval, 
-					s_ctxt, 
-					ua->get_arg1(), ua->get_bv_offset (), 
+      return ND_eval_unary_expr_generic(SetsExprSemantics::BV_OP_NEG_eval,
+					s_ctxt,
+					ua->get_arg1(), ua->get_bv_offset (),
 					ua->get_bv_size ());
     case BV_OP_NOT:
-      return ND_eval_unary_expr_generic(SetsExprSemantics::BV_OP_NOT_eval, 
-					s_ctxt, ua->get_arg1(), 
-					ua->get_bv_offset (), 
+      return ND_eval_unary_expr_generic(SetsExprSemantics::BV_OP_NOT_eval,
+					s_ctxt, ua->get_arg1(),
+					ua->get_bv_offset (),
 					ua->get_bv_size ());
     default:
       logs::fatal_error("Context::eval Unknown unary operator");
@@ -187,12 +187,12 @@ ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
     case BV_OP_LSH:
       return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LSH_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
     case BV_OP_RSH_U:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_RSH_U_eval,  
-					 s_ctxt, e->get_arg1(), e->get_arg2(), 
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_RSH_U_eval,
+					 s_ctxt, e->get_arg1(), e->get_arg2(),
 					 offset, size);
     case BV_OP_RSH_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_RSH_S_eval,  
-					 s_ctxt, e->get_arg1(), e->get_arg2(), 
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_RSH_S_eval,
+					 s_ctxt, e->get_arg1(), e->get_arg2(),
 					 offset, size);
     case BV_OP_ROR:
       return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_ROR_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
@@ -200,12 +200,12 @@ ND_eval_binary_expr(SpecializedContext *s_ctxt, BinaryApp *e)
       return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_ROL_eval,  s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
 
     case BV_OP_EQ:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_EQ_eval, 
-					 s_ctxt, e->get_arg1(), e->get_arg2(), 
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_EQ_eval,
+					 s_ctxt, e->get_arg1(), e->get_arg2(),
 					 offset, size);
 
     case BV_OP_LEQ_S:
-      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_S_eval, 
+      return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_S_eval,
 					 s_ctxt, e->get_arg1(), e->get_arg2(), offset, size);
     case BV_OP_GEQ_S:
       return ND_eval_binary_expr_generic(SetsExprSemantics::BV_OP_LEQ_S_eval,  s_ctxt, e->get_arg2(), e->get_arg1(), offset, size);
@@ -280,7 +280,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
             }
           catch (OptionNoValueExc &)
             {
-              logs::warning << "ND_eval: TOP value for address : returns TOP" 
+              logs::warning << "ND_eval: TOP value for address : returns TOP"
 			   << std::endl;
               result.push_back(std::pair< Option<ConcreteValue>, SpecializedContext * > (Option<ConcreteValue>() , current_s_ctxt));
               return result;
@@ -330,7 +330,7 @@ ND_eval(SpecializedContext *s_ctxt, const Expr *e)
       catch (SpecializedContextNotSpecialized &)
         {
           // reg is not specialized : one produces any possible specialisation for addr
-          SetsValue s_val = 
+          SetsValue s_val =
 	    s_ctxt->underlying_context->memory->get(reg);
           try
             {
@@ -422,7 +422,7 @@ get_specialized(const RegisterDesc *reg)
        p = specialised_registers.begin();
        p != specialised_registers.end();
        p++)
-    if (p->first == reg) 
+    if (p->first == reg)
       return p->second;
   throw SpecializedContextNotSpecialized();
 }

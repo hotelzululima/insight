@@ -36,7 +36,7 @@
 
 TEMPLATE
 AbstractExecContext<TEMPLATE_ARGS>::~AbstractExecContext() {
-  typename std::map<ProgramPoint, AbstractContext<TEMPLATE_ARGS> *>::iterator 
+  typename std::map<ProgramPoint, AbstractContext<TEMPLATE_ARGS> *>::iterator
     p = exec_map.begin(),
     end = exec_map.end();
 
@@ -54,11 +54,11 @@ eval_unary_expr(UnaryApp *ua)
     {
 
     case BV_OP_NEG:
-      return Semantics::BV_OP_NEG_eval(eval(ua->get_arg1()), 
-				       ua->get_bv_offset (), 
+      return Semantics::BV_OP_NEG_eval(eval(ua->get_arg1()),
+				       ua->get_bv_offset (),
 				       ua->get_bv_size ());
     case BV_OP_NOT:
-      return Semantics::BV_OP_NOT_eval(eval(ua->get_arg1()), 
+      return Semantics::BV_OP_NOT_eval(eval(ua->get_arg1()),
 				       ua->get_bv_offset (),
 				       ua->get_bv_size ());
     default:
@@ -76,17 +76,17 @@ eval_ternary_expr(TernaryApp *ta)
   switch (ta->get_op())
     {
 
- #define APPLY_TERNARY(op_sem) {     			\
-    /* Caution: ordering of argument evaluation */    \
-    Value val_arg1 = eval(ta->get_arg1());		\
-    Value val_arg2 = eval(ta->get_arg2());		\
-    Value val_arg3 = eval(ta->get_arg3());		\
+#define APPLY_TERNARY(op_sem) {			        \
+	/* Caution: ordering of argument evaluation */	\
+	Value val_arg1 = eval(ta->get_arg1());		\
+	Value val_arg2 = eval(ta->get_arg2());		\
+	Value val_arg3 = eval(ta->get_arg3());		\
     return Semantics::BV_OP_ ## op_sem(val_arg1, val_arg2, val_arg3, ta->get_bv_offset (), ta->get_bv_size ()); \
   }
-	 
+
     case BV_OP_EXTRACT:
       APPLY_TERNARY(EXTRACT_eval);
-    
+
     default:
       logs::fatal_error("Context::eval Unknown ternary operator");
     }
@@ -104,22 +104,22 @@ eval_binary_expr(BinaryApp *ba)
   switch (ba->get_op())
     { // \todo rewrite that with operator.def
 
-#define APPLY_BINARY(op_sem) {     			\
-    /* Caution: ordering of argument evaluation */    \
-    Value val_arg1 = eval(ba->get_arg1());		\
-    Value val_arg2 = eval(ba->get_arg2());		\
-    return Semantics::BV_OP_ ## op_sem(val_arg1, val_arg2, \
-				       ba->get_bv_offset (),	\
-      ba->get_bv_size ());			\
+#define APPLY_BINARY(op_sem) {						\
+	/* Caution: ordering of argument evaluation */			\
+	Value val_arg1 = eval(ba->get_arg1());				\
+	Value val_arg2 = eval(ba->get_arg2());				\
+	return Semantics::BV_OP_ ## op_sem(val_arg1, val_arg2,		\
+					   ba->get_bv_offset (),	\
+					   ba->get_bv_size ());		\
   }
 
-#define APPLY_BINARY_REV(op_sem) { 			\
-    /* Caution: ordering of argument evaluation */    \
-    Value val_arg1 = eval(ba->get_arg1());		\
-    Value val_arg2 = eval(ba->get_arg2());		\
-    return Semantics::BV_OP_ ## op_sem(val_arg2, val_arg1, \
-				       ba->get_bv_offset (),	\
-      ba->get_bv_size ());      \
+#define APPLY_BINARY_REV(op_sem) {					\
+	/* Caution: ordering of argument evaluation */			\
+	Value val_arg1 = eval(ba->get_arg1());				\
+	Value val_arg2 = eval(ba->get_arg2());				\
+	return Semantics::BV_OP_ ## op_sem(val_arg2, val_arg1,		\
+					   ba->get_bv_offset (),	\
+					   ba->get_bv_size ());		\
   }
 
     case BV_OP_ADD:
@@ -221,19 +221,19 @@ eval(const Expr *e)
       MemCell *mc = (MemCell *) e;
       Address a(eval(mc->get_addr()));
       int size = (mc->get_bv_offset() + mc->get_bv_size () - 1) / 8 + 1;
-      
+
       /*! \todo in Expr, propagate endianness */
-      Value v = memory->get(a, size, //mc->get_bv_size() / 8, 
+      Value v = memory->get(a, size, //mc->get_bv_size() / 8,
 			    Architecture::LittleEndian);
-      result = Semantics::extract_eval (v, e->get_bv_offset(), 
-					e->get_bv_size ()); 
+      result = Semantics::extract_eval (v, e->get_bv_offset(),
+					e->get_bv_size ());
     }
   else if (e->is_RegisterExpr ())
     {
       RegisterExpr *reg = (RegisterExpr *) e;
       Value v = memory->get (reg->get_descriptor ());
-      result = Semantics::extract_eval (v, e->get_bv_offset(), 
-					e->get_bv_size ()); 
+      result = Semantics::extract_eval (v, e->get_bv_offset(),
+					e->get_bv_size ());
     }
   else
     {
@@ -269,37 +269,37 @@ exec(Statement *st)
       Assignment *assign = (Assignment *) st;
 
       if (assign->get_lval()->is_MemCell())
-        {
-	  const MemCell *cell = 
+	{
+	  const MemCell *cell =
 	    dynamic_cast<const MemCell *> (assign->get_lval());
 	  assert (cell->get_bv_offset () == 0);
 	  assert (cell->get_bv_size () == assign->get_rval()->get_bv_size ());
 
-          Address a(eval(((const MemCell *) assign->get_lval())->get_addr()));
-          Value v = eval(assign->get_rval());
-          /*! \todo propagate endianness in Expr module */
-          new_ctxt->memory->put(a, v, Architecture::LittleEndian);
-        }
+	  Address a(eval(((const MemCell *) assign->get_lval())->get_addr()));
+	  Value v = eval(assign->get_rval());
+	  /*! \todo propagate endianness in Expr module */
+	  new_ctxt->memory->put(a, v, Architecture::LittleEndian);
+	}
 
       if (assign->get_lval()->is_RegisterExpr())
-        {
+	{
 	  RegisterExpr *reg = (RegisterExpr *) assign->get_lval();
 	  const RegisterDesc *rdesc = reg->get_descriptor();
 	  Value v = eval(assign->get_rval());
-	  Value regval;	  
+	  Value regval;
 	  if (v.get_size () != rdesc->get_register_size ())
 	    {
 	      if (new_ctxt->memory->is_defined(rdesc))
 		regval = new_ctxt->memory->get(rdesc);
-	      else 
-		regval = 
+	      else
+		regval =
 		  Value::unknown_value_generator ()->unknown_value (rdesc->get_window_size());
 
 	      v = Semantics::embed_eval(regval, v, reg->get_bv_offset());
 	    }
 
-          new_ctxt->memory->put (rdesc, v);
-        }
+	  new_ctxt->memory->put (rdesc, v);
+	}
     }
 
   if (st->is_Skip()) {}
@@ -321,19 +321,19 @@ split_context(Expr *condition)
   if (cond_eval.hasValue())
     {
       if (cond_eval.getValue())
-        {
-          return std::pair <Option<AbstractContext<TEMPLATE_ARGS> *>,
-                 Option<AbstractContext<TEMPLATE_ARGS> *> >
-	      (Option<AbstractContext<TEMPLATE_ARGS> *>(this),
-	       Option<AbstractContext<TEMPLATE_ARGS> *>());
-        }
+	{
+	  return std::pair <Option<AbstractContext<TEMPLATE_ARGS> *>,
+			    Option<AbstractContext<TEMPLATE_ARGS> *> >
+	    (Option<AbstractContext<TEMPLATE_ARGS> *>(this),
+	     Option<AbstractContext<TEMPLATE_ARGS> *>());
+	}
       else
-        {
-          return std::pair <Option<AbstractContext<TEMPLATE_ARGS> *>,
+	{
+	  return std::pair <Option<AbstractContext<TEMPLATE_ARGS> *>,
 			    Option<AbstractContext<TEMPLATE_ARGS> *> >
 	      (Option<AbstractContext<TEMPLATE_ARGS> *>(),
 	       Option<AbstractContext<TEMPLATE_ARGS> *>(this));
-        }
+	}
     }
   else
     return std::pair <Option<AbstractContext<TEMPLATE_ARGS> *>,
@@ -368,7 +368,7 @@ step(const Arrow &pa)
   if (!splited_ctxt_pair.first.hasValue() &&
       !splited_ctxt_pair.second.hasValue())
     {
-      logs::warning << "step: unable to extract bool from the condition" 
+      logs::warning << "step: unable to extract bool from the condition"
 		   << std::endl;
       pending_arrow_set_status(pp, arr, PAS_UNABLE_TO_EVAL_CONDITION);
       return SR_UNABLE_TO_EVALUATE_CONDITION;
@@ -396,18 +396,18 @@ step(const Arrow &pa)
       DynamicArrow *darr = dynamic_cast<DynamicArrow *>(arr);
       next_addr = new_context->eval(darr->get_target()).to_MicrocodeAddress();
       if (!next_addr.hasValue())
-        {
-          // Computation of the next program point impossible
-          //! Note that the pending arrow is not deleted in this case.
+	{
+	  // Computation of the next program point impossible
+	  //! Note that the pending arrow is not deleted in this case.
 
-          // TODO : value_to_microcode_address could return a list of
-          // addresses, and produce a several transitions.
+	  // TODO : value_to_microcode_address could return a list of
+	  // addresses, and produce a several transitions.
 	  // One can also record the dynamic arrows.
 
-          delete new_context;
-          pending_arrow_set_status(pp, arr, PAS_UNABLE_TO_EVAL_TARGET);
-          return SR_UNABLE_TO_EVALUATE_TARGET;
-        }
+	  delete new_context;
+	  pending_arrow_set_status(pp, arr, PAS_UNABLE_TO_EVAL_TARGET);
+	  return SR_UNABLE_TO_EVALUATE_TARGET;
+	}
     }
 
   ProgramPoint new_pp = pp.next(next_addr.getValue());
@@ -416,27 +416,27 @@ step(const Arrow &pa)
   delete_pending_arrow(pp, arr);
 
   std::cout << "----- STEPPING { " << arr->get_origin()
-            << " - Statement : "
-            << arr->get_stmt()->pp() << " ==> " << new_pp.pp() << " } ----- "
-            << std::endl << std::endl;
+	    << " - Statement : "
+	    << arr->get_stmt()->pp() << " ==> " << new_pp.pp() << " } ----- "
+	    << std::endl << std::endl;
 
   //! Create the new context or merge with the existing one if there was
   try
     {
       ctxt_opt = get_current_context(new_pp);
       if (ctxt_opt.hasValue())   // there was already a context
-        {
-          AbstractContext<TEMPLATE_ARGS> *curr_context = ctxt_opt.getValue();
+	{
+	  AbstractContext<TEMPLATE_ARGS> *curr_context = ctxt_opt.getValue();
 
-          if (curr_context->merge(new_context)) // modification of the current context in place
-            // One adds pending arrows depending on what says the method merge.
-            request_update(new_pp);
+	  if (curr_context->merge(new_context)) // modification of the current context in place
+	    // One adds pending arrows depending on what says the method merge.
+	    request_update(new_pp);
 	  delete new_context;
-        }
+	}
       else   // there was no context (one always adds pending arrows)
-        {
-          set_context_and_request_update(new_pp, new_context);
-        }
+	{
+	  set_context_and_request_update(new_pp, new_context);
+	}
     }
 
   // Note : This exception means that one could not find a node
@@ -458,8 +458,8 @@ step(const Arrow &pa)
 TEMPLATE void
 AbstractExecContext<TEMPLATE_ARGS>::
 pending_arrow_set_status(ProgramPoint &pp,
-                         StmtArrow *arr,
-                         PendingArrowStatus st)
+			 StmtArrow *arr,
+			 PendingArrowStatus st)
 {
   // \todo humm, pas trop efficace...
   delete_pending_arrow(pp, arr);
@@ -469,8 +469,8 @@ pending_arrow_set_status(ProgramPoint &pp,
 TEMPLATE void
 AbstractExecContext<TEMPLATE_ARGS>::
 add_pending_arrow(ProgramPoint pp,
-                  StmtArrow *arr,
-                  PendingArrowStatus st)
+		  StmtArrow *arr,
+		  PendingArrowStatus st)
 {
   // \todo : verifier qu'on ne met pas de doublons
   pending_arrows.push_back(PendingArrow<TEMPLATE_ARGS>(pp, arr, st));
@@ -530,8 +530,8 @@ public:
   bool operator()(const PendingArrow<TEMPLATE_ARGS> & pa)
   {
     return (pa.pp.equals (the_pa->pp) &&
-            *(pa.arr) == *(the_pa->arr) &&
-            pa.status == the_pa->status);
+	    *(pa.arr) == *(the_pa->arr) &&
+	    pa.status == the_pa->status);
   }
 };
 
@@ -569,7 +569,7 @@ get_current_context(ProgramPoint &pp)
   for (it = exec_map.begin(); it != exec_map.end(); it++)
     {
       if (it->first.equals(pp))
-        return Option<AbstractContext<TEMPLATE_ARGS> *>(it->second);
+	return Option<AbstractContext<TEMPLATE_ARGS> *>(it->second);
     }
 
   // TODO: est ce vraiment la bonne syntaxe ?
@@ -578,7 +578,7 @@ get_current_context(ProgramPoint &pp)
 
 
 TEMPLATE ProgramPoint
-AbstractExecContext<TEMPLATE_ARGS>::get_current_program_point () 
+AbstractExecContext<TEMPLATE_ARGS>::get_current_program_point ()
 {
   assert (pending_arrows.size ()  > 0);
 
@@ -618,7 +618,7 @@ generic_step()
 TEMPLATE void
 AbstractExecContext<TEMPLATE_ARGS>::
 set_context_and_request_update(ProgramPoint &pp,
-                               AbstractContext<TEMPLATE_ARGS> *ctxt)
+			       AbstractContext<TEMPLATE_ARGS> *ctxt)
 {
   request_update(pp);
   if (exec_map.find (pp) != exec_map.end ())
@@ -634,7 +634,7 @@ void
 AbstractExecContext<TEMPLATE_ARGS>::
 init(AbstractContext<TEMPLATE_ARGS> *ctxt)
 {
-  typename std::map<ProgramPoint, AbstractContext<TEMPLATE_ARGS> *>::iterator 
+  typename std::map<ProgramPoint, AbstractContext<TEMPLATE_ARGS> *>::iterator
     p = exec_map.begin(),
     end = exec_map.end();
 
@@ -659,7 +659,7 @@ pp()
   for (p = exec_map.begin(); p != exec_map.end(); p++)
     {
       oss << "******* Context at program point " << p->first.pp()
-          << " *******" << std::endl;
+	  << " *******" << std::endl;
       oss << p->second->pp() << std::endl;
     }
 

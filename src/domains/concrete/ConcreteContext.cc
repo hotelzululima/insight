@@ -1,16 +1,16 @@
 #include "ConcreteContext.hh"
 
-ConcreteContext::ConcreteContext (ConcreteMemory *mem) 
+ConcreteContext::ConcreteContext (ConcreteMemory *mem)
   : AbstractDomainContext<ConcreteMemory>  (mem)
 {
 }
 
-ConcreteContext::~ConcreteContext () 
+ConcreteContext::~ConcreteContext ()
 {
 }
 
 ConcreteContext *
-ConcreteContext::clone () const 
+ConcreteContext::clone () const
 {
   return new ConcreteContext (memory->clone ());
 }

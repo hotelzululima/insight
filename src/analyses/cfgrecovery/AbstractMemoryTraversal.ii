@@ -5,21 +5,21 @@
 
 template<typename AlgoSpec>
 AbstractMemoryTraversal<AlgoSpec>::
- AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder, 
-			  Stepper *stepper, StateSpace *states) 
-   : memory (memory), worklist(), stepper (stepper), 
-     decoder (decoder), states (states), 
+ AbstractMemoryTraversal (ConcreteMemory *memory, Decoder *decoder,
+			  Stepper *stepper, StateSpace *states)
+   : memory (memory), worklist(), stepper (stepper),
+     decoder (decoder), states (states),
      stop_computation (false)
 {
 # define ABSTRACT_MEMORY_TRAVERSAL_PROPERTY(type_, name_, defval_) \
-  name_ = defval_; 
+  name_ = defval_;
 
   ABSTRACT_MEMORY_TRAVERSAL_PROPERTIES
 # undef ABSTRACT_MEMORY_TRAVERSAL_PROPERTY
 }
 
 template<typename AlgoSpec>
-AbstractMemoryTraversal<AlgoSpec>::~AbstractMemoryTraversal () 
+AbstractMemoryTraversal<AlgoSpec>::~AbstractMemoryTraversal ()
 {
   while (! worklist.empty ())
     {
@@ -29,16 +29,16 @@ AbstractMemoryTraversal<AlgoSpec>::~AbstractMemoryTraversal ()
 }
 
 template<typename AlgoSpec>
-void 
+void
 AbstractMemoryTraversal<AlgoSpec>::abort_computation ()
-{  
+{
   stop_computation = true;
 }
 
 template<typename AlgoSpec>
-void 
-AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress> 
-					    &entrypoints, 
+void
+AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
+					    &entrypoints,
 					    Microcode *result)
 {
   stop_computation = false;
@@ -50,7 +50,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
       State *s = stepper->get_initial_state (*ep);
       computePendingArrowsFor (s);
       s->deref ();
-      
+
       while (! worklist.empty () && ! stop_computation)
 	{
 	  PendingArrow pa = nextPendingArrow ();
@@ -59,7 +59,7 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 	    {
 	      logs::debug << "New state" << std::endl
 			  << *(pa.s) << std::endl
-			  << "(" << worklist.size () << ") Pending " 
+			  << "(" << worklist.size () << ") Pending "
 			  << pa.arrow->pp () << std::endl;
 	    }
 
@@ -69,11 +69,11 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 	      continue;
 	    }
 
-	  try 
+	  try
 	    {
 	      StateSet *succ = stepper->get_successors (pa.s, pa.arrow);
 	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (pa.arrow);
-	
+
 	      if (da != NULL && succ->size () == 0)
 		{
 		  logs::warning << "unable to solve dynamic jump "
@@ -81,8 +81,8 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 		}
 	      else
 		{
-		  for (typename StateSet::iterator i = succ->begin(); 
-		       i != succ->end ();  i++) 
+		  for (typename StateSet::iterator i = succ->begin();
+		       i != succ->end ();  i++)
 		    {
 		      if (da != NULL)
 			{
@@ -91,10 +91,10 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 			  if (! memory->is_defined (a.getGlobal ()))
 			    {
 			      if (warn_skipped_dynamic_jumps)
-				logs::warning << "at " 
+				logs::warning << "at "
 					      << pa.s->get_ProgramPoint ()->to_MicrocodeAddress ()
 					      << " skip dynamic jump to undefined "
-					      << "target 0x" << std::hex 
+					      << "target 0x" << std::hex
 					      << a.getGlobal () << std::endl;
 			      (*i)->deref ();
 			      continue;
@@ -106,8 +106,8 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 		    }
 		}
 	      if (show_state_space_size)
-		logs::debug << "# state " << states->size() 
-			    << " # pp " << visits.size () 
+		logs::debug << "# state " << states->size()
+			    << " # pp " << visits.size ()
 			    << " # WL " << worklist.size ()
 			    << std::endl;
 	      delete succ;
@@ -116,26 +116,26 @@ AbstractMemoryTraversal<AlgoSpec>::compute (const std::list<ConcreteAddress>
 	    {
 	      MicrocodeAddress a =
 		pa.s->get_ProgramPoint ()->to_MicrocodeAddress ();
-	      logs::warning << a << " " << e.what () << std::endl;	    
+	      logs::warning << a << " " << e.what () << std::endl;
 	    }
 	  pa.s->deref ();
 	}
     }
   program->set_entry_point (MicrocodeAddress (entrypoints.begin ()->get_address ()));
 }
-  
-template<typename AlgoSpec>  
-typename AbstractMemoryTraversal<AlgoSpec>::PendingArrow 
-AbstractMemoryTraversal<AlgoSpec>::nextPendingArrow () 
+
+template<typename AlgoSpec>
+typename AbstractMemoryTraversal<AlgoSpec>::PendingArrow
+AbstractMemoryTraversal<AlgoSpec>::nextPendingArrow ()
 {
   PendingArrow res = worklist.front ();
   worklist.pop_front ();
-  
+
   return res;
 }
 
 template<typename AlgoSpec>
-bool 
+bool
 AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
 {
   bool result = false;
@@ -143,7 +143,7 @@ AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
   if (number_of_visits_per_address > 0 && ma.getLocal () == 0)
     {
       address_t a = ma.getGlobal ();
-      
+
       if (visits.find (a) == visits.end ())
 	visits[a] = 1;
       else
@@ -160,9 +160,9 @@ AbstractMemoryTraversal<AlgoSpec>::skip_pending_arrow (const PendingArrow &pa)
 }
 
 template<typename AlgoSpec>
-void 
-AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s) 
-    throw (Decoder::Exception) 
+void
+AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s)
+    throw (Decoder::Exception)
 {
   State *ns = states->find_or_add_state (s);
   if (ns != s)
@@ -172,7 +172,7 @@ AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s)
   if (! memory->is_defined (pp->to_MicrocodeAddress ().getGlobal ()))
     return;
 
-  try 
+  try
     {
       MicrocodeNode *node = get_node (pp);
       if (show_pending_arrows)
@@ -181,8 +181,8 @@ AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s)
 	PendingArrow pa = { ns, *succ };
 	ns->ref ();
 	if (show_pending_arrows)
-	  logs::debug << "   (" << worklist.size () 
-		      << ") add pending " 
+	  logs::debug << "   (" << worklist.size ()
+		      << ") add pending "
 		      << pa.arrow->pp () << std::endl;
 	worklist.push_back (pa);
       }
@@ -197,8 +197,8 @@ AbstractMemoryTraversal<AlgoSpec>::computePendingArrowsFor (State *s)
 
 template<typename AlgoSpec>
 MicrocodeNode *
-AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp) 
-  throw (Decoder::Exception) 
+AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp)
+  throw (Decoder::Exception)
 {
   MicrocodeAddress ma = pp->to_MicrocodeAddress ();
   bool is_global = (ma.getLocal () == 0);
@@ -224,7 +224,7 @@ AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp)
 				  new NextInstAnnotation (nextma));
 	}
     }
-  else 
+  else
     {
       if (! is_global)
 	throw GetNodeNotFoundExc ();
@@ -235,7 +235,7 @@ AbstractMemoryTraversal<AlgoSpec>::get_node (const ProgramPoint *pp)
       result->add_annotation (NextInstAnnotation::ID,
 			      new NextInstAnnotation (nextma));
     }
-    
+
   return result;
 }
 

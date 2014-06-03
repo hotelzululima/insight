@@ -63,7 +63,7 @@ typedef AlgorithmFactory::Algorithm * (AlgorithmFactory::* FactoryMethod) ();
 
 static AlgorithmFactory::Algorithm *running_algorithm = NULL;
 
-static void 
+static void
 s_sigint_handler (int)
 {
   if (running_algorithm)
@@ -131,19 +131,19 @@ s_generic_call (const list<ConcreteAddress >&entrypoint,
 	c->deref ();
     }
 
-  bool show_states = 
+  bool show_states =
     CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATES, false);
-  bool show_state_space_size = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATE_SPACE_SIZE, 
+  bool show_state_space_size =
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_STATE_SPACE_SIZE,
 				     false);
-  bool show_pending_arrows = 
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS, 
+  bool show_pending_arrows =
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_DEBUG_SHOW_PENDING_ARROWS,
 				     false);
   bool warn_unsolved_jumps =
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS,
 				     true);
   bool warn_skipped_jumps =
-    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS, 
+    CFGRECOVERY_CONFIG->get_boolean (SIMULATOR_WARN_UNSOLVED_DYNAMIC_JUMPS,
 				     true);
   int max_nb_visits =
     CFGRECOVERY_CONFIG->get_integer (SIMULATOR_NB_VISITS_PER_ADDRESS, 0);
@@ -154,13 +154,13 @@ s_generic_call (const list<ConcreteAddress >&entrypoint,
 		    << "to " << dec << max_nb_visits << " visits."
 		    << endl;
     }
-  int djmpth = 
+  int djmpth =
     CFGRECOVERY_CONFIG->get_integer (SYMSIM_DYNAMIC_JUMP_THRESHOLD);
-  bool djmp2mem = 
+  bool djmp2mem =
     CFGRECOVERY_CONFIG->get_boolean (SYMSIM_MAP_DYNAMIC_JUMP_TO_MEMORY);
 
   F.set_memory (memory);
-  F.set_decoder (decoder); 
+  F.set_decoder (decoder);
   F.set_show_states (show_states);
   F.set_show_state_space_size (show_state_space_size);
   F.set_show_pending_arrows (show_pending_arrows);
@@ -169,7 +169,7 @@ s_generic_call (const list<ConcreteAddress >&entrypoint,
   F.set_map_dynamic_jumps_to_memory (djmp2mem);
   F.set_dynamic_jumps_threshold (djmpth);
   F.set_max_number_of_visits_per_address (max_nb_visits);
- 
+
   running_algorithm = (F.* build) ();
   if (signal (SIGINT, &s_sigint_handler) == SIG_ERR)
     logs::error << "unable to set CTRL-C handler." << endl;
@@ -196,21 +196,21 @@ void
 linear_sweep(const list<ConcreteAddress> &entrypoints,
 	     ConcreteMemory * memory, Decoder * decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &)
-{ 
-  s_generic_call (entrypoints, memory, decoder, 
+{
+  s_generic_call (entrypoints, memory, decoder,
 		  &AlgorithmFactory::buildLinearSweep, result);
 }
 
-void 
+void
 flood_traversal (const list<ConcreteAddress> &entrypoints,
 		 ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &)
 {
-  s_generic_call (entrypoints, memory, decoder, 
+  s_generic_call (entrypoints, memory, decoder,
 		  &AlgorithmFactory::buildFloodTraversal, result);
 }
 
-void 
+void
 recursive_traversal (const list<ConcreteAddress> &entrypoints,
 		     ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &)
@@ -219,7 +219,7 @@ recursive_traversal (const list<ConcreteAddress> &entrypoints,
 		  &AlgorithmFactory::buildRecursiveTraversal, result);
 }
 
-void 
+void
 symbolic_simulator (const list<ConcreteAddress> &entrypoints,
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &)
@@ -228,7 +228,7 @@ symbolic_simulator (const list<ConcreteAddress> &entrypoints,
 		  &AlgorithmFactory::buildSymbolicSimulator, result);
 }
 
-void 
+void
 concrete_simulator (const list<ConcreteAddress> &entrypoints,
 		    ConcreteMemory *memory, Decoder *decoder, Microcode *result)
   throw (Decoder::Exception &, AlgorithmFactory::Exception &)

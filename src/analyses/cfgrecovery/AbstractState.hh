@@ -5,7 +5,7 @@
 # include <analyses/cfgrecovery/AbstractContext.hh>
 
 template<typename PP, typename CTX>
-class AbstractState : public Object 
+class AbstractState : public Object
 {
 public:
   typedef PP ProgramPoint;

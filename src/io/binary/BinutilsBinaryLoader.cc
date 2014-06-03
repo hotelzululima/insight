@@ -189,13 +189,13 @@ BinutilsBinaryLoader::fill_memory_from_sections (ConcreteMemory *memory) const {
 
       if(((bfd_section->flags & (SEC_DATA|SEC_CODE)) == 0))
 	{
-	  logs::warning << "ignoring section " 
+	  logs::warning << "ignoring section "
 			<< bfd_section->name
 			<<" with bad flag." << hex << bfd_section->flags << endl;
 	  continue;
 	}
       logs::warning << hex <<  bfd_section->flags  << " "
-		    << bfd_section->name 
+		    << bfd_section->name
 		    << " " << bfd_get_reloc_upper_bound (abfd, bfd_section)
 		    << endl;
 
@@ -314,19 +314,19 @@ BinutilsBinaryLoader::fill_memory_from_ELF_Phdrs(ConcreteMemory *memory) const {
   return r;
 }
 
-bool 
+bool
 BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
 {
   /* Read symbols */
   size_t ssyms = bfd_get_symtab_upper_bound(abfd);
   bool result = (ssyms > 0);
 
-  if (ssyms > 0) 
+  if (ssyms > 0)
     {
       asymbol **syms = (asymbol **) operator new (ssyms);
       long nsyms = bfd_canonicalize_symtab(abfd, syms);
 
-      for (long i = 0; i < nsyms; i++) 
+      for (long i = 0; i < nsyms; i++)
 	{
 	  if ((syms[i]->flags & BSF_FUNCTION) == 0)
 	    continue;
@@ -335,7 +335,7 @@ BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
 	  address_t addr = bfd_asymbol_value(syms[i]);
 	  if (table->has (name) && table->get (name) != addr)
 	    logs::warning << "warning: symbol '" << name << "' already defined "
-			<< "with a different value. Current is 0x" 
+			<< "with a different value. Current is 0x"
 			<< std::hex << table->get (name) << " and new is 0x"
 			<< addr << "." << std::endl;
 	  else
@@ -346,7 +346,7 @@ BinutilsBinaryLoader::load_symbol_table (SymbolTable *table) const
   return result;
 }
 
-bool 
+bool
 BinutilsBinaryLoader::load_memory (ConcreteMemory *memory) const
 {
   /* Prefer reading the ELF Phdr information because it's the authoritative
@@ -364,7 +364,7 @@ BinutilsBinaryLoader::load_memory (ConcreteMemory *memory) const
 }
 
 StubFactory *
-BinutilsBinaryLoader::get_StubFactory () const 
+BinutilsBinaryLoader::get_StubFactory () const
 {
   StubFactory *result = NULL;
   const Architecture *arch = get_architecture ();

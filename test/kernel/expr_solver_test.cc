@@ -45,7 +45,7 @@
 
 using namespace std;
 
-#if HAVE_SOLVER 
+#if HAVE_SOLVER
 
 #define ALL_TESTS					\
   SOLVER_TEST (NP, "(NOT %pf)", ExprSolver::SAT)	     \
@@ -89,7 +89,7 @@ ATF_TEST_CASE_BODY(id)			\
 }
 
 static void
-s_check_tautology (const string &, const string &expr, 
+s_check_tautology (const string &, const string &expr,
 		   ExprSolver::Result res)
 {
   ConfigTable cfg;
@@ -105,7 +105,7 @@ s_check_tautology (const string &, const string &expr,
   cfg.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (cfg);
-  const Architecture *x86_32 = 
+  const Architecture *x86_32 =
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 
@@ -114,7 +114,7 @@ s_check_tautology (const string &, const string &expr,
 
   ExprSolver *s = ExprSolver::create_default_solver (&ma);
 
-  ATF_REQUIRE_EQ (s->check_sat (e, true), res); 
+  ATF_REQUIRE_EQ (s->check_sat (e, true), res);
   e->deref ();
   delete s;
 
@@ -138,7 +138,7 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
   cfg.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (cfg);
-  const Architecture *x86_32 = 
+  const Architecture *x86_32 =
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 
@@ -148,9 +148,9 @@ s_check_evaluation (const string &, const string &expr, const string &cond,
   ATF_REQUIRE (c != NULL);
   Expr *er = expr_parser (expected_result, &ma);
   ATF_REQUIRE (er != NULL);
-  
+
   ExprSolver *s = ExprSolver::create_default_solver (&ma);
-  
+
   Expr *res = s->evaluate (e, c);
   if (res != er)
     {
@@ -187,12 +187,12 @@ ATF_INIT_TEST_CASES(tcs)
 ATF_TEST_CASE(NO_SMT_SOLVER)
 
 ATF_TEST_CASE_HEAD(NO_SMT_SOLVER)
-{ 
-  set_md_var ("descr", "No SMT solver has not been found."); 
-} 
+{
+  set_md_var ("descr", "No SMT solver has not been found.");
+}
 
-ATF_TEST_CASE_BODY(NO_SMT_SOLVER) 
-{ 
+ATF_TEST_CASE_BODY(NO_SMT_SOLVER)
+{
 }
 
 ATF_INIT_TEST_CASES(tcs)

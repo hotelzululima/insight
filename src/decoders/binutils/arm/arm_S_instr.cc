@@ -34,9 +34,9 @@
 using namespace std;
 
 //1st
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
-			       bool is_D_suffix, bool is_H_suffix, 
+			       bool is_D_suffix, bool is_H_suffix,
 			       bool is_B_suffix, bool /*is_T_suffix*/,
 			       std::string* cond, Expr *reg, Expr *mem)
 
@@ -54,14 +54,14 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
     data.mc->add_assignment(data.start_ma, dst2, reg2, data.next_ma, guard);
 
   } else if (is_H_suffix) {
-    Expr* half_reg = TernaryApp::create (BV_OP_EXTRACT, reg, 
+    Expr* half_reg = TernaryApp::create (BV_OP_EXTRACT, reg,
 					 Constant::create(0, 0, BV_DEFAULT_SIZE),
 					 Constant::create(16, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, half_reg,
         data.next_ma, guard);
   } else if (is_B_suffix) {
 
-    Expr* byte_reg = TernaryApp::create (BV_OP_EXTRACT, reg, 
+    Expr* byte_reg = TernaryApp::create (BV_OP_EXTRACT, reg,
 					 Constant::create(0, 0, BV_DEFAULT_SIZE),
 					 Constant::create(8, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, byte_reg,
@@ -74,11 +74,11 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 }
 
 //2nd
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
-			       bool is_D_suffix, bool is_H_suffix, 
+			       bool is_D_suffix, bool is_H_suffix,
 			       bool is_B_suffix, bool /*is_T_suffix*/,
-			       std::string* cond, Expr *reg, Expr *mem, 
+			       std::string* cond, Expr *reg, Expr *mem,
 			       bool is_NOT_suffix)
 
 {
@@ -87,8 +87,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
   if (is_D_suffix) {
     MemCell *dst1 = (MemCell *) mem;
     Expr* address = dst1->get_addr();
-    MemCell* dst2 = 
-      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4), 
+    MemCell* dst2 =
+      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4),
 		      dst1->get_bv_offset (), dst1->get_bv_size ());
 
     LValue* reg2 = data.get_adjacent_register (reg);
@@ -106,7 +106,7 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
       data.mc->add_assignment(data.start_ma, dst2, reg2, data.next_ma, guard);
 
   } else if (is_H_suffix) {
-    Expr* half_reg = 
+    Expr* half_reg =
       TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0, 0, BV_DEFAULT_SIZE),
         Constant::create(16, 0, BV_DEFAULT_SIZE));
 
@@ -122,7 +122,7 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
           data.next_ma, guard);
 
   } else if (is_B_suffix) {
-    Expr* byte_reg = 
+    Expr* byte_reg =
       TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0, 0, BV_DEFAULT_SIZE),
 			  Constant::create(8, 0, BV_DEFAULT_SIZE));
 
@@ -153,11 +153,11 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 }
 
 //3rd
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
-			       bool is_D_suffix, bool is_H_suffix, 
+			       bool is_D_suffix, bool is_H_suffix,
 			       bool is_B_suffix, bool /*is_T_suffix*/,
-			       std::string* cond, Expr *reg, Expr *mem, 
+			       std::string* cond, Expr *reg, Expr *mem,
 			       Expr* offset)
 
 {
@@ -166,8 +166,8 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
   if (is_D_suffix) {
     MemCell *dst1 = (MemCell *) mem;
     Expr* address = dst1->get_addr();
-    MemCell* dst2 = 
-      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4), 
+    MemCell* dst2 =
+      MemCell::create(BinaryApp::create (BV_OP_ADD, address->ref(), 4),
 		      dst1->get_bv_offset (), dst1->get_bv_size ());
 
     LValue* reg2 = data.get_adjacent_register (reg);
@@ -181,32 +181,32 @@ arm_translate<ARM_TOKEN(STR)> (arm::parser_data &data,
 
   } else if (is_H_suffix) {
 
-    Expr* half_reg = 
+    Expr* half_reg =
       TernaryApp::create (BV_OP_EXTRACT, reg, Constant::create(0, 0, BV_DEFAULT_SIZE),
 			  Constant::create(16, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, half_reg);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(), 
+			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(),
 					       offset), data.next_ma, guard);
 
   } else if (is_B_suffix) {
-    Expr* byte_reg = TernaryApp::create (BV_OP_EXTRACT, reg, 
+    Expr* byte_reg = TernaryApp::create (BV_OP_EXTRACT, reg,
 					 Constant::create(0, 0, BV_DEFAULT_SIZE),
 					 Constant::create(8, 0, BV_DEFAULT_SIZE));
     data.mc->add_assignment(data.start_ma, (LValue*) mem, byte_reg);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(), 
+			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(),
 					       offset), data.next_ma, guard);
   } else {
     data.mc->add_assignment(data.start_ma, (LValue*) mem, reg);
 
     Expr* mem_reg = ((MemCell*) mem)->get_addr();
     data.mc->add_assignment(data.start_ma, (LValue*) mem_reg->ref(),
-			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(), 
+			    BinaryApp::create (BV_OP_ADD, mem_reg->ref(),
 					       offset), data.next_ma, guard);
   }
 }
@@ -230,9 +230,9 @@ template<> void arm_translate<ARM_TOKEN(SUB)> (arm::parser_data &data,
     update_flags(data, guard, src, SUB_INS);
 }
 
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(SUB8)> (arm::parser_data &data,
-				std::string* /*prefix*/, std::string* cond, 
+				std::string* /*prefix*/, std::string* cond,
 				Expr *op1, Expr *op2, Expr *op3)
 {
   LValue *dst = (LValue *) op1;
@@ -241,29 +241,29 @@ arm_translate<ARM_TOKEN(SUB8)> (arm::parser_data &data,
 
   Expr* first_operand = op2;
   Expr* second_operand = op3;
-  Expr* first_operand_1 = 
+  Expr* first_operand_1 =
     TernaryApp::create (BV_OP_EXTRACT, first_operand,
 			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
-  Expr* first_operand_2 = 
+  Expr* first_operand_2 =
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
 			Constant::create(8, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
-  Expr* first_operand_3 = 
+  Expr* first_operand_3 =
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
 			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
-  Expr* first_operand_4 = 
+  Expr* first_operand_4 =
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
 			Constant::create(24, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
 
-  Expr* second_operand_1 = 
+  Expr* second_operand_1 =
     TernaryApp::create (BV_OP_EXTRACT, second_operand,
 			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
-  Expr* second_operand_2 = 
+  Expr* second_operand_2 =
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
 			Constant::create(8, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
-  Expr* second_operand_3 = 
+  Expr* second_operand_3 =
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
 			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
-  Expr* second_operand_4 = 
+  Expr* second_operand_4 =
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
 			Constant::create(24, 0, BV_DEFAULT_SIZE), Constant::create(8, 0, BV_DEFAULT_SIZE));
 
@@ -293,9 +293,9 @@ arm_translate<ARM_TOKEN(SUB8)> (arm::parser_data &data,
 
 }
 
-template<> void 
+template<> void
 arm_translate<ARM_TOKEN(SUB16)> (arm::parser_data &data,
-				 std::string* /*prefix*/, std::string* cond, 
+				 std::string* /*prefix*/, std::string* cond,
 				 Expr *op1, Expr *op2, Expr *op3)
 {
   LValue *dst = (LValue *) op1;
@@ -304,17 +304,17 @@ arm_translate<ARM_TOKEN(SUB16)> (arm::parser_data &data,
 
   Expr* first_operand = op2;
   Expr* second_operand = op3;
-  Expr* first_operand_1 = 
+  Expr* first_operand_1 =
     TernaryApp::create (BV_OP_EXTRACT, first_operand,
 			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
-  Expr* first_operand_2 = 
+  Expr* first_operand_2 =
     TernaryApp::create (BV_OP_EXTRACT, first_operand->ref(),
 			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
 
-  Expr* second_operand_1 = 
+  Expr* second_operand_1 =
     TernaryApp::create (BV_OP_EXTRACT, second_operand,
 			Constant::create(0, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
-  Expr* second_operand_2 = 
+  Expr* second_operand_2 =
     TernaryApp::create (BV_OP_EXTRACT, second_operand->ref(),
 			Constant::create(16, 0, BV_DEFAULT_SIZE), Constant::create(16, 0, BV_DEFAULT_SIZE));
 

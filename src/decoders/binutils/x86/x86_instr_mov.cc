@@ -92,19 +92,19 @@ X86_TRANSLATE_2_OP(MOVBE)
       operand_size = src->get_bv_size ();
       nb_bytes = operand_size / 8;
       Expr *addr = dynamic_cast<MemCell *> (dst)->get_addr ();
-      
-      for (int i = 0; i < nb_bytes; i++) 
+
+      for (int i = 0; i < nb_bytes; i++)
 	{
 	  if (i == 0)
 	    dstbytes[i] = MemCell::create (addr->ref (), 0, 8);
 	  else
 	    {
-	      Expr *na = 
+	      Expr *na =
 		BinaryApp::create (BV_OP_ADD, addr->ref (),
-				   Constant::create (i, 0, 
-						     addr->get_bv_size ()), 
+				   Constant::create (i, 0,
+						     addr->get_bv_size ()),
 				   0, addr->get_bv_size ());
-	      
+
 	      dstbytes[i] = MemCell::create (na, 0, 8);
 	    }
 	}
@@ -113,8 +113,8 @@ X86_TRANSLATE_2_OP(MOVBE)
     {
       operand_size = dst->get_bv_size ();
       nb_bytes = operand_size / 8;
-      
-      for (int i = 0; i < nb_bytes; i ++) 
+
+      for (int i = 0; i < nb_bytes; i ++)
 	dstbytes[i] = dst->extract_bit_vector (8 * i, 8);
       Expr *tmp = src->extract_bit_vector (0, operand_size);
       src->deref ();
@@ -126,7 +126,7 @@ X86_TRANSLATE_2_OP(MOVBE)
   for (int i = 0; i < nb_bytes; i++)
     {
       MicrocodeAddress *next = (i == nb_bytes - 1) ? &data.next_ma : NULL;
-      Expr *srcbyte = 
+      Expr *srcbyte =
 	temp->extract_bit_vector (temp->get_bv_size () - 8 * (i + 1), 8);
       data.mc->add_assignment (from, (LValue *) dstbytes[i], srcbyte, next);
     }
@@ -137,7 +137,7 @@ X86_TRANSLATE_2_OP(MOVBE)
 }
 
 static void
-s_mov_on_cc (MicrocodeAddress from, x86::parser_data &data, 
+s_mov_on_cc (MicrocodeAddress from, x86::parser_data &data,
 	     Expr *op1, Expr *op2, Expr *cond, MicrocodeAddress to)
 {
   Expr *src = op1;
@@ -148,8 +148,8 @@ s_mov_on_cc (MicrocodeAddress from, x86::parser_data &data,
   else if (src->get_bv_size () < dst->get_bv_size ())
     Expr::extract_with_bit_vector_size_of ((Expr *&) dst, src);
 
-  data.mc->add_skip (from, to, 
-		     UnaryApp::create (BV_OP_NOT, cond, 0, 
+  data.mc->add_skip (from, to,
+		     UnaryApp::create (BV_OP_NOT, cond, 0,
 				       cond->get_bv_size ()));
   data.mc->add_skip (from, from + 1, cond->ref());
   from++;
@@ -166,36 +166,36 @@ X86_TRANSLATE_2_OP (CMOV ## cc) \
 #undef X86_CC
 
 X86_TRANSLATE_2_OP (CMOVC)
-{ 
-  s_mov_on_cc (data.start_ma, data, op1, op2, 
-	       data.condition_codes[x86::parser_data::X86_CC_B]->ref (), 
-	       data.next_ma); 
+{
+  s_mov_on_cc (data.start_ma, data, op1, op2,
+	       data.condition_codes[x86::parser_data::X86_CC_B]->ref (),
+	       data.next_ma);
 }
 
 X86_TRANSLATE_2_OP (CMOVNC)
-{ 
-  s_mov_on_cc (data.start_ma, data, op1, op2, 
-	       data.condition_codes[x86::parser_data::X86_CC_NB]->ref (), 
-	       data.next_ma); 
+{
+  s_mov_on_cc (data.start_ma, data, op1, op2,
+	       data.condition_codes[x86::parser_data::X86_CC_NB]->ref (),
+	       data.next_ma);
 }
 
-static void 
+static void
 s_movx (x86::parser_data &data, Expr *op1, Expr *op2, BinaryOp op, int size)
 {
   Expr *val = BinaryApp::createExtend (op, op1, size);
   assert (op2->get_bv_size () == size);
 
   x86_translate<X86_TOKEN(MOV)> (data, val, op2);
-  
+
 }
 
-static void 
+static void
 s_movs (x86::parser_data &data, Expr *op1, Expr *op2, int size)
 {
   s_movx (data, op1, op2, BV_OP_EXTEND_S, size);
 }
 
-static void 
+static void
 s_movz (x86::parser_data &data, Expr *op1, Expr *op2, int size)
 {
   s_movx (data, op1, op2, BV_OP_EXTEND_U, size);

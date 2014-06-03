@@ -9,14 +9,14 @@
 
 namespace SymbStepper {
   class RewriteWithAssignedValues : public ExprRewritingRule {
-    const SymbolicContext *ctx;  
+    const SymbolicContext *ctx;
     const Architecture::endianness_t endianness;
     SymbolicStepper::UnknownGenerator *unkgen;
 
 public:
-    RewriteWithAssignedValues (const SymbolicContext *ctx, 
+    RewriteWithAssignedValues (const SymbolicContext *ctx,
 			       SymbolicStepper::UnknownGenerator *unkgen,
-			       Architecture::endianness_t e) 
+			       Architecture::endianness_t e)
       : ctx (ctx), endianness (e), unkgen (unkgen) {
     }
 
@@ -26,9 +26,9 @@ public:
       int size = F->get_bv_size ();
       Option<SymbolicValue> val;
 
-      if (F->is_RandomValue ()) 
+      if (F->is_RandomValue ())
 	val = unkgen->unknown_value (size);
-      else if (F->is_RegisterExpr ()) 
+      else if (F->is_RegisterExpr ())
 	{
 	  RegisterExpr *regexpr = (RegisterExpr *) F;
 	  const RegisterDesc *rdesc = regexpr->get_descriptor ();
@@ -40,17 +40,17 @@ public:
 	      ctx->get_memory ()->put (rdesc, unk);
 	    }
 	  val = ctx->get_memory ()->get (rdesc);
-	} 
-      else if (F->is_MemCell ()) 
+	}
+      else if (F->is_MemCell ())
 	{
-	  MemCell *mc = (MemCell *) F;      
+	  MemCell *mc = (MemCell *) F;
 	  Expr *addr = mc->get_addr()->ref ();
 	  exprutils::simplify (&addr);
 	  Constant *c = dynamic_cast<Constant *> (addr);
 	  if (c != NULL)
 	    {
 	      int i;
-	      int size = 
+	      int size =
 		(mc->get_bv_offset() + mc->get_bv_size () - 1) / 8 + 1;
 	      for (i = 0; i < size; i++)
 		if (! ctx->get_memory ()->is_defined (c->get_val () + i))
@@ -67,13 +67,13 @@ public:
 		}
 	    }
 	  addr->deref ();
-	} 
-    
+	}
+
       if (val.hasValue ())
 	{
-	  SymbolicValue sv = 
-	    SymbolicExprSemantics::extract_eval (val.getValue (), offset, 
-						 size); 
+	  SymbolicValue sv =
+	    SymbolicExprSemantics::extract_eval (val.getValue (), offset,
+						 size);
 	  result = sv.get_Expr ()->ref ();
 	}
 
@@ -87,10 +87,10 @@ public:
 
 using namespace SymbStepper;
 
-SymbolicStepper::SymbolicStepper (ConcreteMemory *memory, 
+SymbolicStepper::SymbolicStepper (ConcreteMemory *memory,
 				  const MicrocodeArchitecture *arch)
   : Super (arch->get_reference_arch ()), memory (memory)
-    
+
 {
   solver = ExprSolver::create_default_solver (arch);
   if (solver == NULL)
@@ -101,8 +101,8 @@ SymbolicStepper::~SymbolicStepper () {
   delete solver;
 }
 
-ConcreteValue 
-SymbolicStepper::value_to_ConcreteValue (const Context *ctx, const Value &v, 
+ConcreteValue
+SymbolicStepper::value_to_ConcreteValue (const Context *ctx, const Value &v,
 					 bool *is_unique)
   throw (UndefinedValueException)
 {
@@ -126,8 +126,8 @@ SymbolicStepper::value_to_ConcreteValue (const Context *ctx, const Value &v,
   exprutils::simplify (&f);
 
   Expr *cond = sc->get_path_condition ()->ref ();
-  
-  std::vector<constant_t> *values = 
+
+  std::vector<constant_t> *values =
     solver->evaluate (f, cond, is_unique ? 2 : 1);
   f->deref ();
   cond->deref ();
@@ -142,11 +142,11 @@ SymbolicStepper::value_to_ConcreteValue (const Context *ctx, const Value &v,
     *is_unique = (values->size () == 1);
   delete values;
 
-  return result;    
+  return result;
 }
 
-SymbolicStepper::Address 
-SymbolicStepper::value_to_address (const Context *, const Value &v) 
+SymbolicStepper::Address
+SymbolicStepper::value_to_address (const Context *, const Value &v)
   throw (UndefinedValueException)
 {
   return (SymbolicStepper::Address) v;
@@ -155,10 +155,10 @@ SymbolicStepper::value_to_address (const Context *, const Value &v)
 static Expr *
 s_expr_in_range (const Expr *e, address_t min, address_t max)
 {
-  Expr *in1 = BinaryApp::create (BV_OP_LEQ_U, 
+  Expr *in1 = BinaryApp::create (BV_OP_LEQ_U,
 				 Constant::create (min, 0, e->get_bv_size ()),
 				 e->ref (), 0, 1);
-  Expr *in2 = BinaryApp::create (BV_OP_LEQ_U, 
+  Expr *in2 = BinaryApp::create (BV_OP_LEQ_U,
 				 e->ref (),
 				 Constant::create (max, 0, e->get_bv_size ()),
 				 0, 1);
@@ -168,10 +168,10 @@ s_expr_in_range (const Expr *e, address_t min, address_t max)
 void
 s_expand_memcell_indexes_rec (class ExprSolver *solver,
 			      SymbolicStepper::UnknownGenerator *unkgen,
-			      std::vector<const Expr *> *indexes, 
-			      std::vector<Expr *>::size_type current, 
-			      const SymbolicContext *ctx, const Expr *e, 
-			      const Expr *cond, const Architecture *arch, 
+			      std::vector<const Expr *> *indexes,
+			      std::vector<Expr *>::size_type current,
+			      const SymbolicContext *ctx, const Expr *e,
+			      const Expr *cond, const Architecture *arch,
 			      std::vector<Expr *> *result, int jmpthreshold)
 {
   if (current < indexes->size ())
@@ -183,15 +183,15 @@ s_expand_memcell_indexes_rec (class ExprSolver *solver,
 
       if (th >= 0 && (int)tmp->size () > th)
 	tmp->clear ();
-      
+
       for (std::vector<constant_t>::size_type i = 0; i < tmp->size (); i++)
 	{
-	  Constant *cst = Constant::create (tmp->at (i), 
+	  Constant *cst = Constant::create (tmp->at (i),
 					    index->get_bv_offset (),
 					    index->get_bv_size ());
 	  Expr *ne = exprutils::replace_subterm (e, index, cst);
-	  s_expand_memcell_indexes_rec (solver, unkgen, indexes, current + 1, 
-					ctx, ne, cond, arch, result, 
+	  s_expand_memcell_indexes_rec (solver, unkgen, indexes, current + 1,
+					ctx, ne, cond, arch, result,
 					jmpthreshold);
 	  ne->deref ();
 	  cst->deref ();
@@ -218,15 +218,15 @@ s_expand_memcell_indexes_rec (class ExprSolver *solver,
 }
 
 std::vector<Expr *> *
-s_expand_memcell_indexes (class ExprSolver *solver, 
-			  SymbolicStepper::UnknownGenerator *unkgen, 
-			  const Architecture *arch, 
+s_expand_memcell_indexes (class ExprSolver *solver,
+			  SymbolicStepper::UnknownGenerator *unkgen,
+			  const Architecture *arch,
 			  const SymbolicContext *ctx, const Expr *e,
 			  const Expr *cond, int jmpthreshold)
 {
   std::vector<Expr *> *result = new std::vector<Expr *>;
   std::vector<const Expr *> *indexes = exprutils::collect_memcell_indexes (e);
-  s_expand_memcell_indexes_rec (solver, unkgen, indexes, 0, ctx, e, cond, 
+  s_expand_memcell_indexes_rec (solver, unkgen, indexes, 0, ctx, e, cond,
 				arch, result, jmpthreshold);
   delete (indexes);
 
@@ -234,9 +234,9 @@ s_expand_memcell_indexes (class ExprSolver *solver,
 }
 
 std::vector<address_t> *
-SymbolicStepper::value_to_concrete_addresses (const Context *ctx, 
-					      const Value &v) 
-  throw (UndefinedValueException) 
+SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
+					      const Value &v)
+  throw (UndefinedValueException)
 {
   const SymbolicContext *sc = dynamic_cast<const SymbolicContext *> (ctx);
   assert (sc != NULL);
@@ -259,10 +259,10 @@ SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
   address_t range[2];
   sc->get_memory ()->get_address_range (range[0], range[1]);
   Expr *cond = sc->get_path_condition ()->ref ();
-      
+
   if (this->map_dynamic_jumps_to_memory)
     cond = Expr::createLAnd (s_expr_in_range (e, range[0], range[1]), cond);
-      
+
   for (;;)
     {
       cond->acceptVisitor (r);
@@ -273,8 +273,8 @@ SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
       cond = aux;
     }
 
-  std::vector<Expr *> *expaddr = 
-    s_expand_memcell_indexes (solver, unkgen, this->arch, sc, f, cond, 
+  std::vector<Expr *> *expaddr =
+    s_expand_memcell_indexes (solver, unkgen, this->arch, sc, f, cond,
 			      this->dynamic_jump_threshold);
   for (std::vector<Expr *>::size_type i = 0; i < expaddr->size (); i++)
     {
@@ -285,7 +285,7 @@ SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
 
       if (th >= 0 && (int)tmp->size () >= th)
 	tmp->clear ();
-      
+
       for (size_t i = 0; i < tmp->size (); i++)
 	result->push_back (tmp->at (i));
       delete tmp;
@@ -297,11 +297,11 @@ SymbolicStepper::value_to_concrete_addresses (const Context *ctx,
 
   assert (result != NULL);
 
-  return result;  
+  return result;
 }
 
-SymbolicStepper::Value 
-SymbolicStepper::eval (const Context *ctx, const Expr *e) 
+SymbolicStepper::Value
+SymbolicStepper::eval (const Context *ctx, const Expr *e)
   throw (UndefinedValueException)
 {
   SymbolicStepper::Value result;
@@ -336,20 +336,20 @@ SymbolicStepper::eval (const Context *ctx, const Expr *e)
   return result;
 }
 
-SymbolicStepper::Value 
-SymbolicStepper::embed_eval (const SymbolicStepper::Value &v1, 
-			     const SymbolicStepper::Value &v2, 
+SymbolicStepper::Value
+SymbolicStepper::embed_eval (const SymbolicStepper::Value &v1,
+			     const SymbolicStepper::Value &v2,
 			     int off) const
 {
   return SymbolicExprSemantics::embed_eval (v1, v2, off);
 }
-    
 
-static Option<bool> 
-s_to_bool (ExprSolver *solver, SymbolicStepper::UnknownGenerator *unkgen, 
-	   const Architecture *arch, 
-	   const SymbolicContext *ctx, const Expr *e, 
-	   Expr **symbval) 
+
+static Option<bool>
+s_to_bool (ExprSolver *solver, SymbolicStepper::UnknownGenerator *unkgen,
+	   const Architecture *arch,
+	   const SymbolicContext *ctx, const Expr *e,
+	   Expr **symbval)
 {
   Option<bool> result;
   RewriteWithAssignedValues r (ctx, unkgen, arch->get_endian ());
@@ -380,7 +380,7 @@ s_to_bool (ExprSolver *solver, SymbolicStepper::UnknownGenerator *unkgen,
   return result;
 }
 
-SymbolicStepper::Context * 
+SymbolicStepper::Context *
 SymbolicStepper::restrict_to_condition (const Context *ctx, const Expr *cond)
 {
   const SymbolicContext *sc = dynamic_cast<const SymbolicContext *> (ctx);
@@ -397,7 +397,7 @@ SymbolicStepper::restrict_to_condition (const Context *ctx, const Expr *cond)
 	result = sc->clone ();
     }
   else
-    {      
+    {
       assert (val != NULL);
       exprutils::simplify_level0 (&val);
       result = sc->clone ();
@@ -412,8 +412,8 @@ SymbolicStepper::State *
 SymbolicStepper::get_initial_state (const ConcreteAddress &entrypoint)
 {
   MicrocodeAddress ma (entrypoint.get_address ());
-  State *result = new State (new ProgramPoint (ma), 
-			     new Context (new SymbolicMemory (memory), 
+  State *result = new State (new ProgramPoint (ma),
+			     new Context (new SymbolicMemory (memory),
 					  Constant::True ()));
 
   return result;

@@ -54,11 +54,11 @@ struct ParserData
   const string &filename;
   ostringstream oss;
 
-  ParserData (Microcode *mc, MicrocodeArchitecture *mcArch, 
-	      const string &filename) : mc (mc), mcArch (mcArch), 
+  ParserData (Microcode *mc, MicrocodeArchitecture *mcArch,
+	      const string &filename) : mc (mc), mcArch (mcArch),
 					filename (filename), oss () { }
 
-  std::ostream &error (xmlNodePtr node) {    
+  std::ostream &error (xmlNodePtr node) {
     oss << filename << ": ";
     if (node != NULL)
       oss << node->line << ": ";
@@ -67,7 +67,7 @@ struct ParserData
     return oss;
   }
 
-  std::ostream &warning (xmlNodePtr node) {    
+  std::ostream &warning (xmlNodePtr node) {
     logs::warning << filename << ": ";
     if (node != NULL)
       logs::warning << node->line << ": ";
@@ -98,7 +98,7 @@ int parse_hexadecimal(char *str)
   return v;
 }
 
-static pair<xmlDocPtr, xmlNodePtr> 
+static pair<xmlDocPtr, xmlNodePtr>
 s_xml_get_root_from_file (const string filename)
   throw (XmlParserException)
 {
@@ -117,19 +117,19 @@ s_xml_get_root_from_file (const string filename)
   return pair<xmlDocPtr, xmlNodePtr> (doc, root);
 }
 
-static bool 
+static bool
 s_xml_has_attribute (xmlNodePtr node, const xmlChar *id)
 {
   return xmlHasProp(node, id) != NULL;
 }
 
 static string
-s_xml_get_attribute (xmlNodePtr node, const xmlChar *attribute_id, 
+s_xml_get_attribute (xmlNodePtr node, const xmlChar *attribute_id,
 		     ParserData &data)
   throw (XmlParserException)
 {
   xmlChar *cval = xmlGetProp (node, attribute_id);
-  
+
   if (cval == NULL)
     {
       data.error (node) << "expecting " << attribute_id << " attribute.";
@@ -141,8 +141,8 @@ s_xml_get_attribute (xmlNodePtr node, const xmlChar *attribute_id,
   return result;
 }
 
-static int 
-s_xml_get_int_attribute (xmlNodePtr node, const xmlChar *attribute_id, 
+static int
+s_xml_get_int_attribute (xmlNodePtr node, const xmlChar *attribute_id,
 			 ParserData &data)
   throw (XmlParserException)
 {
@@ -165,7 +165,7 @@ s_xml_get_text (xmlNodePtr node)
 }
 
 static void
-s_xml_get_bv_attributes (xmlNodePtr node, int &offset, int &size, 
+s_xml_get_bv_attributes (xmlNodePtr node, int &offset, int &size,
 			 ParserData &data)
   throw (XmlParserException)
 {
@@ -173,7 +173,7 @@ s_xml_get_bv_attributes (xmlNodePtr node, int &offset, int &size,
   size = s_xml_get_int_attribute (node, BAD_CAST "size", data);
 }
 
-static xmlNodePtr 
+static xmlNodePtr
 s_xml_nth_child (xmlNodePtr node, int n)
 {
   int k = 0;
@@ -184,11 +184,11 @@ s_xml_nth_child (xmlNodePtr node, int n)
       child = child->next;
       k++;
     }
-  
+
   return child;
 }
 
-static int 
+static int
 s_xml_child_nb (xmlNodePtr node)
 {
   int n = 0;
@@ -229,11 +229,11 @@ s_xml_child_nb (xmlNodePtr node)
 /*****************************************************************************/
 
 
-static Expr * 
+static Expr *
 s_expr_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException);
 
-static UnaryOp 
+static UnaryOp
 s_unary_op_of_xml (xmlNodePtr node, char *ident, ParserData &data)
   throw (XmlParserException)
 {
@@ -242,24 +242,24 @@ s_unary_op_of_xml (xmlNodePtr node, char *ident, ParserData &data)
 
   if (strcmp(ident, "minus") == 0)
     return BV_OP_NEG;
-  
+
   data.error (node) << "unary operator " << ident << " unknown.";
   throw XmlParserException (data.oss.str ());
 }
 
-static UnaryApp * 
+static UnaryApp *
 s_unary_app_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
   assert_name (node, "apply");
   assert (s_xml_child_nb (node) == 2);
 
-  UnaryOp op = 
+  UnaryOp op =
     s_unary_op_of_xml (node, (char *) s_xml_nth_child (node, 0)->name,
 		       data);
   int offset, size;
   s_xml_get_bv_attributes (node, offset, size, data);
-  
+
   Expr *arg = s_expr_of_xml (s_xml_nth_child (node, 1), data);
 
   return UnaryApp::create (op, arg, offset, size);
@@ -267,7 +267,7 @@ s_unary_app_of_xml (xmlNodePtr node, ParserData &data)
 
 /*****************************************************************************/
 
-static BinaryOp 
+static BinaryOp
 s_binary_op_of_xml (xmlNodePtr node, char *ident, ParserData &data)
   throw (XmlParserException)
 {
@@ -305,14 +305,14 @@ s_binary_op_of_xml (xmlNodePtr node, char *ident, ParserData &data)
   RAISE_ERROR (data);
 }
 
-static BinaryApp * 
+static BinaryApp *
 s_binary_app_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
   assert_name (node, "apply");
   assert (s_xml_child_nb (node) == 3);
- 
-  BinaryOp op = 
+
+  BinaryOp op =
     s_binary_op_of_xml (node, (char *) s_xml_nth_child (node, 0)->name, data);
   int offset, size;
   s_xml_get_bv_attributes (node, offset, size, data);
@@ -325,33 +325,33 @@ s_binary_app_of_xml (xmlNodePtr node, ParserData &data)
   } catch (XmlParserException) {
     arg1->deref ();
     throw;
-  }    
+  }
 }
 
-static TernaryOp 
+static TernaryOp
 s_ternary_op_of_xml (xmlNodePtr node, char *ident, ParserData &data)
   throw (XmlParserException)
 {
   if (strcmp (ident, "extract") == 0) return BV_OP_EXTRACT;
-    
+
   data.error (node) << "ternary operator " << ident << " is unknown.";
   RAISE_ERROR (data);
 }
 
-static TernaryApp * 
+static TernaryApp *
 s_ternary_app_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
   assert_name(node, "apply");
   assert (s_xml_child_nb (node) == 4);
-  TernaryOp op = 
+  TernaryOp op =
     s_ternary_op_of_xml (node, (char *) s_xml_nth_child (node, 0)->name, data);
   int offset, size;
   s_xml_get_bv_attributes (node, offset, size, data);
-  Expr *args[] = { NULL, NULL, NULL }; 
+  Expr *args[] = { NULL, NULL, NULL };
 
-  try 
-    {  
+  try
+    {
       args[0] = s_expr_of_xml(s_xml_nth_child (node, 1), data);
       args[1] = s_expr_of_xml(s_xml_nth_child (node, 2), data);
       args[2] = s_expr_of_xml(s_xml_nth_child (node, 3), data);
@@ -368,14 +368,14 @@ s_ternary_app_of_xml (xmlNodePtr node, ParserData &data)
     }
 }
 
-static Expr * 
+static Expr *
 s_apply_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
   return_null_if_not_named (node, "apply");
   switch (s_xml_child_nb (node))
     {
-    case 2: 
+    case 2:
       return s_unary_app_of_xml (node, data);
     case 3:
       return s_binary_app_of_xml (node, data);
@@ -397,7 +397,7 @@ s_register_of_xml (xmlNodePtr node, ParserData &data)
 
   string regname (s_xml_get_attribute (node, BAD_CAST "name", data));
   const RegisterDesc *rdesc = data.mcArch->get_register (regname);
-  if (rdesc == NULL) 
+  if (rdesc == NULL)
     {
       data.error (node) << "register " << regname << " not declared.";
       RAISE_ERROR (data);
@@ -405,11 +405,11 @@ s_register_of_xml (xmlNodePtr node, ParserData &data)
 
   int offset, size;
   if (s_xml_has_attribute (node, BAD_CAST "size"))
-    {      
+    {
       s_xml_get_bv_attributes (node, offset, size, data);
     }
   else if (! rdesc->is_alias ())
-    {      
+    {
       size = rdesc->get_register_size ();
       offset = 0;
     }
@@ -445,7 +445,7 @@ s_constant_of_xml (xmlNodePtr node, ParserData &data)
 }
 
 static RandomValue *
-s_random_value_of_xml (xmlNodePtr node, ParserData &data) 
+s_random_value_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
   return_null_if_not_named (node, "random");
@@ -479,7 +479,7 @@ s_memcell_of_xml (xmlNodePtr node, ParserData &data)
 
 /*****************************************************************************/
 
-static LValue * 
+static LValue *
 s_lvalue_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
@@ -492,7 +492,7 @@ s_lvalue_of_xml (xmlNodePtr node, ParserData &data)
 
 /*****************************************************************************/
 
-static Expr * 
+static Expr *
 s_expr_of_xml (xmlNodePtr node, ParserData &data)
   throw (XmlParserException)
 {
@@ -506,7 +506,7 @@ s_expr_of_xml (xmlNodePtr node, ParserData &data)
   return NULL;
 }
 
-static MicrocodeAddress 
+static MicrocodeAddress
 s_extract_microcode_address_attribute(xmlNodePtr node, const xmlChar *id,
 				      ParserData &data)
   throw (XmlParserException)
@@ -521,11 +521,11 @@ s_extract_microcode_address_attribute(xmlNodePtr node, const xmlChar *id,
     }
 
   int idx = 1;
-  while (attr[idx] != 0 && attr[idx] != '-') 
+  while (attr[idx] != 0 && attr[idx] != '-')
     idx++;
   if (attr[idx] == 0)
     {
-      data.error (node) 
+      data.error (node)
 	<< "extract_loc_of_xml:: expecting hexadecimal form \"xGLOBAL-LOCAL\" "
 	<< "(miss the '-').";
       RAISE_ERROR (data);
@@ -554,8 +554,8 @@ s_SolvedJmpAnnotation (xmlNodePtr annotation, ParserData &data)
       for (xmlNodePtr addr = annotation->children; addr; addr = addr->next)
 	{
 	  check_name (addr, "addr", data);
-	  MicrocodeAddress loc = 
-	    s_extract_microcode_address_attribute (addr, BAD_CAST "value", 
+	  MicrocodeAddress loc =
+	    s_extract_microcode_address_attribute (addr, BAD_CAST "value",
 						   data);
 	  sja->add (loc);
 	}
@@ -597,7 +597,7 @@ s_NextInstAnnotation (xmlNodePtr annotation, ParserData &data)
 {
   return_null_if_not_named (annotation, "next-inst");
 
-  MicrocodeAddress loc = 
+  MicrocodeAddress loc =
     s_extract_microcode_address_attribute (annotation, BAD_CAST "value", data);
 
   return new NextInstAnnotation (loc);
@@ -637,11 +637,11 @@ s_annotation_from_xml (xmlNodePtr annotation, ParserData &data)
   throw (XmlParserException)
 {
   Annotation * (*parser[])(xmlNodePtr, ParserData &) = {
-    s_SolvedJmpAnnotation, s_AsmAnnotation, s_NextInstAnnotation, 
+    s_SolvedJmpAnnotation, s_AsmAnnotation, s_NextInstAnnotation,
     s_CallRetAnnotation, s_StubAnnotation };
   Annotation *result = NULL;
 
-  for (size_t i = 0; i < sizeof (parser)/sizeof(parser[0]) && result == NULL; 
+  for (size_t i = 0; i < sizeof (parser)/sizeof(parser[0]) && result == NULL;
        i++)
     result = parser[i] (annotation, data);
   return result;
@@ -660,19 +660,19 @@ s_annotate (xmlNodePtr annotation, Annotable *annotable, ParserData &data)
       if (annotable->has_annotation (id))
 	{
 	  delete a;
-	  data.error (annotation) << "annotation '" << id 
+	  data.error (annotation) << "annotation '" << id
 				  << "' has already been defined.";
 	  RAISE_ERROR (data);
 	}
       annotable->add_annotation (id, a);
     }
   else
-    data.warning (annotation) << "unknown annotation '" << annotation->name 
+    data.warning (annotation) << "unknown annotation '" << annotation->name
 			      << "'. Skipped." << endl;
 }
 
 static void
-s_add_annotations (xmlNodePtr annotations, Annotable *annotable, 
+s_add_annotations (xmlNodePtr annotations, Annotable *annotable,
 		   ParserData &data)
   throw (XmlParserException)
 {
@@ -685,9 +685,9 @@ static void
 s_annotate_node (xmlNodePtr annotable, ParserData &data)
   throw (XmlParserException)
 {
-  MicrocodeAddress loc = 
+  MicrocodeAddress loc =
     s_extract_microcode_address_attribute (annotable, BAD_CAST "addr", data);
- 
+
   try
     {
       MicrocodeNode *node = data.mc->get_node (loc);
@@ -695,7 +695,7 @@ s_annotate_node (xmlNodePtr annotable, ParserData &data)
     }
   catch (GetNodeNotFoundExc)
     {
-      data.error (annotable) << "try to annotate unknown location " 
+      data.error (annotable) << "try to annotate unknown location "
 			     << loc << ".";
       RAISE_ERROR (data);
     }
@@ -704,7 +704,7 @@ s_annotate_node (xmlNodePtr annotable, ParserData &data)
 static void
 s_annotate_arrow (xmlNodePtr annotable, DynamicArrow *da, ParserData &data)
   throw (XmlParserException)
-{ 
+{
   if (s_xml_has_attribute (annotable, BAD_CAST "addr"))
     {
       data.error (annotable) << "malformed annotations node for dynamic jump.";
@@ -723,16 +723,16 @@ s_xml_parse_assign (xmlNodePtr node, ParserData &data, Expr *guard)
 {
   return_false_if_not_named(node, "assign");
 
-  MicrocodeAddress origin = 
+  MicrocodeAddress origin =
     s_extract_microcode_address_attribute (node, BAD_CAST "id", data);
-  MicrocodeAddress target = 
+  MicrocodeAddress target =
     s_extract_microcode_address_attribute (node, BAD_CAST "next", data);
 
   LValue *lv = s_lvalue_of_xml (s_xml_nth_child (node, 0), data);
 
   if (lv == NULL)
     {
-      data.error (node) 
+      data.error (node)
 	<< "xml_parse_assign:: expecting a lvalue as first child." << endl;
       RAISE_ERROR (data);
     }
@@ -742,8 +742,8 @@ s_xml_parse_assign (xmlNodePtr node, ParserData &data, Expr *guard)
       Expr *e = s_expr_of_xml (s_xml_nth_child (node, 1), data);
       if (e == NULL)
 	{
-	  data.error (node) 
-	    << "xml_parse_assign:: expecting an expression as second child." 
+	  data.error (node)
+	    << "xml_parse_assign:: expecting an expression as second child."
 	    << endl;
 	  RAISE_ERROR (data);
 	}
@@ -765,7 +765,7 @@ s_xml_parse_skip (xmlNodePtr node, ParserData &data, Expr *guard)
   throw (XmlParserException)
 {
   return_false_if_not_named (node, "skip");
-  MicrocodeAddress origin = 
+  MicrocodeAddress origin =
     s_extract_microcode_address_attribute (node, BAD_CAST "id", data);
   MicrocodeAddress target =
     s_extract_microcode_address_attribute (node, BAD_CAST "next", data);
@@ -783,13 +783,13 @@ s_xml_parse_jump (xmlNodePtr node, ParserData &data, Expr *guard)
 {
   return_false_if_not_named (node, "jump");
 
-  MicrocodeAddress origin = 
+  MicrocodeAddress origin =
     s_extract_microcode_address_attribute (node, BAD_CAST "id", data);
 
   // static jump
   if (s_xml_has_attribute (node, BAD_CAST "next"))
     {
-      MicrocodeAddress target = 
+      MicrocodeAddress target =
 	s_extract_microcode_address_attribute (node, BAD_CAST "next", data);
       data.mc->add_skip (origin, target, guard);
     }
@@ -799,11 +799,11 @@ s_xml_parse_jump (xmlNodePtr node, ParserData &data, Expr *guard)
 
       if (e == NULL)
 	{
-	  data.error (node) 
+	  data.error (node)
 	    << "xml_parse_jump:: dynamic jump expects an expression as child.";
 	  RAISE_ERROR (data);
 	}
-      StmtArrow *sa = data.mc->add_jump (origin, e, guard);      
+      StmtArrow *sa = data.mc->add_jump (origin, e, guard);
       if (node->children->next != NULL)
 	{
 	  DynamicArrow *da = dynamic_cast<DynamicArrow *> (sa);
@@ -854,7 +854,7 @@ s_MicrocodeNode_of_xml (xmlNodePtr node, ParserData &data)
   return ret;
 }
 
-static void 
+static void
 s_prefix_run (xmlNodePtr node, ParserData &data)
 {
   xmlNodePtr n;
@@ -867,7 +867,7 @@ s_prefix_run (xmlNodePtr node, ParserData &data)
 	  int size = s_xml_get_int_attribute (n, BAD_CAST "size", data);
 	  if (data.mcArch->get_reference_arch ()->has_register (regname))
 	    {
-	      const RegisterDesc *rdesc = 
+	      const RegisterDesc *rdesc =
 		data.mcArch->get_reference_arch ()->get_register (regname);
 	      assert (rdesc->get_register_size () == size);
 	    }
@@ -879,7 +879,7 @@ s_prefix_run (xmlNodePtr node, ParserData &data)
 	  for (xmlNodePtr child = n->children; child; child = child->next)
 	    s_annotate_node (child, data);
 	}
-      else 
+      else
 	{
 	  assert (xmlStrcmp(n->name, (const xmlChar *) "code") == 0);
 	  for (xmlNodePtr child = n->children; child; child = child->next)
@@ -894,11 +894,11 @@ Microcode *
 xml_parse_mc_program(const string &filename, MicrocodeArchitecture *arch)
   throw (XmlParserException)
 {
-  pair<xmlDocPtr, xmlNodePtr> xml_doc_handler = 
+  pair<xmlDocPtr, xmlNodePtr> xml_doc_handler =
     s_xml_get_root_from_file (filename.c_str ());
   ParserData data (new Microcode (), arch, filename);
 
-  try 
+  try
     {
       xmlNodePtr root = xml_doc_handler.second;
       s_prefix_run (root->children, data);

@@ -702,11 +702,11 @@ s_cumulate_shifts (const Expr *phi)
 	 (ba->get_op () == BV_OP_RSH_U ||
 	  ba->get_op () == BV_OP_RSH_S ||
 	  ba->get_op () == BV_OP_LSH) &&
-	 ba->get_bv_offset () == 0 && 
+	 ba->get_bv_offset () == 0 &&
 	 ba->get_arg2 ()->is_Constant ()))
     return NULL;
   const BinaryApp *barg1 = dynamic_cast<const BinaryApp *> (ba->get_arg1 ());
-  
+
   if (!(barg1 != NULL &&
 	barg1->get_op () == ba->get_op () &&
 	barg1->get_arg1 ()->get_bv_size () == ba->get_bv_size () &&

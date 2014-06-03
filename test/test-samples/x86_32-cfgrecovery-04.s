@@ -6,7 +6,7 @@ lelse:
 	jmp lcont
 lhalt:
 	ret
-    
+
 lthen:
 	mov $l1 + 6, %eax
 l1:

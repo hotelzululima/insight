@@ -6,7 +6,7 @@
 # include <analyses/cfgrecovery/AbstractState.hh>
 
 template<typename S>
-class AbstractStepper 
+class AbstractStepper
 {
 public:
   typedef S State;

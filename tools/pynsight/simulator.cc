@@ -59,7 +59,7 @@ class GenericInsightSimulator;
 
 class CodeChangedException : public std::runtime_error {
 public:
-  CodeChangedException (address_t where) 
+  CodeChangedException (address_t where)
     : std::runtime_error (""), addr (where) {
   }
 
@@ -68,7 +68,7 @@ private:
   address_t addr;
 };
 
-class StopCondition : public Object 
+class StopCondition : public Object
 {
 public:
   StopCondition ();
@@ -181,14 +181,14 @@ public:
   virtual bool check_memory_range (void *s, address_t addr, size_t len) = 0;
 
   virtual bool abstract_memory (address_t addr, size_t len, bool keep_in_ctx);
-  virtual void *abstract_memory (void *p, address_t addr, size_t len, 
+  virtual void *abstract_memory (void *p, address_t addr, size_t len,
 				 bool keep_in_ctx) = 0;
 
   virtual bool concretize_memory (address_t addr, size_t len);
-  virtual bool concretize_memory (address_t addr, const ConcreteValue *values, 
+  virtual bool concretize_memory (address_t addr, const ConcreteValue *values,
 				  size_t len);
   virtual void *concretize_memory (void *s, address_t addr, size_t len) = 0;
-  virtual void *concretize_memory (void *s, address_t addr, 
+  virtual void *concretize_memory (void *s, address_t addr,
 				   const ConcreteValue *values,
 				   size_t len) = 0;
 
@@ -198,14 +198,14 @@ public:
   virtual bool check_register (void *s, const RegisterDesc *reg) = 0;
 
   virtual bool abstract_register (const RegisterDesc *reg, bool keep_in_ctx);
-  virtual void *abstract_register (void *p, const RegisterDesc *reg, 
+  virtual void *abstract_register (void *p, const RegisterDesc *reg,
 				   bool keep_in_ctx) = 0;
 
   virtual bool concretize_register (const RegisterDesc *reg);
-  virtual bool concretize_register (const RegisterDesc *reg, 
+  virtual bool concretize_register (const RegisterDesc *reg,
 				    const ConcreteValue &v);
   virtual void *concretize_register (void *s, const RegisterDesc *reg) = 0;
-  virtual void *concretize_register (void *s, const RegisterDesc *reg, 
+  virtual void *concretize_register (void *s, const RegisterDesc *reg,
 				     const ConcreteValue &v) = 0;
 
   virtual MicrocodeAddress get_pc (void *s) = 0;
@@ -239,7 +239,7 @@ public:
   virtual GenericGenerator *compare_states (void *s1, void *s2) const = 0;
 
 protected:
-  Program *prg;  
+  Program *prg;
   Microcode *mc;
   MicrocodeArchitecture *march;
   ArrowVector *arrows;
@@ -248,7 +248,8 @@ protected:
 };
 
 template <typename Stepper>
-class InsightSimulator : public GenericInsightSimulator, public UnknownValueGenerator<typename Stepper::Value> {
+class InsightSimulator : public GenericInsightSimulator,
+			 public UnknownValueGenerator<typename Stepper::Value> {
 public:
   typedef typename Stepper::State State;
   typedef typename Stepper::Memory Memory;
@@ -272,24 +273,24 @@ public:
   virtual string get_memory (void *p, address_t addr);
   virtual Value get_memory_value (void *p, address_t addr);
   virtual bool check_memory_range (void *s, address_t addr, size_t len);
-  virtual void *abstract_memory (void *p, address_t addr, size_t len, 
+  virtual void *abstract_memory (void *p, address_t addr, size_t len,
 				 bool keep_in_ctx);
   virtual void *concretize_memory (void *s, address_t addr, size_t len);
-  virtual void *concretize_memory (void *s, address_t addr, 
+  virtual void *concretize_memory (void *s, address_t addr,
 				   const ConcreteValue *values,
 				   size_t len);
 
-  virtual void set_register (void *p, const RegisterDesc *reg, 
+  virtual void set_register (void *p, const RegisterDesc *reg,
 			     const Value &value);
   virtual void set_register (void *p, const RegisterDesc *reg, word_t value);
   virtual string get_register (void *p, const RegisterDesc *reg);
   virtual Value get_register_value (void *p, const RegisterDesc *reg);
   virtual bool check_register (void *s, const RegisterDesc *reg);
 
-  virtual void* abstract_register (void *p, const RegisterDesc *reg, 
+  virtual void* abstract_register (void *p, const RegisterDesc *reg,
 				  bool keep_in_ctx);
   virtual void *concretize_register (void *s, const RegisterDesc *reg);
-  virtual void *concretize_register (void *s, const RegisterDesc *reg, 
+  virtual void *concretize_register (void *s, const RegisterDesc *reg,
 				     const ConcreteValue &v);
 
   virtual MicrocodeAddress get_pc (void *s);
@@ -307,7 +308,7 @@ public:
 
   virtual Value unknown_value (int size);
 
-protected:  
+protected:
   Stepper *stepper;
   State *current_state;
   State *ref_state;
@@ -322,16 +323,16 @@ private:
 };
 
 template <typename Stepper>
-class RawBytesReader : public Decoder::RawBytesReader 
+class RawBytesReader : public Decoder::RawBytesReader
 {
-public:  
+public:
   RawBytesReader (InsightSimulator<Stepper> *simulator);
   virtual ~RawBytesReader ();
 
 
   virtual void read_buffer (address_t from, uint8_t *dest, size_t length)
     throw (Decoder::Exception);
-  
+
 private:
   InsightSimulator<Stepper> *simulator;
 };
@@ -341,10 +342,10 @@ struct Simulator {
   GenericInsightSimulator *gsim;
 };
 
-class AbstractCodeException : public Decoder::Exception 
+class AbstractCodeException : public Decoder::Exception
 {
 public:
-  AbstractCodeException (address_t addr) 
+  AbstractCodeException (address_t addr)
     : Decoder::Exception (itos (addr)) {}
 };
 
@@ -451,9 +452,9 @@ static PyTypeObject SimulatorType = {
   PyObject_HEAD_INIT(NULL)
   0,					/*ob_size*/
   "insight.Simulator",			/*tp_name*/
-  sizeof (Simulator),		        /*tp_basicsize*/
+  sizeof (Simulator),			/*tp_basicsize*/
   0,					/*tp_itemsize*/
-  s_Simulator_dealloc,		        /*tp_dealloc*/
+  s_Simulator_dealloc,			/*tp_dealloc*/
   0,					/*tp_print*/
   0,					/*tp_getattr*/
   0,					/*tp_setattr*/
@@ -474,86 +475,86 @@ static PyTypeObject SimulatorType = {
 };
 
 static PyMethodDef SimulatorMethods[] = {
- { "run", s_Simulator_run, METH_VARARGS, 
+ { "run", s_Simulator_run, METH_VARARGS,
    "\n" },
- { "microstep", s_Simulator_microstep, METH_VARARGS, 
+ { "microstep", s_Simulator_microstep, METH_VARARGS,
    "\n" },
- { "step", s_Simulator_step, METH_VARARGS, 
+ { "step", s_Simulator_step, METH_VARARGS,
    "\n" },
- { "state", s_Simulator_state, METH_NOARGS, 
+ { "state", s_Simulator_state, METH_NOARGS,
    "\n" },
- { "set_memory", s_Simulator_set_memory, METH_VARARGS, 
+ { "set_memory", s_Simulator_set_memory, METH_VARARGS,
    "\n" },
- { "unset_memory", 
+ { "unset_memory",
    (PyCFunction) s_Simulator_unset_memory, METH_VARARGS|METH_KEYWORDS,
    "\n" },
- { "get_memory", s_Simulator_get_memory, METH_VARARGS, 
+ { "get_memory", s_Simulator_get_memory, METH_VARARGS,
    "\n" },
  { "concretize_memory", s_Simulator_concretize_memory, METH_VARARGS,
-   "\n" }, 
- { "set_register", s_Simulator_set_register, METH_VARARGS, 
    "\n" },
- { "unset_register", 
-   (PyCFunction) s_Simulator_unset_register, METH_VARARGS|METH_KEYWORDS, 
+ { "set_register", s_Simulator_set_register, METH_VARARGS,
    "\n" },
- { "get_register", s_Simulator_get_register, METH_VARARGS, 
+ { "unset_register",
+   (PyCFunction) s_Simulator_unset_register, METH_VARARGS|METH_KEYWORDS,
+   "\n" },
+ { "get_register", s_Simulator_get_register, METH_VARARGS,
    "\n" },
  { "concretize_register", s_Simulator_concretize_register, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "get_pc", s_Simulator_get_pc, METH_NOARGS,
    "\n" },
  { "get_arrows", s_Simulator_get_arrows, METH_NOARGS,
    "\n" },
- { "get_breakpoints", s_Simulator_get_breakpoints, METH_NOARGS, 
+ { "get_breakpoints", s_Simulator_get_breakpoints, METH_NOARGS,
    "\n" },
  { "add_breakpoint", s_Simulator_add_breakpoint, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "set_cond", s_Simulator_set_cond, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "add_watchpoint", s_Simulator_add_watchpoint, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "add_pywatchpoint", s_Simulator_add_pywatchpoint, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "del_breakpoint", s_Simulator_del_breakpoint, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "eval", s_Simulator_eval, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "get_microcode", s_Simulator_get_microcode, METH_NOARGS,
-   "\n" }, 
+   "\n" },
  { "get_instruction", s_Simulator_get_instruction, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "load_mc", s_Simulator_load_mc, METH_VARARGS,
-   "\n" }, 
+   "\n" },
  { "save_mc", s_Simulator_save_mc, METH_VARARGS,
-   "\n" }, 
- { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" }, 
- { "assume", s_Simulator_assume, METH_VARARGS, "\n" }, 
- { "remove_assumption", s_Simulator_remove_assumption, METH_VARARGS, "\n" }, 
- { "get_assumptions", s_Simulator_get_assumptions, METH_NOARGS, "\n" }, 
- { "set_compare_state", s_Simulator_set_compare_state, METH_NOARGS, "\n" }, 
+   "\n" },
+ { "load_stub", s_Simulator_load_stub, METH_VARARGS, "\n" },
+ { "assume", s_Simulator_assume, METH_VARARGS, "\n" },
+ { "remove_assumption", s_Simulator_remove_assumption, METH_VARARGS, "\n" },
+ { "get_assumptions", s_Simulator_get_assumptions, METH_NOARGS, "\n" },
+ { "set_compare_state", s_Simulator_set_compare_state, METH_NOARGS, "\n" },
  { "unset_compare_state", s_Simulator_unset_compare_state, METH_NOARGS, "\n" },
- { "compare_states", s_Simulator_compare_states, METH_NOARGS, "\n" }, 
+ { "compare_states", s_Simulator_compare_states, METH_NOARGS, "\n" },
  { NULL, NULL, 0, NULL }
 };
 
-static bool 
-s_init () 
-{ 
+static bool
+s_init ()
+{
   SimulatorType.tp_methods = SimulatorMethods;
   if (PyType_Ready (&SimulatorType) < 0)
     return false;
   return true;
 }
 
-static bool 
-s_terminate () 
+static bool
+s_terminate ()
 {
   return true;
 }
 
 static pynsight::Module SIMULATOR (NULL, s_init, s_terminate);
 
-PyObject * 
+PyObject *
 pynsight::simulator (Program *P, SimulationDomain dom)
 {
   Simulator *S = PyObject_New (Simulator, &SimulatorType);
@@ -565,7 +566,7 @@ pynsight::simulator (Program *P, SimulationDomain dom)
 
   if (dom == pynsight::SIM_SYMBOLIC)
     S->gsim = new InsightSimulator<SymbolicStepper> (P);
-  else 
+  else
     {
       assert (dom == pynsight::SIM_CONCRETE);
       S->gsim = new InsightSimulator<ConcreteStepper> (P);
@@ -575,7 +576,7 @@ pynsight::simulator (Program *P, SimulationDomain dom)
 }
 
 static void
-s_Simulator_dealloc (PyObject *obj) 
+s_Simulator_dealloc (PyObject *obj)
 {
   Simulator *S = (Simulator *) obj;
   delete S->gsim;
@@ -587,7 +588,7 @@ s_PyMicrocodeAddress (const MicrocodeAddress &addr)
 {
   return Py_BuildValue ("(k,k)", addr.getGlobal (), addr.getLocal ());
 }
-  
+
 static void
 s_CodeChangedException (CodeChangedException &e)
 {
@@ -597,7 +598,7 @@ s_CodeChangedException (CodeChangedException &e)
 
 static PyObject *
 s_Simulator_run (PyObject *p, PyObject *args)
-{  
+{
   GenericInsightSimulator *S = ((Simulator *) p)->gsim;
   unsigned long start;
 
@@ -607,12 +608,12 @@ s_Simulator_run (PyObject *p, PyObject *args)
       if (! PyArg_ParseTuple (args, "", args))
 	return NULL;
       start = S->get_program ()->loader->get_entrypoint ().get_address ();
-    }    
-    
+    }
+
   address_t s,e;
 
   S->get_program ()->concrete_memory->get_address_range (s, e);
-  if (! (s <= start && start <= e)) {    
+  if (! (s <= start && start <= e)) {
     PyErr_SetString (PyExc_LookupError, "start address is out of memory");
     return NULL;
   }
@@ -668,15 +669,15 @@ s_trigger_arrow (GenericInsightSimulator *S, StmtArrow *a)
   if (newst != NULL)
     {
       try {
-	S->set_state (newst); 	
+	S->set_state (newst);
 
 	if (S->get_number_of_arrows () == 0)
 	  {
 	    MicrocodeAddress a = S->get_pc (st);
-	    PyErr_SetObject (pynsight::SinkNodeReached, 
+	    PyErr_SetObject (pynsight::SinkNodeReached,
 			     s_PyMicrocodeAddress (a));
 	  }
-	else if (! PyErr_Occurred ()) 
+	else if (! PyErr_Occurred ())
 	  {
 	    if (S->apply_assumption ())
 	      {
@@ -696,9 +697,9 @@ s_trigger_arrow (GenericInsightSimulator *S, StmtArrow *a)
   return ! PyErr_Occurred ();
 }
 
-static bool 
+static bool
 s_trigger_arrow_from_index (GenericInsightSimulator *S, unsigned int aindex)
-  
+
 {
   bool result = false;
   if (aindex >= S->get_number_of_arrows ())
@@ -719,18 +720,18 @@ s_Simulator_microstep (PyObject *self, PyObject *args)
 
   if (! s_check_state (S) || ! PyArg_ParseTuple (args, "I", &aindex))
     return NULL;
-  
+
   PyObject *result = NULL;
 
   if (s_trigger_arrow_from_index (S, aindex))
     result = pynsight::None ();
-      
-  return result;  
+
+  return result;
 }
 
 static PyObject *
 s_Simulator_step (PyObject *self, PyObject *args)
-{  
+{
   PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
   MicrocodeAddress ep = S->get_pc ();
@@ -752,7 +753,7 @@ s_Simulator_step (PyObject *self, PyObject *args)
 	  return NULL;
 	}
     }
-    
+
   while (ep.getGlobal () == S->get_pc ().getGlobal () &&
 	 ! PyErr_Occurred ())
     {
@@ -765,7 +766,7 @@ s_Simulator_step (PyObject *self, PyObject *args)
 
       if (S->get_number_of_arrows () == 0)
 	{
-	  PyErr_SetObject (pynsight::SinkNodeReached, 
+	  PyErr_SetObject (pynsight::SinkNodeReached,
 			   s_PyMicrocodeAddress (ep));
 	  return NULL;
 	}
@@ -792,7 +793,7 @@ s_Simulator_state (PyObject *self, PyObject *)
       string sstr = S->state_to_string (s);
       result = Py_BuildValue ("s", sstr.c_str ());
       S->delete_state (s);
-    }			    
+    }
 
   return result;
 }
@@ -803,7 +804,7 @@ s_Simulator_set_memory (PyObject *self, PyObject *args)
   Py_ssize_t addr;
   unsigned char byte;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  
+
   if (! s_check_state (S) || ! PyArg_ParseTuple (args, "kb", &addr, &byte))
     return NULL;
 
@@ -825,18 +826,18 @@ s_Simulator_unset_memory (PyObject *self, PyObject *args, PyObject *kwds)
   Py_ssize_t len;
   unsigned char keep;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  
-  if (! s_check_state (S) || 
+
+  if (! s_check_state (S) ||
       !PyArg_ParseTupleAndKeywords (args, kwds, "kkb", (char **) kwlists,
 				    &addr, &len, &keep))
     return NULL;
   PyObject *result = NULL;
-  if (S->check_memory_range (addr, len)) 
+  if (S->check_memory_range (addr, len))
     {
       if (! S->abstract_memory (addr, len, keep))
 	PyErr_SetNone (PyExc_NotImplementedError);
-      else 
-	result = pynsight::None ();    
+      else
+	result = pynsight::None ();
     }
   else
     {
@@ -853,11 +854,11 @@ s_Simulator_get_memory (PyObject *self, PyObject *args)
   unsigned long len = 1;
   PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  
+
   if (! s_check_state (S) || !PyArg_ParseTuple (args, "k|k", &addr, &len))
     return NULL;
 
-  if (S->check_memory_range (addr, len)) 
+  if (S->check_memory_range (addr, len))
     {
       result = PyTuple_New (len);
       for (unsigned long i = 0; i < len && ! PyErr_Occurred (); i++)
@@ -865,7 +866,7 @@ s_Simulator_get_memory (PyObject *self, PyObject *args)
 	  string v = S->get_memory (addr + i);
 	  PyObject *val = Py_BuildValue ("s", v.c_str ());
 
-	  if (val != NULL) 
+	  if (val != NULL)
 	    PyTuple_SetItem (result, i, val);
 	  else
 	    Py_XDECREF (val);
@@ -891,11 +892,11 @@ s_Simulator_concretize_memory (PyObject *self, PyObject *args)
   unsigned long len = 1;
   PyObject *result = NULL;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  
+
   if (! s_check_state (S) || !PyArg_ParseTuple (args, "k|k", &addr, &len))
     return NULL;
 
-  if (! S->check_memory_range (addr, len)) 
+  if (! S->check_memory_range (addr, len))
     PyErr_SetString (PyExc_IndexError, "memory range out of bounds");
   else if (! S->concretize_memory (addr, len))
     PyErr_SetNone (pynsight::ConcretizationException);
@@ -911,11 +912,11 @@ s_Simulator_set_register (PyObject *self, PyObject *args)
   const char *regname;
   unsigned long regval;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  
+
   if (! s_check_state (S) || !PyArg_ParseTuple (args, "sk", &regname, &regval))
     return NULL;
 
-  try 
+  try
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
       ConcreteValue v (rd->get_window_size (), regval);
@@ -941,14 +942,14 @@ s_Simulator_unset_register (PyObject *self, PyObject *args, PyObject *kwds)
   const char *regname = NULL;
   unsigned char keep;
   GenericInsightSimulator *S = ((Simulator *) self)->gsim;
-  
-  if (! s_check_state (S) || 
+
+  if (! s_check_state (S) ||
       !PyArg_ParseTupleAndKeywords (args, kwds, "sb", (char **) kwlists,
 				    &regname, &keep))
     return NULL;
 
   PyObject *result= NULL;
-  try 
+  try
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
       if (! S->abstract_register (rd, keep))
@@ -956,7 +957,7 @@ s_Simulator_unset_register (PyObject *self, PyObject *args, PyObject *kwds)
       else
 	result = pynsight::None ();
     }
-  catch (Architecture::RegisterDescNotFound &e) 
+  catch (Architecture::RegisterDescNotFound &e)
     {
       PyErr_SetString (PyExc_LookupError, "unknown register");
     }
@@ -975,15 +976,15 @@ s_Simulator_get_register (PyObject *self, PyObject *args)
 
   PyObject *result = NULL;
 
-  try 
+  try
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
-      if (!S->check_register (rd)) 
+      if (!S->check_register (rd))
 	result = pynsight::None ();
       else
 	result = Py_BuildValue ("s", S->get_register (rd).c_str ());
     }
-  catch (Architecture::RegisterDescNotFound &e) 
+  catch (Architecture::RegisterDescNotFound &e)
     {
       PyErr_SetString (PyExc_LookupError, "unknown register");
     }
@@ -1002,7 +1003,7 @@ s_Simulator_concretize_register (PyObject *self, PyObject *args)
 
   PyObject *result = NULL;
 
-  try 
+  try
     {
       const RegisterDesc *rd = S->get_march ()->get_register (regname);
 
@@ -1010,10 +1011,10 @@ s_Simulator_concretize_register (PyObject *self, PyObject *args)
 	result = pynsight::None ();
       else if (S->concretize_register (rd))
 	result = pynsight::True ();
-      else 
+      else
 	PyErr_SetNone (pynsight::ConcretizationException);
     }
-  catch (Architecture::RegisterDescNotFound &e) 
+  catch (Architecture::RegisterDescNotFound &e)
     {
       PyErr_SetString (PyExc_LookupError, "unknown register");
     }
@@ -1025,7 +1026,7 @@ static PyObject *
 s_Simulator_get_pc (PyObject *self, PyObject *)
 {
   PyObject *result = NULL;
-  GenericInsightSimulator *S = ((Simulator *) self)->gsim; 
+  GenericInsightSimulator *S = ((Simulator *) self)->gsim;
 
   if (s_check_state (S))
     {
@@ -1060,7 +1061,7 @@ public:
       }
 
     return result;
-  } 
+  }
 };
 
 static PyObject *
@@ -1077,7 +1078,7 @@ private:
   GenericInsightSimulator *gsim;
   StopConditionSet::const_iterator current;
 public:
-  StopConditionsIterator (GenericInsightSimulator *gsim) 
+  StopConditionsIterator (GenericInsightSimulator *gsim)
     : gsim (gsim), current (gsim->get_stop_conditions ()->begin ()) { }
 
   virtual ~StopConditionsIterator () { }
@@ -1095,7 +1096,7 @@ public:
       }
 
     return result;
-  } 
+  }
 };
 
 static PyObject *
@@ -1121,7 +1122,7 @@ s_Simulator_add_breakpoint (PyObject *self, PyObject *args)
   StopCondition *newbp = new Breakpoint (a);
 
   S->add_stop_condition (newbp);
-  result = Py_BuildValue ("(k,s)", newbp->get_id (), 
+  result = Py_BuildValue ("(k,s)", newbp->get_id (),
 			  newbp->to_string ().c_str ());
 
   return result;
@@ -1146,11 +1147,11 @@ s_Simulator_set_cond (PyObject *self, PyObject *args)
     bp->reset_cond ();
   else
     {
-      Expr *e = expr_parser (condition, S->get_march ()); 
+      Expr *e = expr_parser (condition, S->get_march ());
       if (e == NULL)
 	{
 	  PyErr_SetString(PyExc_SyntaxError, "syntax error");
-	  
+
 	  return NULL;
 	}
       else
@@ -1289,7 +1290,7 @@ s_Simulator_load_mc (PyObject *self, PyObject *args)
 
   if (! PyArg_ParseTuple (args, "s", &filename))
     return NULL;
-  
+
   if (S->load_microcode (filename))
     return pynsight::None ();
   return NULL;
@@ -1303,7 +1304,7 @@ s_Simulator_save_mc (PyObject *self, PyObject *args)
 
   if (! PyArg_ParseTuple (args, "s", &filename))
     return NULL;
-  
+
   if (S->save_microcode (filename))
     return pynsight::None ();
   return NULL;
@@ -1319,7 +1320,7 @@ s_Simulator_load_stub (PyObject *self, PyObject *args)
 
   if (! PyArg_ParseTuple (args, "sk|i", &filename, &addr, &fold))
     return NULL;
-  
+
   if (S->load_stub (filename, addr, fold))
     return pynsight::None ();
   return NULL;
@@ -1334,7 +1335,7 @@ s_Simulator_assume (PyObject *self, PyObject *args)
 
   if (! PyArg_ParseTuple (args, "ks|k", &g, &constraint, &l))
     return NULL;
-  
+
   Expr *expr = expr_parser (constraint, S->get_march ());
   if (expr == NULL)
     {
@@ -1385,9 +1386,9 @@ class AssumptionsIterator : public pynsight::GenericGenerator
 private:
   GenericInsightSimulator *gsim;
   GenericInsightSimulator::AssumptionMap::const_iterator current;
-  
+
 public:
-  AssumptionsIterator (GenericInsightSimulator *gsim) 
+  AssumptionsIterator (GenericInsightSimulator *gsim)
     : gsim (gsim), current (gsim->get_assumptions ().begin ()) { }
 
   virtual ~AssumptionsIterator () { }
@@ -1398,7 +1399,7 @@ public:
       PyErr_SetNone (PyExc_StopIteration);
     else
       {
-	result = Py_BuildValue ("(k, k, s)", 
+	result = Py_BuildValue ("(k, k, s)",
 				current->first.getGlobal (),
 				current->first.getLocal (),
 				current->second->to_string ().c_str ());
@@ -1406,7 +1407,7 @@ public:
       }
 
     return result;
-  } 
+  }
 };
 
 static PyObject *
@@ -1465,7 +1466,7 @@ GenericInsightSimulator::GenericInsightSimulator (Program *P)
   arrows = new ArrowVector ();
   stop_conditions = new StopConditionSet;
   if (prg->stubfactory)
-    prg->stubfactory->add_stubs (prg->concrete_memory, march, mc, 
+    prg->stubfactory->add_stubs (prg->concrete_memory, march, mc,
 				 prg->symbol_table);
 }
 
@@ -1476,13 +1477,13 @@ GenericInsightSimulator::~GenericInsightSimulator ()
   delete march;
 
   delete arrows;
-  for (StopConditionSet::iterator i = stop_conditions->begin (); 
+  for (StopConditionSet::iterator i = stop_conditions->begin ();
        i != stop_conditions->end (); i++) {
     delete (*i);
   }
-  delete stop_conditions;  
+  delete stop_conditions;
 
-  for (AssumptionMap::iterator i = assumptions.begin (); 
+  for (AssumptionMap::iterator i = assumptions.begin ();
        i != assumptions.end (); i++) {
     i->second->deref ();
   }
@@ -1494,26 +1495,26 @@ GenericInsightSimulator::get_march () const
   return march;
 }
 
-const Microcode * 
+const Microcode *
 GenericInsightSimulator::get_microcode () const
 {
   return mc;
 }
 
-Program * 
+Program *
 GenericInsightSimulator::get_program () const
 {
   return prg;
 }
 
 
-void 
+void
 GenericInsightSimulator::clear_arrows ()
 {
   arrows->clear ();
 }
 
-size_t 
+size_t
 GenericInsightSimulator::get_number_of_arrows () const
 {
   return arrows->size ();
@@ -1526,24 +1527,24 @@ GenericInsightSimulator::get_arrow_at (size_t i) const
   return arrows->at (i);
 }
 
-string 
+string
 GenericInsightSimulator::get_memory (address_t addr)
 {
   void *s = get_state ();
   assert (s != NULL);
 
   string result = get_memory (s, addr);
-  delete_state (s);  
+  delete_state (s);
   return result;
 }
 
-bool 
+bool
 GenericInsightSimulator::check_memory_range (address_t addr, size_t len)
 {
   void *s = get_state ();
   assert (s != NULL);
   bool result = check_memory_range (s, addr, len);
-  delete_state (s);  
+  delete_state (s);
 
   return result;
 }
@@ -1551,85 +1552,85 @@ GenericInsightSimulator::check_memory_range (address_t addr, size_t len)
 static bool
 s_try_set_state (GenericInsightSimulator *S, void *s)
 {
-  try { 
-    S->set_state (s); 
+  try {
+    S->set_state (s);
     return true;
-  } catch (CodeChangedException &e) { 
+  } catch (CodeChangedException &e) {
     s_CodeChangedException (e);
     return false;
   }
 }
 
-bool 
-GenericInsightSimulator::abstract_memory (address_t addr, size_t len, 
+bool
+GenericInsightSimulator::abstract_memory (address_t addr, size_t len,
 					  bool keep_in_ctx)
 {
   void *s = get_state ();
   void *ns = abstract_memory (s, addr, len, keep_in_ctx);
   if (ns != NULL)
     {
-      s_try_set_state (this, ns); 
-      delete_state (ns);  
+      s_try_set_state (this, ns);
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
 
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
-bool 
+bool
 GenericInsightSimulator::concretize_memory (address_t addr, size_t len)
 {
   void *s = get_state ();
   void *ns = concretize_memory (s, addr, len);
   if (ns != NULL)
     {
-      s_try_set_state (this, ns); 
-      delete_state (ns);  
+      s_try_set_state (this, ns);
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
 
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
-bool 
-GenericInsightSimulator::concretize_memory (address_t addr, 
-					    const ConcreteValue *values, 
+bool
+GenericInsightSimulator::concretize_memory (address_t addr,
+					    const ConcreteValue *values,
 					    size_t len)
 {
   void *s = get_state ();
   void *ns = concretize_memory (s, addr, values, len);
   if (ns != NULL)
     {
-      s_try_set_state (this, ns); 
-      delete_state (ns);  
+      s_try_set_state (this, ns);
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
 
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
-string 
+string
 GenericInsightSimulator::get_register (const RegisterDesc *reg)
 {
   void *s = get_state ();
   string result = get_register (s, reg);
-  delete_state (s);  
+  delete_state (s);
 
   return result;
 }
 
-bool 
+bool
 GenericInsightSimulator::check_register (const RegisterDesc *reg)
 {
   void *s = get_state ();
   bool result = check_register (s, reg);
-  delete_state (s);  
+  delete_state (s);
 
   return result;
 }
 
-bool 
-GenericInsightSimulator::abstract_register (const RegisterDesc *reg, 
+bool
+GenericInsightSimulator::abstract_register (const RegisterDesc *reg,
 					    bool keep_in_ctx)
 {
   void *s = get_state ();
@@ -1637,9 +1638,9 @@ GenericInsightSimulator::abstract_register (const RegisterDesc *reg,
   if (ns != NULL)
     {
       s_try_set_state (this, ns);
-      delete_state (ns);  
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
@@ -1651,14 +1652,14 @@ GenericInsightSimulator::concretize_register (const RegisterDesc *reg)
   if (ns != NULL)
     {
       s_try_set_state (this, ns);
-      delete_state (ns);  
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
 bool
-GenericInsightSimulator::concretize_register (const RegisterDesc *reg, 
+GenericInsightSimulator::concretize_register (const RegisterDesc *reg,
 					      const ConcreteValue &v)
 {
   void *s = get_state ();
@@ -1666,18 +1667,18 @@ GenericInsightSimulator::concretize_register (const RegisterDesc *reg,
   if (ns != NULL)
     {
       s_try_set_state (this, ns);
-      delete_state (ns);  
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
-const StopCondition * 
+const StopCondition *
 GenericInsightSimulator::add_stop_condition (StopCondition *sc)
 {
   const StopCondition *result = NULL;
 
-  for (StopConditionSet::iterator i = stop_conditions->begin (); 
+  for (StopConditionSet::iterator i = stop_conditions->begin ();
        i != stop_conditions->end () && result == NULL; i++) {
     if (sc->equals (*i))
       result = *i;
@@ -1698,7 +1699,7 @@ GenericInsightSimulator::get_stop_condition (int id) const
 {
   StopCondition *result = NULL;
 
-  for (StopConditionSet::iterator i = stop_conditions->begin (); 
+  for (StopConditionSet::iterator i = stop_conditions->begin ();
        i != stop_conditions->end () && result == NULL; i++) {
     if ((*i)->get_id () == id)
       result = (*i);
@@ -1712,7 +1713,7 @@ GenericInsightSimulator::check_stop_conditions ()
 {
   const StopCondition *result = NULL;
 
-  for (StopConditionSet::iterator i = stop_conditions->begin (); 
+  for (StopConditionSet::iterator i = stop_conditions->begin ();
        i != stop_conditions->end () && result == NULL; i++) {
     if ((*i)->stop(this))
       result = (*i);
@@ -1721,18 +1722,18 @@ GenericInsightSimulator::check_stop_conditions ()
   return result;
 }
 
-void 
+void
 GenericInsightSimulator::reset_stop_conditions ()
 {
-  for (StopConditionSet::iterator i = stop_conditions->begin (); 
-       i != stop_conditions->end (); i++) 
+  for (StopConditionSet::iterator i = stop_conditions->begin ();
+       i != stop_conditions->end (); i++)
     (*i)->reset (this);
 }
 
-bool 
+bool
 GenericInsightSimulator::del_stop_condition (int id)
 {
-  for (StopConditionSet::iterator i = stop_conditions->begin (); 
+  for (StopConditionSet::iterator i = stop_conditions->begin ();
        i != stop_conditions->end (); i++) {
     if ((*i)->get_id () == id)
       {
@@ -1743,7 +1744,7 @@ GenericInsightSimulator::del_stop_condition (int id)
   return false;
 }
 
-Option<string> 
+Option<string>
 GenericInsightSimulator::get_instruction (address_t addr)
 {
   MicrocodeAddress ma (addr);
@@ -1753,7 +1754,7 @@ GenericInsightSimulator::get_instruction (address_t addr)
     {
       MicrocodeNode *node = mc->get_node (ma);
       assert (node != NULL);
-      AsmAnnotation *aa = (AsmAnnotation *) 
+      AsmAnnotation *aa = (AsmAnnotation *)
 	node->get_annotation (AsmAnnotation::ID);
       if (aa != NULL)
 	result = aa->get_value ();
@@ -1763,13 +1764,13 @@ GenericInsightSimulator::get_instruction (address_t addr)
 	  ss << node;
 	  result = ss.str();
 	}
-    } 
+    }
   catch (GetNodeNotFoundExc &) { }
 
   return result;
 }
 
-bool 
+bool
 GenericInsightSimulator::load_microcode (const string &filename)
 {
   try
@@ -1786,7 +1787,7 @@ GenericInsightSimulator::load_microcode (const string &filename)
   return true;
 }
 
-bool 
+bool
 GenericInsightSimulator::load_stub (const string &filename, address_t shift,
 				    bool fold)
 {
@@ -1799,7 +1800,7 @@ GenericInsightSimulator::load_stub (const string &filename, address_t shift,
 	{
 	  if (!(*i)->has_annotation (StubAnnotation::ID))
 	    (*i)->add_annotation (StubAnnotation::ID,
-				  new StubAnnotation ("insight-stub/" + 
+				  new StubAnnotation ("insight-stub/" +
 						      filename));
 	}
 
@@ -1811,10 +1812,10 @@ GenericInsightSimulator::load_stub (const string &filename, address_t shift,
       PyErr_SetString (PyExc_IOError, e.what ());
       return false;
     }
-  return true;  
+  return true;
 }
 
-bool 
+bool
 GenericInsightSimulator::save_microcode (const string &filename)
 {
   std::ofstream output (filename.c_str ());
@@ -1823,7 +1824,7 @@ GenericInsightSimulator::save_microcode (const string &filename)
       PyErr_SetFromErrno (PyExc_IOError);
       return false;
     }
-  
+
   xml_of_microcode (output, mc, march);
   output.flush ();
   output.close ();
@@ -1831,7 +1832,7 @@ GenericInsightSimulator::save_microcode (const string &filename)
   return true;
 }
 
-bool 
+bool
 GenericInsightSimulator::assume (const Expr *e)
 {
   void *s = get_state ();
@@ -1841,21 +1842,21 @@ GenericInsightSimulator::assume (const Expr *e)
   else
     {
       s_try_set_state (this, ns);
-      delete_state (ns);  
+      delete_state (ns);
     }
-  delete_state (s);  
+  delete_state (s);
   return (ns != NULL) && !PyErr_Occurred ();
 }
 
-void 
-GenericInsightSimulator::add_assumption (const MicrocodeAddress &ma, 
+void
+GenericInsightSimulator::add_assumption (const MicrocodeAddress &ma,
 					 const Expr *e)
 {
   detach_assumption (ma);
   assumptions[ma] = e->ref ();
 }
 
-bool 
+bool
 GenericInsightSimulator::apply_assumption ()
 {
   MicrocodeAddress pc = get_pc ();
@@ -1866,7 +1867,7 @@ GenericInsightSimulator::apply_assumption ()
   return assume (i->second);
 }
 
-bool 
+bool
 GenericInsightSimulator::detach_assumption (const MicrocodeAddress &addr)
 {
   AssumptionMap::iterator i = assumptions.find (addr);
@@ -1890,21 +1891,21 @@ GenericInsightSimulator::get_assumptions () const
  *
  *****************************************************************************/
 
-template <typename Stepper> 
+template <typename Stepper>
 InsightSimulator<Stepper>::InsightSimulator (Program *prg)
   : GenericInsightSimulator (prg)
-{  
+{
   stepper = new Stepper (prg->concrete_memory, march);
   stepper->set_map_dynamic_jumps_to_memory (true);
   stepper->set_unknown_value_generator (this);
   current_state = NULL;
   ref_state = NULL;
-  decoder = new BinutilsDecoder (march, 
+  decoder = new BinutilsDecoder (march,
 				 new RawBytesReader<Stepper>(this));
   in_abstraction = 0;
 }
 
-template <typename Stepper> 
+template <typename Stepper>
 InsightSimulator<Stepper>::~InsightSimulator ()
 {
   delete stepper;
@@ -1915,8 +1916,8 @@ InsightSimulator<Stepper>::~InsightSimulator ()
   delete decoder;
 }
 
-template <typename Stepper> string 
-InsightSimulator<Stepper>::state_to_string (void *s) 
+template <typename Stepper> string
+InsightSimulator<Stepper>::state_to_string (void *s)
 {
   return ((State *) s)->to_string ();
 }
@@ -1927,10 +1928,10 @@ InsightSimulator<Stepper>::get_initial_state (address_t start)
   return stepper->get_initial_state (start);
 }
 
-template <typename Stepper> void 
+template <typename Stepper> void
 InsightSimulator<Stepper>::set_state (void *ptr)
   throw (CodeChangedException)
-{ 
+{
   if (current_state != NULL)
     current_state->deref ();
   current_state = (State *) ptr;
@@ -1939,7 +1940,7 @@ InsightSimulator<Stepper>::set_state (void *ptr)
   compute_enabled_arrows (current_state, arrows);
 }
 
-template <typename Stepper> void 
+template <typename Stepper> void
 InsightSimulator<Stepper>::delete_state (void *ptr)
 {
   ((State *) ptr)->deref ();
@@ -1951,7 +1952,7 @@ InsightSimulator<Stepper>::has_state ()
   return (current_state != NULL);
 }
 
-template <typename Stepper> void * 
+template <typename Stepper> void *
 InsightSimulator<Stepper>::get_state ()
 {
   assert (current_state != NULL);
@@ -1959,22 +1960,22 @@ InsightSimulator<Stepper>::get_state ()
   return current_state;
 }
 
-template <typename Stepper> void * 
+template <typename Stepper> void *
 InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
 {
   State *result = NULL;
-  try 
+  try
     {
-      typename Stepper::StateSet *succs = 
+      typename Stepper::StateSet *succs =
 	stepper->get_successors ((State *) from, a);
-  
+
       if (succs->size () == 1)
 	{
 	  result = *(succs->begin ());
-	  MicrocodeAddress tgt = 
+	  MicrocodeAddress tgt =
 	    result->get_ProgramPoint ()->to_MicrocodeAddress ();
-	  
-	  if (mc->has_node_at (tgt) || 
+
+	  if (mc->has_node_at (tgt) ||
 	      check_memory_range (from, tgt.getGlobal (), 1))
 	    {
 	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (a);
@@ -2005,9 +2006,9 @@ InsightSimulator<Stepper>::trigger_arrow (void *from, StmtArrow *a)
   return result;
 }
 
-template <typename Stepper> void 
-InsightSimulator<Stepper>::set_memory (void *p, address_t addr, 
-				       const typename Stepper::Value &value) 
+template <typename Stepper> void
+InsightSimulator<Stepper>::set_memory (void *p, address_t addr,
+				       const typename Stepper::Value &value)
 {
   assert (value.get_size () == 8);
   typename Stepper::State *s = (typename Stepper::State *) p;
@@ -2015,37 +2016,37 @@ InsightSimulator<Stepper>::set_memory (void *p, address_t addr,
   mem->put (addr, value, Architecture::LittleEndian);
 }
 
-template <typename Stepper> void 
-InsightSimulator<Stepper>::set_memory (void *p, address_t addr, uint8_t value) 
+template <typename Stepper> void
+InsightSimulator<Stepper>::set_memory (void *p, address_t addr, uint8_t value)
 {
   typename Stepper::Value val (8, value);
   set_memory (p, addr, val);
 }
 
-template <typename Stepper> string 
-InsightSimulator<Stepper>::get_memory (void *p, address_t addr) 
+template <typename Stepper> string
+InsightSimulator<Stepper>::get_memory (void *p, address_t addr)
 {
   return get_memory_value (p, addr).to_string ();
 }
 
 template <typename Stepper> typename Stepper::Value
-InsightSimulator<Stepper>::get_memory_value (void *p, address_t addr) 
+InsightSimulator<Stepper>::get_memory_value (void *p, address_t addr)
 {
   typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
   return mem->get (addr, 1, Architecture::LittleEndian);
 }
 
-template <typename Stepper> bool 
-InsightSimulator<Stepper>::check_memory_range (void *p, address_t addr, 
+template <typename Stepper> bool
+InsightSimulator<Stepper>::check_memory_range (void *p, address_t addr,
 					       size_t len)
 {
   State *s = (State *) p;
   typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
-  
+
   while (len--)
     {
-      if (!mem->is_defined (addr)) 
+      if (!mem->is_defined (addr))
 	return false;
       addr++;
     }
@@ -2053,7 +2054,7 @@ InsightSimulator<Stepper>::check_memory_range (void *p, address_t addr,
 }
 
 template <> void *
-InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr, 
+InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
 						    size_t len, bool keep)
 {
   State *s = (State *) p;
@@ -2065,7 +2066,7 @@ InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
   Value newval (stepper->unknown_value (8 * len));
   in_abstraction--;
 
-  for (size_t i = 0; i < len; i++) 
+  for (size_t i = 0; i < len; i++)
     {
       Expr *v = Expr::createExtract (newval.get_Expr ()->ref(), 8 * i, 8);
 
@@ -2073,10 +2074,10 @@ InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
       if (mem->is_defined (addr + i) && keep)
 	{
 	  Value val = get_memory_value (p, addr + i);
-	  Expr *eq = 
-	    Expr::createEquality (val.get_Expr ()->ref (), 
+	  Expr *eq =
+	    Expr::createEquality (val.get_Expr ()->ref (),
 				  newvals[i].get_Expr ()->ref ());
-	  cond = Expr::createLAnd (cond, eq);    
+	  cond = Expr::createLAnd (cond, eq);
 	}
       v->deref ();
     }
@@ -2087,7 +2088,7 @@ InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
     }
   else
     s = s->clone ();
-      
+
   if (s != NULL)
     {
       for (size_t i = 0; i < len; i++)
@@ -2095,34 +2096,34 @@ InsightSimulator<SymbolicStepper>::abstract_memory (void *p, address_t addr,
     }
   delete[] newvals;
 
-  return s;   
+  return s;
 }
 
 template <> void *
-InsightSimulator<ConcreteStepper>::abstract_memory (void *, address_t, 
+InsightSimulator<ConcreteStepper>::abstract_memory (void *, address_t,
 						    size_t, bool)
 {
   return NULL;
 }
 
 template <> void *
-InsightSimulator<SymbolicStepper>::concretize_memory 
+InsightSimulator<SymbolicStepper>::concretize_memory
 (void *p, address_t addr, const ConcreteValue *values, size_t len)
 {
   SymbolicStepper::State *s = (SymbolicStepper::State *) p;
   SymbolicMemory *mem = s->get_Context ()->get_memory ();
   Expr *cond = Constant::True ();
 
-  for (size_t i = 0; i < len; i++) 
+  for (size_t i = 0; i < len; i++)
     {
       if (! mem->is_defined (addr + i))
 	continue;
 
       SymbolicStepper::Value val = get_memory_value (p, addr + i);
-      Expr *eq = 
+      Expr *eq =
 	Expr::createEquality (val.get_Expr()->ref (),
 			      Constant::create (values[i].get (), 0, 8));
-      cond = Expr::createLAnd (cond, eq);    
+      cond = Expr::createLAnd (cond, eq);
     }
 
   s = stepper->restrict_state_to_condition (s, cond);
@@ -2133,7 +2134,7 @@ InsightSimulator<SymbolicStepper>::concretize_memory
 	set_memory (s, addr + i, values[i].get ());
     }
 
-  return s;  
+  return s;
 }
 
 template <> void *
@@ -2144,7 +2145,7 @@ InsightSimulator<ConcreteStepper>::concretize_memory
   ConcreteMemory *mem = s->get_Context ()->get_memory ();
   bool eq = true;
 
-  for (size_t i = 0; eq && i < len; i++) 
+  for (size_t i = 0; eq && i < len; i++)
     {
       if ((eq = mem->is_defined (addr + i)))
 	{
@@ -2158,17 +2159,17 @@ InsightSimulator<ConcreteStepper>::concretize_memory
   else
     s = NULL;
 
-  return s;  
+  return s;
 }
 
 template <typename Stepper> void *
-InsightSimulator<Stepper>::concretize_memory (void *p, address_t addr, 
+InsightSimulator<Stepper>::concretize_memory (void *p, address_t addr,
 					      size_t len)
 {
   typename Stepper::State *s = (typename Stepper::State *) p;
   ConcreteValue *cvalues = new ConcreteValue[len];
 
-  for (size_t i = 0; i < len; i++) 
+  for (size_t i = 0; i < len; i++)
     {
       typename Stepper::Value val = get_memory_value (p, addr + i);
       cvalues[i] = stepper->value_to_ConcreteValue (s->get_Context (), val,
@@ -2180,9 +2181,9 @@ InsightSimulator<Stepper>::concretize_memory (void *p, address_t addr,
   return s;
 }
 
-template <typename Stepper> void 
-InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg, 
-					 const typename Stepper::Value &value) 
+template <typename Stepper> void
+InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg,
+					 const typename Stepper::Value &value)
 {
   assert (value.get_size () == reg->get_window_size ());
   typename Stepper::State *s = (typename Stepper::State *) p;
@@ -2196,21 +2197,21 @@ InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg,
 
       if (mem->is_defined (areg))
 	regval = mem->get (areg);
-      else 
+      else
 	{
 	  in_abstraction++;
 	  regval = stepper->unknown_value (areg->get_register_size ());
-      	  in_abstraction--;
+	  in_abstraction--;
 	}
       val = stepper->embed_eval (regval, val, reg->get_window_offset ());
-    }     
+    }
   mem->put (areg, val);
 }
 
-template <typename Stepper> void 
-InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg, 
+template <typename Stepper> void
+InsightSimulator<Stepper>::set_register (void *p, const RegisterDesc *reg,
 					 word_t v)
-{  
+{
   typename Stepper::Value val (reg->get_window_size (), v);
   set_register (p, reg, val);
 }
@@ -2233,17 +2234,17 @@ InsightSimulator<Stepper>::get_register_value (void *p, const RegisterDesc *reg)
   if (reg->get_window_size () == areg->get_register_size ())
     regval = mem->get (areg);
   else
-    {      
+    {
       Expr *tmp = Expr::createExtract (RegisterExpr::create (areg),
 				       reg->get_window_offset (),
 				       reg->get_window_size ());
       regval = stepper->eval (s->get_Context (), tmp);
       tmp->deref ();
-    }     
+    }
   return regval;
 }
 
-template <typename Stepper> bool 
+template <typename Stepper> bool
 InsightSimulator<Stepper>::check_register (void *p, const RegisterDesc *reg)
 {
   State *s = (State *) p;
@@ -2254,19 +2255,19 @@ InsightSimulator<Stepper>::check_register (void *p, const RegisterDesc *reg)
 }
 
 template <> void *
-InsightSimulator<SymbolicStepper>::abstract_register (void *p, 
-						      const RegisterDesc *reg, 
+InsightSimulator<SymbolicStepper>::abstract_register (void *p,
+						      const RegisterDesc *reg,
 						      bool keep_in_ctx)
 {
   SymbolicStepper::State *s = (SymbolicStepper::State *) p;
   in_abstraction++;
-  SymbolicStepper::Value newval = 
+  SymbolicStepper::Value newval =
     stepper->unknown_value (reg->get_window_size ());
   in_abstraction--;
   if (check_register (p, reg) && keep_in_ctx)
     {
       SymbolicStepper::Value val = get_register_value (p, reg);
-      Expr *cond = Expr::createEquality (val.get_Expr ()->ref (), 
+      Expr *cond = Expr::createEquality (val.get_Expr ()->ref (),
 					 newval.get_Expr ()->ref ());
       s = stepper->restrict_state_to_condition (s, cond);
       cond->deref ();
@@ -2283,20 +2284,20 @@ InsightSimulator<SymbolicStepper>::abstract_register (void *p,
 }
 
 template <> void *
-InsightSimulator<ConcreteStepper>::abstract_register (void *, 
-						      const RegisterDesc *, 
+InsightSimulator<ConcreteStepper>::abstract_register (void *,
+						      const RegisterDesc *,
 						      bool)
 {
   return NULL;
 }
 
 template <typename Stepper> void *
-InsightSimulator<Stepper>::concretize_register (void *p, 
+InsightSimulator<Stepper>::concretize_register (void *p,
 						const RegisterDesc *reg)
 {
   typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Value regval = get_register_value (p, reg);
-  ConcreteValue v = 
+  ConcreteValue v =
     stepper->value_to_ConcreteValue (s->get_Context (), regval, NULL);
   s = (typename Stepper::State *) concretize_register (s, reg, v);
 
@@ -2311,9 +2312,9 @@ InsightSimulator<SymbolicStepper>::concretize_register
   if (check_register (s, reg))
     {
       SymbolicStepper::Value regval = get_register_value (p, reg);
-      Expr *cond = 
-	Expr::createEquality (regval.get_Expr ()->ref (), 
-			      Constant::create (v.get (), 0, 
+      Expr *cond =
+	Expr::createEquality (regval.get_Expr ()->ref (),
+			      Constant::create (v.get (), 0,
 						reg->get_window_size ()));
       s = stepper->restrict_state_to_condition (s, cond);
       cond->deref ();
@@ -2339,13 +2340,13 @@ InsightSimulator<ConcreteStepper>::concretize_register
   return s;
 }
 
-template <typename Stepper> MicrocodeAddress 
+template <typename Stepper> MicrocodeAddress
 InsightSimulator<Stepper>::get_pc (void *p)
 {
   return ((State *) p)->get_ProgramPoint ()->to_MicrocodeAddress ();
 }
 
-template <typename Stepper> MicrocodeAddress 
+template <typename Stepper> MicrocodeAddress
 InsightSimulator<Stepper>::get_pc ()
 {
   void *s = get_state ();
@@ -2355,7 +2356,7 @@ InsightSimulator<Stepper>::get_pc ()
   return res;
 }
 
-template <typename Stepper> Option<ConcreteValue> 
+template <typename Stepper> Option<ConcreteValue>
 InsightSimulator<Stepper>::eval (const Expr *e) const
 {
   typename Stepper::Context *ctx = ((State *) current_state)->get_Context ();
@@ -2364,15 +2365,15 @@ InsightSimulator<Stepper>::eval (const Expr *e) const
   ConcreteValue cv = stepper->value_to_ConcreteValue (ctx, val, &is_unique);
 
   if (! is_unique)
-    return Option<ConcreteValue> ();  
-  
+    return Option<ConcreteValue> ();
+
   return Option<ConcreteValue> (cv);
 }
 
-template <typename Stepper> Option<bool> 
+template <typename Stepper> Option<bool>
 InsightSimulator<Stepper>::eval_condition (const Expr *e) const
 {
-  typename Stepper::Value val = 
+  typename Stepper::Value val =
     stepper->eval (((State *) current_state)->get_Context (), e);
   return val.to_bool ();
 }
@@ -2383,9 +2384,9 @@ InsightSimulator<Stepper>::get_stepper ()
   return stepper;
 }
 
-template <typename Stepper> void 
-InsightSimulator<Stepper>::compute_enabled_arrows (State *s, 
-						   ArrowVector *result) 
+template <typename Stepper> void
+InsightSimulator<Stepper>::compute_enabled_arrows (State *s,
+						   ArrowVector *result)
   throw (CodeChangedException)
 {
   typename Stepper::State *ns = (typename Stepper::State *) s;
@@ -2395,12 +2396,12 @@ InsightSimulator<Stepper>::compute_enabled_arrows (State *s,
   if (! prg->concrete_memory->is_defined (addr) && !mc->has_node_at (addr))
     return;
 
-  try 
+  try
     {
       MicrocodeNode *node = get_node (pp);
-      MicrocodeNode_iterate_successors (*node, pa) {	
+      MicrocodeNode_iterate_successors (*node, pa) {
 	typename Stepper::StateSet *succs = NULL;
-	try 
+	try
 	  {
 	    succs = stepper->get_successors (ns, *pa);
 	  }
@@ -2416,7 +2417,7 @@ InsightSimulator<Stepper>::compute_enabled_arrows (State *s,
       logs::warning << "warning: decoder says at "
 		    << pp->to_MicrocodeAddress () << ":"
 		    << e.what () << std::endl;
-    } 
+    }
 }
 
 template <typename Stepper> MicrocodeNode *
@@ -2470,12 +2471,12 @@ InsightSimulator<Stepper>::get_node (const ProgramPoint *pp)
       result->add_annotation (NextInstAnnotation::ID,
 			      new NextInstAnnotation (nextma));
     }
-    
+
   return result;
 }
 
 template <typename Stepper> void *
-InsightSimulator<Stepper>::assume (void *p, const Expr *e) const 
+InsightSimulator<Stepper>::assume (void *p, const Expr *e) const
 {
   return stepper->restrict_state_to_condition ((State *) p, e);
 }
@@ -2483,14 +2484,14 @@ InsightSimulator<Stepper>::assume (void *p, const Expr *e) const
 template <typename Stepper>
 class StateComparator : public GenericGenerator
 {
-public: 
+public:
   typedef typename Stepper::State State;
   typedef typename Stepper::Value Value;
   typedef typename Stepper::Memory Memory;
   typedef typename Memory::const_memcell_iterator cell_iterator;
 
 
-  StateComparator (State *ref, State *other, const Architecture *arch) 
+  StateComparator (State *ref, State *other, const Architecture *arch)
     : GenericGenerator (), arch (arch)
   {
     st1 = ref;
@@ -2511,11 +2512,11 @@ public:
   }
 
   virtual bool are_different (Option<Value> &v1, Option<Value> &v2,
-			      string &s1, string &s2) 
+			      string &s1, string &s2)
   {
     if (!(v1.hasValue () || v2.hasValue ()))
       return false;
-    
+
     bool result = true;
     if (v1.hasValue ())
       s1 = v1.getValue ().to_string ();
@@ -2526,13 +2527,13 @@ public:
     else
       s2 = "undefined";
 
-    if (v1.hasValue () && v2.hasValue () && 
+    if (v1.hasValue () && v2.hasValue () &&
 	values_are_equals (v1.getValue (), v2.getValue ()))
       result = false;
 
     return result;
   }
-			      
+
   virtual PyObject *next () {
     PyObject *result = NULL;
     Option<Value> v1;
@@ -2542,7 +2543,7 @@ public:
     address_t addr;
     string s1, s2;
 
-    while (! diff && startmem != endmem) 
+    while (! diff && startmem != endmem)
       {
 	if (m1->is_defined (startmem->first))
 	  v1 = m1->get (startmem->first, 1, arch->get_endian ());
@@ -2554,7 +2555,7 @@ public:
 	startmem++;
       }
 
-    while (! diff && startreg != endreg) 
+    while (! diff && startreg != endreg)
       {
 	if (startreg->second->is_alias ())
 	  {
@@ -2578,7 +2579,7 @@ public:
       {
 	if (reg != NULL)
 	  {
-	    result = Py_BuildValue ("(s,s,s)", 
+	    result = Py_BuildValue ("(s,s,s)",
 				    reg->get_label ().c_str (),
 				    s1.c_str (),
 				    s2.c_str ());
@@ -2606,17 +2607,17 @@ private:
   RegisterSpecs::const_iterator endreg;
 };
 
-template <> bool 
-StateComparator<ConcreteStepper>::values_are_equals (const ConcreteValue &v1, 
-						     const ConcreteValue &v2) 
+template <> bool
+StateComparator<ConcreteStepper>::values_are_equals (const ConcreteValue &v1,
+						     const ConcreteValue &v2)
   const
 {
   return v1.get () == v2.get ();
 }
 
-template <> bool 
-StateComparator<SymbolicStepper>::values_are_equals (const SymbolicValue &v1, 
-						     const SymbolicValue &v2) 
+template <> bool
+StateComparator<SymbolicStepper>::values_are_equals (const SymbolicValue &v1,
+						     const SymbolicValue &v2)
   const
 {
   return v1.get_Expr () == v2.get_Expr ();
@@ -2630,7 +2631,7 @@ InsightSimulator<Stepper>::compare_states (void *s1, void *s2) const
 				      march->get_reference_arch ());
 }
 
-template <typename Stepper> void 
+template <typename Stepper> void
 InsightSimulator<Stepper>::set_compare_state (bool set)
 {
   if (ref_state != NULL)
@@ -2642,7 +2643,7 @@ InsightSimulator<Stepper>::set_compare_state (bool set)
       ref_state->ref ();
     }
   else
-    ref_state = NULL;    
+    ref_state = NULL;
 }
 
 template <typename Stepper> GenericGenerator *
@@ -2654,8 +2655,8 @@ InsightSimulator<Stepper>::compare_states () const
   return compare_states (ref_state, current_state);
 }
 
-template <> SymbolicValue 
-InsightSimulator<SymbolicStepper>::unknown_value (int size) 
+template <> SymbolicValue
+InsightSimulator<SymbolicStepper>::unknown_value (int size)
 {
   static unsigned int unique = 0;
   assert (current_state != NULL);
@@ -2676,10 +2677,10 @@ InsightSimulator<SymbolicStepper>::unknown_value (int size)
   return val;
 }
 
-template <typename Stepper> typename Stepper::Value 
-InsightSimulator<Stepper>::unknown_value (int size) 
+template <typename Stepper> typename Stepper::Value
+InsightSimulator<Stepper>::unknown_value (int size)
 {
-  return 
+  return
     Stepper::Value::unknown_value_generator ()->unknown_value (size);
 }
 
@@ -2691,7 +2692,7 @@ InsightSimulator<Stepper>::unknown_value (int size)
 
 int StopCondition::last_id = 1;
 
-StopCondition::StopCondition () : id (last_id++), hits (0) 
+StopCondition::StopCondition () : id (last_id++), hits (0)
 {
 }
 
@@ -2699,14 +2700,14 @@ StopCondition::~StopCondition ()
 {
 }
 
-int 
-StopCondition::get_id () const 
+int
+StopCondition::get_id () const
 {
   return id;
 }
 
 size_t
-StopCondition::get_number_of_hits () const 
+StopCondition::get_number_of_hits () const
 {
   return hits;
 }
@@ -2717,13 +2718,13 @@ StopCondition::reset (GenericInsightSimulator *)
   hits = 0;
 }
 
-void 
+void
 StopCondition::hit ()
 {
   hits++;
 }
 
-Breakpoint::Breakpoint (MicrocodeAddress a) 
+Breakpoint::Breakpoint (MicrocodeAddress a)
   : StopCondition (), addr (a), cond (NULL)
 {
 }
@@ -2734,7 +2735,7 @@ Breakpoint::~Breakpoint ()
     cond->deref ();
 }
 
-bool 
+bool
 Breakpoint::stop (GenericInsightSimulator *S)
 {
   MicrocodeAddress pc = S->get_pc ();
@@ -2750,7 +2751,7 @@ Breakpoint::stop (GenericInsightSimulator *S)
   return ! val.hasValue () || val.getValue ();
 }
 
-void 
+void
 Breakpoint::set_cond (const Expr *e)
 {
   assert (e != NULL);
@@ -2758,7 +2759,7 @@ Breakpoint::set_cond (const Expr *e)
   cond = e->ref ();
 }
 
-void 
+void
 Breakpoint::reset_cond ()
 {
   if (cond != NULL)
@@ -2766,8 +2767,8 @@ Breakpoint::reset_cond ()
   cond = NULL;
 }
 
-void 
-Breakpoint::output_text (std::ostream &out) const 
+void
+Breakpoint::output_text (std::ostream &out) const
 {
   out << "breakpoint: " << addr;
   if (cond != NULL)
@@ -2777,7 +2778,7 @@ Breakpoint::output_text (std::ostream &out) const
     }
 }
 
-bool 
+bool
 Breakpoint::equals (const StopCondition *other) const
 {
   const Breakpoint *bp = dynamic_cast<const Breakpoint *> (other);
@@ -2785,7 +2786,7 @@ Breakpoint::equals (const StopCondition *other) const
   return bp != NULL && bp->cond == cond && bp->addr.equals (addr);
 }
 
-Watchpoint::Watchpoint (const Expr *e) 
+Watchpoint::Watchpoint (const Expr *e)
   : StopCondition (), cond (e->ref ()), last_value ()
 {
 }
@@ -2795,7 +2796,7 @@ Watchpoint::~Watchpoint ()
   cond->deref ();
 }
 
-bool 
+bool
 Watchpoint::stop (GenericInsightSimulator *S)
 {
   hit ();
@@ -2803,20 +2804,20 @@ Watchpoint::stop (GenericInsightSimulator *S)
   Option<bool> oval = S->eval_condition (cond);
   bool val = ! oval.hasValue () || oval.getValue ();
   bool result = (val != last_value);
-  
+
   if (result)
     last_value = val;
   return result;
 }
 
-void 
-Watchpoint::output_text (std::ostream &out) const 
+void
+Watchpoint::output_text (std::ostream &out) const
 {
   out << "watchpoint: expr = ";
   cond->output_text (out);
 }
 
-bool 
+bool
 Watchpoint::equals (const StopCondition *other) const
 {
   const Watchpoint *wp = dynamic_cast<const Watchpoint *> (other);
@@ -2825,14 +2826,14 @@ Watchpoint::equals (const StopCondition *other) const
 }
 
 void
-Watchpoint::reset (GenericInsightSimulator *S) 
+Watchpoint::reset (GenericInsightSimulator *S)
 {
   this->StopCondition::reset (S);
   Option<bool> oval = S->eval_condition (cond);
   last_value = ! oval.hasValue () || oval.getValue ();
 }
 
-PyWatchpoint::PyWatchpoint (PyObject *callable) 
+PyWatchpoint::PyWatchpoint (PyObject *callable)
   : StopCondition (), cb (callable)
 {
   Py_INCREF (cb);
@@ -2843,7 +2844,7 @@ PyWatchpoint::~PyWatchpoint ()
   Py_DECREF (cb);
 }
 
-bool 
+bool
 PyWatchpoint::stop (GenericInsightSimulator *)
 {
   PyObject *res = PyObject_CallObject (cb, NULL);
@@ -2855,20 +2856,20 @@ PyWatchpoint::stop (GenericInsightSimulator *)
   return result;
 }
 
-void 
+void
 PyWatchpoint::output_text (std::ostream &out) const
 {
   out << "callable object @" << std::hex << cb;
 }
 
-bool 
+bool
 PyWatchpoint::equals (const StopCondition *other) const
 {
   const PyWatchpoint *pw = dynamic_cast<const PyWatchpoint *> (other);
   return pw != NULL && pw->cb == cb;
 }
 
-void 
+void
 PyWatchpoint::reset (GenericInsightSimulator *S)
 {
   this->StopCondition::reset (S);
@@ -2884,7 +2885,7 @@ template <typename Stepper>
 RawBytesReader<Stepper>::RawBytesReader (InsightSimulator<Stepper> *simulator)
   : simulator (simulator)
 {
-  
+
 }
 
 template <typename Stepper>
@@ -2893,11 +2894,11 @@ RawBytesReader<Stepper>::~RawBytesReader ()
 }
 
 template <typename Stepper> void
-RawBytesReader<Stepper>::read_buffer (address_t from, uint8_t *dest, 
+RawBytesReader<Stepper>::read_buffer (address_t from, uint8_t *dest,
 				      size_t length)
   throw (Decoder::Exception)
 {
-  typename Stepper::State *s = 
+  typename Stepper::State *s =
     (typename Stepper::State *) simulator->get_state ();
   typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
   Stepper *stepper = simulator->get_stepper ();
@@ -2907,24 +2908,24 @@ RawBytesReader<Stepper>::read_buffer (address_t from, uint8_t *dest,
       if (mem->is_defined (from + i))
 	{
 	  bool is_unique = true;
-	  typename Stepper::Value val = 
+	  typename Stepper::Value val =
 	    mem->get(from + i, 1, Architecture::LittleEndian);
 
-	  ConcreteValue cval = 
-	    stepper->value_to_ConcreteValue (s->get_Context (), val, 
+	  ConcreteValue cval =
+	    stepper->value_to_ConcreteValue (s->get_Context (), val,
 					     &is_unique);
-	  if (! is_unique) 
+	  if (! is_unique)
 	    {
 	      simulator->delete_state (s);
 	      throw AbstractCodeException (from + i);
 	    }
 	  dest[i] = cval.get ();
-	}      
+	}
       else
 	{
 	  simulator->delete_state (s);
 	  throw Decoder::OutOfBounds (from + i);
-	}  
+	}
     }
   simulator->delete_state (s);
 }

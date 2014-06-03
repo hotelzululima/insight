@@ -5,12 +5,12 @@
 # include <analyses/cfgrecovery/AbstractContext.hh>
 
 template <typename MEM>
-class AbstractDomainContext : public AbstractContext 
+class AbstractDomainContext : public AbstractContext
 {
 
 public:
   typedef MEM Memory;
-  
+
   AbstractDomainContext (Memory *mem);
 
   virtual ~AbstractDomainContext ();

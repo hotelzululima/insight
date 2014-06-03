@@ -57,7 +57,7 @@ s_parse_expr (const string &s)
 
 static bool
 s_check_is_true (Expr *F)
-{  
+{
   Expr *tmp = F->ref ();
   exprutils::simplify_level0 (&tmp);
   Option<bool> value = tmp->try_eval_level0 ();
@@ -80,7 +80,7 @@ s_check_tautology (Expr *F, const char *file, int line)
       oss << file << ":" << line << ": "
 	  << "fail to check tautology " << F->to_string ();
       ATF_FAIL (oss.str ());
-    }  
+    }
 }
 
 #define CHK_EQUIV(f1, f2) s_check_equivalence (f1, f2, __FILE__, __LINE__)
@@ -105,12 +105,12 @@ s_check_equivalence (Expr *F1, Expr *F2, const char *file, int line)
 ATF_TEST_CASE (check_tautologies)
 
 ATF_TEST_CASE_HEAD (check_tautologies)
-{ 
+{
   set_md_var ("descr", "check that some simple exprs are tautologies");
-} 
+}
 
-ATF_TEST_CASE_BODY (check_tautologies) 
-{ 
+ATF_TEST_CASE_BODY (check_tautologies)
+{
   ConfigTable ct;
   ct.set (logs::DEBUG_ENABLED_PROP, false);
   ct.set (logs::STDIO_ENABLED_PROP, true);
@@ -163,12 +163,12 @@ s_replace (Expr *F, Expr *P, Expr *V)
 ATF_TEST_CASE (check_replacement)
 
 ATF_TEST_CASE_HEAD (check_replacement)
-{ 
+{
   set_md_var ("descr", "check replace procedure");
-} 
+}
 
-ATF_TEST_CASE_BODY(check_replacement) 
-{ 
+ATF_TEST_CASE_BODY(check_replacement)
+{
   ConfigTable ct;
   ct.set (logs::DEBUG_ENABLED_PROP, false);
   ct.set (logs::STDIO_ENABLED_PROP, true);
@@ -176,9 +176,9 @@ ATF_TEST_CASE_BODY(check_replacement)
 
   insight::init (ct);
 
-  /* 
-   * compute (replace (replace (replace (Y || X) Y tmp) X Y) tmp X) 
-   * and check equivalence with X || Y 
+  /*
+   * compute (replace (replace (replace (Y || X) Y tmp) X Y) tmp X)
+   * and check equivalence with X || Y
    */
 
   Expr *F = s_parse_expr ("(OR Y X){0;1}");
@@ -186,7 +186,7 @@ ATF_TEST_CASE_BODY(check_replacement)
   Expr *Y = s_parse_expr ("Y");
   Expr *tmp = s_parse_expr ("tmp");
 
-  F = s_replace (F, Y->ref (), tmp->ref ()); /* F <- replace (Y || X) Y tmp */  
+  F = s_replace (F, Y->ref (), tmp->ref ()); /* F <- replace (Y || X) Y tmp */
   Expr *aux = s_parse_expr ("(OR tmp X){0;1}");
   CHK_EQUIV (F, aux);
   aux->deref ();
@@ -205,14 +205,14 @@ ATF_TEST_CASE_BODY(check_replacement)
   Y->deref ();
   tmp->deref ();
 
-  /* 
+  /*
    * compute F <- (EQ (MUL 2 X) (ADD X X))
    * and check equivalence between
    * replace $F (MUL 2 X) Z)
    * and (EQ Z (ADD X X));
    */
   F = s_replace (s_parse_expr ("(EQ (MUL_U 2 X)" DEFBV "(ADD X X)" DEFBV ")"),
-		 s_parse_expr ("(MUL_U 2 X)" DEFBV), 
+		 s_parse_expr ("(MUL_U 2 X)" DEFBV),
 		 s_parse_expr ("Z"));
   aux = s_parse_expr ("(EQ Z  (ADD X X)" DEFBV ")");
   CHK_EQUIV (F, aux);
@@ -227,12 +227,12 @@ ATF_TEST_CASE_BODY(check_replacement)
 ATF_TEST_CASE (check_pattern_matching)
 
 ATF_TEST_CASE_HEAD (check_pattern_matching)
-{ 
+{
   set_md_var ("descr", "check pattern matching procedure");
-} 
+}
 
-ATF_TEST_CASE_BODY(check_pattern_matching) 
-{ 
+ATF_TEST_CASE_BODY(check_pattern_matching)
+{
   ConfigTable ct;
   ct.set (logs::DEBUG_ENABLED_PROP, false);
   ct.set (logs::STDIO_ENABLED_PROP, true);
@@ -240,9 +240,9 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
 
   insight::init (ct);
 
-  /* 
+  /*
    * compute PM <- match (EQ Y (ADD T Z)) $F Y T Z;
-   * then check that 
+   * then check that
    * PM[Y] <=> (2 * X)
    * PM[T] <=> X
    * PM[Z] <=> X
@@ -264,31 +264,31 @@ ATF_TEST_CASE_BODY(check_pattern_matching)
 
   try
     {
-      PatternMatching *PM = 
+      PatternMatching *PM =
 	PatternMatching::match (F, pattern, free_variables);
 
       F->deref ();
 
       ATF_REQUIRE (PM->has (Y));
-      
-      F = 
+
+      F =
 	BinaryApp::createEquality (
-			   dynamic_cast<const Expr *>(PM->get (Y))->ref (), 
-			   dynamic_cast<Expr *>(s_parse_expr ("(MUL_U 2 X)" 
+			   dynamic_cast<const Expr *>(PM->get (Y))->ref (),
+			   dynamic_cast<Expr *>(s_parse_expr ("(MUL_U 2 X)"
 							      DEFBV)));
       CHK_TAUTOLOGY (F);
       F->deref ();
 
       ATF_REQUIRE (PM->has (T));
       F = BinaryApp::createEquality (
-			     dynamic_cast<const Expr *>(PM->get (T))->ref (), 
+			     dynamic_cast<const Expr *>(PM->get (T))->ref (),
 			     dynamic_cast<Expr *>(s_parse_expr ("X")));
       CHK_TAUTOLOGY (F);
       F->deref ();
 
       ATF_REQUIRE (PM->has (Z));
       F = BinaryApp::createEquality (
-			     dynamic_cast<const Expr *>(PM->get (Z))->ref (), 
+			     dynamic_cast<const Expr *>(PM->get (Z))->ref (),
 			     dynamic_cast<Expr *>(s_parse_expr ("X")));
       CHK_TAUTOLOGY (F);
       delete PM;

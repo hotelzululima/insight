@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite de Bordeaux.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -43,7 +43,7 @@ using namespace std;
 
 #define NODE_PREFIX "BB_0x"
 
-struct basic_block_t 
+struct basic_block_t
 {
   int ident;
   int in_degree;
@@ -51,16 +51,16 @@ struct basic_block_t
   vector<MicrocodeNode *> *succs;
 };
 
-static bool 
+static bool
 s_sort_microcode (MicrocodeNode *e1, MicrocodeNode *e2)
 {
   return (*e1) < (*e2);
 }
 
-static void 
+static void
 s_init_basic_block (const Microcode *mc, MicrocodeNode *n, basic_block_t &bb,
 		    int ident)
-{  
+{
   bb.ident = ident;
   bb.in_degree = 0;
   bb.nodes = new vector<MicrocodeNode *> ();
@@ -68,7 +68,7 @@ s_init_basic_block (const Microcode *mc, MicrocodeNode *n, basic_block_t &bb,
   bb.succs = asm_get_successor_instructions (mc, n);
 }
 
-static void 
+static void
 s_clear_basic_block (basic_block_t &bb)
 {
   delete bb.nodes;
@@ -76,7 +76,7 @@ s_clear_basic_block (basic_block_t &bb)
 }
 
 static vector<MicrocodeNode *> *
-s_compute_asm_nodes (const Microcode *mc, 
+s_compute_asm_nodes (const Microcode *mc,
 		     std::map<MicrocodeNode *, basic_block_t> &anodes,
 		     const ConcreteAddress *start, const ConcreteAddress *end)
 {
@@ -86,9 +86,9 @@ s_compute_asm_nodes (const Microcode *mc,
        i != mc->end_nodes (); i++)
     {
       MicrocodeNode *n = *i;
-      
-      assert (! n->has_annotation (AsmAnnotation::ID) || 
-	      n->get_loc ().getLocal() == 0 || 
+
+      assert (! n->has_annotation (AsmAnnotation::ID) ||
+	      n->get_loc ().getLocal() == 0 ||
 	      n->has_annotation (StubAnnotation::ID));
 
       if (start && n->get_loc ().getGlobal () < start->get_address ())
@@ -96,18 +96,18 @@ s_compute_asm_nodes (const Microcode *mc,
       if (end && n->get_loc ().getGlobal () > end->get_address ())
 	continue;
 
-      if (n->has_annotation (StubAnnotation::ID) && 
+      if (n->has_annotation (StubAnnotation::ID) &&
 	  n->get_loc ().getLocal() != 0)
 	continue;
 
-      if (! n->has_annotation (AsmAnnotation::ID) && 
+      if (! n->has_annotation (AsmAnnotation::ID) &&
 	  ! n->has_annotation (StubAnnotation::ID))
 	continue;
 
       if (anodes.find (n) == anodes.end ())
 	s_init_basic_block (mc, n, anodes[n], anodes.size ());
       result->push_back (n);
-      
+
       basic_block_t &an = anodes[n];
       for (size_t s = 0; s < an.succs->size (); s++)
 	{
@@ -123,7 +123,7 @@ s_compute_asm_nodes (const Microcode *mc,
 }
 
 static void
-s_merge_bb_from (basic_block_t *entry, 
+s_merge_bb_from (basic_block_t *entry,
 		 std::map<MicrocodeNode *, basic_block_t> &anodes,
 		 MicrocodeNode *entrypoint, const SymbolTable *symboltable)
 {
@@ -139,10 +139,10 @@ s_merge_bb_from (basic_block_t *entry,
 	  symboltable->has (succ->get_loc ().getGlobal ()) ||
 	  ! s_sort_microcode (entry->nodes->at (entry->nodes->size () - 1),
 			      succ) ||
-	  (nextaddr.hasValue () && nextaddr.getValue () != 
+	  (nextaddr.hasValue () && nextaddr.getValue () !=
 	   succ->get_loc ().getGlobal ()))
 	return;
-  
+
       for (size_t i = 0; i < bbsucc.nodes->size (); i++)
 	entry->nodes->push_back (bbsucc.nodes->at (i));
 
@@ -156,7 +156,7 @@ s_merge_bb_from (basic_block_t *entry,
 }
 
 static void
-s_merge_basic_blocks (vector<MicrocodeNode *> *nodes, 
+s_merge_basic_blocks (vector<MicrocodeNode *> *nodes,
 		      std::map<MicrocodeNode *, basic_block_t> &anodes,
 		      MicrocodeNode *entrypoint, const SymbolTable *symboltable)
 {
@@ -173,7 +173,7 @@ s_merge_basic_blocks (vector<MicrocodeNode *> *nodes,
     }
 }
 
-static int 
+static int
 s_light_color (int rgb)
 {
   if ((rgb & 0xFF0000) >> 16 < 0x7F)
@@ -185,26 +185,26 @@ s_light_color (int rgb)
   return rgb;
 }
 
-void 
+void
 dot_writer (std::ostream &out, const Microcode *mc, bool asm_only,
-	    const std::string &graphlabel, 
+	    const std::string &graphlabel,
 	    ConcreteAddress *entrypoint, const SymbolTable *symboltable)
 {
   if (! asm_only)
       mc->toDot (out);
   else
-    dot_asm_writer (out, mc, NULL, NULL, entrypoint, symboltable, 
+    dot_asm_writer (out, mc, NULL, NULL, entrypoint, symboltable,
 		    false, graphlabel);
 }
 
-void 
+void
 dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
-		ConcreteAddress *end, ConcreteAddress *entrypoint, 
-		const SymbolTable *symboltable, bool arrow_indexes, 
+		ConcreteAddress *end, ConcreteAddress *entrypoint,
+		const SymbolTable *symboltable, bool arrow_indexes,
 		const std::string &graphlabel)
 {
-  static int primes[] = { 5483, 10967, 21933, 43867,  87731, 175459, 350919, 
-			  701833, 1403667, 2807333 , 5614667, 11229331, 
+  static int primes[] = { 5483, 10967, 21933, 43867,  87731, 175459, 350919,
+			  701833, 1403667, 2807333 , 5614667, 11229331,
 			  16777253 };
   static int nb_primes = sizeof (primes) / sizeof (primes[0]);
 
@@ -218,7 +218,7 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
     out << " label=\"" << graphlabel << "\"; " << endl;
 
   std::map<MicrocodeNode *, basic_block_t> anodes;
-  vector<MicrocodeNode *> *nodes = 
+  vector<MicrocodeNode *> *nodes =
     s_compute_asm_nodes (mc, anodes, start, end);
 
   MicrocodeNode *entrynode = NULL;
@@ -229,11 +229,11 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
       } catch (GetNodeNotFoundExc) {
       }
     }
- 
+
   if (entrynode || symboltable)
     s_merge_basic_blocks (nodes, anodes, entrynode, symboltable);
- 
-  for (vector<MicrocodeNode *>::const_iterator i = nodes->begin (); 
+
+  for (vector<MicrocodeNode *>::const_iterator i = nodes->begin ();
        i != nodes->end (); i++)
     {
       MicrocodeNode *n = *i;
@@ -248,7 +248,7 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
       assert (ma.getLocal () == 0);
 
       if (symboltable && symboltable->has (ma.getGlobal ()))
-	{	  
+	{
 	  string s = *symboltable->get (ma.getGlobal ()).begin ();
 	  if (symbols.find (s) == symbols.end ())
 	    {
@@ -274,19 +274,19 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	  rgb = s_light_color (21933 * ma.getGlobal () ^ 11229331);
 	}
 
-      out << NODE_PREFIX << std::hex << ma.getGlobal () 
-	  << "[shape=box,style=filled,fillcolor=\"#" << std::hex << rgb 
+      out << NODE_PREFIX << std::hex << ma.getGlobal ()
+	  << "[shape=box,style=filled,fillcolor=\"#" << std::hex << rgb
 	  << "\",justify=left,label=\"";
       for (size_t inst = 0; inst < bb.nodes->size (); inst++)
 	{
 	  MicrocodeNode *instn = bb.nodes->at (inst);
 	  if (instn->has_annotation (AsmAnnotation::ID) ||
 	      instn->has_annotation (StubAnnotation::ID))
-	    {	      
+	    {
 	      out << setw(8) << hex << instn->get_loc ().getGlobal () << " : ";
 	      if(instn->has_annotation (StubAnnotation::ID))
 		out << *(instn->get_annotation (StubAnnotation::ID)) << "\\l";
-	      else 
+	      else
 		out << *(instn->get_annotation (AsmAnnotation::ID)) << "\\l";
 	    }
 	  else
@@ -312,7 +312,7 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	  assert (tgt.getLocal () == 0);
 	  targets.insert (tgt);
 
-	  out << NODE_PREFIX << std::hex << ma.getGlobal () 
+	  out << NODE_PREFIX << std::hex << ma.getGlobal ()
 	      << " -> "
 	      << NODE_PREFIX << std::hex << tgt.getGlobal ();
 	  out << " [";
@@ -324,22 +324,22 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
     }
   out << " }" << endl;
   int k = 0;
-  for (map<string,int>::const_iterator i = symbols.begin (); 
+  for (map<string,int>::const_iterator i = symbols.begin ();
        i != symbols.end (); i++, k++)
-    {      
+    {
       out << " sym_" << k << "[label=\"" << i->first << "\","
-	  << "shape=box,style=filled,color=\"#" << std::hex << i->second 
+	  << "shape=box,style=filled,color=\"#" << std::hex << i->second
 	  << "\"]; " << endl;
     }
   k = 0;
   assert (symbols.size () == 0 || symboltable != NULL);
-  for (map<string,int>::const_iterator i = symbols.begin (); 
+  for (map<string,int>::const_iterator i = symbols.begin ();
        i != symbols.end (); i++, k++)
     {
-      out << "sym_" << k << " -> " << NODE_PREFIX << std::hex 
+      out << "sym_" << k << " -> " << NODE_PREFIX << std::hex
 	  << symboltable->get (i->first)
 	  << endl;
     }
   out << "} " << std::endl;
-  out.flush (); 
+  out.flush ();
 }

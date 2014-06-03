@@ -2,20 +2,20 @@
  * Copyright (c) 2010-2014, Centre National de la Recherche Scientifique,
  *                          Institut Polytechnique de Bordeaux,
  *                          Universite de Bordeaux.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the
  *    distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,22 +36,22 @@
 # include <kernel/Microcode.hh>
 # include <io/binary/BinaryLoader.hh>
 
-extern std::vector<MicrocodeNode *> * 
-asm_get_successor_instructions (const Microcode *mc, 
+extern std::vector<MicrocodeNode *> *
+asm_get_successor_instructions (const Microcode *mc,
 				const MicrocodeNode *node);
 
 extern Option<address_t>
 next_instruction_addr (const MicrocodeNode *node);
 
-extern void 
-asm_writer (std::ostream &out, const Microcode *mc, 
+extern void
+asm_writer (std::ostream &out, const Microcode *mc,
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
 	    bool with_bytes, bool with_holes, bool with_labels);
 
-extern void 
-asm_writer (std::ostream &out, const Microcode *mc, 
+extern void
+asm_writer (std::ostream &out, const Microcode *mc,
 	    const ConcreteMemory *memory, const SymbolTable *symboltable,
-	    bool with_bytes, bool with_holes, bool with_labels, 
+	    bool with_bytes, bool with_holes, bool with_labels,
 	    address_t addr, size_t nb);
 
 #endif /* ! ASM_WRITER_HH */

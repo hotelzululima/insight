@@ -44,7 +44,7 @@ using namespace std;
 #ifdef X86_32_USE_EFLAGS
 #define  ALL_X86_CC \
   X86_32_CC (NP, "(NOT %pf)", \
-             "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)") \
+	     "(= (bvnot ((_ extract 2 2 ) eflags)) #b1)")	\
   X86_32_CC (A, "(NOT (OR %cf %zf){0;1})", \
              "(= (bvnot (bvor ((_ extract 0 0 ) eflags) ((_ extract 6 6 ) eflags))) #b1)") \
   X86_32_CC (AE, "(NOT %cf)", \
@@ -98,7 +98,7 @@ using namespace std;
   X86_32_CC (S, "%sf", \
              "(= ((_ extract 7 7 ) eflags) #b1)") \
   X86_32_CC (Z, "%zf", \
-             "(= ((_ extract 6 6 ) eflags) #b1)") 
+             "(= ((_ extract 6 6 ) eflags) #b1)")
   X86_32_CC (BUG, "(EXTRACT %ebx{0;32} 0x0{0;32} 0x8{0;32}){0;1}", \
 	     "(= ((_ extract 0 0) ((_ extract 7 0) ebx)) #b1)")
 #else
@@ -178,7 +178,7 @@ ATF_TEST_CASE_BODY(smtlib_ ## id) \
 }
 
 static void
-s_check_expr_to_smtlib (const string &, const string &expr, 
+s_check_expr_to_smtlib (const string &, const string &expr,
 			const string &expectedout)
 {
   ConfigTable ct;
@@ -187,7 +187,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
 
   insight::init (ct);
-  const Architecture *x86_32 = 
+  const Architecture *x86_32 =
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
 
@@ -196,7 +196,7 @@ s_check_expr_to_smtlib (const string &, const string &expr,
   ostringstream oss;
 
   smtlib_writer (oss, e, "memory", 32, x86_32->get_endian (), true);
-  
+
   ATF_REQUIRE_EQ (oss.str (), expectedout);
   e->deref ();
 
@@ -217,28 +217,28 @@ ATF_INIT_TEST_CASES(tcs)
 }
 #else
 
-static void 
+static void
 gen_string (const string &id, const string &e, const MicrocodeArchitecture &ma)
-{					      
-  Expr *ex = expr_parser (e, &ma);            
-  ostringstream oss;				
+{
+  Expr *ex = expr_parser (e, &ma);
+  ostringstream oss;
   smtlib_writer (oss, ex, "memory", 32, ma.get_endian (),true);
-  string smte = oss.str ();			
-  string::size_type i = smte.find ('\n'); 
-  while (i != string::npos)			
-    {						
-      string s = smte.replace (i, 1, "\\n");	
-      smte = s;					
-      i = smte.find ('\n');			
-    }   
+  string smte = oss.str ();
+  string::size_type i = smte.find ('\n');
+  while (i != string::npos)
+    {
+      string s = smte.replace (i, 1, "\\n");
+      smte = s;
+      i = smte.find ('\n');
+    }
   logs::display << "  X86_32_CC (" << id << ", \"" << e << "\", \\" << endl
 		<< "             \"" << smte << "\") \\" << endl;
-  ex->deref ();					
+  ex->deref ();
 }
 
 #define X86_32_CC(id, e, expout) gen_string (# id, e, ma);
 
-int 
+int
 main()
 {
   ConfigTable ct;
@@ -246,11 +246,11 @@ main()
   ct.set (logs::STDIO_ENABLED_PROP, true);
   ct.set (Expr::NON_EMPTY_STORE_ABORT_PROP, true);
   insight::init (ct);
-  const Architecture *x86_32 = 
+  const Architecture *x86_32 =
     Architecture::getArchitecture (Architecture::X86_32);
   MicrocodeArchitecture ma (x86_32);
   logs::display << "#define  ALL_X86_CC \\" << endl;
-  ALL_X86_CC 
+  ALL_X86_CC
   insight::terminate ();
 
   return 0;

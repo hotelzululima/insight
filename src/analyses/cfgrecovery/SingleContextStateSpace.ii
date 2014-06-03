@@ -2,22 +2,22 @@
 # define SINGLECONTEXTSTATESPACE_II
 
 template <typename State>
-SingleContextStateSpace<State>::SingleContextStateSpace () 
-  : AbstractStateSpace<State>(), states () 
+SingleContextStateSpace<State>::SingleContextStateSpace ()
+  : AbstractStateSpace<State>(), states ()
 {
 }
 
 template <typename State>
-SingleContextStateSpace<State>::~SingleContextStateSpace () 
-{ 
-  for (typename StateTable::iterator i = states.begin (); i != states.end (); 
+SingleContextStateSpace<State>::~SingleContextStateSpace ()
+{
+  for (typename StateTable::iterator i = states.begin (); i != states.end ();
        i++)
     (*i)->deref ();
 }
 
-template <typename State> 
+template <typename State>
 State *
-SingleContextStateSpace<State>::find_or_add_state (State *s) 
+SingleContextStateSpace<State>::find_or_add_state (State *s)
 {
   State *result;
   typename StateTable::iterator i = states.find (s);
@@ -27,7 +27,7 @@ SingleContextStateSpace<State>::find_or_add_state (State *s)
       result = s;
       states.insert (result);
     }
-  else 
+  else
     {
       result = *i;
     }
@@ -35,10 +35,10 @@ SingleContextStateSpace<State>::find_or_add_state (State *s)
 }
 
 template <typename State>
-std::size_t 
-SingleContextStateSpace<State>::size () const 
-{ 
-  return states.size(); 
+std::size_t
+SingleContextStateSpace<State>::size () const
+{
+  return states.size();
 }
 
 

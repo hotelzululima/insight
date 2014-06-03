@@ -19,7 +19,7 @@ public:
   virtual std::size_t size () const;
 
 private:
-  typedef std::unordered_set<State *, HashPtrFunctor<State>, 
+  typedef std::unordered_set<State *, HashPtrFunctor<State>,
   			     EqualsPtrFunctor<State> > StateTable;
 
   StateTable states;

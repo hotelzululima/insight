@@ -87,7 +87,7 @@ namespace arm {
 {
   long         intValue;
   std::string *stringValue;
-  bool 		   boolValue;
+  bool	       boolValue;
   class Expr  *expr;
   std::list<RegisterExpr*> *reg_list;
 };
@@ -104,7 +104,7 @@ using namespace arm;
 #define YY_DECL				      \
   arm::parser::token_type		      \
     yylex(arm::parser::semantic_type* yylval, \
-          arm::parser::location_type* yylloc)
+	  arm::parser::location_type* yylloc)
 
 YY_DECL;
 
@@ -209,10 +209,10 @@ YY_DECL;
 %type <expr> register  zero_offset preIndexed_offset   flexOffset operand2 shifted_register multiplyInstr immediate
 %type <reg_list> register_list
 
-%type <intValue> integer  
+%type <intValue> integer
 %type <stringValue> cond prefix
 
-%type <boolValue> B_suffix T_suffix D_suffix H_suffix S_suffix NOT_suffix 
+%type <boolValue> B_suffix T_suffix D_suffix H_suffix S_suffix NOT_suffix
 
 %printer    { debug_stream() << $$; } <intValue>
 
@@ -221,7 +221,7 @@ YY_DECL;
 
 %% /***** Parser rules *****/
 
-start: 
+start:
   instruction{
   }
 |
@@ -231,18 +231,18 @@ start:
   TOK_COMMENT
 ;
 
- 
-instruction: 
+
+instruction:
 	accessMemoryInstr{
 	}
 
 |
 	generalDataProcessInstr{
 	}
-	
+
 |
 	multiplyInstr
-  
+
 |
 	branchesInstr
 ;
@@ -252,29 +252,29 @@ accessMemoryInstr:
 
   TOK_LDR D_suffix H_suffix B_suffix T_suffix cond register TOK_COMMA zero_offset{
 		arm_translate<ARM_TOKEN(LDR)> (data, $2, $3, $4, $5, $6, $7, $9);	//bool, bool, bool, bool, string, expr, expr
-	}  
+	}
 |
 	TOK_LDR D_suffix H_suffix B_suffix T_suffix cond register TOK_COMMA preIndexed_offset NOT_suffix{//T_suffix to resolve conflicts
     arm_translate<ARM_TOKEN(LDR)> (data, $2, $3, $4, $5, $6, $7, $9, $10);	//bool,bool, bool, bool, string, expr, expr, bool
-    
-	}  
+
+	}
 |
 	TOK_LDR D_suffix H_suffix B_suffix T_suffix cond register TOK_COMMA zero_offset TOK_COMMA flexOffset{
-  	arm_translate<ARM_TOKEN(LDR)> (data, $2, $3, $4, $5, $6, $7, $9, $11);	//bool,bool, bool, bool, string, expr, expr, expr
+	arm_translate<ARM_TOKEN(LDR)> (data, $2, $3, $4, $5, $6, $7, $9, $11);	//bool,bool, bool, bool, string, expr, expr, expr
   }
 |
 	TOK_STR D_suffix H_suffix B_suffix T_suffix cond register TOK_COMMA zero_offset{
 		arm_translate<ARM_TOKEN(STR)> (data, $2, $3, $4, $5, $6, $7, $9);	//bool, bool, bool, bool, string, expr, expr
-	}  
+	}
 |
 	TOK_STR D_suffix H_suffix B_suffix T_suffix cond register TOK_COMMA preIndexed_offset NOT_suffix{//T_suffix to resolve conflicts
     arm_translate<ARM_TOKEN(STR)> (data, $2, $3, $4, $5, $6, $7, $9, $10);	//bool,bool, bool, bool, string, expr, expr, bool
-    
-	}  
+
+	}
 |
 	TOK_STR D_suffix H_suffix B_suffix T_suffix cond register TOK_COMMA zero_offset TOK_COMMA flexOffset{
 		arm_translate<ARM_TOKEN(STR)> (data, $2, $3, $4, $5, $6, $7, $9, $11);	//bool,bool, bool, bool, string, expr, expr, expr
-	}	
+	}
 ;
 
 
@@ -350,7 +350,7 @@ cond:
 	TOK_AL{
 		$$ = $1;
 	}
-;	
+;
 
 T_suffix:
 	{
@@ -360,7 +360,7 @@ T_suffix:
 	TOK_PROCESSOR_MODE_SUFFIX{
 		$$ = true;
 	}
-;	
+;
 
 D_suffix:
 	{
@@ -370,7 +370,7 @@ D_suffix:
 	TOK_DOUBLE_WORD_SUFFIX{
 		$$ = true;
 	}
-;	
+;
 
 H_suffix:
   {
@@ -380,7 +380,7 @@ H_suffix:
   TOK_HALF_WORD_SUFFIX{
     $$ = true;
   }
-;  
+;
 
 B_suffix:
 	{
@@ -428,15 +428,15 @@ preIndexed_offset:
   TOK_LVUONG register TOK_COMMA flexOffset TOK_RVUONG{
     $$ = MemCell::create( BinaryApp::create (BV_OP_ADD, $2, $4), 0,
 			  data.arch->get_word_size ());
-	} 
-;  
+	}
+;
 
 /*
 postIndexed_offset:
   TOK_LVUONG register TOK_RVUONG TOK_COMMA flexOffset {
 		$$ = MemCell::create( BinaryApp::create (BV_OP_ADD, $2, $5));
-	} 
-;  
+	}
+;
 */
 
 shifted_register:
@@ -455,17 +455,17 @@ shifted_register:
 |
 	register TOK_COMMA TOK_LSR immediate{
 		$$ = BinaryApp::create (BV_OP_RSH_S, $1, $4);
-	}	
+	}
 |
 	register TOK_COMMA TOK_ROR immediate{
 		$$ = BinaryApp::create (BV_OP_ROR, $1, $4);
-	}	
+	}
 |
 	register TOK_COMMA TOK_RRX{
 		//XXX: change this -> RRX
 		$$ = BinaryApp::create (BV_OP_ROR, $1, Constant::one (BV_DEFAULT_SIZE));
-	}	
-  
+	}
+
 |
 	register TOK_COMMA TOK_ASR register{
 		//XXX: need to distinguish between ASR and LSR
@@ -482,7 +482,7 @@ shifted_register:
 |
 	register TOK_COMMA TOK_ROR register{
 		$$ = BinaryApp::create (BV_OP_ROR, $1, $4);
-	}	  
+	}	
 ;	
 	
 
@@ -518,7 +518,7 @@ generalDataProcessInstr:
 	TOK_SUB S_suffix cond register TOK_COMMA register TOK_COMMA operand2{
 		arm_translate<ARM_TOKEN(SUB)> (data, $2, $3, $4, $6, $8);	//bool, string, expr, expr, expr
 	}
-  
+
 |
 	
 	TOK_RSB S_suffix cond register TOK_COMMA register TOK_COMMA operand2{
@@ -564,7 +564,7 @@ generalDataProcessInstr:
 |
 	TOK_POP TOK_LEFT_CURLY_BRACKET register_list TOK_RIGHT_CURLY_BRACKET{
 		arm_translate<ARM_TOKEN(POP)> (data, $3);	//std::list
-	}  
+	}
 |
 	TOK_CMP cond register TOK_COMMA operand2{
 		arm_translate<ARM_TOKEN(CMP)> (data, $2, $3, $5);	//string, expr, expr
@@ -572,7 +572,7 @@ generalDataProcessInstr:
 |
 	TOK_CMN cond register TOK_COMMA operand2{
 		arm_translate<ARM_TOKEN(CMN)> (data, $2, $3, $5);	//string, expr, expr
-	}  
+	}
 ;
 
 S_suffix:
@@ -656,10 +656,10 @@ multiplyInstr:
   }
 |
 	TOK_SDIV register TOK_COMMA register TOK_COMMA register{
-		arm_translate<ARM_TOKEN(SDIV)> (data, $2, $4, $6);	//expr, expr, expr    
+		arm_translate<ARM_TOKEN(SDIV)> (data, $2, $4, $6);	//expr, expr, expr
   }
 ;
-	
+
 branchesInstr:
 
   TOK_B_OR_BYTE_SUFFIX cond TOK_INTEGER{
@@ -672,7 +672,7 @@ branchesInstr:
 |
   TOK_BX cond register{
     arm_translate<ARM_TOKEN(BX)> (data, $2, $3);	//string, int
-  }  
+  }
 ;
 
 integer:
@@ -680,12 +680,12 @@ integer:
 |
 	TOK_MINUS TOK_INTEGER {$$ = -$2;}
 |
-	TOK_INTEGER 	{$$ = $1;}
-;	
+	TOK_INTEGER	{$$ = $1;}
+;
 
 register:
 	TOK_REGISTER {
-		$$ = data.get_register ($1->c_str ()); 
+		$$ = data.get_register ($1->c_str ());
 		if ($$ == NULL)
 		{
 		  error (@1, ": error: unknown register " + *$1);
@@ -698,7 +698,7 @@ register:
 		}
 	}
  ;
- 
+
 register_list:
   register{
     std::list<RegisterExpr *> *tmp = new list<RegisterExpr *>();

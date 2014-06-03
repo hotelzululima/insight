@@ -3,7 +3,7 @@ PYNSIGHT_HOME=$(DESTDIR)${pkgdatadir}/pynsight/
 PYNSIGHT_DESTDIR=${PYNSIGHT_HOME}/${PYNSIGHT_PKGNAME}
 PYNSIGHT_SCRIPT_FILES=__init__.py utils.py debugger.py iii.py xdot.py
 
-bin_PROGRAMS = pynsight 
+bin_PROGRAMS = pynsight
 bin_SCRIPTS = iii
 
 EXTRA_DIST = ${PYNSIGHT_SCRIPT_FILES} ${bin_SCRIPTS}
@@ -14,7 +14,7 @@ pynsight_SOURCES = pynsight.cc pynsight.hh program.cc io.cc error.cc \
 
 pynsight_CPPFLAGS = @PYTHON_CPPFLAGS@ @BINUTILS_CFLAGS@ -I$(top_srcdir)/src \
                     -DPYNSIGHT_HOME="\"${PYNSIGHT_HOME}\"" \
-                    -DPYNSIGHT_PACKAGE="\"${PYNSIGHT_PKGNAME}\"" 
+                    -DPYNSIGHT_PACKAGE="\"${PYNSIGHT_PKGNAME}\""
 
 pynsight_CXXFLAGS = -Wno-deprecated -Wno-long-long \
                     -Wno-missing-field-initializers

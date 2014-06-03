@@ -71,13 +71,13 @@ Microcode::~Microcode()
     delete *node;
 }
 
-MicrocodeAddress 
+MicrocodeAddress
 Microcode::entry_point () const
 {
   return start;
 }
 
-void 
+void
 Microcode::set_entry_point (MicrocodeAddress addr)
 {
   start = addr;
@@ -100,14 +100,14 @@ Microcode::has_node_at (MicrocodeAddress addr) const
 }
 
 MicrocodeNode *
-Microcode::get_or_create_node (MicrocodeAddress addr) 
+Microcode::get_or_create_node (MicrocodeAddress addr)
 {
   MicrocodeNode *node;
 
   if (has_node_at (addr))
     {
       node = get_node(addr);
-    } 
+    }
   else
     {
       node = new MicrocodeNode(addr);
@@ -149,7 +149,7 @@ Microcode::add_skip(MicrocodeAddress beg, MicrocodeAddress end, Expr *guard)
 
 StmtArrow *
 Microcode::add_assignment(MicrocodeAddress beg, LValue *lvalue, Expr *expr,
-			  MicrocodeAddress end, Expr *guard) 
+			  MicrocodeAddress end, Expr *guard)
 {
   MicrocodeNode *b = get_or_create_node(beg);
 
@@ -175,7 +175,7 @@ Microcode::add_assignment(MicrocodeAddress &beg, LValue *lvalue, Expr *expr,
 }
 
 StmtArrow *
-Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard) 
+Microcode::add_jump(MicrocodeAddress beg, Expr *target, Expr *guard)
 {
   MicrocodeNode *b = get_or_create_node(beg);
 
@@ -196,7 +196,7 @@ Microcode::add_external(MicrocodeAddress /* beg */, Expr * /* relation */,
 }
 
 
-static void 
+static void
 s_copy_annotations (Annotable *dst, const Annotable *src, address_t shift,
 		    bool fold)
 {
@@ -205,7 +205,7 @@ s_copy_annotations (Annotable *dst, const Annotable *src, address_t shift,
   for(Annotable::AnnotationMap::const_iterator i = annotations->begin ();
       i != annotations->end (); i++)
     {
-      const NextInstAnnotation *maa = 
+      const NextInstAnnotation *maa =
 	dynamic_cast<const NextInstAnnotation *>(i ->second);
       Annotation *newa;
       if (maa != NULL)
@@ -219,7 +219,7 @@ s_copy_annotations (Annotable *dst, const Annotable *src, address_t shift,
     }
 }
 
-void 
+void
 Microcode::merge (const Microcode *other, address_t shift, bool fold)
 {
   map<MicrocodeAddress, MicrocodeAddress, LessThanFunctor<MicrocodeAddress> >
@@ -261,14 +261,14 @@ Microcode::merge (const Microcode *other, address_t shift, bool fold)
       s_copy_annotations (newsrc, node, shift, fold);
     }
 
-  Microcode_iterate_nodes(*other, in) 
+  Microcode_iterate_nodes(*other, in)
     {
       MicrocodeNode *node = *in;
       MicrocodeAddress loc = node->get_loc ();
       MicrocodeAddress newloc = address_map[loc];
       MicrocodeNode *newsrc = get_node (newloc);
-      
-      MicrocodeNode_iterate_successors(*node, is) 
+
+      MicrocodeNode_iterate_successors(*node, is)
 	{
 	  StmtArrow *a = *is;
 	  StmtArrow *na;
@@ -287,7 +287,7 @@ Microcode::merge (const Microcode *other, address_t shift, bool fold)
 	    {
 	      DynamicArrow *da = dynamic_cast<DynamicArrow *> (a);
 	      na = newsrc->add_successor (da->get_condition ()->ref (),
-					  da->get_target ()->ref (),  
+					  da->get_target ()->ref (),
 					  da->get_stmt ()->clone ());
 	    }
 	  s_copy_annotations (na, a, shift, fold);
@@ -304,13 +304,13 @@ Microcode::output_text (ostream & out) const
 }
 
 
-static bool 
+static bool
 microcode_sort_ordering (MicrocodeNode *e1, MicrocodeNode *e2)
 {
   return (*e1) < (*e2);
 }
 
-void 
+void
 Microcode::sort ()
 {
   std::sort (begin_nodes (), end_nodes (), microcode_sort_ordering);
@@ -342,16 +342,16 @@ make_static (Microcode *mc, DynamicArrow *da)
     return Option<StaticArrow*>();
 }
 
-void 
+void
 Microcode::simplify_and_clean_targets()
 {
   set<MicrocodeNode *> new_nodes; // temporary list to record nodes to be added.
 
-  Microcode_nodes_pass(node) 
+  Microcode_nodes_pass(node)
   {
     vector<StmtArrow *> * succs = (*node)->get_successors();
     vector<StmtArrow *>::iterator arr = succs->begin();
-    
+
     while (arr != succs->end())
       {
 	// For static arrow, one tests that the target well
@@ -389,23 +389,23 @@ Microcode::simplify_and_clean_targets()
     add_node (*new_node );
 }
 
-void 
-Microcode::regular_form () 
+void
+Microcode::regular_form ()
 {
   simplify_and_clean_targets ();
   sort ();
 }
 
-vector<Expr **> * 
-Microcode::expr_list() 
+vector<Expr **> *
+Microcode::expr_list()
 {
   vector<Expr **> * all_expr = new vector<Expr **>;
 
-  Microcode_iterate_nodes(*this, node) 
+  Microcode_iterate_nodes(*this, node)
     {
       vector<Expr **> * exprs = (*node)->expr_list();
       for (vector<Expr **>::iterator e = exprs->begin(); e != exprs->end();
-	   e++) 
+	   e++)
         all_expr->push_back(*e);
       delete exprs;
     }
@@ -413,10 +413,10 @@ Microcode::expr_list()
   return all_expr;
 }
 
-pair<StmtArrow *, MicrocodeNode *> 
+pair<StmtArrow *, MicrocodeNode *>
 Microcode::get_first_successor(MicrocodeNode *n)  const
 {
-  if (n == NULL || n->get_successors()->size() == 0) 
+  if (n == NULL || n->get_successors()->size() == 0)
       return pair<StmtArrow *, MicrocodeNode *>(NULL, NULL);
 
   StmtArrow *out = n->get_successors()->at(0);
@@ -426,7 +426,7 @@ Microcode::get_first_successor(MicrocodeNode *n)  const
   return pair<StmtArrow *, MicrocodeNode *>(out, dst);
 }
 
-pair<StmtArrow *, MicrocodeNode *> 
+pair<StmtArrow *, MicrocodeNode *>
 Microcode::get_next_successor(MicrocodeNode *n, StmtArrow *e) const
 {
   vector<StmtArrow *>::iterator it = n->get_successors()->begin();
@@ -450,7 +450,7 @@ Microcode::get_next_successor(MicrocodeNode *n, StmtArrow *e) const
   return pair<StmtArrow *, MicrocodeNode *>(ne, nn);
 }
 
-int 
+int
 Microcode::get_nb_successors(MicrocodeNode *n) const
 {
   return n->get_successors()->size();
@@ -462,7 +462,7 @@ Microcode::get_source(StmtArrow *e) const
   return get_node (e->get_origin());
 }
 
-MicrocodeNode * 
+MicrocodeNode *
 Microcode::get_target(StmtArrow *e) const
 {
   Option<MicrocodeAddress> target = e->extract_target();
@@ -500,13 +500,13 @@ Microcode::end_nodes () const
 }
 
 Microcode::node_iterator
-Microcode::begin_nodes () 
+Microcode::begin_nodes ()
 {
   return nodes.begin ();
 }
 
 Microcode::node_iterator
-Microcode::end_nodes () 
+Microcode::end_nodes ()
 {
   return nodes.end ();
 }
