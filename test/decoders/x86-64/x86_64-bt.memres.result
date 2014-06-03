@@ -1,32 +1,32 @@
 **** Decode instruction: bt     %ax,%bx
-[(0x0,0)] @{asm:=bt     %ax,%bx}@ StaticArrow (0x0,0) %cf{0;1} := (RSH_U %rbx{0;16} (EXTEND_U %rax{0;4} 0x10{0;64}){0;16}){0;1}  --> (0x4,0)
-[(0x4,0)] 
+[0x0,0] @{asm:=bt     %ax,%bx}@ %cf{0;1} := (RSH_U %rbx{0;16} (EXTEND_U %rax{0;4} 0x10{0;64}){0;16}){0;1} --> (0x4,0);
+[0x4,0]
 
 **** Decode instruction: bt     %eax,%ebx
-[(0x4,0)] @{asm:=bt     %eax,%ebx}@ StaticArrow (0x4,0) %cf{0;1} := (RSH_U %rbx{0;32} (EXTEND_U %rax{0;6} 0x20{0;64}){0;32}){0;1}  --> (0x7,0)
-[(0x7,0)] 
+[0x4,0] @{asm:=bt     %eax,%ebx}@ %cf{0;1} := (RSH_U %rbx{0;32} (EXTEND_U %rax{0;6} 0x20{0;64}){0;32}){0;1} --> (0x7,0);
+[0x7,0]
 
 **** Decode instruction: bt     %ax,0x12345678
-[(0x7,0)] @{asm:=bt     %ax,0x12345678}@ StaticArrow (0x7,0) %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U %rax{0;4} 0x40{0;64}){0;64}){0;1}  --> (0x10,0)
-[(0x10,0)] 
+[0x7,0] @{asm:=bt     %ax,0x12345678}@ %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U %rax{0;4} 0x40{0;64}){0;64}){0;1} --> (0x10,0);
+[0x10,0]
 
 **** Decode instruction: bt     %eax,0x12345678
-[(0x10,0)] @{asm:=bt     %eax,0x12345678}@ StaticArrow (0x10,0) %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U %rax{0;4} 0x40{0;64}){0;64}){0;1}  --> (0x18,0)
-[(0x18,0)] 
+[0x10,0] @{asm:=bt     %eax,0x12345678}@ %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U %rax{0;4} 0x40{0;64}){0;64}){0;1} --> (0x18,0);
+[0x18,0]
 
 **** Decode instruction: bt     $0x13,%ax
-[(0x18,0)] @{asm:=bt     $0x13,%ax}@ StaticArrow (0x18,0) %cf{0;1} := (RSH_U %rax{0;16} (EXTEND_U 0x3{0;4} 0x10{0;64}){0;16}){0;1}  --> (0x1d,0)
-[(0x1d,0)] 
+[0x18,0] @{asm:=bt     $0x13,%ax}@ %cf{0;1} := (RSH_U %rax{0;16} (EXTEND_U 0x3{0;4} 0x10{0;64}){0;16}){0;1} --> (0x1d,0);
+[0x1d,0]
 
 **** Decode instruction: bt     $0x13,%eax
-[(0x1d,0)] @{asm:=bt     $0x13,%eax}@ StaticArrow (0x1d,0) %cf{0;1} := (RSH_U %rax{0;32} (EXTEND_U 0x13{0;6} 0x20{0;64}){0;32}){0;1}  --> (0x21,0)
-[(0x21,0)] 
+[0x1d,0] @{asm:=bt     $0x13,%eax}@ %cf{0;1} := (RSH_U %rax{0;32} (EXTEND_U 0x13{0;6} 0x20{0;64}){0;32}){0;1} --> (0x21,0);
+[0x21,0]
 
 **** Decode instruction: btw    $0x13,0x12345678
-[(0x21,0)] @{asm:=btw    $0x13,0x12345678}@ StaticArrow (0x21,0) %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U 0x3{0;4} 0x40{0;64}){0;64}){0;1}  --> (0x2b,0)
-[(0x2b,0)] 
+[0x21,0] @{asm:=btw    $0x13,0x12345678}@ %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U 0x3{0;4} 0x40{0;64}){0;64}){0;1} --> (0x2b,0);
+[0x2b,0]
 
 **** Decode instruction: btl    $0x13,0x12345678
-[(0x2b,0)] @{asm:=btl    $0x13,0x12345678}@ StaticArrow (0x2b,0) %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U 0x3{0;4} 0x40{0;64}){0;64}){0;1}  --> (0x34,0)
-[(0x34,0)] 
+[0x2b,0] @{asm:=btl    $0x13,0x12345678}@ %cf{0;1} := (RSH_U [0x12345678{0;64}]{0;64} (EXTEND_U 0x3{0;4} 0x40{0;64}){0;64}){0;1} --> (0x34,0);
+[0x34,0]
 

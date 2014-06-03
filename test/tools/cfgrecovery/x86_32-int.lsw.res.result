@@ -1,5 +1,4 @@
-[(0x0,0)] @{asm:=int3   , next-inst:=(0x1,0)}@ StaticArrow (0x0,0) Skip << False >> --> (0x1,0)
-[(0x1,0)] @{asm:=int    $0x10, next-inst:=(0x3,0)}@ StaticArrow (0x1,0) Skip << False >> --> (0x3,0)
-[(0x3,0)] @{asm:=into   , next-inst:=(0x4,0)}@ StaticArrow (0x3,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x4,0)
-[(0x4,0)] 
-
+[0x0,0] @{asm:=int3   , next-inst:=(0x1,0)}@ << False >> Skip --> (0x1,0);
+[0x1,0] @{asm:=int    $0x10, next-inst:=(0x3,0)}@ << False >> Skip --> (0x3,0);
+[0x3,0] @{asm:=into   , next-inst:=(0x4,0)}@ << (NOT %of{0;1}){0;1} >> Skip --> (0x4,0);
+[0x4,0]

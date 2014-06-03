@@ -30,12 +30,13 @@
 #ifndef KERNEL_MICROCODE_MICROCODE_NODE_HH
 #define KERNEL_MICROCODE_MICROCODE_NODE_HH
 
-#include <vector>
 #include <set>
+#include <vector>
 
 #include <domains/concrete/ConcreteAddress.hh>
-#include <kernel/Architecture.hh>
+
 #include <kernel/Annotable.hh>
+#include <kernel/Architecture.hh>
 #include <kernel/Expressions.hh>
 #include <kernel/microcode/MicrocodeAddress.hh>
 #include <kernel/microcode/MicrocodeStatements.hh>

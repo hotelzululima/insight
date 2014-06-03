@@ -1,36 +1,36 @@
 **** Decode instruction: jmpq   0x5
-[(0x0,0)] @{asm:=jmpq   0x5}@ StaticArrow (0x0,0) Skip  --> (0x5,0)
-[(0x5,0)] 
+[0x0,0] @{asm:=jmpq   0x5}@ Skip --> (0x5,0);
+[0x5,0]
 
 **** Decode instruction: jmpq   *0x12
-[(0x5,0)] @{asm:=jmpq   *0x12}@ DynamicArrow (0x5,0) Jmp [0x12{0;64}]{0;64}  --> << [0x12{0;64}]{0;64} >>
+[0x5,0] @{asm:=jmpq   *0x12}@ Jmp --> [0x12{0;64}]{0;64};
 
 **** Decode instruction: jmpq   0x11
-[(0xc,0)] @{asm:=jmpq   0x11}@ StaticArrow (0xc,0) Skip  --> (0x11,0)
-[(0x11,0)] 
+[0xc,0] @{asm:=jmpq   0x11}@ Skip --> (0x11,0);
+[0x11,0]
 
 **** Decode instruction: jmpq   *0x1234
-[(0x11,0)] @{asm:=jmpq   *0x1234}@ DynamicArrow (0x11,0) Jmp [0x1234{0;64}]{0;64}  --> << [0x1234{0;64}]{0;64} >>
+[0x11,0] @{asm:=jmpq   *0x1234}@ Jmp --> [0x1234{0;64}]{0;64};
 
 **** Decode instruction: jmpq   0x1d
-[(0x18,0)] @{asm:=jmpq   0x1d}@ StaticArrow (0x18,0) Skip  --> (0x1d,0)
-[(0x1d,0)] 
+[0x18,0] @{asm:=jmpq   0x1d}@ Skip --> (0x1d,0);
+[0x1d,0]
 
 **** Decode instruction: jmpw   *%ax
-[(0x1d,0)] @{asm:=jmpw   *%ax}@ DynamicArrow (0x1d,0) Jmp %rax{0;16}  --> << %rax{0;16} >>
+[0x1d,0] @{asm:=jmpw   *%ax}@ Jmp --> %rax{0;16};
 
 **** Decode instruction: jmpq   *0x12345678
-[(0x20,0)] @{asm:=jmpq   *0x12345678}@ DynamicArrow (0x20,0) Jmp [0x12345678{0;64}]{0;64}  --> << [0x12345678{0;64}]{0;64} >>
+[0x20,0] @{asm:=jmpq   *0x12345678}@ Jmp --> [0x12345678{0;64}]{0;64};
 
 **** Decode instruction: jmpq   *%rax
-[(0x27,0)] @{asm:=jmpq   *%rax}@ DynamicArrow (0x27,0) Jmp %rax{0;64}  --> << %rax{0;64} >>
+[0x27,0] @{asm:=jmpq   *%rax}@ Jmp --> %rax{0;64};
 
 **** Decode instruction: jmpq   *%rax
-[(0x29,0)] @{asm:=jmpq   *%rax}@ DynamicArrow (0x29,0) Jmp %rax{0;64}  --> << %rax{0;64} >>
+[0x29,0] @{asm:=jmpq   *%rax}@ Jmp --> %rax{0;64};
 
 **** Decode instruction: jmpq   *0x12345678
-[(0x2b,0)] @{asm:=jmpq   *0x12345678}@ DynamicArrow (0x2b,0) Jmp [0x12345678{0;64}]{0;64}  --> << [0x12345678{0;64}]{0;64} >>
+[0x2b,0] @{asm:=jmpq   *0x12345678}@ Jmp --> [0x12345678{0;64}]{0;64};
 
 **** Decode instruction: jmpq   *0x12345678
-[(0x32,0)] @{asm:=jmpq   *0x12345678}@ DynamicArrow (0x32,0) Jmp [0x12345678{0;64}]{0;64}  --> << [0x12345678{0;64}]{0;64} >>
+[0x32,0] @{asm:=jmpq   *0x12345678}@ Jmp --> [0x12345678{0;64}]{0;64};
 

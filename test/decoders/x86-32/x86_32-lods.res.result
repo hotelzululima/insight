@@ -1,168 +1,168 @@
 **** Decode instruction: lods   %ds:(%esi),%al
-[(0x0,0)] @{asm:=lods   %ds:(%esi),%al}@ %eax{0;8} := [%esi{0;32}]{0;8}
-[(0x0,1)] StaticArrow (0x0,1) Skip << %df{0;1} >> --> (0x0,2)StaticArrow (0x0,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x0,3)
-[(0x0,2)] StaticArrow (0x0,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0x1,0)
-[(0x0,3)] StaticArrow (0x0,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0x1,0)
-[(0x1,0)] 
+[0x0,0] @{asm:=lods   %ds:(%esi),%al}@ %eax{0;8} := [%esi{0;32}]{0;8} --> (0x0,1);
+[0x0,1] << %df{0;1} >> Skip --> (0x0,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x0,3);
+[0x0,2] %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32} --> (0x1,0);
+[0x0,3] %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32} --> (0x1,0);
+[0x1,0]
 
 **** Decode instruction: lods   %ds:(%esi),%ax
-[(0x1,0)] @{asm:=lods   %ds:(%esi),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16}
-[(0x1,1)] StaticArrow (0x1,1) Skip << %df{0;1} >> --> (0x1,2)StaticArrow (0x1,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1,3)
-[(0x1,2)] StaticArrow (0x1,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0x3,0)
-[(0x1,3)] StaticArrow (0x1,3) %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32}  --> (0x3,0)
-[(0x3,0)] 
+[0x1,0] @{asm:=lods   %ds:(%esi),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16} --> (0x1,1);
+[0x1,1] << %df{0;1} >> Skip --> (0x1,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x1,3);
+[0x1,2] %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32} --> (0x3,0);
+[0x1,3] %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32} --> (0x3,0);
+[0x3,0]
 
 **** Decode instruction: lods   %ds:(%esi),%eax
-[(0x3,0)] @{asm:=lods   %ds:(%esi),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32}
-[(0x3,1)] StaticArrow (0x3,1) Skip << %df{0;1} >> --> (0x3,2)StaticArrow (0x3,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x3,3)
-[(0x3,2)] StaticArrow (0x3,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0x4,0)
-[(0x3,3)] StaticArrow (0x3,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0x4,0)
-[(0x4,0)] 
+[0x3,0] @{asm:=lods   %ds:(%esi),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32} --> (0x3,1);
+[0x3,1] << %df{0;1} >> Skip --> (0x3,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x3,3);
+[0x3,2] %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32} --> (0x4,0);
+[0x3,3] %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32} --> (0x4,0);
+[0x4,0]
 
 **** Decode instruction: lods   %ds:(%esi),%al
-[(0x4,0)] @{asm:=lods   %ds:(%esi),%al}@ %eax{0;8} := [%esi{0;32}]{0;8}
-[(0x4,1)] StaticArrow (0x4,1) Skip << %df{0;1} >> --> (0x4,2)StaticArrow (0x4,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x4,3)
-[(0x4,2)] StaticArrow (0x4,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0x5,0)
-[(0x4,3)] StaticArrow (0x4,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0x5,0)
-[(0x5,0)] 
+[0x4,0] @{asm:=lods   %ds:(%esi),%al}@ %eax{0;8} := [%esi{0;32}]{0;8} --> (0x4,1);
+[0x4,1] << %df{0;1} >> Skip --> (0x4,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x4,3);
+[0x4,2] %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32} --> (0x5,0);
+[0x4,3] %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32} --> (0x5,0);
+[0x5,0]
 
 **** Decode instruction: lods   %ds:(%esi),%ax
-[(0x5,0)] @{asm:=lods   %ds:(%esi),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16}
-[(0x5,1)] StaticArrow (0x5,1) Skip << %df{0;1} >> --> (0x5,2)StaticArrow (0x5,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x5,3)
-[(0x5,2)] StaticArrow (0x5,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0x7,0)
-[(0x5,3)] StaticArrow (0x5,3) %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32}  --> (0x7,0)
-[(0x7,0)] 
+[0x5,0] @{asm:=lods   %ds:(%esi),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16} --> (0x5,1);
+[0x5,1] << %df{0;1} >> Skip --> (0x5,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x5,3);
+[0x5,2] %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32} --> (0x7,0);
+[0x5,3] %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32} --> (0x7,0);
+[0x7,0]
 
 **** Decode instruction: lods   %ds:(%esi),%eax
-[(0x7,0)] @{asm:=lods   %ds:(%esi),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32}
-[(0x7,1)] StaticArrow (0x7,1) Skip << %df{0;1} >> --> (0x7,2)StaticArrow (0x7,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x7,3)
-[(0x7,2)] StaticArrow (0x7,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0x8,0)
-[(0x7,3)] StaticArrow (0x7,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0x8,0)
-[(0x8,0)] 
+[0x7,0] @{asm:=lods   %ds:(%esi),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32} --> (0x7,1);
+[0x7,1] << %df{0;1} >> Skip --> (0x7,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x7,3);
+[0x7,2] %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32} --> (0x8,0);
+[0x7,3] %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32} --> (0x8,0);
+[0x8,0]
 
 **** Decode instruction: lods   %ds:(%si),%al
-[(0x8,0)] @{asm:=lods   %ds:(%si),%al}@ %eax{0;8} := [%esi{0;32}]{0;8}
-[(0x8,1)] StaticArrow (0x8,1) Skip << %df{0;1} >> --> (0x8,2)StaticArrow (0x8,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x8,3)
-[(0x8,2)] StaticArrow (0x8,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0xa,0)
-[(0x8,3)] StaticArrow (0x8,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0xa,0)
-[(0xa,0)] 
+[0x8,0] @{asm:=lods   %ds:(%si),%al}@ %eax{0;8} := [%esi{0;32}]{0;8} --> (0x8,1);
+[0x8,1] << %df{0;1} >> Skip --> (0x8,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x8,3);
+[0x8,2] %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32} --> (0xa,0);
+[0x8,3] %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32} --> (0xa,0);
+[0xa,0]
 
 **** Decode instruction: lods   %ds:(%si),%ax
-[(0xa,0)] @{asm:=lods   %ds:(%si),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16}
-[(0xa,1)] StaticArrow (0xa,1) Skip << %df{0;1} >> --> (0xa,2)StaticArrow (0xa,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xa,3)
-[(0xa,2)] StaticArrow (0xa,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0xd,0)
-[(0xa,3)] StaticArrow (0xa,3) %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32}  --> (0xd,0)
-[(0xd,0)] 
+[0xa,0] @{asm:=lods   %ds:(%si),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16} --> (0xa,1);
+[0xa,1] << %df{0;1} >> Skip --> (0xa,2); << (NOT %df{0;1}){0;1} >> Skip --> (0xa,3);
+[0xa,2] %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32} --> (0xd,0);
+[0xa,3] %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32} --> (0xd,0);
+[0xd,0]
 
 **** Decode instruction: lods   %ds:(%si),%eax
-[(0xd,0)] @{asm:=lods   %ds:(%si),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32}
-[(0xd,1)] StaticArrow (0xd,1) Skip << %df{0;1} >> --> (0xd,2)StaticArrow (0xd,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xd,3)
-[(0xd,2)] StaticArrow (0xd,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0xf,0)
-[(0xd,3)] StaticArrow (0xd,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0xf,0)
-[(0xf,0)] 
+[0xd,0] @{asm:=lods   %ds:(%si),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32} --> (0xd,1);
+[0xd,1] << %df{0;1} >> Skip --> (0xd,2); << (NOT %df{0;1}){0;1} >> Skip --> (0xd,3);
+[0xd,2] %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32} --> (0xf,0);
+[0xd,3] %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32} --> (0xf,0);
+[0xf,0]
 
 **** Decode instruction: lods   %ds:(%si),%al
-[(0xf,0)] @{asm:=lods   %ds:(%si),%al}@ %eax{0;8} := [%esi{0;32}]{0;8}
-[(0xf,1)] StaticArrow (0xf,1) Skip << %df{0;1} >> --> (0xf,2)StaticArrow (0xf,1) Skip << (NOT %df{0;1}){0;1} >> --> (0xf,3)
-[(0xf,2)] StaticArrow (0xf,2) %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32}  --> (0x11,0)
-[(0xf,3)] StaticArrow (0xf,3) %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32}  --> (0x11,0)
-[(0x11,0)] 
+[0xf,0] @{asm:=lods   %ds:(%si),%al}@ %eax{0;8} := [%esi{0;32}]{0;8} --> (0xf,1);
+[0xf,1] << %df{0;1} >> Skip --> (0xf,2); << (NOT %df{0;1}){0;1} >> Skip --> (0xf,3);
+[0xf,2] %esi{0;32} := (SUB %esi{0;32} 0x1{0;32}){0;32} --> (0x11,0);
+[0xf,3] %esi{0;32} := (ADD %esi{0;32} 0x1{0;32}){0;32} --> (0x11,0);
+[0x11,0]
 
 **** Decode instruction: lods   %ds:(%si),%ax
-[(0x11,0)] @{asm:=lods   %ds:(%si),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16}
-[(0x11,1)] StaticArrow (0x11,1) Skip << %df{0;1} >> --> (0x11,2)StaticArrow (0x11,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x11,3)
-[(0x11,2)] StaticArrow (0x11,2) %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32}  --> (0x14,0)
-[(0x11,3)] StaticArrow (0x11,3) %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32}  --> (0x14,0)
-[(0x14,0)] 
+[0x11,0] @{asm:=lods   %ds:(%si),%ax}@ %eax{0;16} := [%esi{0;32}]{0;16} --> (0x11,1);
+[0x11,1] << %df{0;1} >> Skip --> (0x11,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x11,3);
+[0x11,2] %esi{0;32} := (SUB %esi{0;32} 0x2{0;32}){0;32} --> (0x14,0);
+[0x11,3] %esi{0;32} := (ADD %esi{0;32} 0x2{0;32}){0;32} --> (0x14,0);
+[0x14,0]
 
 **** Decode instruction: lods   %ds:(%si),%eax
-[(0x14,0)] @{asm:=lods   %ds:(%si),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32}
-[(0x14,1)] StaticArrow (0x14,1) Skip << %df{0;1} >> --> (0x14,2)StaticArrow (0x14,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x14,3)
-[(0x14,2)] StaticArrow (0x14,2) %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32}  --> (0x16,0)
-[(0x14,3)] StaticArrow (0x14,3) %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32}  --> (0x16,0)
-[(0x16,0)] 
+[0x14,0] @{asm:=lods   %ds:(%si),%eax}@ %eax{0;32} := [%esi{0;32}]{0;32} --> (0x14,1);
+[0x14,1] << %df{0;1} >> Skip --> (0x14,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x14,3);
+[0x14,2] %esi{0;32} := (SUB %esi{0;32} 0x4{0;32}){0;32} --> (0x16,0);
+[0x14,3] %esi{0;32} := (ADD %esi{0;32} 0x4{0;32}){0;32} --> (0x16,0);
+[0x16,0]
 
 **** Decode instruction: stos   %al,%es:(%edi)
-[(0x16,0)] @{asm:=stos   %al,%es:(%edi)}@ [%edi{0;32}]{0;8} := %eax{0;8}
-[(0x16,1)] StaticArrow (0x16,1) Skip << %df{0;1} >> --> (0x16,2)StaticArrow (0x16,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x16,3)
-[(0x16,2)] StaticArrow (0x16,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x17,0)
-[(0x16,3)] StaticArrow (0x16,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x17,0)
-[(0x17,0)] 
+[0x16,0] @{asm:=stos   %al,%es:(%edi)}@ [%edi{0;32}]{0;8} := %eax{0;8} --> (0x16,1);
+[0x16,1] << %df{0;1} >> Skip --> (0x16,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x16,3);
+[0x16,2] %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32} --> (0x17,0);
+[0x16,3] %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32} --> (0x17,0);
+[0x17,0]
 
 **** Decode instruction: stos   %ax,%es:(%edi)
-[(0x17,0)] @{asm:=stos   %ax,%es:(%edi)}@ [%edi{0;32}]{0;16} := %eax{0;16}
-[(0x17,1)] StaticArrow (0x17,1) Skip << %df{0;1} >> --> (0x17,2)StaticArrow (0x17,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x17,3)
-[(0x17,2)] StaticArrow (0x17,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x19,0)
-[(0x17,3)] StaticArrow (0x17,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x19,0)
-[(0x19,0)] 
+[0x17,0] @{asm:=stos   %ax,%es:(%edi)}@ [%edi{0;32}]{0;16} := %eax{0;16} --> (0x17,1);
+[0x17,1] << %df{0;1} >> Skip --> (0x17,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x17,3);
+[0x17,2] %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32} --> (0x19,0);
+[0x17,3] %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32} --> (0x19,0);
+[0x19,0]
 
 **** Decode instruction: stos   %eax,%es:(%edi)
-[(0x19,0)] @{asm:=stos   %eax,%es:(%edi)}@ [%edi{0;32}]{0;32} := %eax{0;32}
-[(0x19,1)] StaticArrow (0x19,1) Skip << %df{0;1} >> --> (0x19,2)StaticArrow (0x19,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x19,3)
-[(0x19,2)] StaticArrow (0x19,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x1a,0)
-[(0x19,3)] StaticArrow (0x19,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x1a,0)
-[(0x1a,0)] 
+[0x19,0] @{asm:=stos   %eax,%es:(%edi)}@ [%edi{0;32}]{0;32} := %eax{0;32} --> (0x19,1);
+[0x19,1] << %df{0;1} >> Skip --> (0x19,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x19,3);
+[0x19,2] %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32} --> (0x1a,0);
+[0x19,3] %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32} --> (0x1a,0);
+[0x1a,0]
 
 **** Decode instruction: stos   %al,%es:(%edi)
-[(0x1a,0)] @{asm:=stos   %al,%es:(%edi)}@ [%edi{0;32}]{0;8} := %eax{0;8}
-[(0x1a,1)] StaticArrow (0x1a,1) Skip << %df{0;1} >> --> (0x1a,2)StaticArrow (0x1a,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1a,3)
-[(0x1a,2)] StaticArrow (0x1a,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x1b,0)
-[(0x1a,3)] StaticArrow (0x1a,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x1b,0)
-[(0x1b,0)] 
+[0x1a,0] @{asm:=stos   %al,%es:(%edi)}@ [%edi{0;32}]{0;8} := %eax{0;8} --> (0x1a,1);
+[0x1a,1] << %df{0;1} >> Skip --> (0x1a,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x1a,3);
+[0x1a,2] %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32} --> (0x1b,0);
+[0x1a,3] %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32} --> (0x1b,0);
+[0x1b,0]
 
 **** Decode instruction: stos   %ax,%es:(%edi)
-[(0x1b,0)] @{asm:=stos   %ax,%es:(%edi)}@ [%edi{0;32}]{0;16} := %eax{0;16}
-[(0x1b,1)] StaticArrow (0x1b,1) Skip << %df{0;1} >> --> (0x1b,2)StaticArrow (0x1b,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1b,3)
-[(0x1b,2)] StaticArrow (0x1b,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x1d,0)
-[(0x1b,3)] StaticArrow (0x1b,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x1d,0)
-[(0x1d,0)] 
+[0x1b,0] @{asm:=stos   %ax,%es:(%edi)}@ [%edi{0;32}]{0;16} := %eax{0;16} --> (0x1b,1);
+[0x1b,1] << %df{0;1} >> Skip --> (0x1b,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x1b,3);
+[0x1b,2] %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32} --> (0x1d,0);
+[0x1b,3] %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32} --> (0x1d,0);
+[0x1d,0]
 
 **** Decode instruction: stos   %eax,%es:(%edi)
-[(0x1d,0)] @{asm:=stos   %eax,%es:(%edi)}@ [%edi{0;32}]{0;32} := %eax{0;32}
-[(0x1d,1)] StaticArrow (0x1d,1) Skip << %df{0;1} >> --> (0x1d,2)StaticArrow (0x1d,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1d,3)
-[(0x1d,2)] StaticArrow (0x1d,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x1e,0)
-[(0x1d,3)] StaticArrow (0x1d,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x1e,0)
-[(0x1e,0)] 
+[0x1d,0] @{asm:=stos   %eax,%es:(%edi)}@ [%edi{0;32}]{0;32} := %eax{0;32} --> (0x1d,1);
+[0x1d,1] << %df{0;1} >> Skip --> (0x1d,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x1d,3);
+[0x1d,2] %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32} --> (0x1e,0);
+[0x1d,3] %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32} --> (0x1e,0);
+[0x1e,0]
 
 **** Decode instruction: stos   %al,%es:(%di)
-[(0x1e,0)] @{asm:=stos   %al,%es:(%di)}@ [%edi{0;32}]{0;8} := %eax{0;8}
-[(0x1e,1)] StaticArrow (0x1e,1) Skip << %df{0;1} >> --> (0x1e,2)StaticArrow (0x1e,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x1e,3)
-[(0x1e,2)] StaticArrow (0x1e,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x20,0)
-[(0x1e,3)] StaticArrow (0x1e,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x20,0)
-[(0x20,0)] 
+[0x1e,0] @{asm:=stos   %al,%es:(%di)}@ [%edi{0;32}]{0;8} := %eax{0;8} --> (0x1e,1);
+[0x1e,1] << %df{0;1} >> Skip --> (0x1e,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x1e,3);
+[0x1e,2] %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32} --> (0x20,0);
+[0x1e,3] %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32} --> (0x20,0);
+[0x20,0]
 
 **** Decode instruction: stos   %ax,%es:(%di)
-[(0x20,0)] @{asm:=stos   %ax,%es:(%di)}@ [%edi{0;32}]{0;16} := %eax{0;16}
-[(0x20,1)] StaticArrow (0x20,1) Skip << %df{0;1} >> --> (0x20,2)StaticArrow (0x20,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x20,3)
-[(0x20,2)] StaticArrow (0x20,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x23,0)
-[(0x20,3)] StaticArrow (0x20,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x23,0)
-[(0x23,0)] 
+[0x20,0] @{asm:=stos   %ax,%es:(%di)}@ [%edi{0;32}]{0;16} := %eax{0;16} --> (0x20,1);
+[0x20,1] << %df{0;1} >> Skip --> (0x20,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x20,3);
+[0x20,2] %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32} --> (0x23,0);
+[0x20,3] %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32} --> (0x23,0);
+[0x23,0]
 
 **** Decode instruction: stos   %eax,%es:(%di)
-[(0x23,0)] @{asm:=stos   %eax,%es:(%di)}@ [%edi{0;32}]{0;32} := %eax{0;32}
-[(0x23,1)] StaticArrow (0x23,1) Skip << %df{0;1} >> --> (0x23,2)StaticArrow (0x23,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x23,3)
-[(0x23,2)] StaticArrow (0x23,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x25,0)
-[(0x23,3)] StaticArrow (0x23,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x25,0)
-[(0x25,0)] 
+[0x23,0] @{asm:=stos   %eax,%es:(%di)}@ [%edi{0;32}]{0;32} := %eax{0;32} --> (0x23,1);
+[0x23,1] << %df{0;1} >> Skip --> (0x23,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x23,3);
+[0x23,2] %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32} --> (0x25,0);
+[0x23,3] %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32} --> (0x25,0);
+[0x25,0]
 
 **** Decode instruction: stos   %al,%es:(%di)
-[(0x25,0)] @{asm:=stos   %al,%es:(%di)}@ [%edi{0;32}]{0;8} := %eax{0;8}
-[(0x25,1)] StaticArrow (0x25,1) Skip << %df{0;1} >> --> (0x25,2)StaticArrow (0x25,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x25,3)
-[(0x25,2)] StaticArrow (0x25,2) %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32}  --> (0x27,0)
-[(0x25,3)] StaticArrow (0x25,3) %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32}  --> (0x27,0)
-[(0x27,0)] 
+[0x25,0] @{asm:=stos   %al,%es:(%di)}@ [%edi{0;32}]{0;8} := %eax{0;8} --> (0x25,1);
+[0x25,1] << %df{0;1} >> Skip --> (0x25,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x25,3);
+[0x25,2] %edi{0;32} := (SUB %edi{0;32} 0x1{0;32}){0;32} --> (0x27,0);
+[0x25,3] %edi{0;32} := (ADD %edi{0;32} 0x1{0;32}){0;32} --> (0x27,0);
+[0x27,0]
 
 **** Decode instruction: stos   %ax,%es:(%di)
-[(0x27,0)] @{asm:=stos   %ax,%es:(%di)}@ [%edi{0;32}]{0;16} := %eax{0;16}
-[(0x27,1)] StaticArrow (0x27,1) Skip << %df{0;1} >> --> (0x27,2)StaticArrow (0x27,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x27,3)
-[(0x27,2)] StaticArrow (0x27,2) %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32}  --> (0x2a,0)
-[(0x27,3)] StaticArrow (0x27,3) %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32}  --> (0x2a,0)
-[(0x2a,0)] 
+[0x27,0] @{asm:=stos   %ax,%es:(%di)}@ [%edi{0;32}]{0;16} := %eax{0;16} --> (0x27,1);
+[0x27,1] << %df{0;1} >> Skip --> (0x27,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x27,3);
+[0x27,2] %edi{0;32} := (SUB %edi{0;32} 0x2{0;32}){0;32} --> (0x2a,0);
+[0x27,3] %edi{0;32} := (ADD %edi{0;32} 0x2{0;32}){0;32} --> (0x2a,0);
+[0x2a,0]
 
 **** Decode instruction: stos   %eax,%es:(%di)
-[(0x2a,0)] @{asm:=stos   %eax,%es:(%di)}@ [%edi{0;32}]{0;32} := %eax{0;32}
-[(0x2a,1)] StaticArrow (0x2a,1) Skip << %df{0;1} >> --> (0x2a,2)StaticArrow (0x2a,1) Skip << (NOT %df{0;1}){0;1} >> --> (0x2a,3)
-[(0x2a,2)] StaticArrow (0x2a,2) %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32}  --> (0x2c,0)
-[(0x2a,3)] StaticArrow (0x2a,3) %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32}  --> (0x2c,0)
-[(0x2c,0)] 
+[0x2a,0] @{asm:=stos   %eax,%es:(%di)}@ [%edi{0;32}]{0;32} := %eax{0;32} --> (0x2a,1);
+[0x2a,1] << %df{0;1} >> Skip --> (0x2a,2); << (NOT %df{0;1}){0;1} >> Skip --> (0x2a,3);
+[0x2a,2] %edi{0;32} := (SUB %edi{0;32} 0x4{0;32}){0;32} --> (0x2c,0);
+[0x2a,3] %edi{0;32} := (ADD %edi{0;32} 0x4{0;32}){0;32} --> (0x2c,0);
+[0x2c,0]
 

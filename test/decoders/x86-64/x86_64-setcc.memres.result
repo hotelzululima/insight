@@ -1,360 +1,360 @@
 **** Decode instruction: seta   0x1111
-[(0x0,0)] @{asm:=seta   0x1111}@ StaticArrow (0x0,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x0,1)StaticArrow (0x0,0) Skip << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x0,2)
-[(0x0,1)] StaticArrow (0x0,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x8,0)
-[(0x0,2)] StaticArrow (0x0,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x8,0)
-[(0x8,0)] 
+[0x0,0] @{asm:=seta   0x1111}@ << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x0,1); << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x0,2);
+[0x0,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x8,0);
+[0x0,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x8,0);
+[0x8,0]
 
 **** Decode instruction: setae  0x1111
-[(0x8,0)] @{asm:=setae  0x1111}@ StaticArrow (0x8,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x8,1)StaticArrow (0x8,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x8,2)
-[(0x8,1)] StaticArrow (0x8,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x10,0)
-[(0x8,2)] StaticArrow (0x8,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x10,0)
-[(0x10,0)] 
+[0x8,0] @{asm:=setae  0x1111}@ << (NOT %cf{0;1}){0;1} >> Skip --> (0x8,1); << (NOT (NOT %cf{0;1}){0;1}){0;1} >> Skip --> (0x8,2);
+[0x8,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x10,0);
+[0x8,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x10,0);
+[0x10,0]
 
 **** Decode instruction: setb   0x1111
-[(0x10,0)] @{asm:=setb   0x1111}@ StaticArrow (0x10,0) Skip << %cf{0;1} >> --> (0x10,1)StaticArrow (0x10,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x10,2)
-[(0x10,1)] StaticArrow (0x10,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x18,0)
-[(0x10,2)] StaticArrow (0x10,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x18,0)
-[(0x18,0)] 
+[0x10,0] @{asm:=setb   0x1111}@ << %cf{0;1} >> Skip --> (0x10,1); << (NOT %cf{0;1}){0;1} >> Skip --> (0x10,2);
+[0x10,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x18,0);
+[0x10,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x18,0);
+[0x18,0]
 
 **** Decode instruction: setbe  0x1111
-[(0x18,0)] @{asm:=setbe  0x1111}@ StaticArrow (0x18,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0x18,1)StaticArrow (0x18,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x18,2)
-[(0x18,1)] StaticArrow (0x18,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x20,0)
-[(0x18,2)] StaticArrow (0x18,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x20,0)
-[(0x20,0)] 
+[0x18,0] @{asm:=setbe  0x1111}@ << (OR %cf{0;1} %zf{0;1}){0;1} >> Skip --> (0x18,1); << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x18,2);
+[0x18,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x20,0);
+[0x18,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x20,0);
+[0x20,0]
 
 **** Decode instruction: setb   0x1111
-[(0x20,0)] @{asm:=setb   0x1111}@ StaticArrow (0x20,0) Skip << %cf{0;1} >> --> (0x20,1)StaticArrow (0x20,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x20,2)
-[(0x20,1)] StaticArrow (0x20,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x28,0)
-[(0x20,2)] StaticArrow (0x20,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x28,0)
-[(0x28,0)] 
+[0x20,0] @{asm:=setb   0x1111}@ << %cf{0;1} >> Skip --> (0x20,1); << (NOT %cf{0;1}){0;1} >> Skip --> (0x20,2);
+[0x20,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x28,0);
+[0x20,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x28,0);
+[0x28,0]
 
 **** Decode instruction: sete   0x1111
-[(0x28,0)] @{asm:=sete   0x1111}@ StaticArrow (0x28,0) Skip << %zf{0;1} >> --> (0x28,1)StaticArrow (0x28,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x28,2)
-[(0x28,1)] StaticArrow (0x28,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x30,0)
-[(0x28,2)] StaticArrow (0x28,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x30,0)
-[(0x30,0)] 
+[0x28,0] @{asm:=sete   0x1111}@ << %zf{0;1} >> Skip --> (0x28,1); << (NOT %zf{0;1}){0;1} >> Skip --> (0x28,2);
+[0x28,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x30,0);
+[0x28,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x30,0);
+[0x30,0]
 
 **** Decode instruction: setg   0x1111
-[(0x30,0)] @{asm:=setg   0x1111}@ StaticArrow (0x30,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x30,1)StaticArrow (0x30,0) Skip << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x30,2)
-[(0x30,1)] StaticArrow (0x30,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x38,0)
-[(0x30,2)] StaticArrow (0x30,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x38,0)
-[(0x38,0)] 
+[0x30,0] @{asm:=setg   0x1111}@ << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x30,1); << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x30,2);
+[0x30,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x38,0);
+[0x30,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x38,0);
+[0x38,0]
 
 **** Decode instruction: setge  0x1111
-[(0x38,0)] @{asm:=setge  0x1111}@ StaticArrow (0x38,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x38,1)StaticArrow (0x38,0) Skip << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> --> (0x38,2)
-[(0x38,1)] StaticArrow (0x38,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x40,0)
-[(0x38,2)] StaticArrow (0x38,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x40,0)
-[(0x40,0)] 
+[0x38,0] @{asm:=setge  0x1111}@ << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x38,1); << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x38,2);
+[0x38,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x40,0);
+[0x38,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x40,0);
+[0x40,0]
 
 **** Decode instruction: setl   0x1111
-[(0x40,0)] @{asm:=setl   0x1111}@ StaticArrow (0x40,0) Skip << (XOR %sf{0;1} %of{0;1}){0;1} >> --> (0x40,1)StaticArrow (0x40,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x40,2)
-[(0x40,1)] StaticArrow (0x40,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x48,0)
-[(0x40,2)] StaticArrow (0x40,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x48,0)
-[(0x48,0)] 
+[0x40,0] @{asm:=setl   0x1111}@ << (XOR %sf{0;1} %of{0;1}){0;1} >> Skip --> (0x40,1); << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x40,2);
+[0x40,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x48,0);
+[0x40,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x48,0);
+[0x48,0]
 
 **** Decode instruction: setle  0x1111
-[(0x48,0)] @{asm:=setle  0x1111}@ StaticArrow (0x48,0) Skip << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> --> (0x48,1)StaticArrow (0x48,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x48,2)
-[(0x48,1)] StaticArrow (0x48,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x50,0)
-[(0x48,2)] StaticArrow (0x48,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x50,0)
-[(0x50,0)] 
+[0x48,0] @{asm:=setle  0x1111}@ << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> Skip --> (0x48,1); << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x48,2);
+[0x48,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x50,0);
+[0x48,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x50,0);
+[0x50,0]
 
 **** Decode instruction: setbe  0x1111
-[(0x50,0)] @{asm:=setbe  0x1111}@ StaticArrow (0x50,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0x50,1)StaticArrow (0x50,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x50,2)
-[(0x50,1)] StaticArrow (0x50,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x58,0)
-[(0x50,2)] StaticArrow (0x50,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x58,0)
-[(0x58,0)] 
+[0x50,0] @{asm:=setbe  0x1111}@ << (OR %cf{0;1} %zf{0;1}){0;1} >> Skip --> (0x50,1); << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x50,2);
+[0x50,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x58,0);
+[0x50,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x58,0);
+[0x58,0]
 
 **** Decode instruction: setb   0x1111
-[(0x58,0)] @{asm:=setb   0x1111}@ StaticArrow (0x58,0) Skip << %cf{0;1} >> --> (0x58,1)StaticArrow (0x58,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x58,2)
-[(0x58,1)] StaticArrow (0x58,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x60,0)
-[(0x58,2)] StaticArrow (0x58,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x60,0)
-[(0x60,0)] 
+[0x58,0] @{asm:=setb   0x1111}@ << %cf{0;1} >> Skip --> (0x58,1); << (NOT %cf{0;1}){0;1} >> Skip --> (0x58,2);
+[0x58,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x60,0);
+[0x58,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x60,0);
+[0x60,0]
 
 **** Decode instruction: setae  0x1111
-[(0x60,0)] @{asm:=setae  0x1111}@ StaticArrow (0x60,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x60,1)StaticArrow (0x60,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x60,2)
-[(0x60,1)] StaticArrow (0x60,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x68,0)
-[(0x60,2)] StaticArrow (0x60,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x68,0)
-[(0x68,0)] 
+[0x60,0] @{asm:=setae  0x1111}@ << (NOT %cf{0;1}){0;1} >> Skip --> (0x60,1); << (NOT (NOT %cf{0;1}){0;1}){0;1} >> Skip --> (0x60,2);
+[0x60,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x68,0);
+[0x60,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x68,0);
+[0x68,0]
 
 **** Decode instruction: seta   0x1111
-[(0x68,0)] @{asm:=seta   0x1111}@ StaticArrow (0x68,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x68,1)StaticArrow (0x68,0) Skip << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x68,2)
-[(0x68,1)] StaticArrow (0x68,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x70,0)
-[(0x68,2)] StaticArrow (0x68,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x70,0)
-[(0x70,0)] 
+[0x68,0] @{asm:=seta   0x1111}@ << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x68,1); << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x68,2);
+[0x68,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x70,0);
+[0x68,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x70,0);
+[0x70,0]
 
 **** Decode instruction: setae  0x1111
-[(0x70,0)] @{asm:=setae  0x1111}@ StaticArrow (0x70,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x70,1)StaticArrow (0x70,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x70,2)
-[(0x70,1)] StaticArrow (0x70,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x78,0)
-[(0x70,2)] StaticArrow (0x70,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x78,0)
-[(0x78,0)] 
+[0x70,0] @{asm:=setae  0x1111}@ << (NOT %cf{0;1}){0;1} >> Skip --> (0x70,1); << (NOT (NOT %cf{0;1}){0;1}){0;1} >> Skip --> (0x70,2);
+[0x70,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x78,0);
+[0x70,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x78,0);
+[0x78,0]
 
 **** Decode instruction: setne  0x1111
-[(0x78,0)] @{asm:=setne  0x1111}@ StaticArrow (0x78,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x78,1)StaticArrow (0x78,0) Skip << (NOT (NOT %zf{0;1}){0;1}){0;1} >> --> (0x78,2)
-[(0x78,1)] StaticArrow (0x78,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x80,0)
-[(0x78,2)] StaticArrow (0x78,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x80,0)
-[(0x80,0)] 
+[0x78,0] @{asm:=setne  0x1111}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0x78,1); << (NOT (NOT %zf{0;1}){0;1}){0;1} >> Skip --> (0x78,2);
+[0x78,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x80,0);
+[0x78,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x80,0);
+[0x80,0]
 
 **** Decode instruction: setle  0x1111
-[(0x80,0)] @{asm:=setle  0x1111}@ StaticArrow (0x80,0) Skip << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> --> (0x80,1)StaticArrow (0x80,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x80,2)
-[(0x80,1)] StaticArrow (0x80,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x88,0)
-[(0x80,2)] StaticArrow (0x80,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x88,0)
-[(0x88,0)] 
+[0x80,0] @{asm:=setle  0x1111}@ << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> Skip --> (0x80,1); << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x80,2);
+[0x80,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x88,0);
+[0x80,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x88,0);
+[0x88,0]
 
 **** Decode instruction: setl   0x1111
-[(0x88,0)] @{asm:=setl   0x1111}@ StaticArrow (0x88,0) Skip << (XOR %sf{0;1} %of{0;1}){0;1} >> --> (0x88,1)StaticArrow (0x88,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x88,2)
-[(0x88,1)] StaticArrow (0x88,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x90,0)
-[(0x88,2)] StaticArrow (0x88,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x90,0)
-[(0x90,0)] 
+[0x88,0] @{asm:=setl   0x1111}@ << (XOR %sf{0;1} %of{0;1}){0;1} >> Skip --> (0x88,1); << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x88,2);
+[0x88,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x90,0);
+[0x88,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x90,0);
+[0x90,0]
 
 **** Decode instruction: setge  0x1111
-[(0x90,0)] @{asm:=setge  0x1111}@ StaticArrow (0x90,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x90,1)StaticArrow (0x90,0) Skip << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> --> (0x90,2)
-[(0x90,1)] StaticArrow (0x90,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0x98,0)
-[(0x90,2)] StaticArrow (0x90,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0x98,0)
-[(0x98,0)] 
+[0x90,0] @{asm:=setge  0x1111}@ << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x90,1); << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x90,2);
+[0x90,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0x98,0);
+[0x90,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0x98,0);
+[0x98,0]
 
 **** Decode instruction: setg   0x1111
-[(0x98,0)] @{asm:=setg   0x1111}@ StaticArrow (0x98,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x98,1)StaticArrow (0x98,0) Skip << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x98,2)
-[(0x98,1)] StaticArrow (0x98,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xa0,0)
-[(0x98,2)] StaticArrow (0x98,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xa0,0)
-[(0xa0,0)] 
+[0x98,0] @{asm:=setg   0x1111}@ << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x98,1); << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x98,2);
+[0x98,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xa0,0);
+[0x98,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xa0,0);
+[0xa0,0]
 
 **** Decode instruction: setno  0x1111
-[(0xa0,0)] @{asm:=setno  0x1111}@ StaticArrow (0xa0,0) Skip << (NOT %of{0;1}){0;1} >> --> (0xa0,1)StaticArrow (0xa0,0) Skip << (NOT (NOT %of{0;1}){0;1}){0;1} >> --> (0xa0,2)
-[(0xa0,1)] StaticArrow (0xa0,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xa8,0)
-[(0xa0,2)] StaticArrow (0xa0,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xa8,0)
-[(0xa8,0)] 
+[0xa0,0] @{asm:=setno  0x1111}@ << (NOT %of{0;1}){0;1} >> Skip --> (0xa0,1); << (NOT (NOT %of{0;1}){0;1}){0;1} >> Skip --> (0xa0,2);
+[0xa0,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xa8,0);
+[0xa0,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xa8,0);
+[0xa8,0]
 
 **** Decode instruction: setnp  0x1111
-[(0xa8,0)] @{asm:=setnp  0x1111}@ StaticArrow (0xa8,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0xa8,1)StaticArrow (0xa8,0) Skip << (NOT (NOT %pf{0;1}){0;1}){0;1} >> --> (0xa8,2)
-[(0xa8,1)] StaticArrow (0xa8,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xb0,0)
-[(0xa8,2)] StaticArrow (0xa8,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xb0,0)
-[(0xb0,0)] 
+[0xa8,0] @{asm:=setnp  0x1111}@ << (NOT %pf{0;1}){0;1} >> Skip --> (0xa8,1); << (NOT (NOT %pf{0;1}){0;1}){0;1} >> Skip --> (0xa8,2);
+[0xa8,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xb0,0);
+[0xa8,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xb0,0);
+[0xb0,0]
 
 **** Decode instruction: setns  0x1111
-[(0xb0,0)] @{asm:=setns  0x1111}@ StaticArrow (0xb0,0) Skip << (NOT %sf{0;1}){0;1} >> --> (0xb0,1)StaticArrow (0xb0,0) Skip << (NOT (NOT %sf{0;1}){0;1}){0;1} >> --> (0xb0,2)
-[(0xb0,1)] StaticArrow (0xb0,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xb8,0)
-[(0xb0,2)] StaticArrow (0xb0,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xb8,0)
-[(0xb8,0)] 
+[0xb0,0] @{asm:=setns  0x1111}@ << (NOT %sf{0;1}){0;1} >> Skip --> (0xb0,1); << (NOT (NOT %sf{0;1}){0;1}){0;1} >> Skip --> (0xb0,2);
+[0xb0,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xb8,0);
+[0xb0,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xb8,0);
+[0xb8,0]
 
 **** Decode instruction: setne  0x1111
-[(0xb8,0)] @{asm:=setne  0x1111}@ StaticArrow (0xb8,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0xb8,1)StaticArrow (0xb8,0) Skip << (NOT (NOT %zf{0;1}){0;1}){0;1} >> --> (0xb8,2)
-[(0xb8,1)] StaticArrow (0xb8,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xc0,0)
-[(0xb8,2)] StaticArrow (0xb8,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xc0,0)
-[(0xc0,0)] 
+[0xb8,0] @{asm:=setne  0x1111}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0xb8,1); << (NOT (NOT %zf{0;1}){0;1}){0;1} >> Skip --> (0xb8,2);
+[0xb8,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xc0,0);
+[0xb8,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xc0,0);
+[0xc0,0]
 
 **** Decode instruction: seto   0x1111
-[(0xc0,0)] @{asm:=seto   0x1111}@ StaticArrow (0xc0,0) Skip << %of{0;1} >> --> (0xc0,1)StaticArrow (0xc0,0) Skip << (NOT %of{0;1}){0;1} >> --> (0xc0,2)
-[(0xc0,1)] StaticArrow (0xc0,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xc8,0)
-[(0xc0,2)] StaticArrow (0xc0,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xc8,0)
-[(0xc8,0)] 
+[0xc0,0] @{asm:=seto   0x1111}@ << %of{0;1} >> Skip --> (0xc0,1); << (NOT %of{0;1}){0;1} >> Skip --> (0xc0,2);
+[0xc0,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xc8,0);
+[0xc0,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xc8,0);
+[0xc8,0]
 
 **** Decode instruction: setp   0x1111
-[(0xc8,0)] @{asm:=setp   0x1111}@ StaticArrow (0xc8,0) Skip << %pf{0;1} >> --> (0xc8,1)StaticArrow (0xc8,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0xc8,2)
-[(0xc8,1)] StaticArrow (0xc8,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xd0,0)
-[(0xc8,2)] StaticArrow (0xc8,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xd0,0)
-[(0xd0,0)] 
+[0xc8,0] @{asm:=setp   0x1111}@ << %pf{0;1} >> Skip --> (0xc8,1); << (NOT %pf{0;1}){0;1} >> Skip --> (0xc8,2);
+[0xc8,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xd0,0);
+[0xc8,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xd0,0);
+[0xd0,0]
 
 **** Decode instruction: setp   0x1111
-[(0xd0,0)] @{asm:=setp   0x1111}@ StaticArrow (0xd0,0) Skip << %pf{0;1} >> --> (0xd0,1)StaticArrow (0xd0,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0xd0,2)
-[(0xd0,1)] StaticArrow (0xd0,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xd8,0)
-[(0xd0,2)] StaticArrow (0xd0,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xd8,0)
-[(0xd8,0)] 
+[0xd0,0] @{asm:=setp   0x1111}@ << %pf{0;1} >> Skip --> (0xd0,1); << (NOT %pf{0;1}){0;1} >> Skip --> (0xd0,2);
+[0xd0,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xd8,0);
+[0xd0,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xd8,0);
+[0xd8,0]
 
 **** Decode instruction: setnp  0x1111
-[(0xd8,0)] @{asm:=setnp  0x1111}@ StaticArrow (0xd8,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0xd8,1)StaticArrow (0xd8,0) Skip << (NOT (NOT %pf{0;1}){0;1}){0;1} >> --> (0xd8,2)
-[(0xd8,1)] StaticArrow (0xd8,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xe0,0)
-[(0xd8,2)] StaticArrow (0xd8,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xe0,0)
-[(0xe0,0)] 
+[0xd8,0] @{asm:=setnp  0x1111}@ << (NOT %pf{0;1}){0;1} >> Skip --> (0xd8,1); << (NOT (NOT %pf{0;1}){0;1}){0;1} >> Skip --> (0xd8,2);
+[0xd8,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xe0,0);
+[0xd8,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xe0,0);
+[0xe0,0]
 
 **** Decode instruction: sets   0x1111
-[(0xe0,0)] @{asm:=sets   0x1111}@ StaticArrow (0xe0,0) Skip << %sf{0;1} >> --> (0xe0,1)StaticArrow (0xe0,0) Skip << (NOT %sf{0;1}){0;1} >> --> (0xe0,2)
-[(0xe0,1)] StaticArrow (0xe0,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xe8,0)
-[(0xe0,2)] StaticArrow (0xe0,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xe8,0)
-[(0xe8,0)] 
+[0xe0,0] @{asm:=sets   0x1111}@ << %sf{0;1} >> Skip --> (0xe0,1); << (NOT %sf{0;1}){0;1} >> Skip --> (0xe0,2);
+[0xe0,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xe8,0);
+[0xe0,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xe8,0);
+[0xe8,0]
 
 **** Decode instruction: sete   0x1111
-[(0xe8,0)] @{asm:=sete   0x1111}@ StaticArrow (0xe8,0) Skip << %zf{0;1} >> --> (0xe8,1)StaticArrow (0xe8,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0xe8,2)
-[(0xe8,1)] StaticArrow (0xe8,1) [0x1111{0;64}]{0;8} := 0x1{0;8}  --> (0xf0,0)
-[(0xe8,2)] StaticArrow (0xe8,2) [0x1111{0;64}]{0;8} := 0x0{0;8}  --> (0xf0,0)
-[(0xf0,0)] 
+[0xe8,0] @{asm:=sete   0x1111}@ << %zf{0;1} >> Skip --> (0xe8,1); << (NOT %zf{0;1}){0;1} >> Skip --> (0xe8,2);
+[0xe8,1] [0x1111{0;64}]{0;8} := 0x1{0;8} --> (0xf0,0);
+[0xe8,2] [0x1111{0;64}]{0;8} := 0x0{0;8} --> (0xf0,0);
+[0xf0,0]
 
 **** Decode instruction: seta   %ch
-[(0xf0,0)] @{asm:=seta   %ch}@ StaticArrow (0xf0,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xf0,1)StaticArrow (0xf0,0) Skip << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0xf0,2)
-[(0xf0,1)] StaticArrow (0xf0,1) %rcx{8;8} := 0x1{0;8}  --> (0xf3,0)
-[(0xf0,2)] StaticArrow (0xf0,2) %rcx{8;8} := 0x0{0;8}  --> (0xf3,0)
-[(0xf3,0)] 
+[0xf0,0] @{asm:=seta   %ch}@ << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0xf0,1); << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0xf0,2);
+[0xf0,1] %rcx{8;8} := 0x1{0;8} --> (0xf3,0);
+[0xf0,2] %rcx{8;8} := 0x0{0;8} --> (0xf3,0);
+[0xf3,0]
 
 **** Decode instruction: setae  %ch
-[(0xf3,0)] @{asm:=setae  %ch}@ StaticArrow (0xf3,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0xf3,1)StaticArrow (0xf3,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0xf3,2)
-[(0xf3,1)] StaticArrow (0xf3,1) %rcx{8;8} := 0x1{0;8}  --> (0xf6,0)
-[(0xf3,2)] StaticArrow (0xf3,2) %rcx{8;8} := 0x0{0;8}  --> (0xf6,0)
-[(0xf6,0)] 
+[0xf3,0] @{asm:=setae  %ch}@ << (NOT %cf{0;1}){0;1} >> Skip --> (0xf3,1); << (NOT (NOT %cf{0;1}){0;1}){0;1} >> Skip --> (0xf3,2);
+[0xf3,1] %rcx{8;8} := 0x1{0;8} --> (0xf6,0);
+[0xf3,2] %rcx{8;8} := 0x0{0;8} --> (0xf6,0);
+[0xf6,0]
 
 **** Decode instruction: setb   %ch
-[(0xf6,0)] @{asm:=setb   %ch}@ StaticArrow (0xf6,0) Skip << %cf{0;1} >> --> (0xf6,1)StaticArrow (0xf6,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0xf6,2)
-[(0xf6,1)] StaticArrow (0xf6,1) %rcx{8;8} := 0x1{0;8}  --> (0xf9,0)
-[(0xf6,2)] StaticArrow (0xf6,2) %rcx{8;8} := 0x0{0;8}  --> (0xf9,0)
-[(0xf9,0)] 
+[0xf6,0] @{asm:=setb   %ch}@ << %cf{0;1} >> Skip --> (0xf6,1); << (NOT %cf{0;1}){0;1} >> Skip --> (0xf6,2);
+[0xf6,1] %rcx{8;8} := 0x1{0;8} --> (0xf9,0);
+[0xf6,2] %rcx{8;8} := 0x0{0;8} --> (0xf9,0);
+[0xf9,0]
 
 **** Decode instruction: setbe  %ch
-[(0xf9,0)] @{asm:=setbe  %ch}@ StaticArrow (0xf9,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0xf9,1)StaticArrow (0xf9,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0xf9,2)
-[(0xf9,1)] StaticArrow (0xf9,1) %rcx{8;8} := 0x1{0;8}  --> (0xfc,0)
-[(0xf9,2)] StaticArrow (0xf9,2) %rcx{8;8} := 0x0{0;8}  --> (0xfc,0)
-[(0xfc,0)] 
+[0xf9,0] @{asm:=setbe  %ch}@ << (OR %cf{0;1} %zf{0;1}){0;1} >> Skip --> (0xf9,1); << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0xf9,2);
+[0xf9,1] %rcx{8;8} := 0x1{0;8} --> (0xfc,0);
+[0xf9,2] %rcx{8;8} := 0x0{0;8} --> (0xfc,0);
+[0xfc,0]
 
 **** Decode instruction: setb   %ch
-[(0xfc,0)] @{asm:=setb   %ch}@ StaticArrow (0xfc,0) Skip << %cf{0;1} >> --> (0xfc,1)StaticArrow (0xfc,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0xfc,2)
-[(0xfc,1)] StaticArrow (0xfc,1) %rcx{8;8} := 0x1{0;8}  --> (0xff,0)
-[(0xfc,2)] StaticArrow (0xfc,2) %rcx{8;8} := 0x0{0;8}  --> (0xff,0)
-[(0xff,0)] 
+[0xfc,0] @{asm:=setb   %ch}@ << %cf{0;1} >> Skip --> (0xfc,1); << (NOT %cf{0;1}){0;1} >> Skip --> (0xfc,2);
+[0xfc,1] %rcx{8;8} := 0x1{0;8} --> (0xff,0);
+[0xfc,2] %rcx{8;8} := 0x0{0;8} --> (0xff,0);
+[0xff,0]
 
 **** Decode instruction: sete   %ch
-[(0xff,0)] @{asm:=sete   %ch}@ StaticArrow (0xff,0) Skip << %zf{0;1} >> --> (0xff,1)StaticArrow (0xff,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0xff,2)
-[(0xff,1)] StaticArrow (0xff,1) %rcx{8;8} := 0x1{0;8}  --> (0x102,0)
-[(0xff,2)] StaticArrow (0xff,2) %rcx{8;8} := 0x0{0;8}  --> (0x102,0)
-[(0x102,0)] 
+[0xff,0] @{asm:=sete   %ch}@ << %zf{0;1} >> Skip --> (0xff,1); << (NOT %zf{0;1}){0;1} >> Skip --> (0xff,2);
+[0xff,1] %rcx{8;8} := 0x1{0;8} --> (0x102,0);
+[0xff,2] %rcx{8;8} := 0x0{0;8} --> (0x102,0);
+[0x102,0]
 
 **** Decode instruction: setg   %ch
-[(0x102,0)] @{asm:=setg   %ch}@ StaticArrow (0x102,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x102,1)StaticArrow (0x102,0) Skip << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x102,2)
-[(0x102,1)] StaticArrow (0x102,1) %rcx{8;8} := 0x1{0;8}  --> (0x105,0)
-[(0x102,2)] StaticArrow (0x102,2) %rcx{8;8} := 0x0{0;8}  --> (0x105,0)
-[(0x105,0)] 
+[0x102,0] @{asm:=setg   %ch}@ << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x102,1); << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x102,2);
+[0x102,1] %rcx{8;8} := 0x1{0;8} --> (0x105,0);
+[0x102,2] %rcx{8;8} := 0x0{0;8} --> (0x105,0);
+[0x105,0]
 
 **** Decode instruction: setge  %ch
-[(0x105,0)] @{asm:=setge  %ch}@ StaticArrow (0x105,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x105,1)StaticArrow (0x105,0) Skip << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> --> (0x105,2)
-[(0x105,1)] StaticArrow (0x105,1) %rcx{8;8} := 0x1{0;8}  --> (0x108,0)
-[(0x105,2)] StaticArrow (0x105,2) %rcx{8;8} := 0x0{0;8}  --> (0x108,0)
-[(0x108,0)] 
+[0x105,0] @{asm:=setge  %ch}@ << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x105,1); << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x105,2);
+[0x105,1] %rcx{8;8} := 0x1{0;8} --> (0x108,0);
+[0x105,2] %rcx{8;8} := 0x0{0;8} --> (0x108,0);
+[0x108,0]
 
 **** Decode instruction: setl   %ch
-[(0x108,0)] @{asm:=setl   %ch}@ StaticArrow (0x108,0) Skip << (XOR %sf{0;1} %of{0;1}){0;1} >> --> (0x108,1)StaticArrow (0x108,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x108,2)
-[(0x108,1)] StaticArrow (0x108,1) %rcx{8;8} := 0x1{0;8}  --> (0x10b,0)
-[(0x108,2)] StaticArrow (0x108,2) %rcx{8;8} := 0x0{0;8}  --> (0x10b,0)
-[(0x10b,0)] 
+[0x108,0] @{asm:=setl   %ch}@ << (XOR %sf{0;1} %of{0;1}){0;1} >> Skip --> (0x108,1); << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x108,2);
+[0x108,1] %rcx{8;8} := 0x1{0;8} --> (0x10b,0);
+[0x108,2] %rcx{8;8} := 0x0{0;8} --> (0x10b,0);
+[0x10b,0]
 
 **** Decode instruction: setle  %ch
-[(0x10b,0)] @{asm:=setle  %ch}@ StaticArrow (0x10b,0) Skip << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> --> (0x10b,1)StaticArrow (0x10b,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x10b,2)
-[(0x10b,1)] StaticArrow (0x10b,1) %rcx{8;8} := 0x1{0;8}  --> (0x10e,0)
-[(0x10b,2)] StaticArrow (0x10b,2) %rcx{8;8} := 0x0{0;8}  --> (0x10e,0)
-[(0x10e,0)] 
+[0x10b,0] @{asm:=setle  %ch}@ << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> Skip --> (0x10b,1); << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x10b,2);
+[0x10b,1] %rcx{8;8} := 0x1{0;8} --> (0x10e,0);
+[0x10b,2] %rcx{8;8} := 0x0{0;8} --> (0x10e,0);
+[0x10e,0]
 
 **** Decode instruction: setbe  %ch
-[(0x10e,0)] @{asm:=setbe  %ch}@ StaticArrow (0x10e,0) Skip << (OR %cf{0;1} %zf{0;1}){0;1} >> --> (0x10e,1)StaticArrow (0x10e,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x10e,2)
-[(0x10e,1)] StaticArrow (0x10e,1) %rcx{8;8} := 0x1{0;8}  --> (0x111,0)
-[(0x10e,2)] StaticArrow (0x10e,2) %rcx{8;8} := 0x0{0;8}  --> (0x111,0)
-[(0x111,0)] 
+[0x10e,0] @{asm:=setbe  %ch}@ << (OR %cf{0;1} %zf{0;1}){0;1} >> Skip --> (0x10e,1); << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x10e,2);
+[0x10e,1] %rcx{8;8} := 0x1{0;8} --> (0x111,0);
+[0x10e,2] %rcx{8;8} := 0x0{0;8} --> (0x111,0);
+[0x111,0]
 
 **** Decode instruction: setb   %ch
-[(0x111,0)] @{asm:=setb   %ch}@ StaticArrow (0x111,0) Skip << %cf{0;1} >> --> (0x111,1)StaticArrow (0x111,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x111,2)
-[(0x111,1)] StaticArrow (0x111,1) %rcx{8;8} := 0x1{0;8}  --> (0x114,0)
-[(0x111,2)] StaticArrow (0x111,2) %rcx{8;8} := 0x0{0;8}  --> (0x114,0)
-[(0x114,0)] 
+[0x111,0] @{asm:=setb   %ch}@ << %cf{0;1} >> Skip --> (0x111,1); << (NOT %cf{0;1}){0;1} >> Skip --> (0x111,2);
+[0x111,1] %rcx{8;8} := 0x1{0;8} --> (0x114,0);
+[0x111,2] %rcx{8;8} := 0x0{0;8} --> (0x114,0);
+[0x114,0]
 
 **** Decode instruction: setae  %ch
-[(0x114,0)] @{asm:=setae  %ch}@ StaticArrow (0x114,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x114,1)StaticArrow (0x114,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x114,2)
-[(0x114,1)] StaticArrow (0x114,1) %rcx{8;8} := 0x1{0;8}  --> (0x117,0)
-[(0x114,2)] StaticArrow (0x114,2) %rcx{8;8} := 0x0{0;8}  --> (0x117,0)
-[(0x117,0)] 
+[0x114,0] @{asm:=setae  %ch}@ << (NOT %cf{0;1}){0;1} >> Skip --> (0x114,1); << (NOT (NOT %cf{0;1}){0;1}){0;1} >> Skip --> (0x114,2);
+[0x114,1] %rcx{8;8} := 0x1{0;8} --> (0x117,0);
+[0x114,2] %rcx{8;8} := 0x0{0;8} --> (0x117,0);
+[0x117,0]
 
 **** Decode instruction: seta   %ch
-[(0x117,0)] @{asm:=seta   %ch}@ StaticArrow (0x117,0) Skip << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> --> (0x117,1)StaticArrow (0x117,0) Skip << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x117,2)
-[(0x117,1)] StaticArrow (0x117,1) %rcx{8;8} := 0x1{0;8}  --> (0x11a,0)
-[(0x117,2)] StaticArrow (0x117,2) %rcx{8;8} := 0x0{0;8}  --> (0x11a,0)
-[(0x11a,0)] 
+[0x117,0] @{asm:=seta   %ch}@ << (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x117,1); << (NOT (NOT (OR %cf{0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x117,2);
+[0x117,1] %rcx{8;8} := 0x1{0;8} --> (0x11a,0);
+[0x117,2] %rcx{8;8} := 0x0{0;8} --> (0x11a,0);
+[0x11a,0]
 
 **** Decode instruction: setae  %ch
-[(0x11a,0)] @{asm:=setae  %ch}@ StaticArrow (0x11a,0) Skip << (NOT %cf{0;1}){0;1} >> --> (0x11a,1)StaticArrow (0x11a,0) Skip << (NOT (NOT %cf{0;1}){0;1}){0;1} >> --> (0x11a,2)
-[(0x11a,1)] StaticArrow (0x11a,1) %rcx{8;8} := 0x1{0;8}  --> (0x11d,0)
-[(0x11a,2)] StaticArrow (0x11a,2) %rcx{8;8} := 0x0{0;8}  --> (0x11d,0)
-[(0x11d,0)] 
+[0x11a,0] @{asm:=setae  %ch}@ << (NOT %cf{0;1}){0;1} >> Skip --> (0x11a,1); << (NOT (NOT %cf{0;1}){0;1}){0;1} >> Skip --> (0x11a,2);
+[0x11a,1] %rcx{8;8} := 0x1{0;8} --> (0x11d,0);
+[0x11a,2] %rcx{8;8} := 0x0{0;8} --> (0x11d,0);
+[0x11d,0]
 
 **** Decode instruction: setne  %ch
-[(0x11d,0)] @{asm:=setne  %ch}@ StaticArrow (0x11d,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x11d,1)StaticArrow (0x11d,0) Skip << (NOT (NOT %zf{0;1}){0;1}){0;1} >> --> (0x11d,2)
-[(0x11d,1)] StaticArrow (0x11d,1) %rcx{8;8} := 0x1{0;8}  --> (0x120,0)
-[(0x11d,2)] StaticArrow (0x11d,2) %rcx{8;8} := 0x0{0;8}  --> (0x120,0)
-[(0x120,0)] 
+[0x11d,0] @{asm:=setne  %ch}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0x11d,1); << (NOT (NOT %zf{0;1}){0;1}){0;1} >> Skip --> (0x11d,2);
+[0x11d,1] %rcx{8;8} := 0x1{0;8} --> (0x120,0);
+[0x11d,2] %rcx{8;8} := 0x0{0;8} --> (0x120,0);
+[0x120,0]
 
 **** Decode instruction: setle  %ch
-[(0x120,0)] @{asm:=setle  %ch}@ StaticArrow (0x120,0) Skip << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> --> (0x120,1)StaticArrow (0x120,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x120,2)
-[(0x120,1)] StaticArrow (0x120,1) %rcx{8;8} := 0x1{0;8}  --> (0x123,0)
-[(0x120,2)] StaticArrow (0x120,2) %rcx{8;8} := 0x0{0;8}  --> (0x123,0)
-[(0x123,0)] 
+[0x120,0] @{asm:=setle  %ch}@ << (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1} >> Skip --> (0x120,1); << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x120,2);
+[0x120,1] %rcx{8;8} := 0x1{0;8} --> (0x123,0);
+[0x120,2] %rcx{8;8} := 0x0{0;8} --> (0x123,0);
+[0x123,0]
 
 **** Decode instruction: setl   %ch
-[(0x123,0)] @{asm:=setl   %ch}@ StaticArrow (0x123,0) Skip << (XOR %sf{0;1} %of{0;1}){0;1} >> --> (0x123,1)StaticArrow (0x123,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x123,2)
-[(0x123,1)] StaticArrow (0x123,1) %rcx{8;8} := 0x1{0;8}  --> (0x126,0)
-[(0x123,2)] StaticArrow (0x123,2) %rcx{8;8} := 0x0{0;8}  --> (0x126,0)
-[(0x126,0)] 
+[0x123,0] @{asm:=setl   %ch}@ << (XOR %sf{0;1} %of{0;1}){0;1} >> Skip --> (0x123,1); << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x123,2);
+[0x123,1] %rcx{8;8} := 0x1{0;8} --> (0x126,0);
+[0x123,2] %rcx{8;8} := 0x0{0;8} --> (0x126,0);
+[0x126,0]
 
 **** Decode instruction: setge  %ch
-[(0x126,0)] @{asm:=setge  %ch}@ StaticArrow (0x126,0) Skip << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> --> (0x126,1)StaticArrow (0x126,0) Skip << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> --> (0x126,2)
-[(0x126,1)] StaticArrow (0x126,1) %rcx{8;8} := 0x1{0;8}  --> (0x129,0)
-[(0x126,2)] StaticArrow (0x126,2) %rcx{8;8} := 0x0{0;8}  --> (0x129,0)
-[(0x129,0)] 
+[0x126,0] @{asm:=setge  %ch}@ << (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1} >> Skip --> (0x126,1); << (NOT (NOT (XOR %sf{0;1} %of{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x126,2);
+[0x126,1] %rcx{8;8} := 0x1{0;8} --> (0x129,0);
+[0x126,2] %rcx{8;8} := 0x0{0;8} --> (0x129,0);
+[0x129,0]
 
 **** Decode instruction: setg   %ch
-[(0x129,0)] @{asm:=setg   %ch}@ StaticArrow (0x129,0) Skip << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> --> (0x129,1)StaticArrow (0x129,0) Skip << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> --> (0x129,2)
-[(0x129,1)] StaticArrow (0x129,1) %rcx{8;8} := 0x1{0;8}  --> (0x12c,0)
-[(0x129,2)] StaticArrow (0x129,2) %rcx{8;8} := 0x0{0;8}  --> (0x12c,0)
-[(0x12c,0)] 
+[0x129,0] @{asm:=setg   %ch}@ << (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1} >> Skip --> (0x129,1); << (NOT (NOT (OR (XOR %sf{0;1} %of{0;1}){0;1} %zf{0;1}){0;1}){0;1}){0;1} >> Skip --> (0x129,2);
+[0x129,1] %rcx{8;8} := 0x1{0;8} --> (0x12c,0);
+[0x129,2] %rcx{8;8} := 0x0{0;8} --> (0x12c,0);
+[0x12c,0]
 
 **** Decode instruction: setno  %ch
-[(0x12c,0)] @{asm:=setno  %ch}@ StaticArrow (0x12c,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x12c,1)StaticArrow (0x12c,0) Skip << (NOT (NOT %of{0;1}){0;1}){0;1} >> --> (0x12c,2)
-[(0x12c,1)] StaticArrow (0x12c,1) %rcx{8;8} := 0x1{0;8}  --> (0x12f,0)
-[(0x12c,2)] StaticArrow (0x12c,2) %rcx{8;8} := 0x0{0;8}  --> (0x12f,0)
-[(0x12f,0)] 
+[0x12c,0] @{asm:=setno  %ch}@ << (NOT %of{0;1}){0;1} >> Skip --> (0x12c,1); << (NOT (NOT %of{0;1}){0;1}){0;1} >> Skip --> (0x12c,2);
+[0x12c,1] %rcx{8;8} := 0x1{0;8} --> (0x12f,0);
+[0x12c,2] %rcx{8;8} := 0x0{0;8} --> (0x12f,0);
+[0x12f,0]
 
 **** Decode instruction: setnp  %ch
-[(0x12f,0)] @{asm:=setnp  %ch}@ StaticArrow (0x12f,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x12f,1)StaticArrow (0x12f,0) Skip << (NOT (NOT %pf{0;1}){0;1}){0;1} >> --> (0x12f,2)
-[(0x12f,1)] StaticArrow (0x12f,1) %rcx{8;8} := 0x1{0;8}  --> (0x132,0)
-[(0x12f,2)] StaticArrow (0x12f,2) %rcx{8;8} := 0x0{0;8}  --> (0x132,0)
-[(0x132,0)] 
+[0x12f,0] @{asm:=setnp  %ch}@ << (NOT %pf{0;1}){0;1} >> Skip --> (0x12f,1); << (NOT (NOT %pf{0;1}){0;1}){0;1} >> Skip --> (0x12f,2);
+[0x12f,1] %rcx{8;8} := 0x1{0;8} --> (0x132,0);
+[0x12f,2] %rcx{8;8} := 0x0{0;8} --> (0x132,0);
+[0x132,0]
 
 **** Decode instruction: setns  %ch
-[(0x132,0)] @{asm:=setns  %ch}@ StaticArrow (0x132,0) Skip << (NOT %sf{0;1}){0;1} >> --> (0x132,1)StaticArrow (0x132,0) Skip << (NOT (NOT %sf{0;1}){0;1}){0;1} >> --> (0x132,2)
-[(0x132,1)] StaticArrow (0x132,1) %rcx{8;8} := 0x1{0;8}  --> (0x135,0)
-[(0x132,2)] StaticArrow (0x132,2) %rcx{8;8} := 0x0{0;8}  --> (0x135,0)
-[(0x135,0)] 
+[0x132,0] @{asm:=setns  %ch}@ << (NOT %sf{0;1}){0;1} >> Skip --> (0x132,1); << (NOT (NOT %sf{0;1}){0;1}){0;1} >> Skip --> (0x132,2);
+[0x132,1] %rcx{8;8} := 0x1{0;8} --> (0x135,0);
+[0x132,2] %rcx{8;8} := 0x0{0;8} --> (0x135,0);
+[0x135,0]
 
 **** Decode instruction: setne  %ch
-[(0x135,0)] @{asm:=setne  %ch}@ StaticArrow (0x135,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x135,1)StaticArrow (0x135,0) Skip << (NOT (NOT %zf{0;1}){0;1}){0;1} >> --> (0x135,2)
-[(0x135,1)] StaticArrow (0x135,1) %rcx{8;8} := 0x1{0;8}  --> (0x138,0)
-[(0x135,2)] StaticArrow (0x135,2) %rcx{8;8} := 0x0{0;8}  --> (0x138,0)
-[(0x138,0)] 
+[0x135,0] @{asm:=setne  %ch}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0x135,1); << (NOT (NOT %zf{0;1}){0;1}){0;1} >> Skip --> (0x135,2);
+[0x135,1] %rcx{8;8} := 0x1{0;8} --> (0x138,0);
+[0x135,2] %rcx{8;8} := 0x0{0;8} --> (0x138,0);
+[0x138,0]
 
 **** Decode instruction: seto   %ch
-[(0x138,0)] @{asm:=seto   %ch}@ StaticArrow (0x138,0) Skip << %of{0;1} >> --> (0x138,1)StaticArrow (0x138,0) Skip << (NOT %of{0;1}){0;1} >> --> (0x138,2)
-[(0x138,1)] StaticArrow (0x138,1) %rcx{8;8} := 0x1{0;8}  --> (0x13b,0)
-[(0x138,2)] StaticArrow (0x138,2) %rcx{8;8} := 0x0{0;8}  --> (0x13b,0)
-[(0x13b,0)] 
+[0x138,0] @{asm:=seto   %ch}@ << %of{0;1} >> Skip --> (0x138,1); << (NOT %of{0;1}){0;1} >> Skip --> (0x138,2);
+[0x138,1] %rcx{8;8} := 0x1{0;8} --> (0x13b,0);
+[0x138,2] %rcx{8;8} := 0x0{0;8} --> (0x13b,0);
+[0x13b,0]
 
 **** Decode instruction: setp   %ch
-[(0x13b,0)] @{asm:=setp   %ch}@ StaticArrow (0x13b,0) Skip << %pf{0;1} >> --> (0x13b,1)StaticArrow (0x13b,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x13b,2)
-[(0x13b,1)] StaticArrow (0x13b,1) %rcx{8;8} := 0x1{0;8}  --> (0x13e,0)
-[(0x13b,2)] StaticArrow (0x13b,2) %rcx{8;8} := 0x0{0;8}  --> (0x13e,0)
-[(0x13e,0)] 
+[0x13b,0] @{asm:=setp   %ch}@ << %pf{0;1} >> Skip --> (0x13b,1); << (NOT %pf{0;1}){0;1} >> Skip --> (0x13b,2);
+[0x13b,1] %rcx{8;8} := 0x1{0;8} --> (0x13e,0);
+[0x13b,2] %rcx{8;8} := 0x0{0;8} --> (0x13e,0);
+[0x13e,0]
 
 **** Decode instruction: setp   %ch
-[(0x13e,0)] @{asm:=setp   %ch}@ StaticArrow (0x13e,0) Skip << %pf{0;1} >> --> (0x13e,1)StaticArrow (0x13e,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x13e,2)
-[(0x13e,1)] StaticArrow (0x13e,1) %rcx{8;8} := 0x1{0;8}  --> (0x141,0)
-[(0x13e,2)] StaticArrow (0x13e,2) %rcx{8;8} := 0x0{0;8}  --> (0x141,0)
-[(0x141,0)] 
+[0x13e,0] @{asm:=setp   %ch}@ << %pf{0;1} >> Skip --> (0x13e,1); << (NOT %pf{0;1}){0;1} >> Skip --> (0x13e,2);
+[0x13e,1] %rcx{8;8} := 0x1{0;8} --> (0x141,0);
+[0x13e,2] %rcx{8;8} := 0x0{0;8} --> (0x141,0);
+[0x141,0]
 
 **** Decode instruction: setnp  %ch
-[(0x141,0)] @{asm:=setnp  %ch}@ StaticArrow (0x141,0) Skip << (NOT %pf{0;1}){0;1} >> --> (0x141,1)StaticArrow (0x141,0) Skip << (NOT (NOT %pf{0;1}){0;1}){0;1} >> --> (0x141,2)
-[(0x141,1)] StaticArrow (0x141,1) %rcx{8;8} := 0x1{0;8}  --> (0x144,0)
-[(0x141,2)] StaticArrow (0x141,2) %rcx{8;8} := 0x0{0;8}  --> (0x144,0)
-[(0x144,0)] 
+[0x141,0] @{asm:=setnp  %ch}@ << (NOT %pf{0;1}){0;1} >> Skip --> (0x141,1); << (NOT (NOT %pf{0;1}){0;1}){0;1} >> Skip --> (0x141,2);
+[0x141,1] %rcx{8;8} := 0x1{0;8} --> (0x144,0);
+[0x141,2] %rcx{8;8} := 0x0{0;8} --> (0x144,0);
+[0x144,0]
 
 **** Decode instruction: sets   %ch
-[(0x144,0)] @{asm:=sets   %ch}@ StaticArrow (0x144,0) Skip << %sf{0;1} >> --> (0x144,1)StaticArrow (0x144,0) Skip << (NOT %sf{0;1}){0;1} >> --> (0x144,2)
-[(0x144,1)] StaticArrow (0x144,1) %rcx{8;8} := 0x1{0;8}  --> (0x147,0)
-[(0x144,2)] StaticArrow (0x144,2) %rcx{8;8} := 0x0{0;8}  --> (0x147,0)
-[(0x147,0)] 
+[0x144,0] @{asm:=sets   %ch}@ << %sf{0;1} >> Skip --> (0x144,1); << (NOT %sf{0;1}){0;1} >> Skip --> (0x144,2);
+[0x144,1] %rcx{8;8} := 0x1{0;8} --> (0x147,0);
+[0x144,2] %rcx{8;8} := 0x0{0;8} --> (0x147,0);
+[0x147,0]
 
 **** Decode instruction: sete   %ch
-[(0x147,0)] @{asm:=sete   %ch}@ StaticArrow (0x147,0) Skip << %zf{0;1} >> --> (0x147,1)StaticArrow (0x147,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x147,2)
-[(0x147,1)] StaticArrow (0x147,1) %rcx{8;8} := 0x1{0;8}  --> (0x14a,0)
-[(0x147,2)] StaticArrow (0x147,2) %rcx{8;8} := 0x0{0;8}  --> (0x14a,0)
-[(0x14a,0)] 
+[0x147,0] @{asm:=sete   %ch}@ << %zf{0;1} >> Skip --> (0x147,1); << (NOT %zf{0;1}){0;1} >> Skip --> (0x147,2);
+[0x147,1] %rcx{8;8} := 0x1{0;8} --> (0x14a,0);
+[0x147,2] %rcx{8;8} := 0x0{0;8} --> (0x14a,0);
+[0x14a,0]
 

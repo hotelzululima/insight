@@ -49,10 +49,13 @@
 #include <kernel/expressions/ExprProcessSolver.hh>
 
 #include <io/binary/BinutilsBinaryLoader.hh>
-#include <io/microcode/xml_microcode_generator.hh>
-#include <io/microcode/xml_microcode_parser.hh>
+
 #include <io/microcode/asm-writer.hh>
 #include <io/microcode/dot-writer.hh>
+#include <io/microcode/mc-writer.hh>
+#include <io/microcode/xml_microcode_generator.hh>
+#include <io/microcode/xml_microcode_parser.hh>
+
 
 #include <config.h>
 
@@ -212,8 +215,7 @@ struct CtrlCHandler : public Microcode::ArrowCreationCallback {
 		    asm_with_holes, asm_with_symbols);
 	break;
       case OF_MC :
-	mc->output_text (output);
-	output << endl;
+	mc_writer (output, mc);
 	break;
       case OF_MC_DOT :
       case OF_ASM_DOT :

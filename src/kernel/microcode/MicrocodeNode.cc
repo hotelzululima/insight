@@ -69,7 +69,7 @@ MicrocodeNode::MicrocodeNode(MicrocodeAddress loc) :
 }
 
 MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
-                             vector<StmtArrow *> * successors) :
+			     vector<StmtArrow *> * successors) :
   Annotable(),
   loc(loc),
   successors(successors),
@@ -77,7 +77,7 @@ MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
 {}
 
 MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
-                             StmtArrow *unique_succ) :
+			     StmtArrow *unique_succ) :
   Annotable(),
   loc(loc),
   predecessors(NULL)
@@ -87,8 +87,8 @@ MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
 }
 
 MicrocodeNode::MicrocodeNode(MicrocodeAddress loc,
-                             StmtArrow *succ1,
-                             StmtArrow *succ2) :
+			     StmtArrow *succ1,
+			     StmtArrow *succ2) :
   Annotable(),
   loc(loc),
   predecessors(NULL)
@@ -177,42 +177,70 @@ MicrocodeNode::get_global_parents () const
   return result;
 }
 
+static void
+s_stmtarrow_to_string(std::ostream &out, const StmtArrow* stmtarrow)
+{
+  /* Condition */
+  Expr * condition = stmtarrow->get_condition ();
+
+  if (condition)
+    {
+      if (condition->is_Constant())
+	{
+	  Constant *c = (Constant *) condition;
+	  if (c->get_val() == 0)
+	    out << "<< False >> ";
+	}
+      else
+	{
+	  out << "<< "<<  *condition << " >> ";
+	}
+    }
+
+  /* Statement */
+  if (stmtarrow->is_static ())
+    out << stmtarrow->get_stmt ()->pp();
+  else
+    out << "Jmp";
+
+  /* Arrow */
+  out << " --> ";
+
+  /* Target location */
+  if (stmtarrow->is_static ())
+    {
+      /* StaticArrow */
+      out << ((StaticArrow *) stmtarrow)->get_target ();
+    }
+  else
+    {
+      /* DynamicArrow */
+      ((DynamicArrow *) stmtarrow)->get_target ()->output_text (out);
+    }
+}
+
 string MicrocodeNode::pp() const
 {
   ostringstream oss;
 
-  oss << "[" << loc << "] ";
+  oss << "[0x" << hex << loc.getGlobal()
+      << ","   << dec << loc.getLocal() << "]";
 
   /* Annotation */
   if (is_annotated ())
     {
-      oss << "@";
+      oss << " @";
       output_annotations (oss);
-      oss << "@ ";
+      oss << "@";
     }
 
   MicrocodeNode_iterate_successors(*this, succ)
     {
-      bool is_simple = false;
-
-      if ((*succ)->is_static ())
-	{
-	  StaticArrow *sa = (StaticArrow *) *succ;
-
-	  MicrocodeAddress a = sa->get_target ();
-	  if (loc.getGlobal() == a.getGlobal () &&
-	      loc.getLocal() + 1 == a.getLocal ())
-	    {
-	      Expr *cond = sa->get_condition ();
-	      Constant *cst = dynamic_cast<Constant *> (cond);
-	      is_simple = (cond == NULL || (cst != NULL && cst->get_val ()));
-	    }
-	}
-      if (is_simple)
-	oss << (*succ)->get_stmt()->pp();
-      else
-	oss << (*succ)->pp();
+      oss << " ";
+      s_stmtarrow_to_string(oss, (*succ));
+      oss << ";";
     }
+
   return oss.str();
 }
 
@@ -314,7 +342,7 @@ bool StmtArrow::operator==(const StmtArrow &other)
 
   if (this->is_dynamic() && other.is_dynamic())
     return (((DynamicArrow *) this)->get_target() ==
-              ((DynamicArrow *) &other)->get_target());
+	    ((DynamicArrow *) &other)->get_target());
 
   if ((!this->is_dynamic()) && !other.is_dynamic())
     return ((StaticArrow *) this)->get_concrete_target().equals(
@@ -328,20 +356,16 @@ DynamicArrow::~DynamicArrow() {
 }
 
 static void
-s_arrow_to_string(std::ostream &out, string kind,
-                  const MicrocodeAddress &origin,
-		  Statement *stmt,
-                  const Expr *condition)
+s_dynamicarrow_to_string(std::ostream &out, const MicrocodeAddress &origin,
+			 const Expr *condition, Statement *stmt)
 {
-  string cond;
-
-  out << kind <<  " " << origin << " " << stmt->pp() << " ";
+  out << origin << " ";
   if (condition)
     {
-      if (condition->is_Constant())
+      if (condition->is_Constant ())
 	{
 	  Constant *c = (Constant *) condition;
-	  if (c->get_val() != 1)
+	  if (c->get_val() == 0)
 	    out << "<< False >>";
 	}
       else
@@ -350,21 +374,23 @@ s_arrow_to_string(std::ostream &out, string kind,
 	}
     }
 
-  out << " --> ";
+  out << " --> " << stmt->pp ();
 }
 
-string DynamicArrow::pp() const
+string DynamicArrow::pp () const
 {
   ostringstream oss;
 
-  s_arrow_to_string(oss, "DynamicArrow", get_origin (), stmt, condition);
-  oss << "<< " + target->to_string () + " >>";
+  oss << " ";
+  s_dynamicarrow_to_string(oss, get_origin (), condition, stmt);
+  oss << target->to_string ();
+
   /* Annotation */
   if (is_annotated ())
     {
-      oss << "@";
+      oss << " @";
       output_annotations (oss);
-      oss << "@ ";
+      oss << "@";
     }
 
   return oss.str();
@@ -415,10 +441,32 @@ void StaticArrow::set_tgt(MicrocodeNode * n) {
 	tgt = n;
 }
 
+static void
+s_staticarrow_to_string(std::ostream &out, const MicrocodeAddress &origin,
+			const Expr *condition, Statement *stmt)
+{
+  out << origin << " ";
+  if (condition)
+    {
+      if (condition->is_Constant ())
+	{
+	  Constant *c = (Constant *) condition;
+	  if (c->get_val() == 0)
+	    out << "<< False >>";
+	}
+      else
+	{
+	  out << "<< "<<  *condition << " >>";
+	}
+    }
+
+  out << stmt->pp () << " --> ";
+}
+
 string StaticArrow::pp() const
 {
   ostringstream oss;
-  s_arrow_to_string(oss, "StaticArrow", get_origin (), stmt, condition);
+  s_staticarrow_to_string(oss, get_origin (), condition, stmt);
   oss << target.to_string ();
 
   return oss.str ();

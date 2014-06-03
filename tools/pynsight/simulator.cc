@@ -1053,29 +1053,8 @@ public:
     else
       {
 	std::ostringstream oss;
-	StmtArrow *a = gsim->get_arrow_at (current);
+	oss << gsim->get_arrow_at (current);
 	current++;
-	Expr *guard = a->get_condition ();
-	if (guard)
-	  {
-	    if (guard->is_Constant())
-	      {
-		Constant *c = (Constant *) guard;
-		if (c->get_val() != 1)
-		  oss << "<< False >> ";
-	      }
-	    else
-	      {
-		oss << "<< "<<  *guard << " >> ";
-	      }
-	  }
-	
-	oss << a->get_stmt()->pp ();
-	if (a->is_static ())
-	  {
-	    oss << " -> " << 
-	      dynamic_cast<const StaticArrow *>(a)->get_target ();
-	  }
 
 	result = Py_BuildValue ("s", oss.str ().c_str ());
       }
@@ -1779,7 +1758,11 @@ GenericInsightSimulator::get_instruction (address_t addr)
       if (aa != NULL)
 	result = aa->get_value ();
       else
-	result = node->pp ();
+	{
+	  std::ostringstream ss;
+	  ss << node;
+	  result = ss.str();
+	}
     } 
   catch (GetNodeNotFoundExc &) { }
 

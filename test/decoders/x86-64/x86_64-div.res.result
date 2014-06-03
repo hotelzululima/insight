@@ -1,54 +1,54 @@
 **** Decode instruction: divb   0xff
-[(0x0,0)] @{asm:=divb   0xff}@ StaticArrow (0x0,0) Skip << (NEQ [0xff{0;64}]{0;8} 0x0{0;8}){0;1} >> --> (0x0,1)
-[(0x0,1)] %tmpr0_16{0;16} := (DIV_U %rax{0;16} (EXTEND_U [0xff{0;64}]{0;8} 0x10{0;64}){0;16}){0;16}
-[(0x0,2)] StaticArrow (0x0,2) Skip << (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1} >> --> (0x7,0)StaticArrow (0x0,2) Skip << (NOT (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1}){0;1} >> --> (0x0,3)
-[(0x0,3)] %tmpr1_8{0;8} := (MODULO %rax{0;16} (EXTEND_U [0xff{0;64}]{0;8} 0x10{0;64}){0;16}){0;8}
-[(0x0,4)] %rax{0;8} := %tmpr0_16{0;8}
-[(0x0,5)] StaticArrow (0x0,5) %rax{8;8} := %tmpr1_8{0;8}  --> (0x7,0)
-[(0x7,0)] 
+[0x0,0] @{asm:=divb   0xff}@ << (NEQ [0xff{0;64}]{0;8} 0x0{0;8}){0;1} >> Skip --> (0x0,1);
+[0x0,1] %tmpr0_16{0;16} := (DIV_U %rax{0;16} (EXTEND_U [0xff{0;64}]{0;8} 0x10{0;64}){0;16}){0;16} --> (0x0,2);
+[0x0,2] << (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1} >> Skip --> (0x7,0); << (NOT (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1}){0;1} >> Skip --> (0x0,3);
+[0x0,3] %tmpr1_8{0;8} := (MODULO %rax{0;16} (EXTEND_U [0xff{0;64}]{0;8} 0x10{0;64}){0;16}){0;8} --> (0x0,4);
+[0x0,4] %rax{0;8} := %tmpr0_16{0;8} --> (0x0,5);
+[0x0,5] %rax{8;8} := %tmpr1_8{0;8} --> (0x7,0);
+[0x7,0]
 
 **** Decode instruction: div    %bl
-[(0x7,0)] @{asm:=div    %bl}@ StaticArrow (0x7,0) Skip << (NEQ %rbx{0;8} 0x0{0;8}){0;1} >> --> (0x7,1)
-[(0x7,1)] %tmpr0_16{0;16} := (DIV_U %rax{0;16} (EXTEND_U %rbx{0;8} 0x10{0;64}){0;16}){0;16}
-[(0x7,2)] StaticArrow (0x7,2) Skip << (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1} >> --> (0x9,0)StaticArrow (0x7,2) Skip << (NOT (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1}){0;1} >> --> (0x7,3)
-[(0x7,3)] %tmpr1_8{0;8} := (MODULO %rax{0;16} (EXTEND_U %rbx{0;8} 0x10{0;64}){0;16}){0;8}
-[(0x7,4)] %rax{0;8} := %tmpr0_16{0;8}
-[(0x7,5)] StaticArrow (0x7,5) %rax{8;8} := %tmpr1_8{0;8}  --> (0x9,0)
-[(0x9,0)] 
+[0x7,0] @{asm:=div    %bl}@ << (NEQ %rbx{0;8} 0x0{0;8}){0;1} >> Skip --> (0x7,1);
+[0x7,1] %tmpr0_16{0;16} := (DIV_U %rax{0;16} (EXTEND_U %rbx{0;8} 0x10{0;64}){0;16}){0;16} --> (0x7,2);
+[0x7,2] << (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1} >> Skip --> (0x9,0); << (NOT (GT_U %tmpr0_16{0;16} (EXTEND_U 0xff{0;8} 0x10{0;64}){0;16}){0;1}){0;1} >> Skip --> (0x7,3);
+[0x7,3] %tmpr1_8{0;8} := (MODULO %rax{0;16} (EXTEND_U %rbx{0;8} 0x10{0;64}){0;16}){0;8} --> (0x7,4);
+[0x7,4] %rax{0;8} := %tmpr0_16{0;8} --> (0x7,5);
+[0x7,5] %rax{8;8} := %tmpr1_8{0;8} --> (0x9,0);
+[0x9,0]
 
 **** Decode instruction: divw   0xff
-[(0x9,0)] @{asm:=divw   0xff}@ StaticArrow (0x9,0) Skip << (NEQ [0xff{0;64}]{0;16} 0x0{0;16}){0;1} >> --> (0x9,1)
-[(0x9,1)] %tmpr0_32{0;32} := (DIV_U (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U [0xff{0;64}]{0;16} 0x20{0;64}){0;32}){0;32}
-[(0x9,2)] StaticArrow (0x9,2) Skip << (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1} >> --> (0x11,0)StaticArrow (0x9,2) Skip << (NOT (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1}){0;1} >> --> (0x9,3)
-[(0x9,3)] %tmpr1_16{0;16} := (MODULO (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U [0xff{0;64}]{0;16} 0x20{0;64}){0;32}){0;16}
-[(0x9,4)] %rax{0;16} := %tmpr0_32{0;16}
-[(0x9,5)] StaticArrow (0x9,5) %rdx{0;16} := %tmpr1_16{0;16}  --> (0x11,0)
-[(0x11,0)] 
+[0x9,0] @{asm:=divw   0xff}@ << (NEQ [0xff{0;64}]{0;16} 0x0{0;16}){0;1} >> Skip --> (0x9,1);
+[0x9,1] %tmpr0_32{0;32} := (DIV_U (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U [0xff{0;64}]{0;16} 0x20{0;64}){0;32}){0;32} --> (0x9,2);
+[0x9,2] << (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1} >> Skip --> (0x11,0); << (NOT (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1}){0;1} >> Skip --> (0x9,3);
+[0x9,3] %tmpr1_16{0;16} := (MODULO (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U [0xff{0;64}]{0;16} 0x20{0;64}){0;32}){0;16} --> (0x9,4);
+[0x9,4] %rax{0;16} := %tmpr0_32{0;16} --> (0x9,5);
+[0x9,5] %rdx{0;16} := %tmpr1_16{0;16} --> (0x11,0);
+[0x11,0]
 
 **** Decode instruction: div    %bx
-[(0x11,0)] @{asm:=div    %bx}@ StaticArrow (0x11,0) Skip << (NEQ %rbx{0;16} 0x0{0;16}){0;1} >> --> (0x11,1)
-[(0x11,1)] %tmpr0_32{0;32} := (DIV_U (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U %rbx{0;16} 0x20{0;64}){0;32}){0;32}
-[(0x11,2)] StaticArrow (0x11,2) Skip << (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1} >> --> (0x14,0)StaticArrow (0x11,2) Skip << (NOT (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1}){0;1} >> --> (0x11,3)
-[(0x11,3)] %tmpr1_16{0;16} := (MODULO (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U %rbx{0;16} 0x20{0;64}){0;32}){0;16}
-[(0x11,4)] %rax{0;16} := %tmpr0_32{0;16}
-[(0x11,5)] StaticArrow (0x11,5) %rdx{0;16} := %tmpr1_16{0;16}  --> (0x14,0)
-[(0x14,0)] 
+[0x11,0] @{asm:=div    %bx}@ << (NEQ %rbx{0;16} 0x0{0;16}){0;1} >> Skip --> (0x11,1);
+[0x11,1] %tmpr0_32{0;32} := (DIV_U (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U %rbx{0;16} 0x20{0;64}){0;32}){0;32} --> (0x11,2);
+[0x11,2] << (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1} >> Skip --> (0x14,0); << (NOT (GT_U %tmpr0_32{0;32} (EXTEND_U 0xffff{0;16} 0x20{0;64}){0;32}){0;1}){0;1} >> Skip --> (0x11,3);
+[0x11,3] %tmpr1_16{0;16} := (MODULO (CC %rdx{0;16} %rax{0;16}){0;32} (EXTEND_U %rbx{0;16} 0x20{0;64}){0;32}){0;16} --> (0x11,4);
+[0x11,4] %rax{0;16} := %tmpr0_32{0;16} --> (0x11,5);
+[0x11,5] %rdx{0;16} := %tmpr1_16{0;16} --> (0x14,0);
+[0x14,0]
 
 **** Decode instruction: divl   0xff
-[(0x14,0)] @{asm:=divl   0xff}@ StaticArrow (0x14,0) Skip << (NEQ [0xff{0;64}]{0;32} 0x0{0;32}){0;1} >> --> (0x14,1)
-[(0x14,1)] %tmpr0_64{0;64} := (DIV_U (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U [0xff{0;64}]{0;32} 0x40{0;64}){0;64}){0;64}
-[(0x14,2)] StaticArrow (0x14,2) Skip << (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1} >> --> (0x1b,0)StaticArrow (0x14,2) Skip << (NOT (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1}){0;1} >> --> (0x14,3)
-[(0x14,3)] %tmpr1_32{0;32} := (MODULO (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U [0xff{0;64}]{0;32} 0x40{0;64}){0;64}){0;32}
-[(0x14,4)] %rax{0;32} := %tmpr0_64{0;32}
-[(0x14,5)] StaticArrow (0x14,5) %rdx{0;32} := %tmpr1_32{0;32}  --> (0x1b,0)
-[(0x1b,0)] 
+[0x14,0] @{asm:=divl   0xff}@ << (NEQ [0xff{0;64}]{0;32} 0x0{0;32}){0;1} >> Skip --> (0x14,1);
+[0x14,1] %tmpr0_64{0;64} := (DIV_U (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U [0xff{0;64}]{0;32} 0x40{0;64}){0;64}){0;64} --> (0x14,2);
+[0x14,2] << (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1} >> Skip --> (0x1b,0); << (NOT (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1}){0;1} >> Skip --> (0x14,3);
+[0x14,3] %tmpr1_32{0;32} := (MODULO (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U [0xff{0;64}]{0;32} 0x40{0;64}){0;64}){0;32} --> (0x14,4);
+[0x14,4] %rax{0;32} := %tmpr0_64{0;32} --> (0x14,5);
+[0x14,5] %rdx{0;32} := %tmpr1_32{0;32} --> (0x1b,0);
+[0x1b,0]
 
 **** Decode instruction: div    %ebx
-[(0x1b,0)] @{asm:=div    %ebx}@ StaticArrow (0x1b,0) Skip << (NEQ %rbx{0;32} 0x0{0;32}){0;1} >> --> (0x1b,1)
-[(0x1b,1)] %tmpr0_64{0;64} := (DIV_U (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U %rbx{0;32} 0x40{0;64}){0;64}){0;64}
-[(0x1b,2)] StaticArrow (0x1b,2) Skip << (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1} >> --> (0x1d,0)StaticArrow (0x1b,2) Skip << (NOT (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1}){0;1} >> --> (0x1b,3)
-[(0x1b,3)] %tmpr1_32{0;32} := (MODULO (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U %rbx{0;32} 0x40{0;64}){0;64}){0;32}
-[(0x1b,4)] %rax{0;32} := %tmpr0_64{0;32}
-[(0x1b,5)] StaticArrow (0x1b,5) %rdx{0;32} := %tmpr1_32{0;32}  --> (0x1d,0)
-[(0x1d,0)] 
+[0x1b,0] @{asm:=div    %ebx}@ << (NEQ %rbx{0;32} 0x0{0;32}){0;1} >> Skip --> (0x1b,1);
+[0x1b,1] %tmpr0_64{0;64} := (DIV_U (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U %rbx{0;32} 0x40{0;64}){0;64}){0;64} --> (0x1b,2);
+[0x1b,2] << (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1} >> Skip --> (0x1d,0); << (NOT (GT_U %tmpr0_64{0;64} (EXTEND_U 0xffffffff{0;32} 0x40{0;64}){0;64}){0;1}){0;1} >> Skip --> (0x1b,3);
+[0x1b,3] %tmpr1_32{0;32} := (MODULO (CC %rdx{0;32} %rax{0;32}){0;64} (EXTEND_U %rbx{0;32} 0x40{0;64}){0;64}){0;32} --> (0x1b,4);
+[0x1b,4] %rax{0;32} := %tmpr0_64{0;32} --> (0x1b,5);
+[0x1b,5] %rdx{0;32} := %tmpr1_32{0;32} --> (0x1d,0);
+[0x1d,0]
 

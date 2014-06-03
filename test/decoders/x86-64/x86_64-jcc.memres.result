@@ -1,12 +1,12 @@
 **** Decode instruction: jne    0x6
-[(0x0,0)] @{asm:=jne    0x6}@ StaticArrow (0x0,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x6,0)StaticArrow (0x0,0) Skip << %zf{0;1} >> --> (0x6,0)
-[(0x6,0)] 
+[0x0,0] @{asm:=jne    0x6}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0x6,0); << %zf{0;1} >> Skip --> (0x6,0);
+[0x6,0]
 
 **** Decode instruction: jne    0xc
-[(0x6,0)] @{asm:=jne    0xc}@ StaticArrow (0x6,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0xc,0)StaticArrow (0x6,0) Skip << %zf{0;1} >> --> (0xc,0)
-[(0xc,0)] 
+[0x6,0] @{asm:=jne    0xc}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0xc,0); << %zf{0;1} >> Skip --> (0xc,0);
+[0xc,0]
 
 **** Decode instruction: jne    0x12
-[(0xc,0)] @{asm:=jne    0x12}@ StaticArrow (0xc,0) Skip << (NOT %zf{0;1}){0;1} >> --> (0x12,0)StaticArrow (0xc,0) Skip << %zf{0;1} >> --> (0x12,0)
-[(0x12,0)] 
+[0xc,0] @{asm:=jne    0x12}@ << (NOT %zf{0;1}){0;1} >> Skip --> (0x12,0); << %zf{0;1} >> Skip --> (0x12,0);
+[0x12,0]
 

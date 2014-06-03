@@ -1,20 +1,20 @@
 **** Decode instruction: lea    -0x64(%eax,%esi,2),%bx
-[(0x0,0)] @{asm:=lea    -0x64(%eax,%esi,2),%bx}@ StaticArrow (0x0,0) %rbx{0;16} := (ADD (ADD %rax{0;32} (MUL_U %rsi{0;32} 0x2{0;32}){0;32}){0;32} 0xffffff9c{0;32}){0;32}  --> (0x6,0)
-[(0x6,0)] 
+[0x0,0] @{asm:=lea    -0x64(%eax,%esi,2),%bx}@ %rbx{0;16} := (ADD (ADD %rax{0;32} (MUL_U %rsi{0;32} 0x2{0;32}){0;32}){0;32} 0xffffff9c{0;32}){0;32} --> (0x6,0);
+[0x6,0]
 
 **** Decode instruction: lea    0x1234,%bx
-[(0x6,0)] @{asm:=lea    0x1234,%bx}@ StaticArrow (0x6,0) %rbx{0;16} := 0x1234{0;64}  --> (0xe,0)
-[(0xe,0)] 
+[0x6,0] @{asm:=lea    0x1234,%bx}@ %rbx{0;16} := 0x1234{0;64} --> (0xe,0);
+[0xe,0]
 
 **** Decode instruction: lea    0x12345678,%bx
-[(0xe,0)] @{asm:=lea    0x12345678,%bx}@ StaticArrow (0xe,0) %rbx{0;16} := 0x12345678{0;64}  --> (0x16,0)
-[(0x16,0)] 
+[0xe,0] @{asm:=lea    0x12345678,%bx}@ %rbx{0;16} := 0x12345678{0;64} --> (0x16,0);
+[0x16,0]
 
 **** Decode instruction: lea    0x12345678,%ebx
-[(0x16,0)] @{asm:=lea    0x12345678,%ebx}@ StaticArrow (0x16,0) %rbx{0;32} := 0x12345678{0;64}  --> (0x1d,0)
-[(0x1d,0)] 
+[0x16,0] @{asm:=lea    0x12345678,%ebx}@ %rbx{0;32} := 0x12345678{0;64} --> (0x1d,0);
+[0x1d,0]
 
 **** Decode instruction: lea    -0x64(%eax,%esi,2),%ebx
-[(0x1d,0)] @{asm:=lea    -0x64(%eax,%esi,2),%ebx}@ StaticArrow (0x1d,0) %rbx{0;32} := (ADD (ADD %rax{0;32} (MUL_U %rsi{0;32} 0x2{0;32}){0;32}){0;32} 0xffffff9c{0;32}){0;32}  --> (0x22,0)
-[(0x22,0)] 
+[0x1d,0] @{asm:=lea    -0x64(%eax,%esi,2),%ebx}@ %rbx{0;32} := (ADD (ADD %rax{0;32} (MUL_U %rsi{0;32} 0x2{0;32}){0;32}){0;32} 0xffffff9c{0;32}){0;32} --> (0x22,0);
+[0x22,0]
 

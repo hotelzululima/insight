@@ -251,6 +251,8 @@ io_sources = \
 	io/microcode/asm-writer.hh      	\
 	io/microcode/dot-writer.cc      	\
 	io/microcode/dot-writer.hh      	\
+	io/microcode/mc-writer.cc      		\
+	io/microcode/mc-writer.hh      		\
 	io/microcode/MicrocodeLoader.cc 	\
 	io/microcode/MicrocodeLoader.hh 	\
 	io/microcode/xml_microcode_parser.cc	\
