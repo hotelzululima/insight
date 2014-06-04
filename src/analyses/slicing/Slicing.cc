@@ -28,6 +28,7 @@
  * SUCH DAMAGE.
  */
 
+#include <kernel/annotations/SolvedJmpAnnotation.hh>
 #include <iostream>
 #include <stdio.h>
 #include <utils/tools.hh>
@@ -808,25 +809,44 @@ bool DD_u_explore(vector<StmtArrow*> * explored,
   return true;
 }
 
-Option<bool> DD_u_follow_edge(Microcode * prg,
-			      StmtArrow * arr,
-			      list<StmtArrow*> * pending_arrows,
-			      vector<StmtArrow*> * explored_arrows) {
+static Option<bool> 
+DD_u_follow_edge(const Microcode * prg,
+		 StmtArrow * arr,
+		 list<StmtArrow*> * pending_arrows,
+		 vector<StmtArrow*> * explored_arrows) {
   Option<MicrocodeAddress> tgtopt = arr->extract_target();
+  std::vector<MicrocodeAddress> targets;
+
   // Unresolved dynamic jump : true
-  if (!tgtopt.hasValue()) { return Option<bool>(true); }
-  MicrocodeAddress addr = tgtopt.getValue();
-  MicrocodeNode * tgt_node;
-  try { tgt_node = prg->get_node(addr); }
-  catch (...) { return Option<bool>(false); } // Absent node: ignored
-  vector<StmtArrow *> * succs = tgt_node->get_successors();
-  for (int s=0; s<(int) succs->size(); s++)
-    DD_u_explore(explored_arrows, pending_arrows, (*succs)[s]);
+  if (tgtopt.hasValue()) 
+    targets.push_back (tgtopt.getValue ());
+  else if (arr->has_annotation (SolvedJmpAnnotation::ID))
+    {
+      SolvedJmpAnnotation *a = (SolvedJmpAnnotation *)
+	arr->get_annotation (SolvedJmpAnnotation::ID);
+      for (SolvedJmpAnnotation::const_iterator i = a->begin(); i != a->end();
+	   i++)
+	targets.push_back (*i);
+    }
+  else
+    {
+      return Option<bool>(true); 
+    }
+  for (int i = 0; i < targets.size (); i++)
+    {
+      MicrocodeAddress addr = targets[i];
+      MicrocodeNode *tgt_node;
+      try { tgt_node = prg->get_node(addr); }
+      catch (...) { return Option<bool>(false); } // Absent node: ignored
+      vector<StmtArrow *> * succs = tgt_node->get_successors();
+      for (int s=0; s<(int) succs->size(); s++)
+	DD_u_explore(explored_arrows, pending_arrows, (*succs)[s]);
+    }
   return Option<bool>();
 }
 
 bool
-DataDependency::statement_used (Microcode *prg, StmtArrow *arr)
+DataDependency::statement_used (const Microcode *prg, StmtArrow *arr)
 {
   if (! arr->get_stmt ()->is_Assignment ())
     {
@@ -887,7 +907,7 @@ DataDependency::statement_used (Microcode *prg, StmtArrow *arr)
 }
 
 std::vector<StmtArrow *>
-DataDependency::useless_statements (Microcode * prg)
+DataDependency::useless_statements (const Microcode * prg)
 {
   vector<StmtArrow*> result;
 

@@ -170,11 +170,11 @@ public:
   /* Tells whether a statement is used or not in a piece of microcode.
    * Note that when a not resolved dynamic jump is found, or a missing node,
    * one supposes that anything can occur. */
-  static bool statement_used(Microcode * prg, StmtArrow* arr);
+  static bool statement_used(const Microcode * prg, StmtArrow* arr);
 
   /* Tags the useless arrows in a piece of microcode. Note that when a not resolved dynamic
    * jump is found, or a missing node, one supposes that anything can occur. */
-  static std::vector<StmtArrow*> useless_statements(Microcode * prg);
+  static std::vector<StmtArrow*> useless_statements(const Microcode * prg);
 
 };
 
