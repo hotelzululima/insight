@@ -1054,7 +1054,7 @@ public:
     else
       {
 	std::ostringstream oss;
-	oss << gsim->get_arrow_at (current);
+	oss << gsim->get_arrow_at (current)->pp ();
 	current++;
 
 	result = Py_BuildValue ("s", oss.str ().c_str ());
@@ -1761,7 +1761,7 @@ GenericInsightSimulator::get_instruction (address_t addr)
       else
 	{
 	  std::ostringstream ss;
-	  ss << node;
+	  ss << node->pp ();
 	  result = ss.str();
 	}
     }
