@@ -66,7 +66,7 @@ for a in aliases_.keys():
 
 
 def aliases():
-    """Display current aliases of insgith db"""
+    """Display current aliases"""
     for a in aliases_.keys():
         print "{:10s} -> {}".format(a, aliases_[a].__name__)
 
