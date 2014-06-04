@@ -68,8 +68,8 @@ construct_all_subsets(const T &s)
 
       unsigned int k = 0;
       do {
-    	  belongs[k] = !belongs[k];
-    	  k++;
+	  belongs[k] = !belongs[k];
+	  k++;
       }
       while ((!belongs[k - 1]) && (k < (s.size() + 1)));
     }
@@ -185,7 +185,7 @@ Expr * weakest_precondition(Expr * post, MCPath &p)
   Expr * phi = post;
   for (MCPath_reverse_iterator arr = p.rbegin(); arr != p.rend(); ++arr) {
       Expr * new_phi = weakest_precondition(phi, *arr);
-      if (phi != post && phi != new_phi) { // \todo comment phi pourrait etre != de this ?...
+      if (phi != post && phi != new_phi) {
 	phi->deref ();
 	phi = new_phi;
       }
@@ -214,20 +214,21 @@ public:
   {
     try
       {
-        if (has_invariant(current_path_get_target()))
-          {
-            MicrocodeAddress start = current_path_get_last_annotation().getValue();
-            MicrocodeAddress final = current_path_get_target();
-            MCPath path = current_path_extract(start, final);
-            cout << "SEGMENT" << start << "-" << final << ":\n"
+	if (has_invariant(current_path_get_target()))
+	  {
+	    MicrocodeAddress start =
+	      current_path_get_last_annotation().getValue();
+	    MicrocodeAddress final = current_path_get_target();
+	    MCPath path = current_path_extract(start, final);
+	    cout << "SEGMENT" << start << "-" << final << ":\n"
 		 << path.pp() << endl;
-            segments.push_back(path);
-            cout << segments.size() << endl;
-          }
+	    segments.push_back(path);
+	    cout << segments.size() << endl;
+	  }
       }
     catch (OptionNoValueExc &)
       {
-        logs::warning << "process: unable to extract target" << endl;
+	logs::warning << "process: unable to extract target" << endl;
       }
   };
 
@@ -248,10 +249,10 @@ public:
     bool found_invariant = false;
     for (MCPath_iterator arr = path.begin(); arr != path.end(); arr++)
       if (has_invariant((*arr)->get_origin()))
-        {
-          found_invariant = true;
-          break;
-        }
+	{
+	  found_invariant = true;
+	  break;
+	}
     if (!found_invariant)
       logs::warning << "Loop without invariant" << endl;
   };
@@ -263,36 +264,40 @@ public:
 
   Option<MicrocodeAddress> current_path_get_last_annotation()
   {
-    for (list< vector<StmtArrow *> >::reverse_iterator arrows = current_path->rbegin(); arrows != current_path->rend(); ++arrows)
+    for (list< vector<StmtArrow *> >::reverse_iterator
+	   arrows = current_path->rbegin();
+	 arrows != current_path->rend(); ++arrows)
       {
-        MicrocodeAddress a = arrows->back()->get_origin();
-        if (has_invariant(a)) return Option<MicrocodeAddress>(a);
+	MicrocodeAddress a = arrows->back()->get_origin();
+	if (has_invariant(a)) return Option<MicrocodeAddress>(a);
       }
     return Option<MicrocodeAddress>();
   };
 
   MicrocodeAddress current_path_get_target()
   {
-    logs::check("current_path_get_last_annotation: current path empty", current_path->size() > 0);
+    logs::check("current_path_get_last_annotation: current path empty",
+		current_path->size() > 0);
     return current_path->back().back()->extract_target().getValue();
   };
 
   MCPath current_path_extract(MicrocodeAddress start, MicrocodeAddress end)
   {
     MCPath subpath(prg);
-    for (list< vector<StmtArrow *> >::iterator arrows = current_path->begin(); arrows != current_path->end(); arrows++) {
-        StmtArrow *a = arrows->back();
-        if (subpath.size() > 0) {
-            subpath.push_back(a);
-            if (a->extract_target().getValue().equals(end))
-              return subpath;
-        }
-        else {
-            if (a->get_origin().equals(start)) subpath.push_back(a);
-            if (a->extract_target().getValue().equals(end) &&
+    for (list< vector<StmtArrow *> >::iterator arrows = current_path->begin();
+	 arrows != current_path->end(); arrows++) {
+      StmtArrow *a = arrows->back();
+      if (subpath.size() > 0) {
+	subpath.push_back(a);
+	if (a->extract_target().getValue().equals(end))
+	  return subpath;
+      }
+      else {
+	if (a->get_origin().equals(start)) subpath.push_back(a);
+	if (a->extract_target().getValue().equals(end) &&
 		subpath.size() > 0)
-              return subpath;
-        }
+	  return subpath;
+      }
     }
     logs::warning << "current_path_extract: cannot find bounds" << endl;
     cout << start << "-" << end << endl;
