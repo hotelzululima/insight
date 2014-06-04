@@ -32,6 +32,7 @@
 #include <io/microcode/asm-writer.hh>
 #include <io/microcode/dot-writer.hh>
 #include <analyses/CFG.hh>
+#include <analyses/slicing/Slicing.hh>
 
 struct PyMicrocode
 {
@@ -57,6 +58,9 @@ s_PyMicrocode_get_range (PyObject *self, PyObject *);
 
 static PyObject *
 s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds);
+
+static PyObject *
+s_PyMicrocode_useless (PyObject *self, PyObject *args, PyObject *kwds);
 
 static PyTypeObject PyMicrocodeType = {
   PyObject_HEAD_INIT(NULL)
@@ -94,6 +98,8 @@ static PyMethodDef PyMicrocodeMethods[] = {
   { "get_range", (PyCFunction) s_PyMicrocode_get_range, METH_NOARGS,
     "\n" },
   { "cfg", (PyCFunction) s_PyMicrocode_cfg, METH_VARARGS|METH_KEYWORDS,
+    "\n" },
+  { "useless", (PyCFunction) s_PyMicrocode_useless, METH_VARARGS|METH_KEYWORDS,
     "\n" },
   { NULL, NULL, 0, NULL }
 };
@@ -269,4 +275,25 @@ s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds)
   delete cfg;
 
   return result;
+}
+
+static PyObject *
+s_PyMicrocode_useless (PyObject *self, PyObject *args, PyObject *kwds)
+{
+  //static const char *kwlists[] =  { "start", "filename", NULL };
+  PyMicrocode *M = (PyMicrocode *) self;
+  //const char *filename = NULL;
+  //unsigned long addr;
+
+  //  if (! PyArg_ParseTupleAndKeywords (args, kwds, "k|s", (char **) kwlists,
+  //				     &addr, &filename))
+  //  return NULL;
+
+  std::vector<StmtArrow*> us =
+    DataDependency::useless_statements (M->mc->get_microcode ());
+
+  for (std::vector<StmtArrow*>::size_type i = 0; i < us.size (); i++)
+    std::cout << us[i]->pp () << std::endl;
+
+  return pynsight::None ();
 }
