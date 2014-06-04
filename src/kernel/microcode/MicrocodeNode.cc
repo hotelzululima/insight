@@ -370,7 +370,7 @@ s_dynamicarrow_to_string(std::ostream &out, const MicrocodeAddress &origin,
 	}
       else
 	{
-	  out << "<< "<<  *condition << " >>";
+	  out << "<< " <<  *condition << " >>";
 	}
     }
 
@@ -452,11 +452,11 @@ s_staticarrow_to_string(std::ostream &out, const MicrocodeAddress &origin,
 	{
 	  Constant *c = (Constant *) condition;
 	  if (c->get_val() == 0)
-	    out << "<< False >>";
+	    out << "<< False >> ";
 	}
       else
 	{
-	  out << "<< "<<  *condition << " >>";
+	  out << "<< "<<  *condition << " >> ";
 	}
     }
 
