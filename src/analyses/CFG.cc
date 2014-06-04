@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <kernel/annotations/SolvedJmpAnnotation.hh>
+#include <analyses/slicing/Slicing.hh>
 
 using namespace std;
 
@@ -58,13 +59,15 @@ struct CFG_BasicBlockImpl : public CFG_BasicBlock
     for (list<CFG_EdgeImpl *>::iterator ei = in.begin(); ei != in.end (); ei++)
       delete *ei;
   }
-
+  
+  void trim (std::map<MicrocodeNode *,int> ulmap);
   bool operator == (const CFG_BasicBlock &bb) const;
   string pp () const;
   virtual MicrocodeNode *get_entry () const;
   virtual MicrocodeNode *get_exit () const;
 
   vector<MicrocodeNode *> nodes;
+  vector<bool> visible;
   list<CFG_EdgeImpl *> in;
   list<CFG_EdgeImpl *> out;
 };
@@ -201,7 +204,8 @@ CFG::~CFG ()
 
 
 CFG *
-CFG::createFromMicrocode (const Microcode *prog, const MicrocodeAddress &start)
+CFG::createFromMicrocode (const Microcode *prog, const MicrocodeAddress &start,
+			  bool trim)
 {
   CFG *result = new CFG ();
 
@@ -231,6 +235,24 @@ CFG::createFromMicrocode (const Microcode *prog, const MicrocodeAddress &start)
       delete succ;
     }
 
+  if (trim)
+    {
+      std::vector<StmtArrow*> us = DataDependency::useless_statements (prog);
+      std::map<MicrocodeNode *, int> uselessmap;
+
+      for (std::vector<StmtArrow*>::size_type i = 0; i < us.size (); i++)
+	{
+	  MicrocodeNode *src = us[i]->get_src ();
+	  if (uselessmap.find (src) == uselessmap.end ())
+	    uselessmap[src] = 1;
+	  else
+	    uselessmap[src] += 1;
+	}
+      for (node_iterator i = result->nodes.begin (); i != result->nodes.end (); 
+	   i++)
+	((CFG_BasicBlockImpl *) *i)->trim (uselessmap);
+    }
+  
   return result;
 }
 
@@ -412,6 +434,22 @@ CFG_EdgeImpl::get_tgt () const
   return tgt;
 }
 
+void 
+CFG_BasicBlockImpl::trim (std::map<MicrocodeNode *,int> ulmap)
+{  
+  visible.resize (nodes.size (), true);
+  for (vector<MicrocodeNode *>::size_type i = 0; i < nodes.size (); i++)
+    {
+      if (ulmap.find (nodes[i]) == ulmap.end ())
+	continue;
+
+      MicrocodeNode *n = nodes[i];
+      vector<MicrocodeNode *>::size_type nbuseless = ulmap[n];
+      if (nbuseless == n->get_successors()->size ())
+	visible[i] = false;
+    }
+}
+
 bool
 CFG_BasicBlockImpl::operator == (const CFG_BasicBlock &bb) const
 {
@@ -430,6 +468,9 @@ CFG_BasicBlockImpl::pp () const
     {
       MicrocodeNode *node = nodes.at(i);
 
+      if (visible.size () > 0 && visible[i] == false)
+	continue;
+
       if (node->get_successors ()->size () == 1)
 	{
 	  StmtArrow *a = node->get_successors ()->at (0);
@@ -443,9 +484,7 @@ CFG_BasicBlockImpl::pp () const
 	    }
 	  else
 	    {
-	      DynamicArrow *da = (DynamicArrow *) a;
-	      oss << a->get_stmt () << " ";
-	      da->get_target ()->output_text (oss);
+	      oss << a->get_stmt ()->pp ();
 	    }
 	  oss << endl;
 	}

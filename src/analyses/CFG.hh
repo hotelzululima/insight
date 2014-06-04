@@ -71,7 +71,8 @@ public:
   virtual ~CFG();
 
   static CFG *createFromMicrocode (const Microcode *prog,
-				   const MicrocodeAddress &start);
+				   const MicrocodeAddress &start, 
+				   bool trim);
 
   typedef CFG_BasicBlock node_type;
   typedef CFG_Edge edge_type;

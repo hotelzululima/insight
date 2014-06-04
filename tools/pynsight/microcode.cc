@@ -241,17 +241,18 @@ s_PyMicrocode_get_range (PyObject *self, PyObject *)
 static PyObject *
 s_PyMicrocode_cfg (PyObject *self, PyObject *args, PyObject *kwds)
 {
-  static const char *kwlists[] =  { "start", "filename", NULL };
+  static const char *kwlists[] =  { "start", "filename", "trim", NULL };
   PyMicrocode *M = (PyMicrocode *) self;
   const char *filename = NULL;
   unsigned long addr;
+  unsigned char trim = 1;
 
-  if (! PyArg_ParseTupleAndKeywords (args, kwds, "k|s", (char **) kwlists,
-				     &addr, &filename))
+  if (! PyArg_ParseTupleAndKeywords (args, kwds, "k|sb", (char **) kwlists,
+				     &addr, &filename, &trim))
     return NULL;
 
   MicrocodeAddress ma (addr);
-  CFG *cfg = CFG::createFromMicrocode (M->mc->get_microcode (), ma);
+  CFG *cfg = CFG::createFromMicrocode (M->mc->get_microcode (), ma, trim);
   PyObject *result;
   if (filename != NULL)
     {
