@@ -145,11 +145,10 @@ AC_CANONICAL_HOST
 case $host_os in
      *linux*)
         HOST_OS=linux
-	LIBS="${LIBS}"
 	;;
      *bsd*)
         HOST_OS=bsd
-	CPPFLAGS="-I/usr/pkg/include ${CPPFLAGS} -DBSD"
+	CPPFLAGS="-I/usr/pkg/include ${CPPFLAGS}"
 	LDFLAGS="${LDFLAGS} -L/usr/pkg/lib"
 	LIBS="${LIBS} -lz -liberty -lintl"
 	;;
