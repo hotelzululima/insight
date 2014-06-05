@@ -80,7 +80,7 @@ def add_hook(f, h):
         hooks[f] = [h]
 
 
-def remove_hook(f, hindex):
+def del_hook(f, hindex):
     """
     Remove a hook attached to the simulation function 'f'.
 
@@ -116,7 +116,7 @@ def del_run_hook(hindex):
     Parameters:
     - hindex : index of the hook given by 'show ("hooks")'.
     """
-    remove_hook(run, hindex)
+    del_hook(run, hindex)
 
 
 def add_step_hook(h):
@@ -136,7 +136,7 @@ def del_step_hook(hindex):
     Parameters:
     - hindex : index of the hook given by 'show ("hooks")'.
     """
-    remove_hook(step, hindex)
+    del_hook(step, hindex)
 
 
 def add_cont_hook(h):
@@ -155,7 +155,7 @@ def del_cont_hook(hindex):
     Parameters:
     - hindex : index of the hook given by 'show ("hooks")'.
     """
-    remove_hook(cont, hindex)
+    del_hook(cont, hindex)
 
 
 def add_microstep_hook(h):
@@ -174,7 +174,7 @@ def del_microstep_hook(hindex):
     Parameters:
     - hindex : index of the hook given by 'show ("hooks")'.
     """
-    remove_hook(microstep, hindex)
+    del_hook(microstep, hindex)
 
 
 def run(ep=None):
