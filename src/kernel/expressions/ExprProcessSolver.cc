@@ -82,7 +82,18 @@ ExprProcessSolver::terminate ()
 static string
 s_solver_command ()
 {
-  return CONFIG->get (ExprProcessSolver::COMMAND_PROP);
+  string cmd = CONFIG->get (ExprProcessSolver::COMMAND_PROP);
+
+  if (cmd == "")
+    {
+#ifdef HAVE_MATHSAT_SOLVER
+      cmd = "mathsat";
+#elif defined(HAVE_Z3_SOLVER)
+      cmd = "z3";
+#endif
+    }
+
+  return cmd;
 }
 
 static std::vector<std::string>

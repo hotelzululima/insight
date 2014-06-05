@@ -11,8 +11,6 @@ dotviewer = None
 recorder = None
 displayed_expressions = []
 
-insight.config.set("kernel.expr.solver.name", "mathsat")
-
 
 def binfile(filename, domain="symbolic", target="", architecture=""):
     """

@@ -71,6 +71,9 @@ static SolverModule *default_solver ()
   SolverModule *result = NULL;
   string sname = CONFIG->get (ExprSolver::SOLVER_NAME_PROP);
 
+  if (sname == "" && sizeof modules != 0)
+    return &modules[0];
+
   for (size_t i = 0; result == NULL && i < nb_modules; i++)
     if (modules[i].ident () == sname)
       result = &modules[i];
