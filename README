@@ -7,7 +7,7 @@ analysis, model-checking and theorem proving techniques.
 Insight is released under a 2-clause BSD license (see the 'COPYING'
 file for more details).
 
-For now, Insight supports x86-32 and ARM architectures for
+For now, Insight supports i386 and amd64 architectures for
 analysis. Because it currently depends on the GNU binutils to read
 binary files and decode instructions, it is further limited to what
 your installation of the binutils allows. See the 'INSTALL' file to
