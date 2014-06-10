@@ -397,6 +397,9 @@ s_registers (const Architecture *arch) {
   for (RegisterSpecs::const_iterator i = regspecs->begin ();
        i != regspecs->end () && !PyErr_Occurred (); i++) {
     const char *regname = i->second->get_label ().c_str ();
+    if (i->second->is_alias ())
+      continue;
+
     PyObject *regsize = Py_BuildValue ("I", i->second->get_window_size ());
     if (regsize == NULL)
       break;
