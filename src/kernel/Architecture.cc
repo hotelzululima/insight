@@ -284,10 +284,8 @@ Architecture::getArchitecture (const processor_t proc)
   switch (proc)
     {
     case Architecture::X86_32:
-      arch = getArchitecture (proc, LittleEndian);
-      break;
-
     case Architecture::X86_64:
+    case Architecture::MSP430:
       arch = getArchitecture (proc, LittleEndian);
       break;
 
