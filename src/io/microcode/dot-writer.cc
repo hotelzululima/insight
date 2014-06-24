@@ -294,9 +294,9 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	}
       out << "\"";
       if (n == entrynode)
-	out << ",color=red,peripheries=2";
+	out << ",entrypoint=1,color=red,peripheries=2";
       else
-	out << ",color=\"#" << hex << rgb << "\"";
+	out << ",entrypoint=0,color=\"#" << hex << rgb << "\"";
       out << "];\n";
 
       set<MicrocodeAddress,LessThanFunctor<MicrocodeAddress> > targets;
