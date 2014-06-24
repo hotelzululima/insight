@@ -207,7 +207,7 @@ X86_TRANSLATE_1_OP(IMULQ); // x86_instr_arithmetics.cc
 X86_TRANSLATE_2_OP(IMULQ); // x86_instr_arithmetics.cc
 X86_TRANSLATE_3_OP(IMULQ); // x86_instr_arithmetics.cc
 
-// X86_TRANSLATE_2_OP(IN);
+X86_TRANSLATE_2_OP(IN); // x86_instr_misc.cc
 
 X86_TRANSLATE_1_OP(INC); // x86_instr_arithmetics.cc
 X86_TRANSLATE_1_OP(INCB); // x86_instr_arithmetics.cc
@@ -349,8 +349,7 @@ X86_TRANSLATE_2_OP(ORW); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ORL); // x86_instr_booleans.cc
 X86_TRANSLATE_2_OP(ORQ); // x86_instr_booleans.cc
 
-// X86_TRANSLATE_0_OP(OUT);
-// X86_TRANSLATE_1_OP(OUT);
+X86_TRANSLATE_2_OP(OUT);
 // X86_TRANSLATE_0_OP(OUTSB);
 // X86_TRANSLATE_2_OP(OUTSB);
 // X86_TRANSLATE_0_OP(OUTSW);
