@@ -1,0 +1,3 @@
+@node Full Index
+@unnumbered Full Index
+@printindex cp

@@ -429,6 +429,8 @@ AC_CONFIG_FILES([
 	doc/Makefile
 	doc/doxygen/doxygen.cfg
 	doc/manuals/common-macros.texi
+	doc/tutorials/Makefile
+	doc/tutorials/iii/Makefile
 	src/Makefile
 	test/Makefile
 	test/Makefile.inc

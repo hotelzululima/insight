@@ -1,0 +1,15 @@
+@node Crackme source code 
+@appendix Crackme source code
+
+Here is the source code of the @code{crackme} program. It is written using
+@code{fasm} (@bibcite{FASM}) assembly language.
+
+@smallexample
+@verbatiminclude demo/meta/crackme.asm
+@end smallexample
+The example includes the following file containing the @code{ccall} macro:
+
+@smallexample
+@verbatiminclude demo/meta/ccall.inc
+@end smallexample
+

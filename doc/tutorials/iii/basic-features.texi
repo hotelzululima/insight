@@ -1,0 +1,280 @@
+@node Basic features
+@chapter Basic Features
+
+@node @code{pynsight} interpreter
+@section @code{pynsight} interpreter
+
+@code{pynsight} is @code{Python} interpreter extended with @Insight{} bindings.
+@iii{} is a debugger built on top of @code{pynsight}. As show below, when 
+@iii{} is started a banner is displayed and the tool presents a prompt that 
+permits to interact with @code{pynsight}:
+@smallexample
+$ iii
+iii
+Insight Interactive Inspector
+Try 'help(insight.debugger)' to get information on debugger commands.
+Type 'aliases()' to display list of defined aliases.
+
+No module named iiirc
+
+iii> 
+@end smallexample
+
+The interpreter indicates that @code{iiirc} module has not been found. This 
+point will be clarified in @ref{Initialization file}. 
+
+After the prompt, @code{iii>}, any @code{Python} script can be executed:
+@smallexample
+iii> for i in range(5):
+...     print 2*i 
+... 
+0
+2
+4
+6
+8
+iii> 
+@end smallexample
+In the context of @iii, some modules are pre-loaded; the most interesting one is
+@code{insight.debugger} that contains all functions proposed by @code{iii}. 
+Since we are in a @code{Python} interpreter, documentation related to @Insight{}
+modules can be displayed using the @code{help} function; as suggested by the
+banner try @code{help(insight.debugger)} to discover all functions implemented
+in @iii{}. 
+
+Since @iii{} is an interactive tool, several shorcuts have been defined for 
+most frequently used commands e.g., @code{run}, @code{step}, ... The function 
+@code{aliases()} lists these shortcuts:
+
+@smallexample
+iii> aliases()
+ms         -> microstep
+P          -> prog
+cond       -> cond
+ep         -> entrypoint
+...
+@end smallexample
+
+Each function should be documented. For instance @code{help(microstep)}, or equivalently @code{help(ms)}, describes the behavior of @code{microstep} function.
+
+@node Getting started
+@section Getting started
+
+The tool can be started without any argument or the path to a binary file to 
+analyse. @iii{} accepts several options. The usual @code{--help} option lists 
+all others. Let's start it with our @code{crackme} program.
+
+@smallexample 
+$ iii crackme
+@end smallexample
+
+@code{crackme} has been successfully loaded. Another way to load a binary file 
+is to use the @code{binfile} command. Immediately we can get informations 
+related to what kind of program is currently loaded. To this purpose we use the
+function @code{info()}:
+@smallexample
+iii> info()
+address_size         : 0x20(32)
+memory_min_address   : 0x8048000(134512640)
+memory_max_address   : 0x80ec4b3(135185587)
+format               : elf32-i386
+inputname            : crackme
+registers            : {'ac': 1, 'gs': 16, 'af': 1, 'zf': 1, 'edi': 32, 
+'iopl': 2, 'cf': 1, 'vip': 1, 'ebp': 32, 'cs': 16, 'vif': 1, 'edx': 32, 
+'ebx': 32, 'id': 1, 'es': 16, 'if': 1, 'esp': 32, 'rf': 1, 'pf': 1, 
+'tf': 1, 'nt': 1, 'esi': 32, 'fs': 16, 'df': 1, 'vm': 1, 'eax': 32, 
+'ds': 16, 'ecx': 32, 'ss': 16, 'of': 1, 'sf': 1}
+entrypoint           : 0x8048c18(134515736)
+word_size            : 0x20(32)
+endianness           : little
+cpu                  : x86-32
+iii>
+@end smallexample
+
+Among other informations, @code{info()} gives the list of registers with their
+respective size in number of bits. 
+
+@iii{} is a debugger i.e., it simulates behaviors of analyzed program according
+to some domain used to evaluate values. By default, the @emph{symbolic} domain
+is used; this means that values are formulas. The domain is specified as an 
+arguement to the @code{binfile} function. Currently only two domains are 
+supported formulas and concrete values (see @code{help(binfile)}). 
+
+In @iii{}, most of functions are related to simulation. Among them one is 
+unavoidable: @code{run}. This function starts the simulation of the loaded 
+program. A simulation-related function should fail if it has not been preceded 
+by a call to @code{run}. For instance, if we request the execution of 
+one assembler instruction using @code{step} function while the simulation is
+not started we obtain:
+@smallexample
+iii> step()
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "/home/point/LaBRI/Projects/dev/install/linux-x86_64/share/insight/pynsight/in
+sight/debugger.py", line 272, in step
+    __record(pc(), step, a)
+  File "/home/point/LaBRI/Projects/dev/install/linux-x86_64/share/insight/pynsight/in
+sight/debugger.py", line 583, in pc
+    return mcpc()[0]
+  File "/home/point/LaBRI/Projects/dev/install/linux-x86_64/share/insight/pynsight/in
+sight/debugger.py", line 594, in mcpc
+    return simulator.get_pc()
+SimulationNotStartedException
+iii>
+@end smallexample
+
+The reader should have noticed that @code{pynsight} interpreter prints out its 
+call stack. Remember that we are interacting with a @code{Python} interpreter 
+and that @code{step()} is a simple call to a function which could have been 
+invoked from a script. 
+
+So, let's start the simulation with @code{run()}. At this point, if @code{run}
+is used without any argument the execution will start at the entrypoint of the
+program (see @code{ep()}). The function may accepts a different start address
+which is reused lated when @code{run} is invoked without arguments.
+
+After the invocation of @code{run} the simulator displays the list of enabled
+microcode arrows:
+@smallexample
+iii> run()
+Arrows from (0x8048c18,0):
+0 : (0x8048c18,0) %ebp{0;32} := (XOR %ebp{0;32} %ebp{0;32}){0;32} --> (0x8048c18,1)
+iii> 
+@end smallexample
+Above, only one arrow is enabled. This arrow goes from microcode address
+@t{(0x8048c18,0)} to @t{(0x8048c18,1)}. A microcode address has two components.
+The first one is a @emph{global} address that corresponds to an actual address 
+in the concrete memory of the program. The second one is @emph{local} address
+used to implement the semantics of instructions. To known what is the current
+instruction pointed by the current microcode address, use the function
+@code{instr()}:
+@smallexample
+iii> instr()
+xor    %ebp,%ebp
+iii> 
+@end smallexample
+
+At any moment one can display current enabled arrows using the function 
+@code{arrows}. 
+This instruction, @code{xor %ebp,%ebp}, can not be implemented by only one 
+microcode statement; this is why the destination of this first arrow is a
+@emph{local} microcode address. When the arrow is triggered the register 
+@code{ebp} is set to 0; actually it receives the exclusive-or of 
+its current value with itself. 
+
+The execution of an arrow is requested using @code{microstep} (or @code{ms})
+function:
+@smallexample
+iii> ms()
+Arrows from (0x8048c18,1):
+0 : (0x8048c18,1) %sf{0;1} := %ebp{31;1} --> (0x8048c18,2)
+iii>
+@end smallexample
+
+@iii{} displays a new microcode arrows between two local addresses. Actually,
+following Intel specifications, @code{xor} instruction computes the exclusive-or
+of its operands and then, assign several flags according to the resulting value;
+here the @emph{sign} flags (@code{sf}) is computed. The reader should have 
+noticed that flags are implemented using an @emph{ad-hoc} register instead of 
+a window into the actual @code{eflags} register. 
+
+Let's continue until the end of the @code{xor} instruction:
+@smallexample
+iii> ms()
+Arrows from (0x8048c18,2):
+0 : (0x8048c18,2) %zf{0;1} := (EQ %ebp{0;32} 0x0{0;32}){0;1} --> (0x8048c18,3)
+iii> ms()
+Arrows from (0x8048c18,3):
+0 : (0x8048c18,3) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} ... 
+--> (0x8048c18,4)
+iii> ms()
+Arrows from (0x8048c18,4):
+0 : (0x8048c18,4) %cf{0;1} := 0x0{0;1} --> (0x8048c18,5)
+iii> ms()
+Arrows from (0x8048c18,5):
+0 : (0x8048c18,5) %of{0;1} := 0x0{0;1} --> (0x8048c1a,0)
+iii> ms()
+Arrows from (0x8048c1a,0):
+0 : (0x8048c1a,0) %esi{0;32} := [%esp{0;32}]{0;32} --> (0x8048c1a,1)
+iii> instr()
+pop    %esi
+iii> 
+@end smallexample
+
+Displayed arrow at microde address @t{(0x8048c18,3)} has been cutted off 
+because it is a very long formula expressing the value of the parity flag
+@code{pf}. Finally the simulation arrives into the address @t{(0x8048c1a,0)}
+which points to the instruction @code{pop %esi}.
+
+The simulation of the program at the microde-level is not so interesting. As 
+usual with a debugger it is preferable to step forward at instruction-level.
+In this case the function @code{step} (or @code{s}) must be used. 
+Let's restart the program and execute the first instruction in a single step 
+(i.e., steps between microcode addresses are hidden):
+
+@smallexample
+iii> r()
+Arrows from (0x8048c18,0):
+0 : (0x8048c18,0) %ebp{0;32} := (XOR %ebp{0;32} %ebp{0;32}){0;32} --> (0x8048c18,1)
+iii> instr()
+xor    %ebp,%ebp
+iii> s()
+Arrows from (0x8048c1a,0):
+0 : (0x8048c1a,0) %esi{0;32} := [%esp{0;32}]{0;32} --> (0x8048c1a,1)
+iii> instr()
+pop    %esi
+iii> 
+@end smallexample
+
+@endinput
+
+
+** start iii with 'crackme'
+*** Preamble
+- type help(insight.debugger) to show online help
+- some aliases exist : aliases () to display them.
+- we are in a Python interpreter; we have to write Python statements !
+*** Starting simulation
+**** basic steps
+- type info() to display informations related to the binary.
+- "run" function initializes the simulation and stop just before the
+  first instruction.
+- explain microcode arrows displayed just after "run()"
+- make several steps using 'microstep', 'step'
+**** show symbolic state
+- print_state() display the current context. make a comment. show
+  fresh variable and path-condition. Memory is empty because no stack
+  operation nor mov have been made.
+**** continue
+- try 'cont'. The simulator raises an 'Undefined value' exception
+  because 'esp' is not initialized.
+- register("esp") to display the value of esp
+**** introducing hooks
+- hooks are callback attached to simulation functions
+- add a hook to "run" in order to initialize "esp"
+- add_hook(run, lambda: set("esp", 0xFFFFFFF0))
+- run()
+- cont()
+- now the simulation stops on a choice. numbers associated with arrows
+  are used to indicate next micro-step.
+- c(1)
+- print_state ()
+- arrows() displays current enabled arrows
+- the path-condition has been updated with the value of "zf" (and not
+  "zf" itself) : type register("zf")
+**** introducing view_asm
+- show current disassembled code using 
+- disas() display all instructions (in mc)
+- disas(entrypoint()) display 20 first instruction after the entry
+  point.
+- use instr() to show current instruction.
+- view_asm() waouh! 
+- explain symbols, sink nodes
+- c() the GUI is not updated... use a hooks
+- for f in [ cont, step, run]: add_hook(f, view_asm)
+- cont() rewaouh! the gui is updated
+- restart the simulation r()
+- the BB of the current instruction is highlighted
+- make some states: s(); s ()
+- current instruction split basic blocks.
+
