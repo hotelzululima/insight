@@ -9,7 +9,7 @@ sys.path += ['.']
 # change the prompt
 sys.ps1 = "iii> "
 
-banner = """Insight Debugger
+banner = """Insight Interactive Inspector
 Try 'help(insight.debugger)' to get information on debugger commands.
 Type 'aliases()' to display list of defined aliases.
 """
