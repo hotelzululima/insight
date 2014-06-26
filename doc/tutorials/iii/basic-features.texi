@@ -128,6 +128,9 @@ call stack. Remember that we are interacting with a @code{Python} interpreter
 and that @code{step()} is a simple call to a function which could have been 
 invoked from a script. 
 
+@node Step-by-step simulation
+@section Step-by-step simulation
+ 
 So, let's start the simulation with @code{run()}. At this point, if @code{run}
 is used without any argument the execution will start at the entrypoint of the
 program (see @code{ep()}). The function may accepts a different start address
@@ -138,7 +141,7 @@ microcode arrows:
 @smallexample
 iii> run()
 Arrows from (0x8048c18,0):
-0 : (0x8048c18,0) %ebp{0;32} := (XOR %ebp{0;32} %ebp{0;32}){0;32} --> (0x8048c18,1)
+0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
 iii> 
 @end smallexample
 Above, only one arrow is enabled. This arrow goes from microcode address
@@ -167,7 +170,7 @@ function:
 @smallexample
 iii> ms()
 Arrows from (0x8048c18,1):
-0 : (0x8048c18,1) %sf{0;1} := %ebp{31;1} --> (0x8048c18,2)
+0 : (0x8048c18,1) %sf@{0;1@} := %ebp@{31;1@} --> (0x8048c18,2)
 iii>
 @end smallexample
 
@@ -182,20 +185,20 @@ Let's continue until the end of the @code{xor} instruction:
 @smallexample
 iii> ms()
 Arrows from (0x8048c18,2):
-0 : (0x8048c18,2) %zf{0;1} := (EQ %ebp{0;32} 0x0{0;32}){0;1} --> (0x8048c18,3)
+0 : (0x8048c18,2) %zf@{0;1@} := (EQ %ebp@{0;32@} 0x0@{0;32@})@{0;1@} --> (0x8048c18,3)
 iii> ms()
 Arrows from (0x8048c18,3):
-0 : (0x8048c18,3) %pf{0;1} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1{0;1} ... 
+0 : (0x8048c18,3) %pf@{0;1@} := (XOR (XOR (XOR (XOR (XOR (XOR (XOR (XOR 0x1@{0;1@} ... 
 --> (0x8048c18,4)
 iii> ms()
 Arrows from (0x8048c18,4):
-0 : (0x8048c18,4) %cf{0;1} := 0x0{0;1} --> (0x8048c18,5)
+0 : (0x8048c18,4) %cf@{0;1@} := 0x0@{0;1@} --> (0x8048c18,5)
 iii> ms()
 Arrows from (0x8048c18,5):
-0 : (0x8048c18,5) %of{0;1} := 0x0{0;1} --> (0x8048c1a,0)
+0 : (0x8048c18,5) %of@{0;1@} := 0x0@{0;1@} --> (0x8048c1a,0)
 iii> ms()
 Arrows from (0x8048c1a,0):
-0 : (0x8048c1a,0) %esi{0;32} := [%esp{0;32}]{0;32} --> (0x8048c1a,1)
+0 : (0x8048c1a,0) %esi@{0;32@} := [%esp@{0;32@}]@{0;32@} --> (0x8048c1a,1)
 iii> instr()
 pop    %esi
 iii> 
@@ -215,36 +218,167 @@ Let's restart the program and execute the first instruction in a single step
 @smallexample
 iii> r()
 Arrows from (0x8048c18,0):
-0 : (0x8048c18,0) %ebp{0;32} := (XOR %ebp{0;32} %ebp{0;32}){0;32} --> (0x8048c18,1)
+0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
 iii> instr()
 xor    %ebp,%ebp
 iii> s()
 Arrows from (0x8048c1a,0):
-0 : (0x8048c1a,0) %esi{0;32} := [%esp{0;32}]{0;32} --> (0x8048c1a,1)
+0 : (0x8048c1a,0) %esi@{0;32@} := [%esp@{0;32@}]@{0;32@} --> (0x8048c1a,1)
 iii> instr()
 pop    %esi
 iii> 
 @end smallexample
 
+@code{run}, @code{microstep} and @code{step} are functions that drive a 
+simulator that interprets the semantics of instructions according to some 
+state of the program. This state is made of two components: 
+@enumerate
+@item the value of the program counter (i.e. the current microcode address);
+@item some @emph{context} that represents the values stored into the memory and
+the assignment of registers. This context depends on the domain used to 
+represent values. 
+@end enumerate
+In the sequel we will only use the symbolic domain. The context component of
+states is an assignment of memory cells and registers with formulas, and an
+additional formula, called the @emph{path condition}. This condition is actually
+a constraint on all variables used in the formulas of the state.
+
+The function @code{print_state} can be used to display the current state. 
+Actually it must be used with care because it can print out an huge amount of 
+data. The following example continues the simulation for two more step and then
+invokes @code{print_state}:
+
+@smallexample
+iii> s(); s()
+Arrows from (0x8048c1b,0):
+0 : (0x8048c1b,0) %ecx@{0;32@} := %esp@{0;32@} --> (0x8048c1d,0)
+Arrows from (0x8048c1d,0):
+0 : (0x8048c1d,0) %esp@{0;32@} := (AND %esp@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 
+--> (0x8048c1d,1)
+iii> print_state()
+<(0x8048c1d,0), MemoryDump: 
+Registers: 
+[sf@{0;1@} = 0x0@{0;1@}]
+[of@{0;1@} = 0x0@{0;1@}]
+[esp@{0;32@} = (ADD {uv_3_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@}]
+[ecx@{0;32@} = (ADD {uv_3_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@}]
+[esi@{0;32@} = [{uv_3_0x8048c1a_32b}@{0;32@}]@{0;32@}]
+[zf@{0;1@} = 0x1@{0;1@}]
+[cf@{0;1@} = 0x0@{0;1@}]
+[ebp@{0;32@} = 0x0@{0;32@}]
+[pf@{0;1@} = 0x1@{0;1@}]
+condition = 0x1@{0;1@}
+>
+iii> 
+@end smallexample
+The displayed state indicates that the simulator is currently stopped at 
+microcode address @t{(0x8048c1d,0)}. It also shows that no memory cell has been
+yet assigned by the program; nothing is displayed after @t{MemoryDump} 
+message@footnote{This does not mean that the memory is empty! Actually some 
+parts of the memory is already occupied by the code sections of the program 
+itself.}. Up to now, only registers have been assigned. Some have received
+constant values; for instance @code{zf} flags is assigned the bitvector 
+@t{0x1@{0;1@}}. Others registers are assigned with formulas e.g @code{ecx} is 
+asisgned with the value @code{(ADD {uv_3_0x8048c1a_32b}@{0;32@} 
+0x4@{0;32@})@{0;32@}}. @t{uv_3_0x8048c1a_32b} is an identifier of a fresh 
+variable created by the simulator. The identifier gives us some informations 
+on its creation context: 
+@itemize
+@item @t{uv}: This variable has been allocated when an @t{u}nknown @t{v}alue 
+was to be assigned to a register or a memory cell. 
+@item @t{3}: This is the third fresh variable created so far.
+@item @t{0x8048c1a}: This variable has been created by the instruction at the
+address @t{0x8048c1a}
+@item @t{32b}: This variable is a bitvector of size 32.
+@end itemize
+
+If we have a look to instruction at @t{0x8048c1a} we obtain:
+@smallexample
+iii> instr(0x8048c1a)
+pop    %esi
+iii> 
+@end smallexample
+What's the connection with @code{ecx} ? Actually, this instruction pops
+the top of the stack and stores the value into register @code{esi}. The top of 
+the stack is pointed out by register @code{esp}. When this instruction has been 
+triggered:
+@itemize
+@item @code{esp} was not assigned. In order to continue, the simulator 
+assigned to @code{esp} an unknown value abstracted with a fresh variable: 
+@t{uv_3_0x8048c1a_32b}. 
+@item Then the top of the stack can be assigned to @code{esi}; it is the memory 
+located at the address pointed by @code{esp} i.e @t{uv_3_0x8048c1a_32b}. 
+@code{esi} receives the value/formula: 
+@code{[{uv_3_0x8048c1a_32b}@{0;32@}]@{0;32@}]}. 
+@item The top of the stack must be removed thus, according to Intel specifications, @code{esp} is increased to point 4 bytes forward: it is assigned the value
+@code{(ADD {uv_3_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@}}.
+@item Finally the value of @code{ecx} comes from the next instruction located
+at address @t{(0x8048c1b,0)}: @code{mov %esp,%ecx}.
+@end itemize
+
+Like others debuggers, we can let @iii{} continue the simulation until we 
+interrupt it or something enforces it to stop. The function used to do that
+is @code{cont} (or @code{c}). The following example restarts the simulation 
+and execute @code{cont} just after the @code{run} call.
+
+@smallexample
+iii> run()
+Arrows from (0x8048c18,0):
+0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
+iii> cont()
+execution interrupted:
+Undefined value (SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@} 
+0xfffffff0@{0;32@})@{0;32@} 0x4@{0;32@})@{0;32@}
+Arrows from (0x8048c20,1):
+0 : (0x8048c20,1) [%esp@{0;32@}]@{0;32@} := %eax@{0;32@} --> (0x8048c21,0)
+iii> 
+@end smallexample
+
+We are back to @iii{} prompt with a message from @code{cont} indicating that
+the simulation has been interrupted due to an undefined value. The enabled 
+arrow indicates that we are stopped at microcode address @t{(0x8048c20,1)}.At 
+this location the program tries to assigned the value of register @code{eax} 
+into the memory cell pointed by register @code{esp} i.e. it tries to put
+@code{eax} on the stack@footnote{which is confirmed by a call @code{instr()}.}.
+This problem is the value of @code{esp}; use function @code{register} to get it:
+@smallexample
+iii> register("esp")
+'(SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 
+0x4@{0;32@})@{0;32@}'
+iii> 
+@end smallexample
+
+@code{esp} is assigned a formula that depends on the variable 
+@t{uv_13_0x8048c1a_32b}. Thanks to the embedded SMT solver of @Insight{}, the 
+simulator guesses that @t{uv_13_0x8048c1a_32b} can take many values and thus,
+can not determine the memory cell to assign.
+
+The behavior of the simulator is not surprising since @code{esp} is not
+initialized@footnote{This assignment is usually done by the OS which is not described in our model.}. In order to assign explicitly a value to a register or a
+memory cell we use the function @code{set}. Let's try to assign @t{0x12345678}
+to @code{esp}:
+@smallexample
+iii> set("esp", 0x12345678)
+try to assign an inconsistent value to esp
+iii> 
+@end smallexample
+@iii{} responds that @t{0x12345678} is an inconsistent value. This means that
+@t{0x12345678} is not a valid value for the current formula assigned to 
+@code{esp}: @code{(SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 
+0x4@{0;32@})@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 0x4@{0;32@})@{0;32@}} under 
+the constraint of the current path condition (which is true in this case).
+A consistent value in this case is @t{0xfffffffc}. 
+@smallexample
+iii> set("esp", 0xfffffffc)
+iii> register("esp")
+'0xfffffffc{0;32}'
+iii> 
+@end smallexample
+
+@node Hooks
+@section Hooks
+
 @endinput
-
-
-** start iii with 'crackme'
-*** Preamble
-- type help(insight.debugger) to show online help
-- some aliases exist : aliases () to display them.
-- we are in a Python interpreter; we have to write Python statements !
-*** Starting simulation
-**** basic steps
-- type info() to display informations related to the binary.
-- "run" function initializes the simulation and stop just before the
-  first instruction.
-- explain microcode arrows displayed just after "run()"
-- make several steps using 'microstep', 'step'
-**** show symbolic state
-- print_state() display the current context. make a comment. show
-  fresh variable and path-condition. Memory is empty because no stack
-  operation nor mov have been made.
 **** continue
 - try 'cont'. The simulator raises an 'Undefined value' exception
   because 'esp' is not initialized.
