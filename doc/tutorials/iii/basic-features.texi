@@ -1,7 +1,7 @@
 @node Basic features
 @chapter Basic Features
 
-@node @code{pynsight} interpreter
+@node pynsight interpreter
 @section @code{pynsight} interpreter
 
 @code{pynsight} is @code{Python} interpreter extended with @Insight{} bindings.
