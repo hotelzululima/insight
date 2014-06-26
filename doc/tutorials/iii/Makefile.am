@@ -7,7 +7,7 @@ IIITUTO_FILES = iii-tutorial.texi the-crackme.texi macros.texi \
                 titlepage.texi appendices.texi advanced-features.texi
 
 # Rules and targets
-all: docs
+all: 
 
 docs: tutorials
 
