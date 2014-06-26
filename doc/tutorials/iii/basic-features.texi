@@ -339,8 +339,9 @@ the simulation has been interrupted due to an undefined value. The enabled
 arrow indicates that we are stopped at microcode address @t{(0x8048c20,1)}.At 
 this location the program tries to assigned the value of register @code{eax} 
 into the memory cell pointed by register @code{esp} i.e. it tries to put
-@code{eax} on the stack@footnote{which is confirmed by a call @code{instr()}.}.
-This problem is the value of @code{esp}; use function @code{register} to get it:
+@code{eax} on the stack@footnote{Which is confirmed by a call to 
+@code{instr()}.}. This problem is the value of @code{esp}; use function 
+@code{register} to get it:
 @smallexample
 iii> register("esp")
 '(SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 
@@ -363,7 +364,7 @@ try to assign an inconsistent value to esp
 iii> 
 @end smallexample
 @iii{} responds that @t{0x12345678} is an inconsistent value. This means that
-@t{0x12345678} is not a valid value for the current formula assigned to 
+@t{0x12345678} is not compatible with the current formula assigned to 
 @code{esp}: @code{(SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 
 0x4@{0;32@})@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 0x4@{0;32@})@{0;32@}} under 
 the constraint of the current path condition (which is true in this case).
@@ -378,24 +379,148 @@ iii>
 @node Hooks
 @section Hooks
 
+In order to prevent the problem with @code{esp} we should assign it just after
+the call to @code{run}. When the simulator is started, the memory and the 
+registers are not initialized; thus, any value can be assigned to @code{esp}. 
+However, it is preferable to choose a value that have a sense for the program.
+Usually @t{0xFFFFFFF0} is a good candidate. 
+
+When debugging a program, @code{run} is called quite often (for the entrypoint 
+or elsewhere) and initializing @code{esp} each time becomes a tedious task. 
+Fortunately @iii{} possesses a mean to get rid of such repeative work. 
+
+@iii{} permits to attach callbacks to simulation functions (i.e., @code{run},
+@code{microstep}, @code{step} and @code{cont}). Such callbacks are called 
+@emph{hooks}. 
+
+A @emph{hook} is a @code{Python} function invoked with no argument; a function
+with default values assigned to all its parameters can be used as a hook.
+In order to attach a hook @emph{h} to a function @emph{F} one can used two 
+functions:
+@enumerate
+@item @code{add_hook(@emph{F}, @emph{h})}
+@item @code{add_@emph{F}_hook(@emph{h})}
+@end enumerate
+
+The first version permits to attach a hook to any function but only functions
+used for the simulation are handled. The list of currently attached hooks can
+be obtained using @code{show("hooks")} and a hook can be removed using 
+@code{del_hook}.
+
+We can now set the initializtion of @code{esp} as a hook@footnote{The 
+construction @code{lambda:} is part of @code{Python} language.}:
+@smallexample
+iii> add_run_hook(lambda: set("esp", 0xFFFFFFF0))
+iii> run()
+Arrows from (0x8048c18,0):
+0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
+iii> cont()
+stop in a configuration with several output arrows
+Arrows from (0x8048ed7,0):
+0 : (0x8048ed7,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x8048ed0,0)
+1 : (0x8048ed7,0) << %zf@{0;1@} >> Skip --> (0x8048ed9,0)
+iii> instr()
+jne    0x8048ed0
+iii> 
+@end smallexample
+
+The call to @code{cont} has led the simulator farther. Now the simulation is 
+stopped due to the presence of two enabled arrows. Actually, as show by 
+@code{instr}, we face a conditional jump instruction. 
+
+@iii{} displays both arrows of the conditional jumps because both guards 
+@code{(NOT %zf@{0;1@})@{0;1@}} and @code{%zf@{0;1@}} can be satisfied (obviously not 
+by the same assignemnt of variables):
+@smallexample
+iii> register("zf")
+'(EQ [(ADD (ADD 0xfffffff4@{0;32@} (MUL_U {uv_8_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@})@{0;
+32@} 0x4@{0;32@})@{0;32@}]@{0;32@} 0x0@{0;32@})@{0;1@}'
+iii> 
+@end smallexample
+
+In order to continue the simulation we have to follow one of the two arrows.
+Indeed, @code{microstep}, @code{step} and @code{cont} accept a parameter. By 
+default this parameter is set to 0. This parameter is the index of the arrow
+to trigger. For instance, if we want to continue the simulation assuming
+@code{zf} set to 1 we call @code{cont(1)}. For the moment we just make a single
+step and have a look to the simulation state:
+
+@smallexample
+iii> s(1)
+Arrows from (0x8048ed9,0):
+0 : (0x8048ed9,0) %esp@{0;32@} := (SUB %esp@{0;32@} 0x4@{0;32@})@{0;32@} --> (0x8048ed9,1)
+iii> print_state()
+<(0x8048ed9,0), MemoryDump: 
+...
+...
+condition = (EQ [(ADD (ADD 0xfffffff4@{0;32@} (MUL_U {uv_4_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})
+@{0;32@})@{0;32@} 0x4@{0;32@})@{0;32@}]@{0;32@} 0x0@{0;32@})@{0;1@}
+>
+iii> 
+@end smallexample
+The reader can notice that the value of @code{zf} has been assigned to the 
+path condition of the state@footnote{Actually it has been conjuncted but since 
+its previous value was @t{true} ...}. Each time we enforce the simulator to 
+follow an arrow with a guard, this guard is conjuncted to the path condition 
+of the current state.
+
+Now we continue a little bit more with @code{cont}.
+@smallexample
+iii> c()
+stop in a configuration with several output arrows
+Arrows from (0x8057c89,0):
+0 : (0x8057c89,0) << %zf@{0;1@} >> Skip --> (0x8057dce,0)
+1 : (0x8057c89,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x8057c8f,0)
+iii>
+@end smallexample
+
+
+Since we are yet stopped by a conditional jump, we could take a while to have 
+look to the code of the program. This can be done using @code{disas} function.
+This function accepts several parameters. The first one is a start address 
+from which the function have to display instructions; if it is omitted the 
+whole program is displayed. A second one is @var{l}, the number of 
+instructions to be displayed (set by default to 20). Let's have a look to the 
+ten first instructions from the entrypoint:
+@smallexample
+iii> disas(entrypoint(),l=10)
+08048c18 <_start>: 
+ 8048c18:	xor    %ebp,%ebp
+ 8048c1a:	pop    %esi
+ 8048c1b:	mov    %esp,%ecx
+ 8048c1d:	and    $0xfffffff0,%esp
+ 8048c20:	push   %eax
+ 8048c21:	push   %esp
+ 8048c22:	push   %edx
+ 8048c23:	push   $0x80494c0
+ 8048c28:	push   $0x8049420
+ 8048c2d:	push   %ecx
+ 8048c2e:
+iii> 
+@end smallexample
+
+Note that these instructions are those collected from the microcode built 
+during the simulation and not the output of a direct linear-sweep on the binary
+code.
+
+@node Graphical views
+@section Graphical views
+
+With a textual listing of instructions one fails to picture the CFG of the 
+program. A graphical representation of this graph is more useful. 
+@code{view_asm} function is used for this purpose. This function is based on
+the @t{GraphViz} tool (thus it can become inefficient for large graphs).
+When @code{view_asm()} is invoked, an @code{XDot} (@ref{XDot}) window is 
+opened but the @iii{} prompt remains active:
+
+@smallexample
+iii> view_asm()
+iii>
+@end smallexample
+
+@image{view_asm_01,10cm,,,.png}
+
 @endinput
-**** continue
-- try 'cont'. The simulator raises an 'Undefined value' exception
-  because 'esp' is not initialized.
-- register("esp") to display the value of esp
-**** introducing hooks
-- hooks are callback attached to simulation functions
-- add a hook to "run" in order to initialize "esp"
-- add_hook(run, lambda: set("esp", 0xFFFFFFF0))
-- run()
-- cont()
-- now the simulation stops on a choice. numbers associated with arrows
-  are used to indicate next micro-step.
-- c(1)
-- print_state ()
-- arrows() displays current enabled arrows
-- the path-condition has been updated with the value of "zf" (and not
-  "zf" itself) : type register("zf")
 **** introducing view_asm
 - show current disassembled code using 
 - disas() display all instructions (in mc)
