@@ -87,12 +87,8 @@ void
 RegisterMap<Value>::output_text(std::ostream &os) const
 {
   if (registermap.size() == 0)
-    {
-      os << "All registers are empty";
-      return;
-    }
+    return;
 
-  os << "Registers: ";
   for (const_reg_iterator reg = registermap.begin(); reg != registermap.end();
        reg++) {
     os << "[";
