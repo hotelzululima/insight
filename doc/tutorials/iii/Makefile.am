@@ -1,6 +1,6 @@
 MANDIR=${builddir}/../../manuals
 TEXI2DVI = texi2dvi
-TEXI2DVIFLAGS = --build=clean -I ${srcdir} -I ${builddir} -I ${MANDIR} -p
+TEXI2DVIFLAGS = --clean -I ${srcdir} -I ${builddir} -I ${MANDIR} -p
 
 IIITUTO_FILES = iii-tutorial.texi the-crackme.texi macros.texi \
                 introduction.texi index.texi basic-features.texi \
