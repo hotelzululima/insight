@@ -2,10 +2,13 @@
 @chapter References
 
 @table @bibitem
-@c @item GraphViz
-@c Graphviz - Graph Visualization Software. @uref{http://www.graphviz.org/}, 2009.
+@item GraphViz
+Graphviz - Graph Visualization Software. @uref{http://www.graphviz.org/}, 2009.
 @item FASM
 Tomasz Grysztar. Flat Assembler. @uref{http://flatassembler.net/}, 2014.
+
+@item XDot
+Jose Fonseca. @uref{https://github.com/jrfonseca/xdot.py}, 2014.
 
 @c @item EH86
 @c E.A. Emerson and J. Halpern. ``Sometimes'' and ``not never'' revisited: on 

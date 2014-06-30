@@ -133,7 +133,7 @@ invoked from a script.
  
 So, let's start the simulation with @code{run()}. At this point, if @code{run}
 is used without any argument the execution will start at the entrypoint of the
-program (see @code{ep()}). The function may accepts a different start address
+program (see @code{ep()}). The function can accepts a different start address
 which is reused lated when @code{run} is invoked without arguments.
 
 After the invocation of @code{run} the simulator displays the list of enabled
@@ -509,31 +509,49 @@ code.
 With a textual listing of instructions one fails to picture the CFG of the 
 program. A graphical representation of this graph is more useful. 
 @code{view_asm} function is used for this purpose. This function is based on
-the @t{GraphViz} tool (thus it can become inefficient for large graphs).
-When @code{view_asm()} is invoked, an @code{XDot} (@ref{XDot}) window is 
-opened but the @iii{} prompt remains active:
+the @t{GraphViz} tool (@ref{GraphViz}). When @code{view_asm()} is invoked, an 
+@code{XDot} (@ref{XDot}) window is opened but the @iii{} prompt remains active:
 
 @smallexample
 iii> view_asm()
+iii> arrows()
+Arrows from (0x8057c89,0):
+0 : (0x8057c89,0) << %zf{0;1} >> Skip --> (0x8057dce,0)
+1 : (0x8057c89,0) << (NOT %zf{0;1}){0;1} >> Skip --> (0x8057c8f,0)
 iii>
 @end smallexample
 
-@image{view_asm_01,10cm,,,.png}
+@ref{fig:viewasm01} shows a example of the graphical representation of the CFG. 
+Each block has a distinct color. If @Insight{} succeeds to extract symbols of 
+functions, @code{view_asm} displays them on the graph (e.g., 
+@code{_dl_aux_init} on the figure). The current program point is marked with
+a double-surrounding red line. Some nodes appear with an oval shape; they 
+correspond to pending arrows for unexplored program points. Edges can be 
+labeled with a number that is the index of the arrow printed out by @iii{} (by
+using @code{arrows()} function for instance).
+
+@float Figure,fig:viewasm01
+@center @image{view_asm_01,8cm,,,.png}
+@caption{Graphical view of the CFG.}
+@end float 
+
+With the function @code{view_mc}, @iii{} offers also a graphical view for the 
+microcode. @ref{fig:viewmc01} is an example of such graph; it corresponds to
+the CFG of @ref{fig:viewasm01}.
+
+@code{view_asm}, as well as view_mc, can be used as hooks. The following 
+example attaches @code{view_asm} to all simulation functions. If the simulation
+is pursued then the graphical view of the CFG is automatically updated. 
+
+@smallexample
+iii> for f in [ cont, step, run]: add_hook(f, view_asm)
+iii> cont()
+...
+@end smallexample
+
+@float Figure,fig:viewmc01
+@center @image{view_mc_01,8cm,,,.png}
+@caption{Graphical view of the Microcode.}
+@end float 
 
 @endinput
-**** introducing view_asm
-- show current disassembled code using 
-- disas() display all instructions (in mc)
-- disas(entrypoint()) display 20 first instruction after the entry
-  point.
-- use instr() to show current instruction.
-- view_asm() waouh! 
-- explain symbols, sink nodes
-- c() the GUI is not updated... use a hooks
-- for f in [ cont, step, run]: add_hook(f, view_asm)
-- cont() rewaouh! the gui is updated
-- restart the simulation r()
-- the BB of the current instruction is highlighted
-- make some states: s(); s ()
-- current instruction split basic blocks.
-

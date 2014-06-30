@@ -1,5 +1,292 @@
 @node Advanced features
 @chapter Advanced features
 
+@node Using stubs
+@section Using stubs
+
+If we continue with our example, we can remark (using @code{view_asm} or 
+@code{disas} functions) that several symbols appear: @t{__libc_start_main}, 
+@t{_dl_aux_init}, @t{_dl_discover_osversion}, ... It seems that simulation
+has entered inside initialization procedure done by the @t{libc} library.
+This part of the program should not be actually connected with the behaviors
+of the @t{crackme} challenge.
+
+@iii{} offers a mechanism to bypass parts of the program. It is possible to
+preload a microcode model at a specified address. These preloaded models are
+called @emph{stubs}. 
+
+In order to skip the initialization work done by @t{__libc_start_main}, we 
+have to:
+@itemize
+@item abstract behaviors of @t{__libc_start_main} into a microcode model;
+@item create a loadable (i.e., @t{xml}) file for this model;
+@item attach this model to the address of @t{__libc_start_main}.
+@end itemize
+
+The disassembly of program from the entrypoint shows that @t{_start} that the
+address @t{0x8048da9} is pushed onto the stack just before the call to 
+@t{__libc_start_main}. This address points to @t{main} function@footnote{This 
+information can be obtained (if available) using the table of symbols attached 
+to the program; try @code{help(prog())}.}. When @t{__libc_start_main} has
+finished its jobs, it jumps to the address pushed by @t{_start} onto the stack.
+
+@smallexample
+iii> disas (entrypoint())
+08048c18 <_start>: 
+ 8048c18:	xor    %ebp,%ebp
+ 8048c1a:	pop    %esi
+ 8048c1b:	mov    %esp,%ecx
+ 8048c1d:	and    $0xfffffff0,%esp
+ 8048c20:	push   %eax
+ 8048c21:	push   %esp
+ 8048c22:	push   %edx
+ 8048c23:	push   $0x80494c0
+ 8048c28:	push   $0x8049420
+ 8048c2d:	push   %ecx
+ 8048c2e:	push   %esi
+ 8048c2f:	push   $0x8048da9
+ 8048c34:	call   0x8048e80 # jump to : __libc_start_main
+08048e80 <__libc_start_main>: 
+ 8048e80:	push   %edi
+ 8048e81:	mov    $0x80ea5c0,%eax
+ 8048e86:	push   %esi
+ 8048e87:	push   %ebx
+ 8048e88:	sub    $0x40,%esp
+ 8048e8b:	test   %eax,%eax
+ 8048e8d:	mov    0x5c(%esp),%esi
+ 8048e91:
+iii> 
+@end smallexample
+
+Since initialization done by @t{__libc_start_main} does not matter for our
+analysis, we will abstract its behaviors as a direct jump to the @t{main} 
+function. For this purpose we could create a microcode model that jump to the 
+address @t{0x8048da9} but this is not re-usable at all; we should prefer to 
+jump to the address stored in the stack.
+
+Microcode files are XML files. Even if the model for @t{__libc_start_main} is
+quite simple, writing it by hands is a tedious task. The simplest way to 
+proceed is to:
+@enumerate 
+@item write the abstraction into a small @t{x86} assembly program:
+@verbatim
+$ cat stub_libc_start_main.s
+@end verbatim
+@verbatiminclude demo/stub_libc_start_main.s
+@verbatim
+$
+@end verbatim
+
+@item compile it using @command{gcc} for instance;
+@verbatim
+$ gcc -m32 -c stub_libc_start_main.s -o stub_libc_start_main.o
+@end verbatim
+@item generate the microcode file using the @command{cfgrecovery} tool. A simple
+linear sweep disassembly is sufficient to generate the exact microcode for this
+small program
+@verbatim
+$ cfgrecovery -f mc-xml -d linear stub_libc_start_main.o -o \
+  stub_libc_start_main.mc.xml
+@end verbatim
+@end enumerate
+
+Now we have the abstraction for @t{__libc_start_main} stored into the file
+@file{stub_libc_start_main.mc.xml}; it remains to load it at the address pointed
+by the @t{__libc_start_main} symbol. The function @code{load_stub} is used for 
+purpose. All stubs should be loaded before the first call to @code{run}. 
+Actually stubs are merged into the microcode on demand and not as a replacement 
+of existing microcode. @code{load_stub} takes three arguments: a filename, an 
+address and a Boolean that indicates whether the microcode must be relocated at 
+the same microcode address or not. 
+
 @node Initialization file
 @section Initialization file
+
+Since we already have recovered the first instruction of @t{__libc_start_main},
+the loading of the stub is useless; we must restart @iii{} to make the stub 
+effective. 
+
+If we restart @iii{} we have to redo all the work makes so far; and it will
+be the case each time we will restart the tool. 
+
+@iii{} permits to specify an initialization module using @option{-c} option. 
+When no module is specified the interpreter looks for a module called 
+@file{iiirc}. This file is a @t{Python} script that can contain, obviously, 
+calls to @iii{} functions.
+
+The initialization file we will use is given below. This file starts with two 
+``mandatory'' lines that permits to use 
+@Insight{}/@iii{} functions into the script. Then comes a line that indicates 
+the binary file to load (see @code{help(binfile)} for details). It follows all
+our previous work:
+@enumerate
+@item First the stub for @t{__libc_start_main} is load;
+@item Then we define a function, @code{init_registers} in charge of the 
+      initialization of registers according to a global table @var{valregs}. 
+@item Hooks are then attached: @code{init_registers} is attached to @code{run} 
+and @code{view_asm} is attached to simulation functions.
+@item Finally the simulation is start asap.
+@end enumerate 
+
+@smallexample
+$ cat iiirc.py
+@verbatiminclude demo/demo-setup-1.py
+@end smallexample
+
+If we start @iii{} with the above initialization module we get the following
+output:
+@smallexample
+$ iii 
+Insight Interactive Inspector
+Try 'help(insight.debugger)' to get information on debugger commands.
+Type 'aliases()' to display list of defined aliases.
+
+Arrows from (0x8048c18,0):
+0 : (0x8048c18,0) %ebp{0;32} := (XOR %ebp{0;32} %ebp{0;32}){0;32} --> (0x8048c18,1)
+stop in a configuration with several output arrows
+Arrows from (0x805ad7a,0):
+0 : (0x805ad7a,0) << %zf{0;1} >> Skip --> (0x805ad9b,0)
+1 : (0x805ad7a,0) << (NOT %zf{0;1}){0;1} >> Skip --> (0x805ad7c,0)
+
+iii> 
+@end smallexample
+
+
+This is not very convincing but with the @code{view_asm} window, we can see
+on @ref{fig:viewasm02} that the simulation has gone yet farther. Indeed, the
+actual code of @t{__lib_start_main} has been skipped thanks to its attached 
+stub. However @iii{} is now simulating another function of the standard library:
+@code{printf}. This function will be replaced by the following stub:
+
+@smallexample
+@verbatiminclude demo/stub_printf.s
+@end smallexample
+
+We assume that it does not any interesting side effect and enforce its return
+value to 0 which is stored to @t{eax}. Another standard function should appear
+later, @t{read}, which is called to read the password. The stub for this 
+function is the following:
+
+@smallexample
+@verbatiminclude demo/stub_read.s
+@end smallexample
+
+This stub simulates the read of @var{n} characters stored into a memory area
+at address @var{p}. @var{n} and @var{p} are themself stored onto the stack at 
+@code{12(%esp)} and @code{8(%esp)}, respectively. Then the stub assigns the
+@var{n} memory cells with the value @t{0x33}. This special value is used to 
+locate the assignment into the microcode file. This value is replaced by hand 
+(or a @command{sed} script) by a @code{RND} expression that will be interpreted
+as an unknown value by the symbolic simulator.
+
+@float Figure,fig:viewasm02
+@center @image{view_asm_02,10cm,,,.png}
+@caption{Graphical view of the Microcode. @t{__lib_start_main} has been 
+replaced by its stub.}
+@end float 
+
+We add the new @code{load_stub} calls into the initialization file and restart
+the tool.
+@smallexample
+$ iii
+...
+stop in a configuration with several output arrows
+Arrows from (0x8048e15,0):
+0 : (0x8048e15,0) << (NOT %zf{0;1}){0;1} >> Skip --> (0x8048e3f,0)
+1 : (0x8048e15,0) << %zf{0;1} >> Skip --> (0x8048e17,0)
+
+iii> 
+@end smallexample
+
+@endinput
+        
+* Advanced features
+** Introducing initialization file
+- iii permits to load an initialization _module_.
+- emacs demo-setup-1.py 
+- comments 
+- iii -c demo-setup-1
+- a large MC should appear due to "printf" code
+- stop iii and restart it with demo-setup-2.py (make-stubs.sh generate
+  all necessary stubs)
+- iii -c demo-setup-2
+- stubs for printf, start_main and read appear collapsed.
+- remarks related to the loop that decodes instructions
+  + at 0x8048de5 the instruction makes %esi points to 0x8048e08 i.e.
+    into the .text segment! The following loop seems to modify the
+    code. 
+  + insight.utils.pretty_disas_memory (P(), 0x8048e08) 
+  + compare with MC instructions; code have changed.
+- cont(): after the decoding loop if we continue on branch 0 the
+  crackme displays a string at address 0x8048e62 (see instr
+  @0x8048ea4). 
+
+** Content of the memory
+- dump(0x8048e62, l = 10)
+- These are "abstract" value; we can add a filter to translate them
+  into characters. use filter_abstract_byte defined in init file. 
+- dump(0x8048e62, l = 10, filter = filter_abstract_byte)
+- dump(0x8048e62, l = 20, filter = filter_abstract_byte)
+- so it was not the good branch to go...
+- restart the work: r(); c()
+- we are back to the same program point.
+
+** Abstraction
+- we now follow the other branch: s(1)
+- we face a loop. 
+- the instruction "loop" has two successors but only one is proposed.
+- try cont()
+- back to previous choice point
+- s(1)
+- enter micro steps for "loop"
+- ms()
+- "loop" instruction checks the value of "ecx"
+- register ("ecx")
+- ecx is assigned a concrete value; so, either we iterate until "ecx"
+  falls to 0 or we abstract the register. 
+- let's see what's happens after the "loop" by abstracting "ecx".
+- unset("ecx", keep=False) 
+- keep=False is mandatory to enable both arrows.
+- register("ecx") blurp! 
+- arrows(): now the two arrows are enabled
+- continue on the branch that goes out of the loop : cont(1)
+- the call to function "system" appears
+- come back to the analysis of the loop
+
+** Breakpoints
+- r(); c()
+- apparently we are in a loop that compares strings located at
+  addresses 0x8048d45 and 0x8048e1b (cf instr at 0x8048df7 and
+  0x8048dfc). Have a look to them. The value of ecx+1 gives use the
+  number of comparisons (we already have made a cycle): 
+- dump(0x8048d45, l = 8, filter = filter_abstract_byte)
+- dump(0x8048e1b, l = 8, filter = filter_abstract_byte)
+- 0x8048e1b seems to be the expected string and 0x8048d45 is the input...
+- We can iterate the loop by hand until intruction @0x8048e17 permits
+  us to go to 0x8048e19.
+- A more generic way is the following.
+  - we put a conditional breakpoint at 0x8048e17: 
+    b (0x8048e17) 
+    cond (1, "(EQ %ecx 1)")
+    the condition becomes true when the last iteration occurs ("loop"
+    instruction decrements "%ecx")
+  - we add a constraint at address 0x8048e15 that enforces to continue
+    the checking loop.
+    assume (0x8048e15, "%zf")
+- cont()
+- wait until simulation stops ... 
+
+** Concretization
+- s()
+- Now we have escaped checking loop we can try to compute the correct
+  input that allows to arrive there.
+- show ("breakpoints") 
+- breakpoint @0x8048e17 has been hit 8 times i.e. the number of iterations
+- dump(0x8048d45, l = 8, filter = filter_abstract_byte)
+- we request iii to concretize values for the 8 bytes used as input.
+- for i in range(8): set (0x8048d45 + i)
+- dump(0x8048d45, l = 8, filter = filter_abstract_byte)
+- Yeah! password=Iv6oCb2U
+
+
+
