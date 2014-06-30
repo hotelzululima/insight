@@ -313,12 +313,21 @@ dot_asm_writer (std::ostream &out, const Microcode *mc, ConcreteAddress *start,
 	  targets.insert (tgt);
 
 	  out << NODE_PREFIX << std::hex << ma.getGlobal ()
-	      << " -> "
+	      << " -> " 
 	      << NODE_PREFIX << std::hex << tgt.getGlobal ();
 	  out << " [";
 	  if (indexes)
 	    out << " label = \"#" << i << "\"";
 	  out << "]; " << endl;
+
+	  MicrocodeNode *tgtn = mc->get_node (tgt);
+	  assert (anodes.find (tgtn) != anodes.end ());
+
+	  basic_block_t &tgtbb = anodes[tgtn];
+	  if (tgtbb.nodes->size () == 1 && tgtbb.succs->size () == 0)
+	    out << NODE_PREFIX << std::hex << tgt.getGlobal () 
+		<< "[shape=oval,label=\"0x" << std::hex << tgt.getGlobal () 
+		<< "\"];";
 	}
 
     }
