@@ -80,7 +80,11 @@ if __name__ == "__main__":
             load_mc(args.xmlmc)
 
     try:
-        m = importlib.import_module(args.initmodule)
+        module = args.initmodule
+        l = len(module)
+        if module[l-3:] == ".py":
+            module = module[:l-3]
+        m = importlib.import_module(module)
         globals().update(m.__dict__)
     except ImportError, e:
         print e
