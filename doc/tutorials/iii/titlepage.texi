@@ -1,7 +1,7 @@
 @titlepage
-@title Insight Interactive Inspector 
-@subtitle A tutorial to symbolic debugging using @iii
-@author Insight team
+@title INSIGHT Interactive Inspector 
+@subtitle A tutorial to symbolic debugging with @iii
+@author E. Fleury, G. Point, A. Vincent
 @page
 
 @vskip 0pt plus 1filll

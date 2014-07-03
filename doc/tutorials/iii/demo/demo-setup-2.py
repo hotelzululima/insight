@@ -46,5 +46,4 @@ add_hook (step, view_asm)
 # start simulation from entrypoint
 run ()
 cont()
-disas(P().sym("__read"))
 

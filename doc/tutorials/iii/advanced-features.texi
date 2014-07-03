@@ -142,11 +142,11 @@ Try 'help(insight.debugger)' to get information on debugger commands.
 Type 'aliases()' to display list of defined aliases.
 
 Arrows from (0x8048c18,0):
-0 : (0x8048c18,0) %ebp{0;32} := (XOR %ebp{0;32} %ebp{0;32}){0;32} --> (0x8048c18,1)
+0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
 stop in a configuration with several output arrows
 Arrows from (0x805ad7a,0):
-0 : (0x805ad7a,0) << %zf{0;1} >> Skip --> (0x805ad9b,0)
-1 : (0x805ad7a,0) << (NOT %zf{0;1}){0;1} >> Skip --> (0x805ad7c,0)
+0 : (0x805ad7a,0) << %zf@{0;1@} >> Skip --> (0x805ad9b,0)
+1 : (0x805ad7a,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x805ad7c,0)
 
 iii> 
 @end smallexample
@@ -186,107 +186,479 @@ replaced by its stub.}
 @end float 
 
 We add the new @code{load_stub} calls into the initialization file and restart
-the tool.
+the tool. The simulation stops on a @code{jne} instruction. The CFG is the 
+following:
+
+@center @image{view_asm_03,10cm,,,.png}
+
+After the call to @code{read} i.e., the user as type its password, the program
+enters a loop. The small piece of code that precedes the loop does following
+things:
+@itemize 
+@item At address @t{0x8048ddb}, the return value of @code{read} is copied from
+      @t{eax} into @t{edx}. @t{edx} is then decremented and a null character 
+      is stored at the address @t{0x8048d44+eax}. Indeed the last byte read 
+      from the standard input is a carriage-return character. At address 
+      @t{0x8048dde}, it is replaced by @t{0} in order to form a valid 
+      null-terminated C string. @t{edx} store the length of the password and
+      must not take into account the last null byte.
+@item From addresses @t{0x8048de5} to @t{0x8048dec}, registers @t{esi}, 
+      @t{edi} and @t{ecx} are prepared for some string operation. @t{esi} and 
+      @t{edi} are the source and destination pointers of the operation and 
+      @t{ecx} the number of iterations. We can see that @t{esi} and @t{edi} 
+      have the same starting value (@t{0x8048e08}).
+@end itemize 
+
+According to the value assigned to @t{ecx}, the loop is iterated 28 times. At 
+each iteration of the loop, the byte pointer by @t{esi} is XOR-ed with @t{0xaa}.
+The loop covers addresses between @t{0x8048e08} and @t{0x8048e24} which are
+located few bytes after the loop itsef. This means that this loop is used to
+modify instructions just after the loop; it is a known trick to obfuscate 
+programs.
+
+We can compare instructions decoded on-the-fly by the simulator and the ones
+that was loaded at start-up using functions @code{disas} and 
+@code{insight.utils.pretty_disas_memory}@footnote{@code{prog()} returns an 
+opaque object that contains the loaded binary file}. The latter uses a 
+@emph{linear sweep} algorithm on the raw bytes loaded from the binary file. 
 @smallexample
-$ iii
-...
+iii> disas (0x8048e08, l=8)
+ 8048e08:	xor    %eax,%eax
+ 8048e0a:	lods   %ds:(%esi),%al
+ 8048e0b:	add    %ebx,%eax
+ 8048e0d:	shl    %eax
+ 8048e0f:	xor    $0x12,%eax
+ 8048e12:	mov    %al,%bl
+ 8048e14:	scas   %es:(%edi),%al
+ 8048e15:	jne    0x8048e3f # jump to : L_1
+ 8048e17:
+iii> insight.utils.pretty_disas_memory (prog(), 0x8048e08, l=8)
+ 8048e08 :	fwait
+ 8048e09 :	push   $0x6
+ 8048e0b :	stos   %eax,%es:(%edi)
+ 8048e0c :	jb     0x8048e89
+ 8048e0e :	dec    %edx
+ 8048e0f :	sub    %ebx,-0x48(%edx)
+ 8048e12 :	and    0x4(%ecx),%ch
+ 8048e15 :	fild   -0x5cbebab8(%edx)
+@end smallexample
+
+@node Examining memory
+@section Examining memory
+
+We are still stuck at address @t{0x8048e15}. @code{arrows()} recalls us the
+enabled arrows and we follow arrow 0.
+@smallexample
+iii> arrows()
+Arrows from (0x8048e15,0):
+0 : (0x8048e15,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x8048e3f,0)
+1 : (0x8048e15,0) << %zf@{0;1@} >> Skip --> (0x8048e17,0)
+
+iii> cont(0)
+sink node reached after(0x8048e59, 2)
+Arrows from (0x8048c39,0):
+iii>
+@end smallexample
+The tool indicates that the simulator has reached a sink node i.e. no successor
+state can be visited. If we have a look to the code visited after the 
+conditional jump at address @t{0x8048e15} we obtain:
+
+@smallexample
+iii> disas(0x8048e3f,10)
+08048e3f <L_2>: 
+ 8048e3f:	mov    %esp,%ebp
+ 8048e41:	sub    $0x4,%esp
+ 8048e44:	and    $0xfffffff0,%esp
+ 8048e47:	add    $0x4,%esp
+ 8048e4a:	push   $0x8048e62
+ 8048e4f:	call   0x8049dd0 # jump to : printf, __printf, _IO_printf
+08048e54 <L_4>: 
+ 8048e54:	mov    %ebp,%esp
+ 8048e56:	xor    %eax,%eax
+ 8048e58:	inc    %eax
+ 8048e59:	ret     # jump to : L_0
+ 8048e5a:
+@end smallexample
+
+The program prints out (using @code{printf}) a string stored at address 
+@t{0x8048e62} and then returns (to the termination instruction @code{hlt}).
+@code{dump} function is used to display values stored in the memory for the 
+current state. Let's try it:
+@smallexample
+iii> dump(0x8048e62, l = 10)
+0x57@{0;8@}
+0x72@{0;8@}
+0x6f@{0;8@}
+0x6e@{0;8@}
+0x67@{0;8@}
+0x20@{0;8@}
+0x70@{0;8@}
+0x61@{0;8@}
+0x73@{0;8@}
+0x73@{0;8@}
+iii>
+@end smallexample
+
+We get 10 values. Actually these are @emph{symbolic} values; even if they are
+not formulas. Here we have the chance to get constant and not abstract values.
+@code{dump} accepts an additional parameter that is a callback called to 
+transform the value returned by the simulator. The following @code{Python} 
+defines a function that we will use later to translate abstract constants into
+printable characters. This code is added to the configuration file.
+@smallexample
+import re
+
+def filter_abstract_byte (val):
+    """translate a concrete "abstract" value into a character"""
+    p = re.compile('^(0x[0-9A-Fa-f]{1,2})\{.*\}$')
+    m = p.match (val)
+    if m is not None:
+        return chr(int(m.group(1),16))
+    else:
+        return val
+@end smallexample
+
+If we call @code{dump} with @code{filter_abstract_byte} we get:
+@smallexample
+iii> dump(0x8048e62, l = 10, filter=filter_abstract_byte)
+W
+r
+o
+n
+g
+ 
+p
+a
+s
+s
+iii> 
+@end smallexample
+This means we have followed the branch where the user enters a wrong password.
+
+@node Assignment of abstraction values
+@section Assignment of abstraction values
+
+We restart the simulation and continue simulation until coming back to 
+conditional jump at address @t{0x8048e15}. This time we will follow the second
+branch:
+@smallexample
+iii> r(); c(); c(1)
+Arrows from (0x8048c18,0):
+0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
 stop in a configuration with several output arrows
 Arrows from (0x8048e15,0):
-0 : (0x8048e15,0) << (NOT %zf{0;1}){0;1} >> Skip --> (0x8048e3f,0)
-1 : (0x8048e15,0) << %zf{0;1} >> Skip --> (0x8048e17,0)
+0 : (0x8048e15,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x8048e3f,0)
+1 : (0x8048e15,0) << %zf@{0;1@} >> Skip --> (0x8048e17,0)
+stop in a configuration with several output arrows
+Arrows from (0x8048e15,0):
+0 : (0x8048e15,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x8048e3f,0)
+1 : (0x8048e15,0) << %zf@{0;1@} >> Skip --> (0x8048e17,0)
+iii> 
+@end smallexample
+We are back to instruction at @t{0x8048e15} but this time we have visited a new
+loop as show on the following CFG:
 
+@float Figure,fig:viewasm04
+@center @image{view_asm_04,10cm,,,.png}
+@end float
+
+The reader should wonder why the simulation did not stop at instruction 
+@t{0x8048e17} while two outgoing arrows exist there. Indeed, the simulator
+follows @t{#0} arrow because it is the only one that is enabled ! Let's see why.
+We make a single step from @t{0x8048e15} to @t{0x8048e17}.
+@smallexample
+iii> arrows()
+Arrows from (0x8048e15,0):
+0 : (0x8048e15,0) << (NOT %zf@{0;1@})@{0;1@} >> Skip --> (0x8048e3f,0)
+1 : (0x8048e15,0) << %zf@{0;1@} >> Skip --> (0x8048e17,0)
+iii> s(1)
+Arrows from (0x8048e17,0):
+0 : (0x8048e17,0) %ecx@{0;32@} := (SUB %ecx@{0;32@} 0x1@{0;32@})@{0;32@} --> (0x8048e17,1)
+iii> ms()
+Arrows from (0x8048e17,1):
+0 : (0x8048e17,1) << (NEQ %ecx@{0;32@} 0x0@{0;32@})@{0;1@} >> Skip --> (0x8048e08,0)
+iii> register("ecx")
+'0x6@{0;32@}'
+iii>
+@end smallexample
+The @code{loop} instruction jumps to @t{0x8048e08} until @t{ecx} falls to 0. 
+However, in the current state, register @t{ecx} is the constant 6; thus, the
+second arrow outgoing from the @code{loop} instruction can not being enabled.
+
+We will be back on the loop later. For the moment we want to known what happens
+when the program follows the second branch. To enable the arrow that moves to 
+address @t{0x8048e19} we request the simulator to forget the current value of
+@t{ecx}. This is done using the function @code{unset} (see @code{help(unset)}). 
+
+@code{unset} permits to replace the current value of a register or a memory
+cell with an @emph{unknown} value. In the context of symbolic simulation, 
+this means that a fresh variable is used in place of the current value. 
+
+@code{unset} takes one, two or three parameters. Only the first one, @var{loc}
+is mandatory; it is a register or an address. The second one, @var{len}, is the 
+size of the memory area that is asbtracted; by default @var{len} is set to 1. 
+The third parameter, @var{keep}, is a Boolean value that indicates whether or 
+not the new value must be kept consistent with the old one. This notion of 
+consistency varies with the domain used for the simulation. In the case of
+symbolic simulation this means that:
+@itemize
+@item if @var{keep} is @t{true}, the new state generated by @code{unset} 
+enforces the fresh variable, say @t{fv}, to be equal to the current value 
+@t{val} of the register or memory cell i.e., the constraint @t{fv=val} is 
+added to the path-condition.
+@item if @var{keep} is @t{false}, the new state generated by @code{unset} 
+forgets the current value and any variable can be assigned to the fresh 
+variable.
+@end itemize
+@var{keep}=@t{true} is used to maintain the simulation into a real execution
+path. Using @var{keep}=@t{false} means that the simulation is authorized to
+follow a spurious trace; this is exactly what we want to do there: we want 
+to enforce the trace to follow an arrow that is not possible in the current
+state.
+
+@smallexample
+iii> arrows()
+Arrows from (0x8048e17,1):
+0 : (0x8048e17,1) << (NEQ %ecx@{0;32@} 0x0@{0;32@})@{0;1@} >> Skip --> (0x8048e08,0)
+iii> unset("ecx",keep=False)
+iii> register("ecx")
+'{abs_50_0x8048e17_1_32b}@{0;32@}'
+iii> arrows()
+Arrows from (0x8048e17,1):
+0 : (0x8048e17,1) << (NEQ %ecx@{0;32@} 0x0@{0;32@})@{0;1@} >> Skip --> (0x8048e08,0)
+1 : (0x8048e17,1) << (NOT (NEQ %ecx@{0;32@} 0x0@{0;32@})@{0;1@})@{0;1@} >> Skip --> (0x8048e19,0)
+iii> cont(1)
+@end smallexample
+Now the value assigned to @t{ecx} is a fresh symbol. The prefix @t{abs} is used
+to indicate the variable comes from an abstraction by the user and the address
+locates the program point where the abstraction has been invoked. The two
+arrows becomes enabled and we can now follow the arrow to @t{0x8048e19}.
+
+@center @image{view_asm_05,10cm,,,.png}
+
+On the CFG we can see that, after the loop, the program reaches a call to
+standard function @code{system}. It is invoked with the string located at 
+address @t{0x8048e5a} as parameter (see instruction at @t{0x8048e2f}). 
+
+@smallexample
+iii> dump(0x8048e5a,l=10,filter=filter_abstract_byte)
+/
+b
+i
+n
+/
+s
+h
+
+W
+r
+iii> 
+@end smallexample
+Good news! The call to @code{system} spawns a shell @command{/bin/sh}; this is
+where we have to go. We now come back to the analysis of the loop. 
+
+@node Breakpoints
+@section Breakpoints
+
+In order to study the loop between addresses @t{0x8048e08} and @t{0x8048e17}
+we execute @code{r(); c()}. The loop is given on @ref{fig:viewasm04}.
+As suggested by instructions at @t{0x8048df7} and @t{0x8048dfc}, we are 
+apparently in a loop that compares strings located at addresses @t{0x8048d45} 
+and @t{0x8048e1b}. Since the instruction @code{loop} is used to iterate it 
+means that the length of the strings is stored into @t{ecx} by instruction
+at @t{0x8048e01} which assigns @t{edx} to @t{ecx}. Now remember that @t{edx}
+is the length of the input (see remarks related to @t{read} in 
+@ref{Initialization file}).
+
+Let's have a look to these strings:
+@smallexample
+iii> dump(0x8048d45, l = 8, filter = filter_abstract_byte)
+{uv_58_0x8056020_3_8b}@{0;8@}
+{uv_60_0x8056020_3_8b}@{0;8@}
+{uv_62_0x8056020_3_8b}@{0;8@}
+{uv_64_0x8056020_3_8b}@{0;8@}
+{uv_66_0x8056020_3_8b}@{0;8@}
+{uv_68_0x8056020_3_8b}@{0;8@}
+{uv_70_0x8056020_3_8b}@{0;8@}
+{uv_72_0x8056020_3_8b}@{0;8@}
+iii> dump(0x8048e1b, l = 8, filter = filter_abstract_byte)
+?
+Z
+2
+P
+4
+>
+?
+?
+iii> 
+@end smallexample
+We can deduce that string at @t{0x8048d45} is the input string (fresh variable
+has been generated by @t{__read}). String at @t{0x8048e1b} is quite cryptic;
+it should be a hashed value of the password. 
+
+Interpreting the code of the loop could be a complicated task. In order to
+understand we can try to wait the termination of the loop and have a look to
+the content of the state.
+
+To this aim we could iterate the loop by hand until instruction @t{0x8048e17}
+permits us to go to @t{0x8048e19} but this a tedious work. A more generic way 
+is the following:
+@enumerate
+@item We create a conditional breakpoint at @t{0x8048e17} that will be enabled 
+      when @t{ecx} is equal to 1 (@code{loop} first decreases @t{ecx} before 
+      checking its value).
+@item We add a constraint at address @t{0x8048e15} that enforces the simulator
+      to stay in the loop.
+@end enumerate
+
+The function @code{breakpoint} (or @t{b}) requests the simulator to stop at
+a given addresse. Used without argument, it puts a breakpoint at the current
+program point. Else it takes components of a microcode addresss i.e., a global 
+and a local address; the latter is by default set to 0. The function returns the
+identifier of the breakpoint; it can be used later by a client script.
+
+@smallexample
+iii> breakpoint(0x8048e17)
+breakpoint set at (0x8048e17,0) with id=1.
+1
+iii>
+@end smallexample
+
+To make a breakpoint conditional we use the function @code{cond}. The function
+can be invoked with one or two arguments. The first one is always an identifier
+of a breakpoint. The second one is a string that contains the condition to
+enable the breakpoint. The syntax of these expressions is the one implemented
+in @Insight{}. If the second argument is omitted the condition is removed from
+the breakpoint.
+
+@smallexample
+iii> cond (1, "(EQ %ecx 1)")
+making breakpoint 1  conditional
+1  :  breakpoint: (0x8048e17,0) cond = (EQ %ecx@{0;32@} 0x1@{0;32@})@{0;1@}
+iii> 
+@end smallexample
+The reader should notice that, in expressions, registers are prefixed with a
+percent character (@t{%}).
+The list of breakpoints can be obtained using @code{show ("breakpoints")}:
+@smallexample
+iii> show ("breakpoints")
+1  : hits=0 breakpoint: (0x8048e17,0) cond = (EQ %ecx@{0;32@} 0x1@{0;32@})@{0;1@}
+iii> 
+@end smallexample
+@code{show} indicates the number of times the simulation encounters the 
+breakpoint.
+
+In order to enforce the simulator to continue inside the loop at instruction
+@t{0x8048e15} we use the function @code{assume}. This latter can take up to 3
+arguments; the later one is the local component of a microcode address and is,
+by default, set to 0. The first argument is the location where the enforcement
+takes place i.e., an address. The second argument is a string that contains
+a Boolean expression (same syntax as for conditional breakpoints).
+
+In the context of symbolic simulation, @code{assume} constraints the path 
+condition with its second argument. The list of assumptions can be displayed 
+using @code{show("assumptions")}.
+
+@smallexample
+iii> assume(0x8048e15, "%zf")
+iii> show("assumptions")
+0x8048e15 : %zf@{0;1@}
+iii> cont()
+@end smallexample
+
+After the assumption at @t{0x8048e15}, we let the simulator does its work and 
+wait the termination of the loop.
+
+@node Concretization
+@section Concretization
+
+After a while we get:
+@smallexample
+iii> cont()
+stop condition 1 reached: breakpoint: (0x8048e17,0) cond = (EQ %ecx@{0;32@} 0x1@{0;32@})
+@{0;1@}
+Arrows from (0x8048e17,0):
+0 : (0x8048e17,0) %ecx@{0;32@} := (SUB %ecx@{0;32@} 0x1@{0;32@})@{0;32@} --> (0x8048e17,1)
+iii> s()
+Arrows from (0x8048e19,0):
+0 : (0x8048e19,0) Skip --> (0x8048e24,0)
 iii> 
 @end smallexample
 
+The simulator says that it stop because it encounters the conditional 
+breakpoint at address @t{0x8048e17} while its condition enables it. 
+Contrary to previous sections, this time, if we make a step forward the 
+simulator exits the loop. Now we have to look at what has been computed.
+
+In @ref{Breakpoints}, we have dsicovered that the string at address 
+@t{0x8048d45} is the input given by the user. If we look at the content of
+the string we can notice that it does not change.
+
+@smallexample
+iii> dump(0x8048d45, l = 8, filter = filter_abstract_byte)
+{uv_58_0x8056020_3_8b}@{0;8@}
+{uv_60_0x8056020_3_8b}@{0;8@}
+{uv_62_0x8056020_3_8b}@{0;8@}
+{uv_64_0x8056020_3_8b}@{0;8@}
+{uv_66_0x8056020_3_8b}@{0;8@}
+{uv_68_0x8056020_3_8b}@{0;8@}
+{uv_70_0x8056020_3_8b}@{0;8@}
+{uv_72_0x8056020_3_8b}@{0;8@}
+@end smallexample
+
+A quick look at the iterated code shows that it just compute a value that
+is then compared at the corresponding offset in the hashed password at 
+@t{0x8048e1b}.
+
+@smallexample
+iii> disas(0x8048e08,l=10)
+08048e08 <L_3>: 
+ 8048e08:	xor    %eax,%eax
+ 8048e0a:	lods   %ds:(%esi),%al
+ 8048e0b:	add    %ebx,%eax
+ 8048e0d:	shl    %eax
+ 8048e0f:	xor    $0x12,%eax
+ 8048e12:	mov    %al,%bl
+ 8048e14:	scas   %es:(%edi),%al
+ 8048e15:	jne    0x8048e3f # jump to : L_2
+ 8048e17:	loop   0x8048e08 # jump to : L_3
+ 8048e19:	jmp    0x8048e24 # jump to : L_4
+ 8048e1b:
+iii> 
+@end smallexample
+
+Actually the data related to computed values is stored in the path condition
+accumulated each time we enforced the simulator to follow the arrow @t{#1} 
+to stay in the loop. 
+
+Now we are outside the loop. This means that the current state of the simulation
+encodes all traces that can reach the current program point (i.e., 
+@t{0x8048e19}). Thanks to the SMT-solver integrated to @Insight{}, it is 
+possible to compute an assignment of fresh variables (i.e., a concrete input)
+that satisfies the path-condition of the current state.
+
+Here we reuse a function already encountered: @code{set}. In 
+@ref{Step-by-step simulation}, this section was used to assign a value to 
+register @t{esp}; the function was called with two arguments. This time we
+use @code{set} without sepcifying a value. In this case, @iii{} requests the
+SMT solver to choose a value that is consistent with the current state.
+
+The following script requests a @code{set} for each byte of the input string.
+Then @iii{} displays assigned value.
+@smallexample
+iii> for i in range(8): set (0x8048d45 + i)
+...
+iii> dump(0x8048d45, l = 8, filter = filter_abstract_byte)
+I
+v
+6
+o
+C
+b
+2
+U
+iii>
+@end smallexample
+It is the password; see @ref{Analyzed program}.
+
 @endinput
-        
-* Advanced features
-** Introducing initialization file
-- iii permits to load an initialization _module_.
-- emacs demo-setup-1.py 
-- comments 
-- iii -c demo-setup-1
-- a large MC should appear due to "printf" code
-- stop iii and restart it with demo-setup-2.py (make-stubs.sh generate
-  all necessary stubs)
-- iii -c demo-setup-2
-- stubs for printf, start_main and read appear collapsed.
-- remarks related to the loop that decodes instructions
-  + at 0x8048de5 the instruction makes %esi points to 0x8048e08 i.e.
-    into the .text segment! The following loop seems to modify the
-    code. 
-  + insight.utils.pretty_disas_memory (P(), 0x8048e08) 
-  + compare with MC instructions; code have changed.
-- cont(): after the decoding loop if we continue on branch 0 the
-  crackme displays a string at address 0x8048e62 (see instr
-  @0x8048ea4). 
-
-** Content of the memory
-- dump(0x8048e62, l = 10)
-- These are "abstract" value; we can add a filter to translate them
-  into characters. use filter_abstract_byte defined in init file. 
-- dump(0x8048e62, l = 10, filter = filter_abstract_byte)
-- dump(0x8048e62, l = 20, filter = filter_abstract_byte)
-- so it was not the good branch to go...
-- restart the work: r(); c()
-- we are back to the same program point.
-
-** Abstraction
-- we now follow the other branch: s(1)
-- we face a loop. 
-- the instruction "loop" has two successors but only one is proposed.
-- try cont()
-- back to previous choice point
-- s(1)
-- enter micro steps for "loop"
-- ms()
-- "loop" instruction checks the value of "ecx"
-- register ("ecx")
-- ecx is assigned a concrete value; so, either we iterate until "ecx"
-  falls to 0 or we abstract the register. 
-- let's see what's happens after the "loop" by abstracting "ecx".
-- unset("ecx", keep=False) 
-- keep=False is mandatory to enable both arrows.
-- register("ecx") blurp! 
-- arrows(): now the two arrows are enabled
-- continue on the branch that goes out of the loop : cont(1)
-- the call to function "system" appears
-- come back to the analysis of the loop
-
-** Breakpoints
-- r(); c()
-- apparently we are in a loop that compares strings located at
-  addresses 0x8048d45 and 0x8048e1b (cf instr at 0x8048df7 and
-  0x8048dfc). Have a look to them. The value of ecx+1 gives use the
-  number of comparisons (we already have made a cycle): 
-- dump(0x8048d45, l = 8, filter = filter_abstract_byte)
-- dump(0x8048e1b, l = 8, filter = filter_abstract_byte)
-- 0x8048e1b seems to be the expected string and 0x8048d45 is the input...
-- We can iterate the loop by hand until intruction @0x8048e17 permits
-  us to go to 0x8048e19.
-- A more generic way is the following.
-  - we put a conditional breakpoint at 0x8048e17: 
-    b (0x8048e17) 
-    cond (1, "(EQ %ecx 1)")
-    the condition becomes true when the last iteration occurs ("loop"
-    instruction decrements "%ecx")
-  - we add a constraint at address 0x8048e15 that enforces to continue
-    the checking loop.
-    assume (0x8048e15, "%zf")
-- cont()
-- wait until simulation stops ... 
-
-** Concretization
-- s()
-- Now we have escaped checking loop we can try to compute the correct
-  input that allows to arrive there.
-- show ("breakpoints") 
-- breakpoint @0x8048e17 has been hit 8 times i.e. the number of iterations
-- dump(0x8048d45, l = 8, filter = filter_abstract_byte)
-- we request iii to concretize values for the 8 bytes used as input.
-- for i in range(8): set (0x8048d45 + i)
-- dump(0x8048d45, l = 8, filter = filter_abstract_byte)
-- Yeah! password=Iv6oCb2U
-
-
-
