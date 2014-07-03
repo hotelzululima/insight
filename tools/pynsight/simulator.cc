@@ -1333,6 +1333,9 @@ s_Simulator_assume (PyObject *self, PyObject *args)
   const char *constraint;
   unsigned long g, l = 0;
 
+  if (! s_check_state (S))
+    return NULL;
+
   if (! PyArg_ParseTuple (args, "ks|k", &g, &constraint, &l))
     return NULL;
 
