@@ -66,23 +66,7 @@ typedef std::vector<MicrocodeNode *> MicrocodeNodeVector;
 
 /* --------------- */
 
-template<TokenType> void
-msp430_translate(msp430::parser_data &data, bool)
-{
-  throw Decoder::UnknownMnemonic (data.instruction);
-}
-
-/* --------------- */
-
-#define DEFAULT_DATA data
-#define DEFAULT_BEHAVIOR() \
-  do { throw Decoder::UnknownMnemonic (data.instruction); } while(0)
-
-template<TokenType> void
-msp430_translate(msp430::parser_data &DEFAULT_DATA)
-{
-  DEFAULT_BEHAVIOR();
-}
+template<TokenType> void msp430_translate(msp430::parser_data &);
 
 #define MSP430_TRANSLATE_0_OP(_tok) \
   template<> void \
@@ -90,11 +74,7 @@ msp430_translate(msp430::parser_data &DEFAULT_DATA)
 
 /* --------------- */
 
-template<TokenType> void
-msp430_translate(msp430::parser_data &DEFAULT_DATA, Expr *op1)
-{
-  try { DEFAULT_BEHAVIOR(); } catch(...) { op1->deref (); throw; }
-}
+template<TokenType> void msp430_translate(msp430::parser_data &, Expr *);
 
 #define MSP430_TRANSLATE_1_OP(_tok) \
   template<> void \
@@ -103,17 +83,8 @@ msp430_translate(msp430::parser_data &DEFAULT_DATA, Expr *op1)
 
 /* --------------- */
 
-template<TokenType> void
-msp430_translate(msp430::parser_data &DEFAULT_DATA, Expr *op1, Expr *op2)
-{
-  try { DEFAULT_BEHAVIOR(); }
-  catch(...) {
-    op1->deref ();
-    op2->deref ();
-    throw;
-  }
-}
-
+template<TokenType> void msp430_translate(msp430::parser_data &,
+					    Expr *, Expr *);
 #define MSP430_TRANSLATE_2_OP(_tok) \
   template<> void \
   msp430_translate<MSP430_TOKEN(_tok)> (msp430::parser_data &data, Expr *op1, \
