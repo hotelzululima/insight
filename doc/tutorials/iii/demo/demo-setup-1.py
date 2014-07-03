@@ -10,7 +10,8 @@ load_stub ("stub_libc_start_main.mc.xml", P ().sym ("__libc_start_main"))
 
 # initialization of register 
 valregs = { 
-    'esp' : 0xFFFFFFF0
+    'esp' : 0xFFFFFFF0,
+    'df' : 0  # mandatory for string operations
 }
 
 # useful hooks

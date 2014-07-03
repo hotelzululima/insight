@@ -5,6 +5,7 @@ Here is the source code of the @code{crackme} program. It is written using
 @code{fasm} (@bibcite{FASM}) assembly language.
 
 @smallexample
+
 @verbatiminclude demo/meta/crackme.asm
 @end smallexample
 The example includes the following file containing the @code{ccall} macro:
@@ -13,3 +14,43 @@ The example includes the following file containing the @code{ccall} macro:
 @verbatiminclude demo/meta/ccall.inc
 @end smallexample
 
+@node Stubs
+@appendix Stubs
+
+Stubs have to be compiled into an object file (using @command{gcc} for instance)
+and then their microcode is generated using @command{cfgrecovery}.
+
+@node __libc_start_main
+@section @t{__libc_start_main}
+
+@verbatiminclude demo/stub_libc_start_main.s  
+
+@node __printf
+@section @t{__printf}
+
+@verbatiminclude demo/stub_printf.s  
+
+@node __read
+@section @t{__read}
+
+@verbatiminclude demo/stub_read.s  
+
+For this stub, the constant @t{0x33} (@t{51}) has to be replaced by a 
+random statement into the generated XML file. To this aim you can use the 
+following @command{sed} commands:
+
+@smallexample
+sed -e 's+<const size="8" offset="0">51</const>+<random size="8" \
+offset="0"></random>+g' stub_read.mc.xml  
+@end smallexample
+
+@node Script for automatic password recovery
+@appendix Script for automatic password recovery
+
+The following @t{Python} script can be used as an initialization file (see 
+@ref{Initialization file} to automatically recover the password hidden in the 
+@t{crackme} file.
+
+@smallexample
+@verbatiminclude demo/demo-setup-3.py
+@end smallexample

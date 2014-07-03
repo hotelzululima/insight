@@ -6,5 +6,9 @@
 @node Introduction
 @chapter Introduction
 
-@section microcode
-@section symbolic simulation
+@node Microcode
+@section Microcode
+
+@node Symbolic simulation
+@section Symbolic simulation
+

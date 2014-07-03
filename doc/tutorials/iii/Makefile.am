@@ -5,7 +5,8 @@ TEXI2DVIFLAGS = --clean -I ${srcdir} -I ${builddir} -I ${MANDIR} -p
 IIITUTO_FILES = iii-tutorial.texi the-crackme.texi macros.texi \
                 introduction.texi index.texi basic-features.texi \
                 titlepage.texi appendices.texi advanced-features.texi \
-                view_asm_01.png view_mc_01.png
+                view_asm_01.png view_mc_01.png \
+                demo/demo-setup-3.py
 
 # Rules and targets
 all: 

@@ -16,12 +16,12 @@ Insight
 @include common-macros.texi
 @include macros.texi
 @include titlepage.texi
-@c @contents
-@c @include introduction.texi
-@c @include the-crackme.texi
+@contents
+@include introduction.texi
+@include the-crackme.texi
 @include basic-features.texi
 @include advanced-features.texi
 @include references.texi
-@c @include appendices.texi
+@include appendices.texi
 @c @include index.texi
 @bye

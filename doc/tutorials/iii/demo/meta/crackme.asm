@@ -66,7 +66,7 @@ teste:
 	jnz ko
 	loop teste
 	jmp ok
-pwd db 174, 90, 50, 80, 52, 62, 242, 156, 0		; pwd db "Hu5nBa1T",0
+pwd db 174, 90, 50, 80, 52, 62, 242, 156, 0		
 to_crypt=$-debut_crypt
 crypt debut_crypt,$-debut_crypt
 

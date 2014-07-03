@@ -9,8 +9,8 @@ The binary code has been obtained by compiling a small @code{x86} assembly
 program using @code{fasm} assembler (@bibcite{FASM}). The source code of this
 challenge is given in @ref{Crackme source code}. 
 
-As show below the behavior of this program is simple: When executed it displays
-a prompt, read on the standard input a password and spawns a @code{/bin/sh} 
+As shown below, the behavior of this program is simple: It displays a prompt, 
+reads on the standard input a password and spawns a @code{/bin/sh} 
 shell program if the password is correct or exits in the other case. 
 @example
 $ ./crackme
@@ -28,7 +28,9 @@ the execution of the shell program. In order to counter analysis of the binary
 file, the program implements fences to protect itself from reverse engineering:
 @enumerate
 @item The passord is not stored as-is in the binary data but is hashed.
-@item The algorithm that computes the hash-value of the input is cyphered and this part of the binary is uncyphered at execution time.
+@item The algorithm that computes the hash-value of the input is cyphered and 
+      this part of the binary is uncyphered on-the-fly at execution time.
 @end enumerate 
 
-TO BE COMPLETED
+The last point imposes to change some flags of binary in order to permits
+self-modifying code.
