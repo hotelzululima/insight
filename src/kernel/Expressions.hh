@@ -605,9 +605,9 @@ public:
  ***************************************************************************/
 class RegisterExpr : public LValue {
 private:
-  const RegisterDesc *regdesc;
+  RegisterDesc *regdesc;
 
-  RegisterExpr (const RegisterDesc *reg, int bv_offset, int bv_size);
+  RegisterExpr (RegisterDesc *reg, int bv_offset, int bv_size);
 
   virtual ~RegisterExpr ();
 
@@ -616,11 +616,11 @@ protected:
 
 public:
 
-  static RegisterExpr *create (const RegisterDesc *reg);
-  static RegisterExpr *create (const RegisterDesc *reg, int bv_offset,
+  static RegisterExpr *create (RegisterDesc *reg);
+  static RegisterExpr *create (RegisterDesc *reg, int bv_offset,
 			       int bv_size);
 
-  const RegisterDesc *get_descriptor () const;
+  RegisterDesc *get_descriptor () const;
   const std::string &get_name() const;
 
   /*! \brief syntaxic equality of registers */

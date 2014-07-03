@@ -37,16 +37,14 @@
 #include <kernel/Architecture_SPARC.hh>
 #include <kernel/Architecture_X86_32.hh>
 #include <kernel/Architecture_X86_64.hh>
+#include <utils/logs.hh>
 
 using namespace std;
 
-RegisterDesc::RegisterDesc (int index, const std::string &label, int regsize)
-{
-  new(this) RegisterDesc(index, label, regsize, 0, regsize);
-}
+RegisterDesc::RegisterDescPool RegisterDesc::pool;
 
 RegisterDesc::RegisterDesc (int index, const std::string &label, int regsize,
-			    int winoffset,  int winsize)
+			    int winoffset,  int winsize) : ref_count(0)
 {
   this->index = index;
   this->label = label;
@@ -56,6 +54,58 @@ RegisterDesc::RegisterDesc (int index, const std::string &label, int regsize,
 
   assert (0 <= window_offset+ window_size - 1 &&
 	  window_offset+ window_size - 1 < regsize);
+}
+
+RegisterDesc *
+RegisterDesc::create(int index, const std::string &label, int regsize) {
+  return create(index, label, regsize, 0, regsize);
+}
+
+RegisterDesc *
+RegisterDesc::create(int index, const std::string &label, int regsize,
+		     int winoffset, int winsize) {
+  RegisterDesc *desc =
+    new RegisterDesc(index, label, regsize, winoffset, winsize);
+  RegisterDescPool::iterator it = RegisterDesc::pool.find(desc);
+  if (it != RegisterDesc::pool.end()) {
+    delete desc;
+    desc = *it;
+  } else
+    RegisterDesc::pool.insert(desc);
+
+  return desc->ref();
+}
+
+RegisterDesc *
+RegisterDesc::ref() {
+  ++ref_count;
+  return this;
+}
+
+void
+RegisterDesc::deref() {
+  --ref_count;
+
+  if (ref_count == 0) {
+    RegisterDesc::pool.erase(this);
+    index = -1;
+    delete this;
+  }
+}
+
+void
+RegisterDesc::terminate() {
+  if (RegisterDesc::pool.size() != 0) {
+    logs::error << "**** some RegisterDesc have not been deref()'d:";
+    for (RegisterDescPool::iterator it = RegisterDesc::pool.begin();
+	 it != RegisterDesc::pool.end();
+	 ++it) {
+      logs::error << " " << (*it)->ref_count << " ";
+      (*it)->output_text(logs::error);
+      delete *it;
+    }
+    logs::error << endl;
+  }
 }
 
 void
@@ -135,7 +185,7 @@ Architecture::add_register(const std::string &id, int regsize)
   assert (registerspecs->find(id) == registerspecs->end());
 
   int index = registerspecs->size ();
-  (*registerspecs)[id] = new RegisterDesc (index, id, regsize);
+  (*registerspecs)[id] = RegisterDesc::create(index, id, regsize);
 }
 
 void
@@ -148,8 +198,8 @@ Architecture::add_register_alias (const std::string &name,
   RegisterDesc *reg = (*registerspecs)[refname];
 
   (*registerspecs)[name] =
-    new RegisterDesc (reg->get_index (), refname, reg->get_register_size (),
-		      offset, size);
+    RegisterDesc::create(reg->get_index (), refname, reg->get_register_size (),
+			 offset, size);
 }
 
 bool
@@ -158,7 +208,7 @@ Architecture::has_register(const std::string &label) const
   return (registerspecs->find(label) != registerspecs->end());
 }
 
-const RegisterDesc *
+RegisterDesc *
 Architecture::get_register(const string &label) const
 {
   if (registerspecs->find(label) == registerspecs->end())
@@ -187,7 +237,7 @@ Architecture::~Architecture()
   for (RegisterSpecs::iterator iter = registerspecs->begin();
        iter != registerspecs->end(); iter++)
     {
-      delete iter->second;
+      iter->second->deref();
     }
 
   delete registerspecs;
@@ -215,6 +265,8 @@ Architecture::terminate ()
   int nb_architectures = (int) Unknown * (int) UnknownEndian + 1;
   for (int i = 0; i < nb_architectures; i++)
     delete architectures[i];
+
+  RegisterDesc::terminate();
 
   delete[] architectures;
 }

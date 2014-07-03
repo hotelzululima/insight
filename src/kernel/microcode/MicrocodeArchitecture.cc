@@ -62,7 +62,7 @@ MicrocodeArchitecture::has_tmp_register (const std::string &label) const
   return has_register (label);
 }
 
-const RegisterDesc *
+RegisterDesc *
 MicrocodeArchitecture::get_register(const std::string &label) const
 {
   if (has_register (label))

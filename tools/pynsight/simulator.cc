@@ -2227,7 +2227,7 @@ InsightSimulator<Stepper>::get_register_value (void *p, const RegisterDesc *reg)
 {
   typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
-  const RegisterDesc *areg = march->get_register (reg->get_label ());
+  RegisterDesc *areg = march->get_register (reg->get_label ());
   assert (mem->is_defined (areg));
   typename Stepper::Value regval;
 
