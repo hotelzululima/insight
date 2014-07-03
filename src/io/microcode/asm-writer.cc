@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <kernel/annotations/NextInstAnnotation.hh>
 #include <kernel/annotations/AsmAnnotation.hh>
+#include <kernel/annotations/StubAnnotation.hh>
 #include <kernel/annotations/SolvedJmpAnnotation.hh>
 #include <utils/unordered11.hh>
 #include "asm-writer.hh"
@@ -190,7 +191,8 @@ s_write_asm (ostream &out, const Microcode *mc,
   int i = 0;
   MicrocodeNode *lastnode = NULL;
 
-  while (i < nb_nodes && (! nodes.at (i)->has_annotation (AsmAnnotation::ID)
+  while (i < nb_nodes && (! (nodes.at (i)->has_annotation (AsmAnnotation::ID) ||
+			     nodes.at (i)->has_annotation (StubAnnotation::ID))
 			  || nodes.at (i)->get_loc ().getGlobal() < addr))
     i++;
   MicrocodeAddress prev;
@@ -203,9 +205,16 @@ s_write_asm (ostream &out, const Microcode *mc,
       if (! node->has_annotation (AsmAnnotation::ID))
 	continue;
 
+      MicrocodeAddress ma (node->get_loc ());
+
+      if (ma.getLocal () != 0)
+	{
+	  assert (node->has_annotation (StubAnnotation::ID));
+	  continue;
+	}
+
       nb--;
       lastnode = node;
-      MicrocodeAddress ma (node->get_loc ());
 
       assert (ma.getLocal () == 0);
 
@@ -225,8 +234,6 @@ s_write_asm (ostream &out, const Microcode *mc,
 		<< setw (0)
 		<< " <" << *s << ">: " << endl;
 	}
-      AsmAnnotation *a = (AsmAnnotation *)
-	node->get_annotation (AsmAnnotation::ID);
       Option<address_t> next = next_instruction_addr (node);
       if (next.hasValue ())
 	prev = next.getValue ();
@@ -243,6 +250,13 @@ s_write_asm (ostream &out, const Microcode *mc,
 	    bytes = "(unknown)";
 	  out << left << setw (24) << setfill (' ') << bytes << "\t";
 	}
+      StringAnnotation *a;
+
+      if (node->has_annotation (StubAnnotation::ID))
+	a = (StringAnnotation *) node->get_annotation (StubAnnotation::ID);
+      else
+	a = (StringAnnotation *) node->get_annotation (AsmAnnotation::ID);
+
       out << a->get_value ();
       vector<MicrocodeNode *> *succ =
 	asm_get_successor_instructions (mc, node);
