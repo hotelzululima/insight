@@ -102,7 +102,6 @@ RegisterDesc::terminate() {
 	 ++it) {
       logs::error << " " << (*it)->ref_count << " ";
       (*it)->output_text(logs::error);
-      delete *it;
     }
     logs::error << endl;
   }
