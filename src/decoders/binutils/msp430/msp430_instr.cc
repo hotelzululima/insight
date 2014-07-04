@@ -442,10 +442,8 @@ MSP430_TRANSLATE_1_OP(POP) {
 
   data.add_postincrement((RegisterExpr *) sp->ref());
 
-  Expr *source = msp430_trim_source_operand(data, op1);
-  Expr *dest = MemCell::create(sp, 0, size * 8);
-  source = msp430_stretch_expr_to_dest_size(dest, source);
-  s_translate_mov(data, source, dest, false);
+  Expr *source = MemCell::create(sp, 0, size * 8);
+  s_translate_mov(data, source, op1, false);
   sp->deref();
 }
 
@@ -585,11 +583,31 @@ MSP430_TRANSLATE_1_OP(CALL) {
   op1->deref();
 }
 
-MSP430_TRANSLATE_0_OP(RET) {
+static void s_translate_ret(msp430::parser_data &data, bool is_reti) {
   MicrocodeAddress here(data.start_ma);
   RegisterExpr *sp = data.get_register(MSP430_REG_SP);
-  Expr *address = data.get_memory_reference(0, sp->ref(), false);
-  RegisterExpr *tmpreg = data.get_tmp_register(MSP430_SIZE_A);
+  Expr *address;
+  RegisterExpr *tmpreg;
+
+  if (is_reti) {
+    RegisterExpr *sr = data.get_register(MSP430_REG_SR);
+    int save_operand_size = data.operand_size;
+    int save_is_extended = data.is_extended;
+    MicrocodeAddress save_next_ma = data.next_ma;
+
+    data.operand_size = MSP430_SIZE_W;
+    data.is_extended = 0;
+    data.next_ma = data.start_ma + 5; /* XXX leaves enough room for POP */
+    msp430_translate<MSP430_TOKEN(POP)>(data, sr);
+
+    data.operand_size = save_operand_size;
+    data.is_extended = save_is_extended;
+    data.start_ma = data.next_ma;
+    data.next_ma = save_next_ma;
+  }
+
+  address = data.get_memory_reference(0, sp->ref(), false);
+  tmpreg = data.get_tmp_register(MSP430_SIZE_A);
   data.mc->add_assignment(data.start_ma, tmpreg,
 			  msp430_trim_source_operand(data, address),
 			  data.start_ma + 1,
@@ -605,6 +623,14 @@ MSP430_TRANSLATE_0_OP(RET) {
   MicrocodeNode *start_node = data.mc->get_node (here);
   start_node->add_annotation (CallRetAnnotation::ID,
 			      CallRetAnnotation::create_ret ());
+}
+
+MSP430_TRANSLATE_0_OP(RET) {
+  s_translate_ret(data, false);
+}
+
+MSP430_TRANSLATE_0_OP(RETI) {
+  s_translate_ret(data, true);
 }
 
 /*** Misc ***/
