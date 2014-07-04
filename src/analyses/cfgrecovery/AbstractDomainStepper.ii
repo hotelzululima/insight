@@ -70,13 +70,28 @@ AbstractDomainStepper<CTX,PP>::get_successors (const State *s,
 	  Value vaddr = eval (newctx, addr);
 	  std::vector<address_t> *targets =
 	    value_to_concrete_addresses (newctx, vaddr);
+	  bool add_pc_constraint = targets->size () > 1;
 
 	  for (size_t i = 0; i < targets->size (); i++)
 	    {
-	      MicrocodeAddress tgt (targets->at(i));
+	      address_t a = targets->at(i);
+	      MicrocodeAddress tgt (a);
 	      ProgramPoint *to = from->next (tgt);
-	      result->insert (new State (to, newctx));
+	      State *ns = new State (to, newctx);
 	      newctx->ref ();
+
+	      if (add_pc_constraint)
+		{
+		  Expr *pc_constraint =
+		    Expr::createEquality (addr->ref (),
+					  Constant::create (a, 0,
+							    addr->get_bv_size()));
+		  State *tmp = restrict_state_to_condition (ns, pc_constraint);
+		  pc_constraint->deref ();
+		  ns->deref ();
+		  ns = tmp;
+		}
+	      result->insert (ns);
 	    }
 	  newctx->deref ();
 	  delete targets;
