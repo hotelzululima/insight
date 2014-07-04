@@ -394,6 +394,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(PUSH)> (data, $3); }
 | ret
   { msp430_translate<MSP430_TOKEN(RET)> (data); }
+| TOK_RETI
+  { msp430_translate<MSP430_TOKEN(RETI)> (data); }
 | rla suffix operand
   { msp430_translate<MSP430_TOKEN(RLA)> (data, $3); }
 | rlc suffix operand
@@ -418,6 +420,8 @@ instruction:
   { msp430_translate<MSP430_TOKEN(SWPB)> (data, $2); }
 | sxt operand
   { msp430_translate<MSP430_TOKEN(SXT)> (data, $2); }
+| xor suffix operand TOK_COMMA operand
+  { msp430_translate<MSP430_TOKEN(XOR)> (data, $3, $5); }
 ;
 
 adc:
@@ -565,6 +569,11 @@ swpb:
 sxt:
   TOK_SXT
 | TOK_SXTX { data.is_extended = 1; }
+;
+
+xor:
+  TOK_XOR
+| TOK_XORX { data.is_extended = 1; }
 ;
 
 %% /***** Parser subroutines *****/
