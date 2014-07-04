@@ -8,25 +8,24 @@
 
 This document describes the use of @iii{} tool for the analysis of an 
 executable file. This tutorial does not cover all features of the tool but
-presents most usual ones. @iii{} is essentially a simulator built over 
+presents most usual ones. @iii{} is essentially a simulator built on top of
 @Insight{} framework (@bibcite{Insight}). Simulation can be an efficient tool 
 for the debugging and understanding of program behaviors. 
 
 @Insight{} framework permits to interpret program semantics over different 
 domains. Even if its design is quite independent of the interpretation 
 domain, @iii{} allows only two kinds of values: concrete and formula. In the
-first case, the tool behaves roughly like a classical debugger however @iii{} 
+first case, the tool behaves roughly like a classical debugger. However, @iii{} 
 is limited to the interpretation of the internal model of the program
 i.e., its microcode. Many low-level aspects are not captured by the
 framework: system calls, dynamic loading, multi-threading and so on. 
-To be short, microcode model has three kind of instructions:
+To be short, microcode model has threes kind of instructions:
 @enumerate
-@item @strong{assignments} @var{lv} := @emph{E} where @var{lv} is a 
+@item @strong{Assignments} @var{lv} := @emph{E} where @var{lv} is a 
 @emph{l-value} i.e., a register or a memory cell and @emph{E} is a bitvector 
 expression.
-@item @strong{guarded static jumps} change the program counter if the guard is 
-satisfied to an address known @emph{a priori}.
-@item and @strong{dynamic jumps} that change the program counter to an address 
+@item @strong{Guarded static jumps} change the program counter to an address known @emph{a priori}, if the guard is satisfied.
+@item @strong{Dynamic jumps} that change the program counter to an address 
 computed on-the-fly by the program.
 @end enumerate
 
@@ -50,22 +49,25 @@ symbolic state as follows:
 @itemize
 @item If the instruction is an assignment @var{lv} = @emph{E} where @var{lv}
 is an @emph{l-value} (i.e., either a register or a memory cell) and @emph{E}
-is an expression then, each register and memory cells user by @emph{E} are
+is an expression then, each register and memory cell used by @emph{E} are
 replaced by their assigned value in the current state. If some register or 
 memory cell, says @var{x}, used by @emph{E} is not assigned then a fresh 
 variable @var{fv} is generated and assigned to @var{x} in the new state and 
 @var{x} is replaced by @var{fv} in @emph{E}. Finally the formula obtained 
-from @emph{E} when all substitutions have been done is assigned of @var{lv}
+from @emph{E} when all substitutions have been done is assigned to @var{lv}
 in the new state.
 
 @item If the instruction is a static jump to the address @emph{tgt} and if
-the jump is guarded by some condition @emph{G}, then the simulator check
-if @emph{G} is satisfiable in the current state. To this aim, as for assignment,
+the jump is guarded by some condition @emph{G}, then the simulator check first
+if @emph{G} is satisfiable in the current state. To this aim, as for 
+assignments,
 any occurrence of a register or memory cell is replaced by its current value
 or a fresh variable in @emph{G}; this gives a formula @emph{G'}. The solver is 
-then used to verify the satiafiability of (@emph{G'} @t{and} @emph{pc}). If the
+then used to verify the satiafiability of (@emph{G'} @t{and} @emph{pc}) where
+@emph{pc} is the current path-condition. If the
 formula is satisfiable then the new path-condition becomes (@emph{G'} @t{and} 
-@emph{pc}); else the simulator tries the next microcode instruction at the same
+@emph{pc}) and program counter is updated; else the simulator tries the next 
+microcode instruction at the same
 address or stops.
 
 @item If the instruction is a dynamic jump to an address obtained from an
