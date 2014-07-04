@@ -1,7 +1,8 @@
 @node Analyzed program
 @chapter Analyzed program
 
-The program we study using @iii{} is a @i{crackme} challenge i.e., the program 
+The program we are studying using @iii{} is a @i{crackme} challenge i.e., the 
+program 
 implements a security mechanism to protect some critical part of the 
 software and we have to bypass this fence to access the protected data.
 

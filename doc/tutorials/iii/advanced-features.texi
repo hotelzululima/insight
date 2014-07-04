@@ -335,8 +335,8 @@ iii>
 @end smallexample
 This means we have followed the branch where the user enters a wrong password.
 
-@node Assignment of abstraction values
-@section Assignment of abstraction values
+@node Assignment of abstract values
+@section Assignment of abstract values
 
 We restart the simulation and continue simulation until coming back to 
 conditional jump at address @t{0x8048e15}. This time we will follow the second

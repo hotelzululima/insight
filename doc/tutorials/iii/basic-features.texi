@@ -5,7 +5,7 @@
 @section @code{pynsight} interpreter
 
 @code{pynsight} is @code{Python} interpreter extended with @Insight{} bindings.
-@iii{} is a debugger built on top of @code{pynsight}. As show below, when 
+@iii{} is a debugger built on top of @code{pynsight}. As shown below, when 
 @iii{} is started a banner is displayed and the tool presents a prompt that 
 permits to interact with @code{pynsight}:
 @smallexample
@@ -35,8 +35,8 @@ iii> for i in range(5):
 8
 iii> 
 @end smallexample
-In the context of @iii, some modules are pre-loaded; the most interesting one is
-@code{insight.debugger} that contains all functions proposed by @code{iii}. 
+In the context of @iii, some modules are pre-loaded. The most interesting one,
+@code{insight.debugger}, contains all functions proposed by @code{iii}. 
 Since we are in a @code{Python} interpreter, documentation related to @Insight{}
 modules can be displayed using the @code{help} function; as suggested by the
 banner try @code{help(insight.debugger)} to discover all functions implemented
@@ -44,7 +44,7 @@ in @iii{}.
 
 Since @iii{} is an interactive tool, several shorcuts have been defined for 
 most frequently used commands e.g., @code{run}, @code{step}, ... The function 
-@code{aliases()} lists these shortcuts:
+@code{aliases} lists these shortcuts:
 
 @smallexample
 iii> aliases()
@@ -60,17 +60,17 @@ Each function should be documented. For instance @code{help(microstep)}, or equi
 @node Getting started
 @section Getting started
 
-The tool can be started without any argument or the path to a binary file to 
-analyse. @iii{} accepts several options. The usual @code{--help} option lists 
-all others. Let's start it with our @code{crackme} program.
+The tool can be started without any argument or with the path to a binary file 
+to analyse. @iii{} accepts several options; the usual @code{--help} option 
+lists all others. Let's start @iii{} with our @code{crackme} program.
 
 @smallexample 
 $ iii crackme
 @end smallexample
 
 @code{crackme} has been successfully loaded. Another way to load a binary file 
-is to use the @code{binfile} command. Immediately we can get informations 
-related to what kind of program is currently loaded. To this purpose we use the
+is to use the @code{binfile} function. We can get informations 
+related to what kind of program is currently loaded; to this purpose we use the
 function @code{info()}:
 @smallexample
 iii> info()
@@ -94,10 +94,10 @@ iii>
 Among other informations, @code{info()} gives the list of registers with their
 respective size in number of bits. 
 
-@iii{} is a debugger i.e., it simulates behaviors of analyzed program according
+@iii{} is a debugger i.e., it simulates behaviors of analyzed programs according
 to some domain used to evaluate values. By default, the @emph{symbolic} domain
 is used; this means that values are formulas. The domain is specified as an 
-arguement to the @code{binfile} function. Currently only two domains are 
+argument to the @code{binfile} function. Currently only two domains are 
 supported formulas and concrete values (see @code{help(binfile)}). 
 
 In @iii{}, most of functions are related to simulation. Among them one is 
@@ -124,8 +124,8 @@ iii>
 @end smallexample
 
 The reader should have noticed that @code{pynsight} interpreter prints out its 
-call stack. Remember that we are interacting with a @code{Python} interpreter 
-and that @code{step()} is a simple call to a function which could have been 
+call stack. Remember that we are interacting with a @code{Python} interpreter; 
+@code{step()} is a simple call to a function which could have been 
 invoked from a script. 
 
 @node Step-by-step simulation
@@ -133,8 +133,8 @@ invoked from a script.
  
 So, let's start the simulation with @code{run()}. At this point, if @code{run}
 is used without any argument the execution will start at the entrypoint of the
-program (see @code{ep()}). The function can accepts a different start address
-which is reused lated when @code{run} is invoked without arguments.
+program (see @code{ep()}). The function can accept a different start address
+which is reused later when @code{run} is invoked a new time without arguments.
 
 After the invocation of @code{run} the simulator displays the list of enabled
 microcode arrows:
@@ -144,7 +144,8 @@ Arrows from (0x8048c18,0):
 0 : (0x8048c18,0) %ebp@{0;32@} := (XOR %ebp@{0;32@} %ebp@{0;32@})@{0;32@} --> (0x8048c18,1)
 iii> 
 @end smallexample
-Above, only one arrow is enabled. This arrow goes from microcode address
+At any moment one can display currently enabled arrows using the function 
+@code{arrows}. Above, only one arrow is enabled. This arrow goes from microcode address
 @t{(0x8048c18,0)} to @t{(0x8048c18,1)}. A microcode address has two components.
 The first one is a @emph{global} address that corresponds to an actual address 
 in the concrete memory of the program. The second one is @emph{local} address
@@ -157,8 +158,6 @@ xor    %ebp,%ebp
 iii> 
 @end smallexample
 
-At any moment one can display current enabled arrows using the function 
-@code{arrows}. 
 This instruction, @code{xor %ebp,%ebp}, can not be implemented by only one 
 microcode statement; this is why the destination of this first arrow is a
 @emph{local} microcode address. When the arrow is triggered the register 
@@ -174,10 +173,11 @@ Arrows from (0x8048c18,1):
 iii>
 @end smallexample
 
-@iii{} displays a new microcode arrows between two local addresses. Actually,
+@iii{} displays a new microcode arrow between two local addresses. Actually,
 following Intel specifications, @code{xor} instruction computes the exclusive-or
-of its operands and then, assign several flags according to the resulting value;
-here the @emph{sign} flags (@code{sf}) is computed. The reader should have 
+of its operands and then, assigns several flags according to the resulting 
+value;
+here the @emph{sign} flag (@code{sf}) is computed. The reader should have 
 noticed that flags are implemented using an @emph{ad-hoc} register instead of 
 a window into the actual @code{eflags} register. 
 
@@ -206,11 +206,11 @@ iii>
 
 Displayed arrow at microde address @t{(0x8048c18,3)} has been cutted off 
 because it is a very long formula expressing the value of the parity flag
-@code{pf}. Finally the simulation arrives into the address @t{(0x8048c1a,0)}
+@code{pf}. Finally, after several microsteps, the simulation arrives into the address @t{(0x8048c1a,0)}
 which points to the instruction @code{pop %esi}.
 
 The simulation of the program at the microde-level is not so interesting. As 
-usual with a debugger it is preferable to step forward at instruction-level.
+usual with a debugger, it is preferable to step forward at instruction-level.
 In this case the function @code{step} (or @code{s}) must be used. 
 Let's restart the program and execute the first instruction in a single step 
 (i.e., steps between microcode addresses are hidden):
@@ -231,10 +231,10 @@ iii>
 
 @code{run}, @code{microstep} and @code{step} are functions that drive a 
 simulator that interprets the semantics of instructions according to some 
-state of the program. This state is made of two components: 
+state of the program. This state is made of several components: 
 @enumerate
-@item the value of the program counter (i.e. the current microcode address);
-@item some @emph{context} that represents the values stored into the memory and
+@item The value of the program counter (i.e. the current microcode address);
+@item and some @emph{context} that represents the values stored into the memory and
 the assignment of registers. This context depends on the domain used to 
 represent values. 
 @end enumerate
@@ -245,7 +245,7 @@ a constraint on all variables used in the formulas of the state.
 
 The function @code{print_state} can be used to display the current state. 
 Actually it must be used with care because it can print out an huge amount of 
-data. The following example continues the simulation for two more step and then
+data. The following example continues the simulation for two more steps and then
 invokes @code{print_state}:
 
 @smallexample
@@ -275,12 +275,12 @@ The displayed state indicates that the simulator is currently stopped at
 microcode address @t{(0x8048c1d,0)}. It also shows that no memory cell has been
 yet assigned by the program; nothing is displayed after @t{MemoryDump} 
 message@footnote{This does not mean that the memory is empty! Actually some 
-parts of the memory is already occupied by the code sections of the program 
+parts of the memory is already occupied by the loaded sections of the program 
 itself.}. Up to now, only registers have been assigned. Some have received
-constant values; for instance @code{zf} flags is assigned the bitvector 
+constant values; for instance, @code{zf} flag is assigned the bitvector e.g.,
 @t{0x1@{0;1@}}. Others registers are assigned with formulas e.g @code{ecx} is 
-asisgned with the value @code{(ADD {uv_3_0x8048c1a_32b}@{0;32@} 
-0x4@{0;32@})@{0;32@}}. @t{uv_3_0x8048c1a_32b} is an identifier of a fresh 
+assigned with the value @code{(ADD {uv_3_0x8048c1a_32b}@{0;32@} 
+0x4@{0;32@})@{0;32@}}. @t{uv_3_0x8048c1a_32b} is the identifier of a fresh 
 variable created by the simulator. The identifier gives us some informations 
 on its creation context: 
 @itemize
@@ -306,8 +306,8 @@ triggered:
 @item @code{esp} was not assigned. In order to continue, the simulator 
 assigned to @code{esp} an unknown value abstracted with a fresh variable: 
 @t{uv_3_0x8048c1a_32b}. 
-@item Then the top of the stack can be assigned to @code{esi}; it is the memory 
-located at the address pointed by @code{esp} i.e @t{uv_3_0x8048c1a_32b}. 
+@item Then, the top of the stack can be assigned to @code{esi}; it is the memory 
+cell located at the address pointed by @code{esp} i.e @t{uv_3_0x8048c1a_32b}. 
 @code{esi} receives the value/formula: 
 @code{[{uv_3_0x8048c1a_32b}@{0;32@}]@{0;32@}]}. 
 @item The top of the stack must be removed thus, according to Intel specifications, @code{esp} is increased to point 4 bytes forward: it is assigned the value
@@ -336,11 +336,11 @@ iii>
 
 We are back to @iii{} prompt with a message from @code{cont} indicating that
 the simulation has been interrupted due to an undefined value. The enabled 
-arrow indicates that we are stopped at microcode address @t{(0x8048c20,1)}.At 
-this location the program tries to assigned the value of register @code{eax} 
-into the memory cell pointed by register @code{esp} i.e. it tries to put
+arrow indicates that we are stopped at microcode address @t{(0x8048c20,1)}. At 
+this location the program tries to assign the value of register @code{eax} 
+into the memory cell pointed by register @code{esp} i.e., it tries to put
 @code{eax} on the stack@footnote{Which is confirmed by a call to 
-@code{instr()}.}. This problem is the value of @code{esp}; use function 
+@code{instr()}.}. Here, the problem is the value of @code{esp}. We use function 
 @code{register} to get it:
 @smallexample
 iii> register("esp")
@@ -365,9 +365,9 @@ iii>
 @end smallexample
 @iii{} responds that @t{0x12345678} is an inconsistent value. This means that
 @t{0x12345678} is not compatible with the current formula assigned to 
-@code{esp}: @code{(SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 
-0x4@{0;32@})@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 0x4@{0;32@})@{0;32@}} under 
-the constraint of the current path condition (which is true in this case).
+@code{esp}, @code{(SUB (AND (ADD {uv_13_0x8048c1a_32b}@{0;32@} 
+0x4@{0;32@})@{0;32@} 0xfffffff0@{0;32@})@{0;32@} 0x4@{0;32@})@{0;32@}}, under 
+the constraint of the current path condition (which is true here).
 A consistent value in this case is @t{0xfffffffc}. 
 @smallexample
 iii> set("esp", 0xfffffffc)
@@ -379,8 +379,8 @@ iii>
 @node Hooks
 @section Hooks
 
-In order to prevent the problem with @code{esp} we should assign it just after
-the call to @code{run}. When the simulator is started, the memory and the 
+In order to prevent the problem with @code{esp}, we should assign it just after
+the call to @code{run}. When the simulator is started, the memory and 
 registers are not initialized; thus, any value can be assigned to @code{esp}. 
 However, it is preferable to choose a value that have a sense for the program.
 Usually @t{0xFFFFFFF0} is a good candidate. 
@@ -407,7 +407,7 @@ used for the simulation are handled. The list of currently attached hooks can
 be obtained using @code{show("hooks")} and a hook can be removed using 
 @code{del_hook}.
 
-We can now set the initializtion of @code{esp} as a hook@footnote{The 
+We can now set the initialization of @code{esp} as a hook@footnote{The 
 construction @code{lambda:} is part of @code{Python} language.}:
 @smallexample
 iii> add_run_hook(lambda: set("esp", 0xFFFFFFF0))
@@ -425,12 +425,12 @@ iii>
 @end smallexample
 
 The call to @code{cont} has led the simulator farther. Now the simulation is 
-stopped due to the presence of two enabled arrows. Actually, as show by 
+stopped due to the presence of two enabled arrows. Actually, as shown by 
 @code{instr}, we face a conditional jump instruction. 
 
 @iii{} displays both arrows of the conditional jumps because both guards 
-@code{(NOT %zf@{0;1@})@{0;1@}} and @code{%zf@{0;1@}} can be satisfied (obviously not 
-by the same assignemnt of variables):
+@code{(NOT %zf@{0;1@})@{0;1@}} and @code{%zf@{0;1@}} can be satisfied 
+(obviously not by the same assignment of variables):
 @smallexample
 iii> register("zf")
 '(EQ [(ADD (ADD 0xfffffff4@{0;32@} (MUL_U {uv_8_0x8048c1a_32b}@{0;32@} 0x4@{0;32@})@{0;32@})@{0;
@@ -459,8 +459,7 @@ condition = (EQ [(ADD (ADD 0xfffffff4@{0;32@} (MUL_U {uv_4_0x8048c1a_32b}@{0;32@
 iii> 
 @end smallexample
 The reader can notice that the value of @code{zf} has been assigned to the 
-path condition of the state@footnote{Actually it has been conjuncted but since 
-its previous value was @t{true} ...}. Each time we enforce the simulator to 
+path condition of the state. Each time we enforce the simulator to 
 follow an arrow with a guard, this guard is conjuncted to the path condition 
 of the current state.
 
@@ -474,9 +473,8 @@ Arrows from (0x8057c89,0):
 iii>
 @end smallexample
 
-
 Since we are yet stopped by a conditional jump, we could take a while to have 
-look to the code of the program. This can be done using @code{disas} function.
+a look to the code of the program. This can be done using @code{disas} function.
 This function accepts several parameters. The first one is a start address 
 from which the function have to display instructions; if it is omitted the 
 whole program is displayed. A second one is @var{l}, the number of 
@@ -510,7 +508,7 @@ With a textual listing of instructions one fails to picture the CFG of the
 program. A graphical representation of this graph is more useful. 
 @code{view_asm} function is used for this purpose. This function is based on
 the @t{GraphViz} tool (@ref{DOT}). When @code{view_asm()} is invoked, an 
-@code{XDot} (@ref{XDot}) window is opened but the @iii{} prompt remains active:
+@code{XDot} (@ref{XDot}) window is opened; the @iii{} prompt remains active:
 
 @smallexample
 iii> view_asm()
@@ -521,9 +519,9 @@ Arrows from (0x8057c89,0):
 iii>
 @end smallexample
 
-@ref{fig:viewasm01} shows a example of the graphical representation of the CFG. 
-Each block has a distinct color. If @Insight{} succeeds to extract symbols of 
-functions, @code{view_asm} displays them on the graph (e.g., 
+@ref{fig:viewasm01} shows an example of the graphical representation of the 
+CFG. Each block has a distinct color. If @Insight{} succeeds to extract symbols 
+of functions, @code{view_asm} displays them on the graph (e.g., 
 @code{_dl_aux_init} on the figure). The current program point is marked with
 a double-surrounding red line. Some nodes appear with an oval shape; they 
 correspond to pending arrows for unexplored program points. Edges can be 
@@ -539,7 +537,7 @@ With the function @code{view_mc}, @iii{} offers also a graphical view for the
 microcode. @ref{fig:viewmc01} is an example of such graph; it corresponds to
 the CFG of @ref{fig:viewasm01}.
 
-@code{view_asm}, as well as view_mc, can be used as hooks. The following 
+@code{view_asm}, as well as @code{view_mc}, can be used as hooks. The following 
 example attaches @code{view_asm} to all simulation functions. If the simulation
 is pursued then the graphical view of the CFG is automatically updated. 
 
