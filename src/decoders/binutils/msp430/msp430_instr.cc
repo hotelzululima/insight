@@ -413,6 +413,16 @@ MSP430_TRANSLATE_1_OP(SXT) {
   val->deref();
 }
 
+MSP430_TRANSLATE_2_OP(XOR) {
+  s_translate_arithmetic_op(data, BV_OP_XOR, op1, op2, (1 << MSP430_FLAG_C),
+			    true);
+  s_update_flag(data, UnaryApp::create(BV_OP_NOT,
+				       s_flag_lvalue(data, MSP430_FLAG_Z),
+				       0, 1),
+		s_flag_lvalue(data, MSP430_FLAG_C), false);
+  /* XXX missing overflow flag update */
+}
+
 MSP430_TRANSLATE_1_OP(CLR) {
   s_translate_mov(data, Constant::zero(data.operand_size), op1, false);
 }
