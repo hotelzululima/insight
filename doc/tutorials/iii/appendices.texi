@@ -36,7 +36,7 @@ and then their microcode is generated using @command{cfgrecovery}.
 @verbatiminclude demo/stub_read.s  
 
 For this stub, the constant @t{0x33} (@t{51}) has to be replaced by a 
-random statement into the generated XML file. To this aim you can use the 
+random expression into the generated XML file. To this aim you can use the 
 following @command{sed} commands:
 
 @smallexample
@@ -52,5 +52,6 @@ The following @t{Python} script can be used as an initialization file (see
 @t{crackme} file.
 
 @smallexample
+
 @verbatiminclude demo/demo-setup-3.py
 @end smallexample

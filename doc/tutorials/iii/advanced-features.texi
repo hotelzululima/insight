@@ -23,11 +23,11 @@ have to:
 @item attach this model to the address of @t{__libc_start_main}.
 @end itemize
 
-The disassembly of program from the entrypoint shows that @t{_start} that the
+The disassembly of program from the entrypoint (@t{_start}) shows that the
 address @t{0x8048da9} is pushed onto the stack just before the call to 
 @t{__libc_start_main}. This address points to @t{main} function@footnote{This 
 information can be obtained (if available) using the table of symbols attached 
-to the program; try @code{help(prog())}.}. When @t{__libc_start_main} has
+to the program; try @code{help(prog().sym)}.}. When @t{__libc_start_main} has
 finished its jobs, it jumps to the address pushed by @t{_start} onto the stack.
 
 @smallexample
@@ -93,7 +93,7 @@ $ cfgrecovery -f mc-xml -d linear stub_libc_start_main.o -o \
 Now we have the abstraction for @t{__libc_start_main} stored into the file
 @file{stub_libc_start_main.mc.xml}; it remains to load it at the address pointed
 by the @t{__libc_start_main} symbol. The function @code{load_stub} is used for 
-purpose. All stubs should be loaded before the first call to @code{run}. 
+this purpose. All stubs should be loaded before the first call to @code{run}. 
 Actually stubs are merged into the microcode on demand and not as a replacement 
 of existing microcode. @code{load_stub} takes three arguments: a filename, an 
 address and a Boolean that indicates whether the microcode must be relocated at 
@@ -120,12 +120,12 @@ The initialization file we will use is given below. This file starts with two
 the binary file to load (see @code{help(binfile)} for details). It follows all
 our previous work:
 @enumerate
-@item First the stub for @t{__libc_start_main} is load;
-@item Then we define a function, @code{init_registers} in charge of the 
+@item First the stub for @t{__libc_start_main} is loaded;
+@item Then we define a function, @code{init_registers}, in charge of the 
       initialization of registers according to a global table @var{valregs}. 
 @item Hooks are then attached: @code{init_registers} is attached to @code{run} 
 and @code{view_asm} is attached to simulation functions.
-@item Finally the simulation is start asap.
+@item Finally the simulation is started.
 @end enumerate 
 
 @smallexample
@@ -162,7 +162,7 @@ stub. However @iii{} is now simulating another function of the standard library:
 @verbatiminclude demo/stub_printf.s
 @end smallexample
 
-We assume that it does not any interesting side effect and enforce its return
+We assume that it has no interesting side effect and enforce its return
 value to 0 which is stored to @t{eax}. Another standard function should appear
 later, @t{read}, which is called to read the password. The stub for this 
 function is the following:
@@ -182,7 +182,7 @@ as an unknown value by the symbolic simulator.
 @float Figure,fig:viewasm02
 @center @image{view_asm_02,10cm,,,.png}
 @caption{Graphical view of the Microcode. @t{__lib_start_main} has been 
-replaced by its stub.}
+replaced by its stub but, @t{__printf} is now decoded.}
 @end float 
 
 We add the new @code{load_stub} calls into the initialization file and restart
@@ -191,9 +191,9 @@ following:
 
 @center @image{view_asm_03,10cm,,,.png}
 
-After the call to @code{read} i.e., the user as type its password, the program
-enters a loop. The small piece of code that precedes the loop does following
-things:
+After the call to @code{read} i.e., the user has entered its password, the 
+program enters into a loop. The small piece of code that precedes the loop does 
+the following things:
 @itemize 
 @item At address @t{0x8048ddb}, the return value of @code{read} is copied from
       @t{eax} into @t{edx}. @t{edx} is then decremented and a null character 
@@ -210,7 +210,7 @@ things:
 @end itemize 
 
 According to the value assigned to @t{ecx}, the loop is iterated 28 times. At 
-each iteration of the loop, the byte pointer by @t{esi} is XOR-ed with @t{0xaa}.
+each iteration of the loop, the byte pointed by @t{esi} is XOR-ed with @t{0xaa}.
 The loop covers addresses between @t{0x8048e08} and @t{0x8048e24} which are
 located few bytes after the loop itsef. This means that this loop is used to
 modify instructions just after the loop; it is a known trick to obfuscate 
@@ -219,9 +219,18 @@ programs.
 We can compare instructions decoded on-the-fly by the simulator and the ones
 that was loaded at start-up using functions @code{disas} and 
 @code{insight.utils.pretty_disas_memory}@footnote{@code{prog()} returns an 
-opaque object that contains the loaded binary file}. The latter uses a 
+opaque object that contains the loaded binary file.}. The latter uses a 
 @emph{linear sweep} algorithm on the raw bytes loaded from the binary file. 
 @smallexample
+iii> insight.utils.pretty_disas_memory (prog(), 0x8048e08, l=8)
+ 8048e08 :	fwait
+ 8048e09 :	push   $0x6
+ 8048e0b :	stos   %eax,%es:(%edi)
+ 8048e0c :	jb     0x8048e89
+ 8048e0e :	dec    %edx
+ 8048e0f :	sub    %ebx,-0x48(%edx)
+ 8048e12 :	and    0x4(%ecx),%ch
+ 8048e15 :	fild   -0x5cbebab8(%edx)
 iii> disas (0x8048e08, l=8)
  8048e08:	xor    %eax,%eax
  8048e0a:	lods   %ds:(%esi),%al
@@ -232,15 +241,6 @@ iii> disas (0x8048e08, l=8)
  8048e14:	scas   %es:(%edi),%al
  8048e15:	jne    0x8048e3f # jump to : L_1
  8048e17:
-iii> insight.utils.pretty_disas_memory (prog(), 0x8048e08, l=8)
- 8048e08 :	fwait
- 8048e09 :	push   $0x6
- 8048e0b :	stos   %eax,%es:(%edi)
- 8048e0c :	jb     0x8048e89
- 8048e0e :	dec    %edx
- 8048e0f :	sub    %ebx,-0x48(%edx)
- 8048e12 :	and    0x4(%ecx),%ch
- 8048e15 :	fild   -0x5cbebab8(%edx)
 @end smallexample
 
 @node Examining memory
@@ -259,7 +259,7 @@ sink node reached after(0x8048e59, 2)
 Arrows from (0x8048c39,0):
 iii>
 @end smallexample
-The tool indicates that the simulator has reached a sink node i.e. no successor
+The tool indicates that the simulator has reached a sink node i.e., no successor
 state can be visited. If we have a look to the code visited after the 
 conditional jump at address @t{0x8048e15} we obtain:
 
@@ -300,10 +300,10 @@ iii>
 @end smallexample
 
 We get 10 values. Actually these are @emph{symbolic} values; even if they are
-not formulas. Here we have the chance to get constant and not abstract values.
+concrete. Here we have the chance to get constant and not abstract values.
 @code{dump} accepts an additional parameter that is a callback called to 
 transform the value returned by the simulator. The following @code{Python} 
-defines a function that we will use later to translate abstract constants into
+script defines a function that we will use later to translate abstract constants into
 printable characters. This code is added to the configuration file.
 @smallexample
 import re
@@ -338,7 +338,7 @@ This means we have followed the branch where the user enters a wrong password.
 @node Assignment of abstract values
 @section Assignment of abstract values
 
-We restart the simulation and continue simulation until coming back to 
+We restart the simulation and continue until coming back to the
 conditional jump at address @t{0x8048e15}. This time we will follow the second
 branch:
 @smallexample
@@ -355,8 +355,8 @@ Arrows from (0x8048e15,0):
 1 : (0x8048e15,0) << %zf@{0;1@} >> Skip --> (0x8048e17,0)
 iii> 
 @end smallexample
-We are back to instruction at @t{0x8048e15} but this time we have visited a new
-loop as show on the following CFG:
+We are back to the instruction at @t{0x8048e15} but this time we have visited 
+a new loop as show on the following CFG:
 
 @float Figure,fig:viewasm04
 @center @image{view_asm_04,10cm,,,.png}
@@ -383,9 +383,9 @@ iii>
 @end smallexample
 The @code{loop} instruction jumps to @t{0x8048e08} until @t{ecx} falls to 0. 
 However, in the current state, register @t{ecx} is the constant 6; thus, the
-second arrow outgoing from the @code{loop} instruction can not being enabled.
+second arrow going out of the @code{loop} instruction can not be enabled.
 
-We will be back on the loop later. For the moment we want to known what happens
+We will be back on the loop later. For the moment we want to know what happens
 when the program follows the second branch. To enable the arrow that moves to 
 address @t{0x8048e19} we request the simulator to forget the current value of
 @t{ecx}. This is done using the function @code{unset} (see @code{help(unset)}). 
@@ -407,7 +407,7 @@ enforces the fresh variable, say @t{fv}, to be equal to the current value
 @t{val} of the register or memory cell i.e., the constraint @t{fv=val} is 
 added to the path-condition.
 @item if @var{keep} is @t{false}, the new state generated by @code{unset} 
-forgets the current value and any variable can be assigned to the fresh 
+forgets the current value and any value can be assigned to the fresh 
 variable.
 @end itemize
 @var{keep}=@t{true} is used to maintain the simulation into a real execution
@@ -464,14 +464,17 @@ In order to study the loop between addresses @t{0x8048e08} and @t{0x8048e17}
 we execute @code{r(); c()}. The loop is given on @ref{fig:viewasm04}.
 As suggested by instructions at @t{0x8048df7} and @t{0x8048dfc}, we are 
 apparently in a loop that compares strings located at addresses @t{0x8048d45} 
-and @t{0x8048e1b}. Since the instruction @code{loop} is used to iterate it 
-means that the length of the strings is stored into @t{ecx} by instruction
+and @t{0x8048e1b}. Since the instruction @code{loop} is used to iterate the 
+comparisons, it means that the length of the strings is stored into @t{ecx} by 
+instruction
 at @t{0x8048e01} which assigns @t{edx} to @t{ecx}. Now remember that @t{edx}
 is the length of the input (see remarks related to @t{read} in 
 @ref{Initialization file}).
 
 Let's have a look to these strings:
 @smallexample
+iii> register("edx")
+0x8{0;32}
 iii> dump(0x8048d45, l = 8, filter = filter_abstract_byte)
 {uv_58_0x8056020_3_8b}@{0;8@}
 {uv_60_0x8056020_3_8b}@{0;8@}
@@ -497,7 +500,7 @@ has been generated by @t{__read}). String at @t{0x8048e1b} is quite cryptic;
 it should be a hashed value of the password. 
 
 Interpreting the code of the loop could be a complicated task. In order to
-understand we can try to wait the termination of the loop and have a look to
+understand it we can try to wait the termination of the loop and have a look to
 the content of the state.
 
 To this aim we could iterate the loop by hand until instruction @t{0x8048e17}
@@ -512,8 +515,8 @@ is the following:
 @end enumerate
 
 The function @code{breakpoint} (or @t{b}) requests the simulator to stop at
-a given addresse. Used without argument, it puts a breakpoint at the current
-program point. Else it takes components of a microcode addresss i.e., a global 
+a given address. Used without argument, it puts a breakpoint at the current
+program point. Else, it takes components of a microcode address i.e., a global 
 and a local address; the latter is by default set to 0. The function returns the
 identifier of the breakpoint; it can be used later by a client script.
 
@@ -524,12 +527,12 @@ breakpoint set at (0x8048e17,0) with id=1.
 iii>
 @end smallexample
 
-To make a breakpoint conditional we use the function @code{cond}. The function
+To make a breakpoint conditional we use the function @code{cond}. It
 can be invoked with one or two arguments. The first one is always an identifier
 of a breakpoint. The second one is a string that contains the condition to
-enable the breakpoint. The syntax of these expressions is the one implemented
-in @Insight{}. If the second argument is omitted the condition is removed from
-the breakpoint.
+enable the breakpoint. The syntax of these expressions should be given elsewhere
+in @Insight{} documentation. If the second argument is omitted the condition is
+removed from the breakpoint.
 
 @smallexample
 iii> cond (1, "(EQ %ecx 1)")
@@ -585,12 +588,12 @@ Arrows from (0x8048e19,0):
 iii> 
 @end smallexample
 
-The simulator says that it stop because it encounters the conditional 
+The simulator says that it stops because it encounters the conditional 
 breakpoint at address @t{0x8048e17} while its condition enables it. 
 Contrary to previous sections, this time, if we make a step forward the 
 simulator exits the loop. Now we have to look at what has been computed.
 
-In @ref{Breakpoints}, we have dsicovered that the string at address 
+In @ref{Breakpoints}, we have discovered that the string at address 
 @t{0x8048d45} is the input given by the user. If we look at the content of
 the string we can notice that it does not change.
 
@@ -607,7 +610,7 @@ iii> dump(0x8048d45, l = 8, filter = filter_abstract_byte)
 @end smallexample
 
 A quick look at the iterated code shows that it just compute a value that
-is then compared at the corresponding offset in the hashed password at 
+is then compared at the corresponding offset in the hashed password located at 
 @t{0x8048e1b}.
 
 @smallexample
@@ -640,11 +643,11 @@ that satisfies the path-condition of the current state.
 Here we reuse a function already encountered: @code{set}. In 
 @ref{Step-by-step simulation}, this section was used to assign a value to 
 register @t{esp}; the function was called with two arguments. This time we
-use @code{set} without sepcifying a value. In this case, @iii{} requests the
+use @code{set} without specifying a value. In this case, @iii{} requests the
 SMT solver to choose a value that is consistent with the current state.
 
-The following script requests a @code{set} for each byte of the input string.
-Then @iii{} displays assigned value.
+The following script calls @code{set} for each byte of the input string.
+Then @iii{} displays values computed by the solver.
 @smallexample
 iii> for i in range(8): set (0x8048d45 + i)
 ...
