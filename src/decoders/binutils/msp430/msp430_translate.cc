@@ -173,6 +173,8 @@ msp430::parser_data::finalize_postincrements(bool mc_follows) {
 			 last && !mc_follows? next_ma : start_ma + 1, NULL);
       start_ma = start_ma + 1;
     }
+
+    post_increment_registers[i] = NULL;
   }
 }
 
