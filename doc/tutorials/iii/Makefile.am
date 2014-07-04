@@ -6,7 +6,9 @@ IIITUTO_FILES = iii-tutorial.texi the-crackme.texi macros.texi \
                 introduction.texi index.texi basic-features.texi \
                 titlepage.texi appendices.texi advanced-features.texi \
                 view_asm_01.png view_mc_01.png \
-                demo/demo-setup-3.py
+                demo/demo-setup-3.py references.texi 
+
+EXTRA_DIST = ${IIITUTO_FILES}
 
 # Rules and targets
 all: 

@@ -509,7 +509,7 @@ code.
 With a textual listing of instructions one fails to picture the CFG of the 
 program. A graphical representation of this graph is more useful. 
 @code{view_asm} function is used for this purpose. This function is based on
-the @t{GraphViz} tool (@ref{GraphViz}). When @code{view_asm()} is invoked, an 
+the @t{GraphViz} tool (@ref{DOT}). When @code{view_asm()} is invoked, an 
 @code{XDot} (@ref{XDot}) window is opened but the @iii{} prompt remains active:
 
 @smallexample

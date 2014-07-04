@@ -32,5 +32,5 @@ file, the program implements fences to protect itself from reverse engineering:
       this part of the binary is uncyphered on-the-fly at execution time.
 @end enumerate 
 
-The last point imposes to change some flags of binary in order to permits
-self-modifying code.
+The last point imposes to change program headers of the executable to 
+permits self-modifying code (see @t{elf (5)}).
