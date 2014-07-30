@@ -255,8 +255,8 @@ iii> insight.utils.pretty_disas_memory
 @node Examining memory
 @section Examining memory
 
-We are still stuck at address @t{0x8048e15}. @code{arrows()} recalls us the
-enabled arrows and we follow arrow 0.
+We are still stuck at address @t{0x8048e15}. @code{arrows()} tells us
+what are the enabled arrows and we choose to follow the arrow @code{0}.
 @smallexample
 iii> arrows()
 Arrows from (0x8048e15,0):
@@ -269,7 +269,7 @@ Arrows from (0x8048c39,0):
 iii>
 @end smallexample
 The tool indicates that the simulator has reached a sink node i.e., no successor
-state can be visited. If we have a look to the code visited after the 
+state can be visited. If we have a look at the code visited after the 
 conditional jump at address @t{0x8048e15} we obtain:
 
 @smallexample
@@ -292,7 +292,7 @@ iii> disas(0x8048e3f,10)
 The program prints out (using @code{printf}) a string stored at address 
 @t{0x8048e62} and then returns (to the termination instruction @code{hlt}).
 @code{dump} function is used to display values stored in the memory for the 
-current state. Let's try it:
+current state. Let's try to dump it directly from the memory:
 @smallexample
 iii> dump(0x8048e62, l = 10)
 0x57@{0;8@}
@@ -309,8 +309,8 @@ iii>
 @end smallexample
 
 We get 10 values. Actually these are @emph{symbolic} values; even if they are
-concrete. Here we have the chance to get constant and not abstract values.
-@code{dump} accepts an additional parameter that is a callback called to 
+concrete. Here we were lucky to get constants and no abstract values.
+@code{dump()} accepts an additional parameter that is a callback called to 
 transform the value returned by the simulator. The following @code{Python} 
 script defines a function that we will use later to translate abstract constants into
 printable characters. This code is added to the configuration file.
@@ -342,7 +342,8 @@ s
 s
 iii> 
 @end smallexample
-This means we have followed the branch where the user enters a wrong password.
+We can deduce from the content of this string that we have followed the
+branch where the user enters a wrong password.
 
 @node Assignment of abstract values
 @section Assignment of abstract values
@@ -371,7 +372,7 @@ a new loop as show on the following CFG:
 @center @image{view_asm_04,10cm,,,.png}
 @end float
 
-The reader should wonder why the simulation did not stop at instruction 
+The reader should wonder why the simulation did not stop at instruction
 @t{0x8048e17} while two outgoing arrows exist there. Indeed, the simulator
 follows @t{#0} arrow because it is the only one that is enabled ! Let's see why.
 We make a single step from @t{0x8048e15} to @t{0x8048e17}.
@@ -390,26 +391,29 @@ iii> register("ecx")
 '0x6@{0;32@}'
 iii>
 @end smallexample
-The @code{loop} instruction jumps to @t{0x8048e08} until @t{ecx} falls to 0. 
-However, in the current state, register @t{ecx} is the constant 6; thus, the
-second arrow going out of the @code{loop} instruction can not be enabled.
+The @code{loop} assembly instruction jumps to @t{0x8048e08} until
+@t{ecx} falls to @code{0}. However, in the current state, register
+@t{ecx} is the constant @code{6}; thus, the second arrow going out of
+the @code{loop} instruction can not be enabled.
 
-We will be back on the loop later. For the moment we want to know what happens
-when the program follows the second branch. To enable the arrow that moves to 
-address @t{0x8048e19} we request the simulator to forget the current value of
-@t{ecx}. This is done using the function @code{unset} (see @code{help(unset)}). 
+We will be back on the loop later. For the moment we want to know what
+happens when the program follows the second branch. To enable the arrow
+that moves to address @t{0x8048e19} we request the simulator to forget
+the current value of @t{ecx}. This is done using the function
+@code{unset()} (see @code{help(unset)}).
 
-@code{unset} permits to replace the current value of a register or a memory
-cell with an @emph{unknown} value. In the context of symbolic simulation, 
-this means that a fresh variable is used in place of the current value. 
+@code{unset()} permits to replace the current value of a register or a memory
+cell with an @emph{unknown value}. In the context of symbolic simulation,
+this means that a fresh variable is used in place of the current value.
 
-@code{unset} takes one, two or three parameters. Only the first one, @var{loc}
-is mandatory; it is a register or an address. The second one, @var{len}, is the 
-size of the memory area that is asbtracted; by default @var{len} is set to 1. 
-The third parameter, @var{keep}, is a Boolean value that indicates whether or 
-not the new value must be kept consistent with the old one. This notion of 
-consistency varies with the domain used for the simulation. In the case of
-symbolic simulation this means that:
+@code{unset()} takes one, two or three parameters. Only the first one,
+@var{loc} is mandatory; it is a register or an address. The second
+parameter, @var{len}, is the size of the memory area that is asbtracted;
+by default @var{len} is set to 1. The third parameter, @var{keep}, is a
+Boolean value that indicates whether or not the new value must be kept
+consistent with the old one. This notion of consistency varies with the
+domain used for the simulation. In the case of symbolic simulation this
+means that:
 @itemize
 @item if @var{keep} is @t{true}, the new state generated by @code{unset} 
 enforces the fresh variable, say @t{fv}, to be equal to the current value 
@@ -438,16 +442,18 @@ Arrows from (0x8048e17,1):
 1 : (0x8048e17,1) << (NOT (NEQ %ecx@{0;32@} 0x0@{0;32@})@{0;1@})@{0;1@} >> Skip --> (0x8048e19,0)
 iii> cont(1)
 @end smallexample
-Now the value assigned to @t{ecx} is a fresh symbol. The prefix @t{abs} is used
-to indicate the variable comes from an abstraction by the user and the address
-locates the program point where the abstraction has been invoked. The two
-arrows becomes enabled and we can now follow the arrow to @t{0x8048e19}.
+Now, the value assigned to @t{ecx} is a fresh symbol. The prefix @t{abs}
+is used to indicate that the variable comes from an abstraction required
+by the user and the address locates the program point where the
+abstraction has been invoked. The two arrows becomes enabled and we can
+now follow the arrow to @t{0x8048e19}.
 
 @center @image{view_asm_05,10cm,,,.png}
 
-On the CFG we can see that, after the loop, the program reaches a call to
-standard function @code{system}. It is invoked with the string located at 
-address @t{0x8048e5a} as parameter (see instruction at @t{0x8048e2f}). 
+On the CFG, we can see that, after the loop, the program reaches a call
+to the @code{libc} function @code{system()}. It is invoked with the
+string located at address @t{0x8048e5a} as parameter (see instruction at
+@t{0x8048e2f}).
 
 @smallexample
 iii> dump(0x8048e5a,l=10,filter=filter_abstract_byte)
@@ -463,22 +469,21 @@ W
 r
 iii> 
 @end smallexample
-Good news! The call to @code{system} spawns a shell @command{/bin/sh}; this is
-where we have to go. We now come back to the analysis of the loop. 
+Good news! The call to @code{system()} spawns a shell @command{/bin/sh}; this is
+where we have to go. We, now, get back to the analysis of the loop.
 
 @node Breakpoints
 @section Breakpoints
 
-In order to study the loop between addresses @t{0x8048e08} and @t{0x8048e17}
-we execute @code{r(); c()}. The loop is given on @ref{fig:viewasm04}.
-As suggested by instructions at @t{0x8048df7} and @t{0x8048dfc}, we are 
-apparently in a loop that compares strings located at addresses @t{0x8048d45} 
-and @t{0x8048e1b}. Since the instruction @code{loop} is used to iterate the 
-comparisons, it means that the length of the strings is stored into @t{ecx} by 
-instruction
-at @t{0x8048e01} which assigns @t{edx} to @t{ecx}. Now remember that @t{edx}
-is the length of the input (see remarks related to @t{read} in 
-@ref{Initialization file}).
+In order to study the loop between addresses @t{0x8048e08} and
+@t{0x8048e17} (see @ref{fig:viewasm04}), we execute @code{r(); c()}. As
+suggested by instructions at @t{0x8048df7} and @t{0x8048dfc}, we are
+apparently in a loop that compares strings located at addresses
+@t{0x8048d45} and @t{0x8048e1b}. Since the instruction @code{loop} is
+used to iterate the comparisons, it means that the length of the strings
+is stored into @t{ecx} by instruction at @t{0x8048e01} which assigns
+@t{edx} to @t{ecx}. Now remember that @t{edx} is the length of the input
+(see remarks related to @t{read} in @ref{Initialization file}).
 
 Let's have a look to these strings:
 @smallexample
@@ -517,17 +522,18 @@ permits us to go to @t{0x8048e19} but this a tedious work. A more generic way
 is the following:
 @enumerate
 @item We create a conditional breakpoint at @t{0x8048e17} that will be enabled 
-      when @t{ecx} is equal to 1 (@code{loop} first decreases @t{ecx} before 
+      when @t{ecx} is equal to @t{1} (@code{loop} first decreases @t{ecx} before 
       checking its value).
-@item We add a constraint at address @t{0x8048e15} that enforces the simulator
+@item We add a constraint at @t{0x8048e15} that enforces the simulator
       to stay in the loop.
 @end enumerate
 
-The function @code{breakpoint} (or @t{b}) requests the simulator to stop at
-a given address. Used without argument, it puts a breakpoint at the current
-program point. Else, it takes components of a microcode address i.e., a global 
-and a local address; the latter is by default set to 0. The function returns the
-identifier of the breakpoint; it can be used later by a client script.
+The function @code{breakpoint()} requests the simulator to stop at a
+given address. Used without argument, it sets a breakpoint at the
+current program point. Otherwise, it takes a microcode address (a global
+and a local address); and the latter is by default set to @t{0}. The
+function returns the identifier of the breakpoint; it can be used later
+by a client script.
 
 @smallexample
 iii> breakpoint(0x8048e17)
@@ -536,12 +542,12 @@ breakpoint set at (0x8048e17,0) with id=1.
 iii>
 @end smallexample
 
-To make a breakpoint conditional we use the function @code{cond}. It
-can be invoked with one or two arguments. The first one is always an identifier
-of a breakpoint. The second one is a string that contains the condition to
-enable the breakpoint. The syntax of these expressions should be given elsewhere
-in @Insight{} documentation. If the second argument is omitted the condition is
-removed from the breakpoint.
+To make a breakpoint conditional we use the function @code{cond()}. It
+can be invoked with one or two arguments. The first one is always an
+identifier of a breakpoint. The second one is a string that contains the
+condition to enable the breakpoint. The syntax of these expressions is
+given elsewhere in @Insight{} documentation. If the second argument is
+omitted the condition is removed from the breakpoint.
 
 @smallexample
 iii> cond (1, "(EQ %ecx 1)")
@@ -549,27 +555,29 @@ making breakpoint 1  conditional
 1  :  breakpoint: (0x8048e17,0) cond = (EQ %ecx@{0;32@} 0x1@{0;32@})@{0;1@}
 iii> 
 @end smallexample
-The reader should notice that, in expressions, registers are prefixed with a
-percent character (@t{%}).
+The reader should notice that, in expressions, registers are prefixed by a
+'@t{%}' character as in AT&T syntax.
 The list of breakpoints can be obtained using @code{show ("breakpoints")}:
 @smallexample
 iii> show ("breakpoints")
 1  : hits=0 breakpoint: (0x8048e17,0) cond = (EQ %ecx@{0;32@} 0x1@{0;32@})@{0;1@}
 iii> 
 @end smallexample
-@code{show} indicates the number of times the simulation encounters the 
-breakpoint.
+@code{show("breakpoints")} gives the number of times the simulation did
+hit the breakpoint.
 
-In order to enforce the simulator to continue inside the loop at instruction
-@t{0x8048e15} we use the function @code{assume}. This latter can take up to 3
-arguments; the later one is the local component of a microcode address and is,
-by default, set to 0. The first argument is the location where the enforcement
-takes place i.e., an address. The second argument is a string that contains
-a Boolean expression (same syntax as for conditional breakpoints).
+In order to enforce the simulator to continue inside the loop at
+instruction @t{0x8048e15}, we use the function @code{assume()}. This
+latter can take up to 3 arguments; the third one is the local component
+of a microcode address and is, by default, set to @t{0}. The first
+argument is the location where the enforcement takes place i.e., an
+address. The second argument is a string that contains a Boolean
+expression (same syntax as for conditional breakpoints).
 
-In the context of symbolic simulation, @code{assume} constraints the path 
-condition with its second argument. The list of assumptions can be displayed 
-using @code{show("assumptions")}.
+In the context of symbolic simulation, the @code{assume()} adds
+constraints on the path condition with its second argument. The list of
+assumptions can be displayed using the function
+@code{show("assumptions")}:
 
 @smallexample
 iii> assume(0x8048e15, "%zf")
@@ -579,7 +587,7 @@ iii> cont()
 @end smallexample
 
 After the assumption at @t{0x8048e15}, we let the simulator does its work and 
-wait the termination of the loop.
+wait for the termination of the loop.
 
 @node Concretization
 @section Concretization
@@ -600,7 +608,7 @@ iii>
 The simulator says that it stops because it encounters the conditional 
 breakpoint at address @t{0x8048e17} while its condition enables it. 
 Contrary to previous sections, this time, if we make a step forward the 
-simulator exits the loop. Now we have to look at what has been computed.
+simulator exits the loop. Now, we have to look at what has been computed.
 
 In @ref{Breakpoints}, we have discovered that the string at address 
 @t{0x8048d45} is the input given by the user. If we look at the content of
@@ -643,17 +651,18 @@ Actually the data related to computed values is stored in the path condition
 accumulated each time we enforced the simulator to follow the arrow @t{#1} 
 to stay in the loop. 
 
-Now we are outside the loop. This means that the current state of the simulation
-encodes all traces that can reach the current program point (i.e., 
-@t{0x8048e19}). Thanks to the SMT-solver integrated to @Insight{}, it is 
-possible to compute an assignment of fresh variables (i.e., a concrete input)
-that satisfies the path-condition of the current state.
+Now, we are outside the loop. This means that the current state of the
+simulation encodes all traces that can reach the current program point
+(i.e., @t{0x8048e19}). Thanks to the SMT-solver integrated to
+@Insight{}, it is possible to compute an assignment of fresh variables
+(i.e., a concrete input) that satisfies the path-condition of the
+current state.
 
-Here we reuse a function already encountered: @code{set}. In 
+Here, we reuse a function already encountered: @code{set()}. In 
 @ref{Step-by-step simulation}, this section was used to assign a value to 
-register @t{esp}; the function was called with two arguments. This time we
+register @t{esp}; the function was called with two arguments. This time, we
 use @code{set} without specifying a value. In this case, @iii{} requests the
-SMT solver to choose a value that is consistent with the current state.
+SMT solver to pick-up a value that is consistent with the current state.
 
 The following script calls @code{set} for each byte of the input string.
 Then @iii{} displays values computed by the solver.
