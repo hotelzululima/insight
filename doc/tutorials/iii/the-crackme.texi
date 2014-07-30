@@ -1,10 +1,10 @@
 @node Analyzed program
 @chapter Analyzed program
 
-The program we are studying using @iii{} is a @i{crackme} challenge i.e., the 
-program 
-implements a security mechanism to protect some critical part of the 
-software and we have to bypass this fence to access the protected data.
+The program we are studying using @iii{} is a @i{crackme} challenge,
+meaning that the program implements a few security mechanisms to protect
+some critical parts of the software and we have to bypass these to
+access the protected data.
 
 The binary code has been obtained by compiling a small @code{x86} assembly 
 program using @code{fasm} assembler (@bibcite{FASM}). The source code of this
@@ -26,12 +26,16 @@ sh-4.2$
 
 Our  challenge is to discover, from the binary code, the password that permits 
 the execution of the shell program. In order to counter analysis of the binary
-file, the program implements fences to protect itself from reverse engineering:
-@enumerate
-@item The passord is not stored as-is in the binary data but is hashed.
-@item The algorithm that computes the hash-value of the input is cyphered and 
-      this part of the binary is uncyphered on-the-fly at execution time.
-@end enumerate 
+file, the program implements fences to protect itself from reverse-engineering:
 
-The last point imposes to change program headers of the executable to 
-permits self-modifying code (see @t{elf (5)}).
+@enumerate
+@item The password is not stored as-is in the binary data but is hashed.
+
+@item The algorithm that computes the hash-value of the input is
+      cyphered and this part of the binary is uncyphered on-the-fly at
+      execution time.
+@end enumerate
+
+The last point imposes to change the read/write/execute flags of the
+@t{.text} section of the executable to allow self-modifying code (see
+@t{elf (5)}).

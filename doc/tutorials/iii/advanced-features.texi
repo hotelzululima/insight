@@ -4,12 +4,12 @@
 @node Using stubs
 @section Using stubs
 
-If we continue with our example, we can remark (using @code{view_asm} or 
-@code{disas} functions) that several symbols appear: @t{__libc_start_main}, 
-@t{_dl_aux_init}, @t{_dl_discover_osversion}, ... It seems that simulation
-has entered inside initialization procedure done by the @t{libc} library.
-This part of the program should not be actually connected with the behaviors
-of the @t{crackme} challenge.
+Still on our running example, we can notice (using the @code{view_asm()}
+or @code{disas()} functions) that several symbols are discovered:
+@t{__libc_start_main}, @t{_dl_aux_init}, @t{_dl_discover_osversion}, ...
+It seems that simulation has entered inside initialization procedure
+done by the @t{libc} library. This part of the program should not be
+actually connected with the behaviors of the @t{crackme} challenge.
 
 @iii{} offers a mechanism to bypass parts of the program. It is possible to
 preload a microcode model at a specified address. These preloaded models are
@@ -18,9 +18,9 @@ called @emph{stubs}.
 In order to skip the initialization work done by @t{__libc_start_main}, we 
 have to:
 @itemize
-@item abstract behaviors of @t{__libc_start_main} into a microcode model;
-@item create a loadable (i.e., @t{xml}) file for this model;
-@item attach this model to the address of @t{__libc_start_main}.
+@item Abstract the behaviors of @t{__libc_start_main} into a microcode model;
+@item Create a loadable (i.e., @t{xml}) file for this model;
+@item Attach this model to the address of @t{__libc_start_main}.
 @end itemize
 
 The disassembly of program from the entrypoint (@t{_start}) shows that the
@@ -68,7 +68,7 @@ Microcode files are XML files. Even if the model for @t{__libc_start_main} is
 quite simple, writing it by hands is a tedious task. The simplest way to 
 proceed is to:
 @enumerate 
-@item write the abstraction into a small @t{x86} assembly program:
+@item Write the abstraction into a small @t{x86} assembly program:
 @verbatim
 $ cat stub_libc_start_main.s
 @end verbatim
@@ -77,11 +77,11 @@ $ cat stub_libc_start_main.s
 $
 @end verbatim
 
-@item compile it using @command{gcc} for instance;
+@item Compile it using @command{gcc} for instance;
 @verbatim
 $ gcc -m32 -c stub_libc_start_main.s -o stub_libc_start_main.o
 @end verbatim
-@item generate the microcode file using the @command{cfgrecovery} tool. A simple
+@item Generate the microcode file using the @command{cfgrecovery} tool. A simple
 linear sweep disassembly is sufficient to generate the exact microcode for this
 small program
 @verbatim
@@ -92,10 +92,10 @@ $ cfgrecovery -f mc-xml -d linear stub_libc_start_main.o -o \
 
 Now we have the abstraction for @t{__libc_start_main} stored into the file
 @file{stub_libc_start_main.mc.xml}; it remains to load it at the address pointed
-by the @t{__libc_start_main} symbol. The function @code{load_stub} is used for 
-this purpose. All stubs should be loaded before the first call to @code{run}. 
+by the @t{__libc_start_main} symbol. The function @code{load_stub()} is used for 
+this purpose. All stubs should be loaded before the first call to @code{run()}. 
 Actually stubs are merged into the microcode on demand and not as a replacement 
-of existing microcode. @code{load_stub} takes three arguments: a filename, an 
+of existing microcode. @code{load_stub()} takes three arguments: a filename, an 
 address and a Boolean that indicates whether the microcode must be relocated at 
 the same microcode address or not. 
 
@@ -106,19 +106,18 @@ Since we already have recovered the first instruction of @t{__libc_start_main},
 the loading of the stub is useless; we must restart @iii{} to make the stub 
 effective. 
 
-If we restart @iii{} we have to redo all the work makes so far; and it will
-be the case each time we will restart the tool. 
-
-@iii{} permits to specify an initialization module using @option{-c} option. 
-When no module is specified the interpreter looks for a module called 
-@file{iiirc}. This file is a @t{Python} script that can contain, obviously, 
+If we restart @iii{}, we have to redo all the work we have done so far;
+and it will be the case each time we will restart the tool. Fortunately,
+@iii{} permits to specify an initialization module using the @option{-c}
+option. When no module is specified, the interpreter looks for a module
+called @file{iiirc}. This file must be a @t{Python} script that contain
 calls to @iii{} functions.
 
-The initialization file we will use is given below. This file starts with two 
-``mandatory'' lines that permits to use 
-@Insight{}/@iii{} functions into the script. Then comes a line that indicates 
-the binary file to load (see @code{help(binfile)} for details). It follows all
-our previous work:
+The initialization file must first import @Insight{}/@iii{} functions
+into the script (@code{insight.debugger} and @code{insight.iii}). Then,
+comes a line that indicates the binary file to load (see
+@code{help(binfile)} for details). And, then, it follows all our
+previous work:
 @enumerate
 @item First the stub for @t{__libc_start_main} is loaded;
 @item Then we define a function, @code{init_registers}, in charge of the 
@@ -133,8 +132,8 @@ $ cat iiirc.py
 @verbatiminclude demo/demo-setup-1.py
 @end smallexample
 
-If we start @iii{} with the above initialization module we get the following
-output:
+Starting @iii{} with the above initialization module will produce the
+following output:
 @smallexample
 $ iii 
 Insight Interactive Inspector
@@ -151,12 +150,12 @@ Arrows from (0x805ad7a,0):
 iii> 
 @end smallexample
 
-
-This is not very convincing but with the @code{view_asm} window, we can see
-on @ref{fig:viewasm02} that the simulation has gone yet farther. Indeed, the
-actual code of @t{__lib_start_main} has been skipped thanks to its attached 
-stub. However @iii{} is now simulating another function of the standard library:
-@code{printf}. This function will be replaced by the following stub:
+And, thanks to the @code{view_asm} window, we can see on
+@ref{fig:viewasm02} that the simulation has gone yet farther. Indeed,
+the actual code of @t{__lib_start_main} has been skipped thanks to its
+attached stub. However, @iii{} is now simulating another function of the
+standard library: @code{printf}. This function will be replaced by the
+following stub:
 
 @smallexample
 @verbatiminclude demo/stub_printf.s
@@ -197,7 +196,7 @@ the following things:
 @itemize 
 @item At address @t{0x8048ddb}, the return value of @code{read} is copied from
       @t{eax} into @t{edx}. @t{edx} is then decremented and a null character 
-      is stored at the address @t{0x8048d44+eax}. Indeed the last byte read 
+      is stored at the address @t{0x8048d44+eax}. Indeed, the last byte read 
       from the standard input is a carriage-return character. At address 
       @t{0x8048dde}, it is replaced by @t{0} in order to form a valid 
       null-terminated C string. @t{edx} store the length of the password and
@@ -205,7 +204,7 @@ the following things:
 @item From addresses @t{0x8048de5} to @t{0x8048dec}, registers @t{esi}, 
       @t{edi} and @t{ecx} are prepared for some string operation. @t{esi} and 
       @t{edi} are the source and destination pointers of the operation and 
-      @t{ecx} the number of iterations. We can see that @t{esi} and @t{edi} 
+      @t{ecx} the number of iterations. We can see that, @t{esi} and @t{edi} 
       have the same starting value (@t{0x8048e08}).
 @end itemize 
 
@@ -214,34 +213,44 @@ each iteration of the loop, the byte pointed by @t{esi} is XOR-ed with @t{0xaa}.
 The loop covers addresses between @t{0x8048e08} and @t{0x8048e24} which are
 located few bytes after the loop itsef. This means that this loop is used to
 modify instructions just after the loop; it is a known trick to obfuscate 
-programs.
+programs and prevent static-analysis of it.
 
-We can compare instructions decoded on-the-fly by the simulator and the ones
-that was loaded at start-up using functions @code{disas} and 
-@code{insight.utils.pretty_disas_memory}@footnote{@code{prog()} returns an 
-opaque object that contains the loaded binary file.}. The latter uses a 
-@emph{linear sweep} algorithm on the raw bytes loaded from the binary file. 
+We can compare on-the-fly decoded instructions by the simulator and the
+ones that were loaded at start-up using functions @code{disas} (left)
+and @code{insight.utils.pretty_disas_memory}@footnote{@code{prog()}
+returns an opaque object that contains the loaded binary file.} (right).
+The latter uses a @emph{linear sweep} algorithm on the original binary
+file raw bytes.
+
+@multitable @columnfractions .45 .45
+@item 
 @smallexample
-iii> insight.utils.pretty_disas_memory (prog(), 0x8048e08, l=8)
- 8048e08 :	fwait
- 8048e09 :	push   $0x6
- 8048e0b :	stos   %eax,%es:(%edi)
- 8048e0c :	jb     0x8048e89
- 8048e0e :	dec    %edx
- 8048e0f :	sub    %ebx,-0x48(%edx)
- 8048e12 :	and    0x4(%ecx),%ch
- 8048e15 :	fild   -0x5cbebab8(%edx)
 iii> disas (0x8048e08, l=8)
- 8048e08:	xor    %eax,%eax
- 8048e0a:	lods   %ds:(%esi),%al
- 8048e0b:	add    %ebx,%eax
- 8048e0d:	shl    %eax
- 8048e0f:	xor    $0x12,%eax
- 8048e12:	mov    %al,%bl
- 8048e14:	scas   %es:(%edi),%al
- 8048e15:	jne    0x8048e3f # jump to : L_1
+ 8048e08:	xor   %eax,%eax
+ 8048e0a:	lods  %ds:(%esi),%al
+ 8048e0b:	add   %ebx,%eax
+ 8048e0d:	shl   %eax
+ 8048e0f:	xor   $0x12,%eax
+ 8048e12:	mov   %al,%bl
+ 8048e14:	scas  %es:(%edi),%al
+ 8048e15:	jne   0x8048e3f # jump to L_1
  8048e17:
 @end smallexample
+
+@tab
+@smallexample
+iii> insight.utils.pretty_disas_memory
+... (prog(), 0x8048e08, l=8)
+ 8048e08 :	fwait
+ 8048e09 :	push  $0x6
+ 8048e0b :	stos  %eax,%es:(%edi)
+ 8048e0c :	jb    0x8048e89
+ 8048e0e :	dec   %edx
+ 8048e0f :	sub   %ebx,-0x48(%edx)
+ 8048e12 :	and   0x4(%ecx),%ch
+ 8048e15 :	fild  -0x5cbebab8(%edx)
+@end smallexample
+@end multitable
 
 @node Examining memory
 @section Examining memory
