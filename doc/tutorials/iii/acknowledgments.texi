@@ -1,0 +1,11 @@
+@node Acknowledgements
+@chapter Acknowledgements
+
+The crackme has been written by Renaud Tabary, a former member of the
+Insight team and improved by Gerald Point. This tutorial has been first
+presented at Dagstuhl seminar 14241, @emph{Challenges in Analysing
+Executables: Scalability, Self-Modifying Code and Synergy} in June 2014,
+at Dagstuhl Schloss, Germany. We would like to thanks all the attenders
+for their precious feedback and comments on this tutorial.
+
+

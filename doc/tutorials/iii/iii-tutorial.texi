@@ -21,6 +21,7 @@ Insight
 @include the-crackme.texi
 @include basic-features.texi
 @include advanced-features.texi
+@include acknowledgments.texi
 @include references.texi
 @include appendices.texi
 @c @include index.texi
