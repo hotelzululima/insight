@@ -22,9 +22,10 @@ select disassembler TYPE (default: linear)
 \fB\-l\fR, \fB\-\-list\fR
 display all available disassembler methods
 .TP
-\fB\-f\fR, \fB\-\-formats\fR FMT
-set disassembler output format:
-asm|asm\-dot|mc|mc\-dot|mc\-xml (default: asm)
+\fB\-f\fR, \fB\-\-formats\fR FMT[=FILE]<,FMT[=FILE]>
+set disassembler output format and the file where to write it.
+.br
+current formats: asm|asm\-dot|mc|mc\-dot|mc\-xml (default: asm)
 .TP
 \fB\-S\fR, \fB\-\-symbols\fR
 display known symbols

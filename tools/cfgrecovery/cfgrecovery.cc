@@ -31,6 +31,7 @@
 #include "cfgrecovery.hh"
 #include "algorithms.hh"
 
+#include <cerrno>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -76,12 +77,20 @@ struct OutputFormat {
   OutputFormatID id;
   const char *name;
   const char *desc;
+  ofstream *output;
 };
 
-#define FORMAT(id,name,desc) { id, name, desc },
-static const OutputFormat FORMATS[] = {
+#define FORMAT(id,name,desc) { id, name, desc, NULL },
+static OutputFormat FORMATS[] = {
   OUTPUT_FORMATS
   FORMAT(OF_UNKNOWN, NULL, NULL)
+};
+#undef FORMAT
+
+#define FORMAT(id,name,desc) [id] = (char*) name,
+static char *const fmt_token[] = {
+  OUTPUT_FORMATS
+  NULL
 };
 #undef FORMAT
 
@@ -357,6 +366,9 @@ main (int argc, char *argv[])
   /* Default output format (asm, _mc_, mc-dot, asm-dot, mc-xml) */
   list<const OutputFormat *> output_formats;
 
+  /* Short options string */
+  char * opts = (char *) "b:ld:e:E:f:C::i:o:hDm:nvVc:S";
+
   /* Long options struct */
   struct option const
     long_opts[] = {
@@ -395,8 +407,7 @@ main (int argc, char *argv[])
   bool enable_debug = false;
   /* Parsing options */
   while ((optc =
-	  getopt_long (argc, argv, "b:ld:e:E:f:C::i:o:hDm:nvVc:S",
-		       long_opts, NULL)) != -1)
+	  getopt_long (argc, argv, opts, long_opts, NULL)) != -1)
     switch (optc)
       {
       case 'b':
@@ -495,23 +506,44 @@ main (int argc, char *argv[])
       case 'E':
 	endianness = optarg;
 	break;
+
       case 'f':		/* Output file format */
 	{
-	  string fmt (optarg);
-	  const OutputFormat *of = FORMATS;
-	  for (; of->id != OF_UNKNOWN; of++)
+	  char *subopts = optarg;
+	  char *value;
+
+	  while (*subopts != '\0')
 	    {
-	      if (fmt == of->name)
+	      OutputFormat *of = FORMATS;
+	      int fmt = getsubopt(&subopts, fmt_token, &value);
+
+	      for (; of->id != OF_UNKNOWN; of++)
 		{
-		  output_formats.push_back (of);
-		  break;
+		  if (fmt == of->id)
+		    {
+		      output_formats.push_back (of);
+
+		      if (value)
+			{
+			  of->output = new ofstream(value);
+			  if (! of->output->is_open())
+			    {
+			      cerr << prog_name
+				   << ": error: cannot open '" << value << "': "
+				   << strerror(errno) << endl;
+			      usage(EXIT_FAILURE);
+			    }
+			}
+		      break;
+		    }
 		}
-	    }
-	  if (of->id == OF_UNKNOWN)
-	    {
-	      cerr << prog_name
-		   << ": error: '" << fmt << "' unknown format" << endl;
-	      usage(EXIT_FAILURE);
+
+	      if (of->id == OF_UNKNOWN)
+		{
+		  cerr << prog_name
+		       << ": error: '" << optarg << "' unknown format given" << endl;
+		  usage(EXIT_FAILURE);
+		}
 	    }
 	}
 	break;
@@ -751,7 +783,11 @@ main (int argc, char *argv[])
     {
       for (list<const OutputFormat *>::iterator i = output_formats.begin ();
 	   i != output_formats.end (); i++)
-	CTRL_C_HANDLER.write_microcode (mc, (*i)->id, cout);
+	{
+	  ostream &os = (*i)->output ? *((*i)->output) : cout;
+
+	  CTRL_C_HANDLER.write_microcode (mc, (*i)->id, os);
+	}
       cout.flush ();
     }
   else
@@ -759,14 +795,11 @@ main (int argc, char *argv[])
       for (list<const OutputFormat *>::iterator i = output_formats.begin ();
 	   i != output_formats.end (); i++)
 	{
-	  ostringstream oss;
-	  oss << output_filename;
-	  string filename = oss.str ();
-	  ofstream output (filename.c_str ());
+	  ofstream output (output_filename);
 	  if (! output.is_open ())
 	    {
 	      logs::error << prog_name << ": error opening file '"
-			  << filename << "'" << endl;
+			  << output_filename << "'" << endl;
 	      perror (prog_name.c_str ());
 	    }
 	  else
@@ -816,6 +849,10 @@ main (int argc, char *argv[])
   delete arch;
 
   insight::terminate();
+
+  /* Cleaning format outputs */
+  for (OutputFormat *of = FORMATS; of->id != OF_UNKNOWN; of++)
+    delete (of->output);
 
   return (EXIT_SUCCESS);
 }
