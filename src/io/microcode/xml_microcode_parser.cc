@@ -396,7 +396,7 @@ s_register_of_xml (xmlNodePtr node, ParserData &data)
   return_null_if_not_named(node, "var");
 
   string regname (s_xml_get_attribute (node, BAD_CAST "name", data));
-  const RegisterDesc *rdesc = data.mcArch->get_register (regname);
+  RegisterDesc *rdesc = data.mcArch->get_register (regname);
   if (rdesc == NULL)
     {
       data.error (node) << "register " << regname << " not declared.";

@@ -1,0 +1,41 @@
+@node Analyzed program
+@chapter Analyzed program
+
+The program we are studying using @iii{} is a @i{crackme} challenge,
+meaning that the program implements a few security mechanisms to protect
+some critical parts of the software and we have to bypass these to
+access the protected data.
+
+The binary code has been obtained by compiling a small @code{x86} assembly 
+program using @code{fasm} assembler (@bibcite{FASM}). The source code of this
+challenge is given in @ref{Crackme source code}. 
+
+As shown below, the behavior of this program is simple: It displays a prompt, 
+reads on the standard input a password and spawns a @code{/bin/sh} 
+shell program if the password is correct or exits in the other case. 
+@example
+$ ./crackme
+Enter password:
+toto
+Wrong password
+$ ./crackme
+Enter password:
+Iv6oCb2U
+sh-4.2$ 
+@end example
+
+Our  challenge is to discover, from the binary code, the password that permits 
+the execution of the shell program. In order to counter analysis of the binary
+file, the program implements fences to protect itself from reverse-engineering:
+
+@enumerate
+@item The password is not stored as-is in the binary data but is hashed.
+
+@item The algorithm that computes the hash-value of the input is
+      cyphered and this part of the binary is uncyphered on-the-fly at
+      execution time.
+@end enumerate
+
+The last point imposes to change the read/write/execute flags of the
+@t{.text} section of the executable to allow self-modifying code (see
+@t{elf (5)}).

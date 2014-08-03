@@ -1,0 +1,11 @@
+@macro bibitem{ref}
+[\ref\] @anchor{\ref\}
+@end macro
+
+@macro bibcite{ref}
+[\ref\] @ref{ref}
+@end macro
+
+@iftex 
+@alias bibcite = ref
+@end iftex

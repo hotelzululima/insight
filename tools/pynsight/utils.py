@@ -29,4 +29,4 @@ def pretty_disas_memory(P, s, l=16):
     if P is None:
         raise ValueError
     for instr in P.disas(s, l):
-        print "0x{:x} : {}".format(instr[0], instr[1])
+        print " {:x} :\t{}".format(instr[0], instr[1])

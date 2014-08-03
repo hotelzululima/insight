@@ -102,7 +102,6 @@ static BinutilsBinaryLoader::flag_t bfd_flags[] =
       {HAS_RELOC, "HAS_RELOC"},
       {HAS_LOCALS, "HAS_LOCALS"},
       {HAS_LINENO, "HAS_LINENO"},
-      {HAS_LOAD_PAGE, "HAS_LOAD_PAGE"},
       {BFD_IN_MEMORY, "BFD_IN_MEMORY"},
       {BFD_IS_RELAXABLE, "BFD_IS_RELAXABLE"},
       {BFD_LINKER_CREATED, "BFD_LINKER_CREATED"},

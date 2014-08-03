@@ -1,0 +1,25 @@
+@node References
+@chapter References
+
+@table @bibitem
+@item DOT 
+Graphviz - Graph Visualization Software. @uref{http://www.graphviz.org/}, 2009.
+
+@item FASM
+Tomasz Grysztar. Flat Assembler. @uref{http://flatassembler.net/}, 2014.
+
+@item XDot
+Jose Fonseca. @uref{https://github.com/jrfonseca/xdot.py}, 2014.
+
+@item JK76 
+James C. King. Symbolic execution and program testing. @emph{Communications of 
+the ACM}, volume 19, number 7, 385--394, 1976.
+
+@item Insight
+Insight Framework. @uref{http://insight.labri.fr/}, 2014.
+
+@c @item EH86
+@c E.A. Emerson and J. Halpern. ``Sometimes'' and ``not never'' revisited: on 
+@c branching versus linear time. J. ACM 33, pp 151-178, 1986.
+@end table
+

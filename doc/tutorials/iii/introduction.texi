@@ -1,0 +1,90 @@
+@ifnottex
+@node Top, Introduction
+@top Introduction
+@end ifnottex
+
+@node Introduction
+@chapter Introduction
+
+This document describes the use of the @iii{} tool for the analysis of
+an obfuscated executable file. This tutorial does not cover all features
+of the tool but presents the most usual ones. @iii{} is essentially a
+simulator built on top of @Insight{} framework (@bibcite{Insight}).
+Symbolic simulation can be an efficient tool for the debugging and the
+understanding of program behaviors.
+
+@Insight{} framework permits to interpret program semantics over
+different domains. Even if its design is quite independent of the
+interpretation domain, @iii{} allows, for now, only two kinds of values:
+concrete and formula. In the first case, the tool behaves roughly like a
+classical debugger. However, @iii{} is limited to the interpretation of
+the internal model of the program i.e., its microcode. Many low-level
+aspects are not yet captured by the framework: system calls, dynamic
+loading, multi-threading and so on. To be short, microcode model has
+threes kind of instructions:
+
+@enumerate
+@item @strong{Assignments} @var{lv} := @emph{E} where @var{lv} is a
+      @emph{l-value} i.e., a register or a memory cell and @emph{E} is a
+      bitvector expression.
+
+@item @strong{Guarded static jumps} change the program counter to an
+      address known @emph{a priori}, if the guard is satisfied.
+
+@item @strong{Dynamic jumps} that change the program counter to an
+      address computed on-the-fly by the program.
+@end enumerate
+
+By default, values are interpreted as formulas. In this case @iii{}
+behaves like a symbolic simulator (@bibcite{JK76}). Since the arising of
+efficient solvers, symbolic simulation has became an effective tool for
+the analysis of programs. For more details on symbolic simulation we
+refer the reader to the literature, this document focus only on main
+ideas.
+
+Regardless of the interpretation domain, the simulator maintains a state
+of the simulation that models the content of the memory and registers,
+and the value of the program counter. In the context of symbolic
+simulation this state associates a formula to each byte of the memory
+and to each register that have been accessed during the symbolic
+execution; the program counter is a concrete address that points
+somewhere into the loaded memory. In addition to these three components,
+a @emph{symbolic state} possesses a fourth one: a formula called the
+@emph{path-condition} which is initially set to @t{true}.
+
+Each time an instruction of the microcode is interpreted, the symbolic
+state is changed as follows:
+
+@itemize
+@item If the instruction is an assignment @var{lv} = @emph{E} where @var{lv}
+      is an @emph{l-value} (i.e., either a register or a memory cell)
+      and @emph{E} is an expression then, each register and memory cell
+      used by @emph{E} are replaced by their assigned value in the
+      current state. If some register or memory cell, says @var{x}, used
+      by @emph{E} is not assigned then a fresh variable @var{fv} is
+      generated and assigned to @var{x} in the new state and @var{x} is
+      replaced by @var{fv} in @emph{E}. Finally the formula obtained
+      from @emph{E} when all substitutions have been done is assigned to
+      @var{lv} in the new state.
+
+@item If the instruction is a static jump to the address @emph{tgt} and if
+      the jump is guarded by some condition @emph{G}, then the simulator
+      check first if @emph{G} is satisfiable in the current state. To
+      this aim, as for assignments, any occurrence of a register or
+      memory cell is replaced by its current value or a fresh variable
+      in @emph{G}; this gives a formula @emph{G'}. The solver is then
+      used to verify the satiafiability of (@emph{G'} @t{and} @emph{pc})
+      where @emph{pc} is the current path-condition. If the formula is
+      satisfiable then the new path-condition becomes (@emph{G'} @t{and}
+      @emph{pc}) and program counter is updated; else the simulator
+      tries the next microcode instruction at the same address or stops.
+
+@item If the instruction is a dynamic jump to an address obtained from an
+      expression @emph{E}, then, as for others instructions, registers
+      and memory cells are replaced by their value in @emph{E}. And, the
+      solver is used to compute a valid value @t{addr} for @emph{E}
+      under the constraint of the path condition. If this is the case,
+      the constraint (@emph{E} = @t{addr}) is added to the new path
+      condition and the program counter is set to @t{addr}.
+
+@end itemize

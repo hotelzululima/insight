@@ -621,31 +621,33 @@ MemCell::change_bit_vector (int new_bv_offset, int new_bv_size) const
 
 /*****************************************************************************/
 
-RegisterExpr::RegisterExpr(const RegisterDesc *reg, int bv_offset, int bv_size)
+RegisterExpr::RegisterExpr(RegisterDesc *reg, int bv_offset, int bv_size)
   : LValue (bv_offset, bv_size), regdesc (reg)
 {
   assert (! regdesc->is_alias ());
+  regdesc->ref();
 }
 
 RegisterExpr::~RegisterExpr()
 {
+  regdesc->deref();
 }
 
 RegisterExpr *
-RegisterExpr::create (const RegisterDesc *reg)
+RegisterExpr::create (RegisterDesc *reg)
 {
   return create (reg, 0, reg->get_register_size ());
 }
 
 RegisterExpr *
-RegisterExpr::create (const RegisterDesc *reg, int bv_offset, int bv_size)
+RegisterExpr::create (RegisterDesc *reg, int bv_offset, int bv_size)
 {
   RegisterExpr *tmp = new RegisterExpr (reg, bv_offset, bv_size);
 
   return find_or_add(tmp);
 }
 
-const RegisterDesc *
+RegisterDesc *
 RegisterExpr::get_descriptor () const {
   return regdesc;
 }

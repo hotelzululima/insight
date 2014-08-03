@@ -40,9 +40,7 @@ template <typename MEM>
 void
 AbstractDomainContext<MEM>::output_text (std::ostream &out) const
 {
-  out << "mem = ";
   memory->output_text (out);
-  out << std::endl;
 }
 
 #endif /* ! ABSTRACTDOMAINCONTEXT_II */
