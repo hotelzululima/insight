@@ -1333,6 +1333,9 @@ s_Simulator_assume (PyObject *self, PyObject *args)
   const char *constraint;
   unsigned long g, l = 0;
 
+  if (! s_check_state (S))
+    return NULL;
+
   if (! PyArg_ParseTuple (args, "ks|k", &g, &constraint, &l))
     return NULL;
 
@@ -2227,7 +2230,7 @@ InsightSimulator<Stepper>::get_register_value (void *p, const RegisterDesc *reg)
 {
   typename Stepper::State *s = (typename Stepper::State *) p;
   typename Stepper::Memory *mem = s->get_Context ()->get_memory ();
-  const RegisterDesc *areg = march->get_register (reg->get_label ());
+  RegisterDesc *areg = march->get_register (reg->get_label ());
   assert (mem->is_defined (areg));
   typename Stepper::Value regval;
 

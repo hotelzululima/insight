@@ -1703,8 +1703,7 @@ instruction:
 | TOK_ORPD operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORPD)> (data, $2, $4, $6); }
 | TOK_ORPS operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORPS)> (data, $2, $4); }
 | TOK_ORPS operand TOK_COMMA operand TOK_COMMA operand { x86_translate<X86_TOKEN(ORPS)> (data, $2, $4, $6); }
-| TOK_OUT  { x86_translate<X86_TOKEN(OUT)> (data); }
-| TOK_OUT operand { x86_translate<X86_TOKEN(OUT)> (data, $2); }
+| TOK_OUT operand TOK_COMMA operand { x86_translate<X86_TOKEN(OUT)> (data, $2, $4); }
 | TOK_OUTSB  { x86_translate<X86_TOKEN(OUTSB)> (data); }
 | TOK_OUTSB operand TOK_COMMA operand { x86_translate<X86_TOKEN(OUTSB)> (data, $2, $4); }
 | TOK_OUTSW  { x86_translate<X86_TOKEN(OUTSW)> (data); }

@@ -73,9 +73,13 @@ typedef int size_in_bits_t;
 class RegisterDesc : public Object
 {
 public:
-  RegisterDesc(int index, const std::string &label, int regsize);
-  RegisterDesc(int index, const std::string &label, int regsize,
-	       int winoffset, int winsize);
+  static RegisterDesc *create(int index, const std::string &label, int regsize);
+  static RegisterDesc *create(int index, const std::string &label, int regsize,
+			      int winoffset, int winsize);
+  RegisterDesc *ref();
+  void deref();
+
+  static void terminate();
 
   virtual void output_text(std::ostream &) const;
 
@@ -93,12 +97,32 @@ public:
     }
   };
 
+  struct Equal {
+    bool operator()(const RegisterDesc * const &r1,
+		    const RegisterDesc * const &r2) const {
+      return r1->index == r2->index &&
+	r1->label == r2->label &&
+	r1->register_size == r2->register_size &&
+	r1->window_offset == r2->window_offset &&
+	r1->window_size == r2->window_size;
+    }
+  };
+
 private:
   int index;
   std::string label;
   size_in_bits_t register_size;
   size_in_bits_t window_offset;
   size_in_bits_t window_size;
+
+  int ref_count;
+
+  typedef std::unordered_set<RegisterDesc *, RegisterDesc::Hash,
+			     RegisterDesc::Equal> RegisterDescPool;
+
+  static RegisterDescPool pool;
+  RegisterDesc(int index, const std::string &label, int regsize,
+	       int winoffset, int winsize);
 };
 
 /** \brief Data structure used to encode the registers. */
@@ -199,7 +223,7 @@ public:
   bool has_register(const std::string &label) const;
 
   /** \brief Returns the specification of the 'label' register. */
-  const RegisterDesc *get_register(const std::string &label) const;
+  RegisterDesc *get_register(const std::string &label) const;
 
   /** \brief Returns a pointer to the table of all registers. */
   const RegisterSpecs *get_registers() const;

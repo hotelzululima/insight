@@ -42,7 +42,7 @@ public :
 
   const Architecture *get_reference_arch () const;
 
-  const RegisterDesc *get_register(const std::string &label) const;
+  RegisterDesc *get_register(const std::string &label) const;
 
   void add_tmp_register (const std::string &label, int size);
 

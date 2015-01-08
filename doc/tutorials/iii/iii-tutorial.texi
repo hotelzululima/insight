@@ -1,0 +1,28 @@
+\input texinfo @c -*- texinfo -*-
+@c %**start of header
+@setfilename design.info
+@documentencoding UTF-8
+@settitle Insight User Manual
+@syncodeindex fn cp
+@macro Insight
+Insight
+@end macro
+@macro iii
+@code{iii}
+@end macro
+
+@c %**end of header
+
+@include common-macros.texi
+@include macros.texi
+@include titlepage.texi
+@contents
+@include introduction.texi
+@include the-crackme.texi
+@include basic-features.texi
+@include advanced-features.texi
+@include acknowledgments.texi
+@include references.texi
+@include appendices.texi
+@c @include index.texi
+@bye

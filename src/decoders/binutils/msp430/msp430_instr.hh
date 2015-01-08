@@ -31,7 +31,7 @@
 #ifndef MSP430_TRANSLATION_FUNCTIONS_HH
 # define MSP430_TRANSLATION_FUNCTIONS_HH
 
-# include "msp430_translate.hh"
+#include <decoders/binutils/msp430/msp430_translate.hh>
 
 MSP430_TRANSLATE_0_OP(BAD); // msp430_translate.cc
 

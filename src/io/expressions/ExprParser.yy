@@ -180,7 +180,7 @@ lvalue:
 | TOK_PERCENT TOK_STRING
   {
     try {
-      const RegisterDesc *reg = data.arch->get_register (*$2);
+      RegisterDesc *reg = data.arch->get_register (*$2);
       int offset = reg->get_window_offset ();
       int size = reg->get_window_size ();
       if (reg->is_alias ())

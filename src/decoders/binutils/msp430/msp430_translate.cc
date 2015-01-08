@@ -56,7 +56,7 @@ msp430::parser_data::get_register (const char *regname) const
 {
   assert (regname != NULL);
 
-  const RegisterDesc *rd = arch->get_register (regname);
+  RegisterDesc *rd = arch->get_register (regname);
   int offset = rd->get_window_offset ();
   int size = rd->get_window_size ();
 
@@ -173,6 +173,8 @@ msp430::parser_data::finalize_postincrements(bool mc_follows) {
 			 last && !mc_follows? next_ma : start_ma + 1, NULL);
       start_ma = start_ma + 1;
     }
+
+    post_increment_registers[i] = NULL;
   }
 }
 

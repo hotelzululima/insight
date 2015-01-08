@@ -347,16 +347,24 @@ X86_TRANSLATE_0_OP(HLT)
   data.mc->add_skip (data.start_ma, data.start_ma, Constant::zero (1));
 }
 
+X86_TRANSLATE_2_OP(IN)
+{
+  data.mc->add_assignment (data.start_ma, 
+			   (LValue *) op2, 
+			   RandomValue::create (op2->get_bv_size ()),
+			   data.next_ma);
+  op1->deref ();
+}
 
 X86_TRANSLATE_0_OP(INVD)
 {
-  logs:: warning << "RDSTC translated in NOP" << endl;
+  logs:: warning << "INVD translated in NOP" << endl;
   x86_translate<X86_TOKEN (NOP)> (data);
 }
 
 X86_TRANSLATE_1_OP(INVLPG)
 {
-  logs:: warning << "RDSTC translated in INVLPG" << endl;
+  logs:: warning << "INVLPG translated in NOP" << endl;
   x86_translate<X86_TOKEN (NOP)> (data);
   op1->deref ();
 }
@@ -388,6 +396,14 @@ X86_TRANSLATE_1_OP(NOPL)
 {
   x86_translate<X86_TOKEN (NOP)> (data);
   op1->deref ();
+}
+
+X86_TRANSLATE_2_OP(OUT)
+{
+  logs:: warning << "OUT translated in NOP" << endl;
+  x86_translate<X86_TOKEN (NOP)> (data);
+  op1->deref ();
+  op2->deref ();
 }
 
 X86_TRANSLATE_0_OP(PAUSE)

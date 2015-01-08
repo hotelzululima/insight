@@ -165,7 +165,7 @@ static void
 s_randomize_register (MicrocodeAddress &start, Microcode *prog,
 		      const Architecture *arch, const char *regname)
 {
-  const RegisterDesc *reg = arch->get_register (regname);
+  RegisterDesc *reg = arch->get_register (regname);
   int regsize = reg->get_register_size ();
   prog->add_assignment (start,
 			RegisterExpr::create (reg, 0, regsize),

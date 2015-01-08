@@ -378,7 +378,7 @@ class Element(CompoundShape):
 
 class Node(Element):
 
-    def __init__(self, id, x, y, w, h, shapes, url):
+    def __init__(self, id, x, y, w, h, shapes, url, ep):
         Element.__init__(self, shapes)
 
         self.id = id
@@ -392,8 +392,13 @@ class Node(Element):
 
         self.url = url
 
+        self.entrypoint = ep
+
     def is_inside(self, x, y):
         return self.x1 <= x and x <= self.x2 and self.y1 <= y and y <= self.y2
+
+    def is_entrypoint(self):
+        return self.entrypoint == 1
 
     def get_url(self, x, y):
         if self.url is None:
@@ -1198,7 +1203,8 @@ class XDotParser(DotParser):
                 parser = XDotAttrParser(self, attrs[attr])
                 shapes.extend(parser.parse())
         url = attrs.get('URL', None)
-        node = Node(id, x, y, w, h, shapes, url)
+        ep = int(attrs.get('entrypoint', 0))
+        node = Node(id, x, y, w, h, shapes, url ,ep)
         self.node_by_name[id] = node
         if shapes:
             self.nodes.append(node)
@@ -1552,6 +1558,18 @@ class DotWidget(gtk.DrawingArea):
         parser = XDotParser(xdotcode)
         self.graph = parser.parse()
         self.zoom_image(self.zoom_ratio, center=True)
+
+    def center_on_entrypoint (self):
+        for node in self.graph.nodes:
+            if node.is_entrypoint ():
+                posnode = node.x, node.y
+                rect = self.get_allocation()
+                self.zoom_to_area (node.x-0.5*rect.width,
+                                   node.y-0.5*rect.height,
+                                   node.x+0.5*rect.width,
+                                   node.y+0.5*rect.height)
+                #self.zoom_image(self.zoom_ratio, center=False, pos = posnode)
+                return
 
     def reload(self):
         if self.openfilename is not None:
@@ -2006,7 +2024,8 @@ class DotWindow(gtk.Window):
     def set_dotcode(self, dotcode, filename=None):
         if self.widget.set_dotcode(dotcode, filename):
             self.update_title(filename)
-            self.widget.zoom_to_fit()
+#            self.widget.zoom_to_fit()
+            self.widget.center_on_entrypoint ()
 
     def set_xdotcode(self, xdotcode, filename=None):
         if self.widget.set_xdotcode(xdotcode):

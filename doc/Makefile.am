@@ -1,5 +1,7 @@
-
-MANDIR=manuals
+MANDIR = ${srcdir}/manuals
+TEXI2DVI = texi2dvi
+TEXI2DVIFLAGS = --build=clean -I ${MANDIR} -I ${builddir}/manuals -p
+SUBDIRS=tutorials
 
 .PHONY:	manuals api
 
@@ -12,13 +14,14 @@ api: doxygen/doxygen.cfg
 	@(cd doxygen && (doxygen doxygen.cfg || \
 	echo "error: 'doxygen' is needed to build the API documentation"))
 
-manuals: insight-user-manual.pdf insight-dev-manual.pdf
+manuals: insight-user-manual.pdf insight-dev-manual.pdf \
+         iii-tutorial.pdf
 
 insight-user-manual.pdf: $(MANDIR)/insight-user-manual.texi
-	@(cd $(MANDIR) && texi2dvi -p -o ../$@ ../$<)
+	${TEXI2DVI} ${TEXI2DVIFLAGS} -o $@ $<
 
 insight-dev-manual.pdf: $(MANDIR)/insight-dev-manual.texi
-	@(cd $(MANDIR) && texi2dvi -p -o ../$@ ../$<)
+	${TEXI2DVI} ${TEXI2DVIFLAGS} -o $@ $<
 
 clean-local:
 	@rm -fr *~

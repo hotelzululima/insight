@@ -47,7 +47,7 @@ arm::parser_data::parser_data ()
 LValue *
 arm::parser_data::get_register(const char *regname) const
 {
-  const RegisterDesc *rd = arch->get_register (regname);
+  RegisterDesc *rd = arch->get_register (regname);
   int offset = rd->get_window_offset ();
   int size = rd->get_window_size ();
 
